@@ -25,7 +25,7 @@ export async function uploadAvatar(buffer: Buffer, personId: string, filename: s
       Key: key,
       Body: buffer,
       ContentType: contentType,
-    }),
+    })
   );
 
   return getPublicUrl(key);
@@ -41,6 +41,6 @@ export async function deleteAvatar(url: string): Promise<void> {
     new DeleteObjectCommand({
       Bucket: bucket,
       Key: key,
-    }),
+    })
   );
 }

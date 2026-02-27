@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
-import { render, type RenderOptions } from '@testing-library/react';
+import { type RenderOptions, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactNode } from 'react';
 
 function Wrapper({ children }: { children: ReactNode }) {
   return <>{children}</>;

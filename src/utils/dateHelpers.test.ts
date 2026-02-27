@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { formatDisplayDate, getLunarDateString, calculateAge } from './dateHelpers';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { calculateAge, formatDisplayDate, getLunarDateString } from './dateHelpers';
 
 describe('formatDisplayDate', () => {
   describe('when all date components are provided', () => {
@@ -65,10 +65,10 @@ describe('getLunarDateString', () => {
 });
 
 describe('calculateAge', () => {
-  let realDateNow: typeof Date.now;
+  let _realDateNow: typeof Date.now;
 
   beforeEach(() => {
-    realDateNow = Date.now;
+    _realDateNow = Date.now;
     // Mock current year to 2025
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2025, 0, 1));

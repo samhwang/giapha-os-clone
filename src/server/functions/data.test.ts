@@ -14,7 +14,7 @@ vi.mock('@tanstack/react-start', () => ({
         const callable = async (input: unknown) => {
           let data = input;
           if (validatorSchema) {
-            data = typeof validatorSchema === 'function' ? validatorSchema(input) : validatorSchema.parse!(input);
+            data = typeof validatorSchema === 'function' ? validatorSchema(input) : validatorSchema.parse?.(input);
           }
           return fn({ data });
         };

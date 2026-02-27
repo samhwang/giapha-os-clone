@@ -1,12 +1,12 @@
-@import '@fontsource-variable/inter';
-@import '@fontsource-variable/playfair-display';
-@import 'tailwindcss';
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/playfair-display";
+@import "tailwindcss";
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --font-inter: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-playfair: 'Playfair Display Variable', Georgia, serif;
+  --font-inter: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-playfair: "Playfair Display Variable", Georgia, serif;
 }
 
 @theme inline {
@@ -26,7 +26,7 @@ body {
   input,
   textarea,
   select {
-    font-size: 16px !important;
+    font-size: 16px;
   }
 }
 

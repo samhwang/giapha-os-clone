@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { computeEvents } from './eventHelpers';
 
 describe('computeEvents', () => {
@@ -58,7 +58,7 @@ describe('computeEvents', () => {
 
       expect(birthday).toBeDefined();
       // Jan 1 already passed (today is Jan 15), so next occurrence is Jan 1, 2026
-      expect(birthday!.nextOccurrence.getFullYear()).toBe(2026);
+      expect(birthday?.nextOccurrence.getFullYear()).toBe(2026);
     });
 
     it('should skip birthday when birthMonth or birthDay is null', () => {

@@ -40,7 +40,7 @@ export function computeEvents(
     deathMonth: number | null;
     deathDay: number | null;
     isDeceased: boolean;
-  }[],
+  }[]
 ): FamilyEvent[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);

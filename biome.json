@@ -41,5 +41,10 @@
       "arrowParentheses": "always",
       "jsxQuoteStyle": "double"
     }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
   }
 }

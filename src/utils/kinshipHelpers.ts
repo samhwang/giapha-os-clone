@@ -55,7 +55,7 @@ function resolveBloodTerms(
   personA: PersonNode,
   personB: PersonNode,
   pathA: PersonNode[],
-  pathB: PersonNode[],
+  pathB: PersonNode[]
 ): [string, string, string] {
   const genderA = personA.gender;
   const genderB = personB.gender;
@@ -193,7 +193,7 @@ function findBloodKinship(
   personA: PersonNode,
   personB: PersonNode,
   personsMap: Map<string, PersonNode>,
-  parentMap: Map<string, string[]>,
+  parentMap: Map<string, string[]>
 ): KinshipResult | null {
   const ancA = getAncestryData(personA.id, parentMap, personsMap);
   const ancB = getAncestryData(personB.id, parentMap, personsMap);
@@ -203,7 +203,7 @@ function findBloodKinship(
 
   for (const [id, dataA] of ancA) {
     if (ancB.has(id)) {
-      const dist = dataA.depth + ancB.get(id)!.depth;
+      const dist = dataA.depth + ancB.get(id)?.depth;
       if (dist < minDistance) {
         minDistance = dist;
         lcaId = id;
