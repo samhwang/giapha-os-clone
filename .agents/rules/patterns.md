@@ -112,7 +112,7 @@ await prisma.$transaction([
 ### Error Handling
 
 ```tsx
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/generated/prisma';
 
 try {
   await prisma.person.create({ data });

@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.999.0",
+    "@dotenvx/dotenvx": "^1.52.0",
     "@fontsource-variable/inter": "^5.2.8",
     "@fontsource-variable/playfair-display": "^5.2.8",
     "@prisma/client": "^7.4.1",
@@ -75,8 +76,5 @@
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.18",
     "zod": "^4.3.5"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   }
 }

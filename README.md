@@ -54,7 +54,7 @@ A self-hosted Vietnamese genealogy and family tree management application. This 
 4. **Configure environment**
 
    ```bash
-   cp .env.example .env
+   cp .env.sample .env
    # Edit .env with your S3 keys from the Garage setup output
    ```
 
