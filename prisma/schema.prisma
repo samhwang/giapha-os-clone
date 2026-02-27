@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -60,6 +61,7 @@ model Session {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+  @@index([userId])
 }
 
 model Account {
@@ -79,6 +81,7 @@ model Account {
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("accounts")
+  @@index([userId])
 }
 
 model Verification {
@@ -90,6 +93,7 @@ model Verification {
   updatedAt  DateTime? @updatedAt @map("updated_at")
 
   @@map("verifications")
+  @@index([identifier])
 }
 
 // ============================================================
