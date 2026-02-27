@@ -11,9 +11,7 @@ vi.mock('./_auth', () => ({
   requireAdmin: (...args: unknown[]) => mockRequireAdmin(...args),
 }));
 
-// ─── Imports ────────────────────────────────────────────────────────────────
-
-const { createPerson, updatePerson, deleteMember, uploadPersonAvatar, getPersons, getPersonById } = await import('./member');
+import { createPerson, deleteMember, getPersonById, getPersons, updatePerson, uploadPersonAvatar } from './member';
 
 const prisma = getDbClient();
 

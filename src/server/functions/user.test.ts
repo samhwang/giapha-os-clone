@@ -19,9 +19,7 @@ vi.mock('@/lib/auth', () => ({
   },
 }));
 
-// ─── Imports ────────────────────────────────────────────────────────────────
-
-const { changeRole, deleteUser, createUser, toggleStatus, getUsers } = await import('./user');
+import { changeRole, createUser, deleteUser, getUsers, toggleStatus } from './user';
 
 const prisma = getDbClient();
 
