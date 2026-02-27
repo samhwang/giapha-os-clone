@@ -26,6 +26,7 @@ export default defineConfig({
           include: ['src/server/functions/**.test.ts'],
           environment: 'node',
           globalSetup: ['./test/globalSetup.ts'],
+          fileParallelism: false,
         },
       },
       {
@@ -39,6 +40,5 @@ export default defineConfig({
       },
     ],
     setupFiles: ['./src/test-utils/setup.ts'],
-    fileParallelism: false,
   },
 });
