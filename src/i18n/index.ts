@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import en from './en.json';
-import vi from './vi.json';
+import en from './translations/en.json';
+import vi from './translations/vi.json';
 
 export const supportedLanguages = ['vi', 'en'] as const;
 export type Language = (typeof supportedLanguages)[number];
