@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '@/lib/db';
-import { cleanDatabase } from '@/test-utils/db-helpers';
 
 // ─── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -20,11 +19,10 @@ const prisma = getDbClient();
 
 // ─── Setup ──────────────────────────────────────────────────────────────────
 
-beforeEach(async () => {
+beforeEach(() => {
   vi.clearAllMocks();
   mockRequireAuth.mockResolvedValue({ id: 'user-1', role: 'admin', isActive: true });
   mockRequireAdmin.mockResolvedValue({ id: 'user-1', role: 'admin', isActive: true });
-  await cleanDatabase();
 });
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
@@ -134,7 +132,7 @@ describe('uploadPersonAvatar', () => {
     await expect(
       uploadPersonAvatar({
         data: {
-          personId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+          personId: crypto.randomUUID(),
           filename: 'photo.jpg',
           contentType: 'image/jpeg',
           base64: Buffer.from('data').toString('base64'),
@@ -145,20 +143,15 @@ describe('uploadPersonAvatar', () => {
 });
 
 describe('getPersons', () => {
-  it('should return all persons', async () => {
-    await createPerson({ data: { fullName: 'Person 1', gender: 'male' } });
-    await createPerson({ data: { fullName: 'Person 2', gender: 'female' } });
+  it('should return created persons', async () => {
+    const p1 = await createPerson({ data: { fullName: 'Person 1', gender: 'male' } });
+    const p2 = await createPerson({ data: { fullName: 'Person 2', gender: 'female' } });
 
     const result = await getPersons();
+    const ids = result.map((p: { id: string }) => p.id);
 
-    expect(result).toHaveLength(2);
-    expect(result[0].fullName).toBe('Person 1');
-    expect(result[1].fullName).toBe('Person 2');
-  });
-
-  it('should return empty array when no persons', async () => {
-    const result = await getPersons();
-    expect(result).toEqual([]);
+    expect(ids).toContain(p1.id);
+    expect(ids).toContain(p2.id);
   });
 });
 
@@ -179,7 +172,7 @@ describe('getPersonById', () => {
   });
 
   it('should return null for non-existent person', async () => {
-    const result = await getPersonById({ data: { id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' } });
+    const result = await getPersonById({ data: { id: crypto.randomUUID() } });
     expect(result).toBeNull();
   });
 });

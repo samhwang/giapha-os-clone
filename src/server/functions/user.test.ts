@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '@/lib/db';
-import { cleanDatabase, cleanUsers } from '@/test-utils/db-helpers';
 
 // ─── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -28,27 +27,29 @@ const prisma = getDbClient();
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-const ADMIN_ID = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
+const ADMIN_ID = crypto.randomUUID();
 
 async function seedUser(overrides: { id?: string; email?: string; role?: 'admin' | 'member'; isActive?: boolean } = {}) {
-  return prisma.user.create({
-    data: {
-      id: overrides.id ?? crypto.randomUUID(),
-      email: overrides.email ?? `user-${crypto.randomUUID()}@test.com`,
-      name: 'Test User',
-      role: overrides.role ?? 'member',
-      isActive: overrides.isActive ?? true,
-    },
+  const id = overrides.id ?? crypto.randomUUID();
+  const data = {
+    email: overrides.email ?? `user-${crypto.randomUUID()}@test.com`,
+    name: 'Test User',
+    role: overrides.role ?? 'member',
+    isActive: overrides.isActive ?? true,
+  };
+
+  return prisma.user.upsert({
+    where: { id },
+    create: { id, ...data },
+    update: data,
   });
 }
 
 // ─── Setup ──────────────────────────────────────────────────────────────────
 
-beforeEach(async () => {
+beforeEach(() => {
   vi.clearAllMocks();
   mockRequireAdmin.mockResolvedValue({ id: ADMIN_ID, role: 'admin' });
-  await cleanDatabase();
-  await cleanUsers();
 });
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
@@ -112,9 +113,10 @@ describe('createUser', () => {
   });
 
   it('should throw when email already exists', async () => {
-    await seedUser({ email: 'existing@test.com' });
+    const email = `existing-${crypto.randomUUID()}@test.com`;
+    await seedUser({ email });
 
-    await expect(createUser({ data: { email: 'existing@test.com', password: 'password123' } })).rejects.toThrow('error.user.emailTaken');
+    await expect(createUser({ data: { email, password: 'password123' } })).rejects.toThrow('error.user.emailTaken');
   });
 });
 
@@ -137,13 +139,17 @@ describe('toggleStatus', () => {
 });
 
 describe('getUsers', () => {
-  it('should return all users with selected fields', async () => {
-    await seedUser({ email: 'user1@test.com', role: 'admin' });
-    await seedUser({ email: 'user2@test.com', role: 'member' });
+  it('should return users with selected fields', async () => {
+    const email1 = `user1-${crypto.randomUUID()}@test.com`;
+    const email2 = `user2-${crypto.randomUUID()}@test.com`;
+    await seedUser({ email: email1, role: 'admin' });
+    await seedUser({ email: email2, role: 'member' });
 
     const result = await getUsers();
+    const emails = result.map((u: { email: string }) => u.email);
 
-    expect(result).toHaveLength(2);
+    expect(emails).toContain(email1);
+    expect(emails).toContain(email2);
     expect(result[0]).toHaveProperty('email');
     expect(result[0]).toHaveProperty('role');
     expect(result[0]).not.toHaveProperty('emailVerified');

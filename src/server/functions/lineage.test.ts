@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '@/lib/db';
-import { cleanDatabase } from '@/test-utils/db-helpers';
 
 // ─── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -19,10 +18,9 @@ const prisma = getDbClient();
 
 // ─── Setup ──────────────────────────────────────────────────────────────────
 
-beforeEach(async () => {
+beforeEach(() => {
   vi.clearAllMocks();
   mockRequireAuth.mockResolvedValue({ id: 'user-1', isActive: true });
-  await cleanDatabase();
 });
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
@@ -77,8 +75,6 @@ describe('updateBatch', () => {
   it('should require authentication', async () => {
     mockRequireAuth.mockRejectedValue(new Error('Vui lòng đăng nhập.'));
 
-    await expect(updateBatch({ data: { updates: [{ id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', generation: 1, birthOrder: 1 }] } })).rejects.toThrow(
-      'Vui lòng đăng nhập.'
-    );
+    await expect(updateBatch({ data: { updates: [{ id: crypto.randomUUID(), generation: 1, birthOrder: 1 }] } })).rejects.toThrow('Vui lòng đăng nhập.');
   });
 });

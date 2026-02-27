@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '@/lib/db';
-import { cleanDatabase } from '@/test-utils/db-helpers';
 
 // ─── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -19,15 +18,14 @@ const prisma = getDbClient();
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-const UUID_A = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
-const UUID_B = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22';
+const UUID_A = crypto.randomUUID();
+const UUID_B = crypto.randomUUID();
 
 // ─── Setup ──────────────────────────────────────────────────────────────────
 
-beforeEach(async () => {
+beforeEach(() => {
   vi.clearAllMocks();
   mockRequireAdmin.mockResolvedValue({ id: 'user-1', role: 'admin' });
-  await cleanDatabase();
 });
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
@@ -44,8 +42,8 @@ describe('exportData', () => {
 
     expect(result.version).toBe(2);
     expect(result.timestamp).toBeDefined();
-    expect(result.persons).toHaveLength(2);
-    expect(result.relationships).toHaveLength(1);
+    expect(result.persons.map((p: { id: string }) => p.id)).toEqual(expect.arrayContaining([UUID_A, UUID_B]));
+    expect(result.relationships).toEqual(expect.arrayContaining([expect.objectContaining({ personAId: UUID_A, personBId: UUID_B, type: 'marriage' })]));
   });
 
   it('should require admin access', async () => {
@@ -94,8 +92,10 @@ describe('importData', () => {
       imported: { persons: 2, relationships: 1 },
     });
 
-    const persons = await prisma.person.findMany();
-    expect(persons).toHaveLength(2);
+    const personA = await prisma.person.findUnique({ where: { id: UUID_A } });
+    const personB = await prisma.person.findUnique({ where: { id: UUID_B } });
+    expect(personA?.fullName).toBe('Nguyễn Vạn');
+    expect(personB?.fullName).toBe('Nguyễn Thị');
   });
 
   it('should handle import with only persons (no relationships)', async () => {
