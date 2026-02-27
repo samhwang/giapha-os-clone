@@ -1,6 +1,6 @@
 import childProcess from 'node:child_process';
 import { PostgreSqlContainer, type StartedPostgreSqlContainer } from '@testcontainers/postgresql';
-import { GenericContainer, Wait, type StartedTestContainer } from 'testcontainers';
+import { GenericContainer, type StartedTestContainer, Wait } from 'testcontainers';
 
 const ADMIN_TOKEN = 'test-admin-token';
 
@@ -32,7 +32,7 @@ const BUCKET_NAME = 'avatars';
 function pushSchema(databaseUrl: string) {
   console.log('Running Prisma DB Push');
   process.env.DATABASE_URL = databaseUrl;
-  childProcess.execSync(`pnpm run prisma:push --url "${databaseUrl}"`, {
+  childProcess.execSync(`pnpm run prisma:migrate:dev --url "${databaseUrl}"`, {
     env: { ...process.env, DATABASE_URL: databaseUrl },
   });
   console.log('Prisma DB Push complete');
