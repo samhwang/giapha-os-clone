@@ -50,30 +50,36 @@
    ./scripts/setup-garage.sh
    ```
 
-3. **Cài đặt dependencies**
+3. **Thiết lập Better Auth token**
+
+   ```bash
+   pnpm run auth:secret
+   ```
+
+4. **Cài đặt dependencies**
 
    ```bash
    pnpm install
    ```
 
-4. **Cấu hình môi trường**
+5. **Cấu hình môi trường**
 
    ```bash
    cp .env.sample .env
-   # Chỉnh sửa .env với các key S3 từ kết quả setup Garage
+   # Chỉnh sửa .env với các key S3 từ kết quả setup Garage và Better Auth
    ```
 
-5. **Thiết lập cơ sở dữ liệu**
+6. **Thiết lập cơ sở dữ liệu**
 
    ```bash
-   pnpm prisma db push
-   pnpm prisma db seed
+   pnpm run prisma:migrate:dev
+   pnpm run prisma:seed
    ```
 
-6. **Khởi động server phát triển**
+7. **Khởi động server phát triển**
 
    ```bash
-   pnpm dev
+   pnpm run dev
    ```
 
    Mở [http://localhost:3000](http://localhost:3000). Người dùng đầu tiên đăng ký sẽ tự động trở thành quản trị viên.
@@ -82,20 +88,28 @@
 
 | Lệnh | Mô tả |
 |---|---|
-| `pnpm dev` | Khởi động server phát triển |
-| `pnpm build` | Build production |
-| `pnpm start` | Khởi động server production |
-| `pnpm test` | Chạy kiểm thử ở chế độ watch |
-| `pnpm test:run` | Chạy kiểm thử một lần |
-| `pnpm test:coverage` | Chạy kiểm thử với báo cáo coverage |
-| `pnpm lint` | Kiểm tra linting (Biome) |
-| `pnpm lint:fix` | Tự động sửa lỗi lint |
-| `pnpm typecheck` | Kiểm tra kiểu TypeScript |
-| `pnpm ci` | Kiểm tra linting nghiêm ngặt cho CI |
-| `pnpm prisma studio` | Mở giao diện quản lý database |
-| `pnpm prisma db push` | Đẩy schema vào database |
-| `pnpm prisma db seed` | Tạo dữ liệu mẫu |
-| `pnpm prisma migrate dev` | Tạo và áp dụng migration |
+| `pnpm run dev` | Khởi động server phát triển |
+| `pnpm run build` | Build production |
+| `pnpm run start` | Khởi động server production |
+| `pnpm run test` | Chạy kiểm thử ở chế độ watch |
+| `pnpm run test:run` | Chạy kiểm thử một lần |
+| `pnpm run test:coverage` | Chạy kiểm thử với báo cáo coverage |
+| `pnpm run test:ui` | Chạy kiểm thử UI components |
+| `pnpm run test:server` | Chạy kiểm thử server functions |
+| `pnpm run test:integration` | Chạy kiểm thử tích hợp |
+| `pnpm run lint` | Kiểm tra linting (Biome) |
+| `pnpm run lint:fix` | Tự động sửa lỗi lint |
+| `pnpm run typecheck` | Kiểm tra kiểu TypeScript |
+| `pnpm run ci` | Kiểm tra linting nghiêm ngặt cho CI |
+| `pnpm run prisma:studio` | Mở giao diện quản lý database |
+| `pnpm run prisma:push` | Đẩy schema vào database |
+| `pnpm run prisma:generate` | Generate Prisma client |
+| `pnpm run prisma:seed` | Tạo dữ liệu mẫu |
+| `pnpm run prisma:migrate:dev` | Tạo và áp dụng migration |
+| `pnpm run prisma:migrate:prod` | Deploy migration |
+| `pnpm run prisma:format` | Format Prisma schema |
+| `pnpm run auth:secret` | Tạo Better Auth secret |
+| `pnpm run auth:generate` | Generate Better Auth client |
 
 ## Cấu Trúc Dự Án
 
