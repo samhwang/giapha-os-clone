@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, RefreshCw, Sparkles } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { updateBatch } from '@/server/functions/lineage';
 import type { Person, Relationship } from '@/types';
 
@@ -126,6 +127,7 @@ function computeBirthOrders(persons: Person[], relationships: Relationship[]): M
 }
 
 export default function LineageManager({ persons, relationships }: LineageManagerProps) {
+  const { t } = useTranslation();
   const [updates, setUpdates] = useState<ComputedUpdate[] | null>(null);
   const [computing, setComputing] = useState(false);
   const [applying, setApplying] = useState(false);
@@ -168,7 +170,7 @@ export default function LineageManager({ persons, relationships }: LineageManage
 
       setUpdates(result);
     } catch (err) {
-      setError((err as Error).message || 'Lỗi tính toán.');
+      setError((err as Error).message || t('lineage.calcError'));
     } finally {
       setComputing(false);
     }
@@ -192,7 +194,7 @@ export default function LineageManager({ persons, relationships }: LineageManage
       });
       setApplied(true);
     } catch (err) {
-      setError((err as Error).message || 'Lỗi khi cập nhật dữ liệu.');
+      setError((err as Error).message || t('lineage.applyError'));
     } finally {
       setApplying(false);
     }
@@ -211,7 +213,7 @@ export default function LineageManager({ persons, relationships }: LineageManage
           className="inline-flex items-center gap-2 px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
         >
           {computing ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
-          {computing ? 'Đang tính...' : 'Tính toán'}
+          {computing ? t('lineage.calculating') : t('lineage.calculate')}
         </button>
 
         {updates && changedCount > 0 && !applied && (
@@ -222,7 +224,7 @@ export default function LineageManager({ persons, relationships }: LineageManage
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm shadow-sm"
           >
             {applying ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
-            {applying ? 'Đang cập nhật...' : `Áp dụng (${changedCount} thay đổi)`}
+            {applying ? t('lineage.updating') : t('lineage.applyChanges', { count: changedCount })}
           </button>
         )}
       </div>
@@ -250,7 +252,7 @@ export default function LineageManager({ persons, relationships }: LineageManage
             className="flex items-center gap-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl p-4 text-sm font-semibold"
           >
             <CheckCircle2 className="size-5 shrink-0" />
-            Đã áp dụng thành công {changedCount} thay đổi! Tải lại trang để xem kết quả.
+            {t('lineage.applySuccess', { count: changedCount })}
           </motion.div>
         )}
       </AnimatePresence>
@@ -258,10 +260,7 @@ export default function LineageManager({ persons, relationships }: LineageManage
       {updates && (
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <p className="text-sm text-stone-500 font-medium">
-              <span className="text-stone-800 font-bold">{changedCount}</span> thành viên sẽ được cập nhật /&nbsp;
-              <span className="text-stone-800 font-bold">{updates.length}</span> tổng
-            </p>
+            <p className="text-sm text-stone-500 font-medium">{t('lineage.changesSummary', { changed: changedCount, total: updates.length })}</p>
           </div>
 
           <div className="rounded-2xl border border-stone-200/80 overflow-hidden shadow-sm">
@@ -269,10 +268,10 @@ export default function LineageManager({ persons, relationships }: LineageManage
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-stone-50 border-b border-stone-200/80">
-                    <th className="text-left px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">Tên</th>
-                    <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">Thế hệ (cũ → mới)</th>
-                    <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">Thứ tự sinh (cũ → mới)</th>
-                    <th className="text-center px-4 py-3 font-semibold text-stone-600">Trạng thái</th>
+                    <th className="text-left px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.nameHeader')}</th>
+                    <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.generationHeader')}</th>
+                    <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.birthOrderHeader')}</th>
+                    <th className="text-center px-4 py-3 font-semibold text-stone-600">{t('lineage.statusHeader')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -305,11 +304,11 @@ export default function LineageManager({ persons, relationships }: LineageManage
                       <td className="px-4 py-3 text-center">
                         {u.changed ? (
                           <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700 border border-amber-200/60">
-                            Cập nhật
+                            {t('common.update')}
                           </span>
                         ) : (
                           <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold bg-stone-100 text-stone-400 border border-stone-200/60">
-                            Không đổi
+                            {t('common.unchanged')}
                           </span>
                         )}
                       </td>
@@ -328,11 +327,11 @@ export default function LineageManager({ persons, relationships }: LineageManage
             >
               {showAll ? (
                 <>
-                  <ChevronUp className="size-4" /> Thu gọn
+                  <ChevronUp className="size-4" /> {t('lineage.collapse')}
                 </>
               ) : (
                 <>
-                  <ChevronDown className="size-4" /> Xem tất cả {updates.length} thành viên
+                  <ChevronDown className="size-4" /> {t('lineage.showAll', { count: updates.length })}
                 </>
               )}
             </button>

@@ -1,9 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle2, Download, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { exportData, importData } from '@/server/functions/data';
 
 export default function DataImportExport() {
+  const { t } = useTranslation();
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [importStatus, setImportStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -26,7 +28,7 @@ export default function DataImportExport() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (error: unknown) {
-      alert(error instanceof Error ? error.message : 'Tải xuống thất bại.');
+      alert(error instanceof Error ? error.message : t('data.downloadError'));
     } finally {
       setIsExporting(false);
     }
@@ -36,7 +38,7 @@ export default function DataImportExport() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
-        setImportStatus({ type: 'error', message: 'Vui lòng chọn file JSON hợp lệ.' });
+        setImportStatus({ type: 'error', message: t('data.invalidJson') });
         return;
       }
       setSelectedFile(file);
@@ -56,7 +58,7 @@ export default function DataImportExport() {
       const payload = JSON.parse(fileText);
 
       if (!payload.persons || !payload.relationships) {
-        throw new Error('File JSON không chứa cấu trúc dữ liệu hợp lệ (thiếu persons hoặc relationships).');
+        throw new Error(t('data.invalidStructure'));
       }
 
       const result = await importData({
@@ -68,7 +70,10 @@ export default function DataImportExport() {
 
       setImportStatus({
         type: 'success',
-        message: `Phục hồi thành công! Đã nhập ${result.imported.persons} thành viên và ${result.imported.relationships} quan hệ.`,
+        message: t('data.restoreSuccess', {
+          persons: result.imported.persons,
+          relationships: result.imported.relationships,
+        }),
       });
       setShowConfirm(false);
       setSelectedFile(null);
@@ -76,7 +81,7 @@ export default function DataImportExport() {
     } catch (error: unknown) {
       setImportStatus({
         type: 'error',
-        message: error instanceof Error ? error.message : 'Quá trình phục hồi đã xảy ra lỗi.',
+        message: error instanceof Error ? error.message : t('data.restoreError'),
       });
       setShowConfirm(false);
       setSelectedFile(null);
@@ -97,8 +102,8 @@ export default function DataImportExport() {
               <Download className="size-6" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-stone-800">Sao lưu dữ liệu</h3>
-              <p className="text-sm text-stone-500 mt-1">Tải xuống toàn bộ dữ liệu thành viên và quan hệ gia phả dưới định dạng file JSON.</p>
+              <h3 className="text-lg font-bold text-stone-800">{t('data.backupTitle')}</h3>
+              <p className="text-sm text-stone-500 mt-1">{t('data.backupDesc')}</p>
             </div>
           </div>
           <button
@@ -107,7 +112,7 @@ export default function DataImportExport() {
             disabled={isExporting}
             className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm shadow-sm"
           >
-            {isExporting ? 'Đang tải xuống...' : 'Tải xuống bản sao lưu'}
+            {isExporting ? t('data.downloading') : t('data.downloadBackup')}
           </button>
         </div>
 
@@ -119,10 +124,10 @@ export default function DataImportExport() {
               <Upload className="size-6" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-stone-800">Phục hồi dữ liệu</h3>
+              <h3 className="text-lg font-bold text-stone-800">{t('data.restoreTitle')}</h3>
               <p className="text-sm text-stone-500 mt-1">
-                Khôi phục cây gia phả từ một file JSON đã sao lưu.
-                <span className="font-semibold text-rose-600 ml-1">Cảnh báo: Tác vụ này sẽ xoá toàn bộ dữ liệu hiện tại!</span>
+                {t('data.restoreDesc')}
+                <span className="font-semibold text-rose-600 ml-1">{t('data.restoreWarning')}</span>
               </p>
             </div>
           </div>
@@ -133,7 +138,7 @@ export default function DataImportExport() {
             disabled={isImporting}
             className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
           >
-            {isImporting ? 'Đang xử lý...' : 'Chọn file JSON để phục hồi'}
+            {isImporting ? t('data.restoring') : t('data.selectJsonFile')}
           </button>
         </div>
       </div>
@@ -160,12 +165,11 @@ export default function DataImportExport() {
                   <AlertTriangle className="size-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-stone-800">Xác nhận phục hồi</h3>
+                  <h3 className="text-lg font-bold text-stone-800">{t('data.confirmTitle')}</h3>
                   <p className="text-sm text-stone-600 mt-2 leading-relaxed">
-                    Hệ thống sẽ xoá <b>toàn bộ dữ liệu thành viên và mối quan hệ hiện tại</b> để thay thế bằng dữ liệu từ file{' '}
-                    <span className="font-mono text-xs bg-stone-100 px-1 rounded">{selectedFile?.name}</span>.
+                    {t('data.confirmMessage')} <span className="font-mono text-xs bg-stone-100 px-1 rounded">{selectedFile?.name}</span>.
                   </p>
-                  <p className="text-sm text-rose-600 font-semibold mt-2">Hành động này không thể hoàn tác. Bạn đã chắc chắn?</p>
+                  <p className="text-sm text-rose-600 font-semibold mt-2">{t('data.confirmWarning')}</p>
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
@@ -175,7 +179,7 @@ export default function DataImportExport() {
                   disabled={isImporting}
                   className="px-4 py-2 text-sm font-medium text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors"
                 >
-                  Huỷ bỏ
+                  {t('data.confirmCancel')}
                 </button>
                 <button
                   type="button"
@@ -183,7 +187,7 @@ export default function DataImportExport() {
                   disabled={isImporting}
                   className="px-4 py-2 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors shadow-sm disabled:opacity-50"
                 >
-                  {isImporting ? 'Đang phục hồi...' : 'Vẫn tiếp tục'}
+                  {isImporting ? t('data.confirmRestoring') : t('data.confirmProceed')}
                 </button>
               </div>
             </motion.div>
