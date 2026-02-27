@@ -61,6 +61,7 @@
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
+    "@better-auth/cli": "^1.4.19",
     "@biomejs/biome": "^2.4.4",
     "@tanstack/devtools-vite": "^0.3.11",
     "@testcontainers/postgresql": "^11.12.0",
