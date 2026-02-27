@@ -66,8 +66,8 @@ function LoginPage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_800px_at_50%_-30%,#fef3c7,transparent)] pointer-events-none" />
 
       <div className="absolute top-0 inset-x-0 h-screen overflow-hidden pointer-events-none flex justify-center">
-        <div className="absolute top-[-10%] right-[-5%] w-[50vw] h-[50vw] max-w-150 max-h-150 bg-amber-300/20 rounded-full blur-[100px] mix-blend-multiply" />
-        <div className="absolute bottom-[0%] left-[-10%] w-[60vw] h-[60vw] max-w-200 max-h-200 bg-rose-200/20 rounded-full blur-[120px] mix-blend-multiply" />
+        <div className="absolute top-[-10%] right-[-5%] w-[50vw] h-[50vw] max-w-150 max-h-150 bg-amber-300/20 rounded-full blur-4xl mix-blend-multiply" />
+        <div className="absolute bottom-[0%] left-[-10%] w-[60vw] h-[60vw] max-w-200 max-h-200 bg-rose-200/20 rounded-full blur-5xl mix-blend-multiply" />
       </div>
 
       <div className="flex-1 flex items-center justify-center px-4 py-12 relative z-10 w-full">
@@ -93,7 +93,7 @@ function LoginPage() {
           <form className="space-y-5 relative z-10" onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="relative">
-                <label htmlFor="email-address" className="block text-[13px] font-semibold text-stone-600 mb-1.5 ml-1">
+                <label htmlFor="email-address" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
                   {t('auth.emailLabel')}
                 </label>
                 <div className="relative flex items-center group">
@@ -113,7 +113,7 @@ function LoginPage() {
               </div>
 
               <div className="relative">
-                <label htmlFor="password" className="block text-[13px] font-semibold text-stone-600 mb-1.5 ml-1">
+                <label htmlFor="password" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
                   {t('auth.passwordLabel')}
                 </label>
                 <div className="relative flex items-center group">
@@ -141,7 +141,7 @@ function LoginPage() {
                     transition={{ duration: 0.3 }}
                     className="relative overflow-hidden"
                   >
-                    <label htmlFor="confirmPassword" className="block text-[13px] font-semibold text-stone-600 mb-1.5 ml-1">
+                    <label htmlFor="confirmPassword" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
                       {t('auth.confirmPasswordLabel')}
                     </label>
                     <div className="relative flex items-center group">
@@ -169,7 +169,7 @@ function LoginPage() {
                   initial={{ opacity: 0, y: -10, height: 0 }}
                   animate={{ opacity: 1, y: 0, height: 'auto' }}
                   exit={{ opacity: 0, y: -10, height: 0 }}
-                  className="text-red-700 text-[13px] text-center bg-red-50 p-3 rounded-xl border border-red-100/50 font-medium"
+                  className="text-red-700 text-sm-plus text-center bg-red-50 p-3 rounded-xl border border-red-100/50 font-medium"
                 >
                   {error}
                 </motion.div>
@@ -180,7 +180,7 @@ function LoginPage() {
                   initial={{ opacity: 0, y: -10, height: 0 }}
                   animate={{ opacity: 1, y: 0, height: 'auto' }}
                   exit={{ opacity: 0, y: -10, height: 0 }}
-                  className="text-teal-700 text-[13px] text-center bg-teal-50 p-3 rounded-xl border border-teal-100/50 font-medium"
+                  className="text-teal-700 text-sm-plus text-center bg-teal-50 p-3 rounded-xl border border-teal-100/50 font-medium"
                 >
                   {successMessage}
                 </motion.div>
@@ -191,7 +191,7 @@ function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center items-center gap-2 py-4 px-4 text-[15px] font-bold rounded-xl text-white bg-stone-900 hover:bg-stone-800 border border-stone-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-900 disabled:opacity-70 disabled:cursor-wait transition-all duration-300 shadow-xl shadow-stone-900/10 hover:shadow-2xl hover:shadow-stone-900/20 hover:-translate-y-0.5"
+                className="group relative w-full flex justify-center items-center gap-2 py-4 px-4 text-base-plus font-bold rounded-xl text-white bg-stone-900 hover:bg-stone-800 border border-stone-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-900 disabled:opacity-70 disabled:cursor-wait transition-all duration-300 shadow-xl shadow-stone-900/10 hover:shadow-2xl hover:shadow-stone-900/20 hover:-translate-y-0.5"
               >
                 {loading ? (
                   <span className="flex items-center gap-2.5">
@@ -216,7 +216,7 @@ function LoginPage() {
 
               <div className="relative flex items-center py-2 opacity-60">
                 <div className="grow border-t border-stone-200" />
-                <span className="shrink-0 mx-4 text-stone-400 text-[11px] uppercase tracking-wider font-bold">{t('common.or')}</span>
+                <span className="shrink-0 mx-4 text-stone-400 text-xs-plus uppercase tracking-wider font-bold">{t('common.or')}</span>
                 <div className="grow border-t border-stone-200" />
               </div>
 
