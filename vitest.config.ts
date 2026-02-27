@@ -26,7 +26,7 @@ export default defineConfig({
           include: ['src/server/functions/**.test.ts'],
           environment: 'node',
           globalSetup: ['./test/globalSetup.ts'],
-          fileParallelism: false,
+          setupFiles: ['./test/per-file-db.ts', './src/test-utils/setup.ts'],
         },
       },
       {
