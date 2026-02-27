@@ -1,29 +1,50 @@
 import { createServerFn } from '@tanstack/react-start';
-import { getRequestHeaders } from '@tanstack/react-start/server';
-import { auth } from '@/lib/auth';
+import { z } from 'zod';
 import { prisma } from '@/lib/db';
-import type { BackupPayload, Gender, RelationshipType } from '@/types';
+import type { BackupPayload } from '@/types';
+import { requireAdmin } from './_auth';
 
-async function requireAdmin() {
-  const headers = getRequestHeaders();
-  const session = await auth.api.getSession({ headers });
-  if (!session) throw new Error('Vui lòng đăng nhập.');
-  if (session.user.role !== 'admin') throw new Error('Từ chối truy cập. Chỉ admin mới có quyền này.');
-  return session.user;
-}
+// ─── Schemas ────────────────────────────────────────────────────────────────
+
+const importPersonSchema = z.object({
+  id: z.string().uuid(),
+  fullName: z.string().min(1),
+  gender: z.enum(['male', 'female', 'other']),
+  birthYear: z.number().int().nullish(),
+  birthMonth: z.number().int().min(1).max(12).nullish(),
+  birthDay: z.number().int().min(1).max(31).nullish(),
+  deathYear: z.number().int().nullish(),
+  deathMonth: z.number().int().min(1).max(12).nullish(),
+  deathDay: z.number().int().min(1).max(31).nullish(),
+  isDeceased: z.boolean().optional().default(false),
+  isInLaw: z.boolean().optional().default(false),
+  birthOrder: z.number().int().nullish(),
+  generation: z.number().int().nullish(),
+  avatarUrl: z.string().nullish(),
+  note: z.string().nullish(),
+});
+
+const importRelationshipSchema = z.object({
+  type: z.enum(['marriage', 'biological_child', 'adopted_child']),
+  personAId: z.string().uuid(),
+  personBId: z.string().uuid(),
+  note: z.string().nullish(),
+});
+
+const importDataSchema = z.object({
+  version: z.number().optional(),
+  timestamp: z.string().optional(),
+  persons: z.array(importPersonSchema).min(1, 'File backup trống — không có thành viên nào để phục hồi.'),
+  relationships: z.array(importRelationshipSchema),
+});
 
 // ─── Export Data ────────────────────────────────────────────────────────────
 
 export const exportData = createServerFn({ method: 'GET' }).handler(async () => {
   await requireAdmin();
 
-  const persons = await prisma.person.findMany({
-    orderBy: { createdAt: 'asc' },
-  });
-
-  const relationships = await prisma.relationship.findMany({
-    orderBy: { createdAt: 'asc' },
-  });
+  const persons = await prisma.person.findMany({ orderBy: { createdAt: 'asc' } });
+  const relationships = await prisma.relationship.findMany({ orderBy: { createdAt: 'asc' } });
 
   const payload: BackupPayload = {
     version: 2,
@@ -37,57 +58,17 @@ export const exportData = createServerFn({ method: 'GET' }).handler(async () => 
 
 // ─── Import Data ────────────────────────────────────────────────────────────
 
-interface ImportInput {
-  version?: number;
-  timestamp?: string;
-  persons: Array<{
-    id: string;
-    fullName: string;
-    gender: Gender;
-    birthYear?: number | null;
-    birthMonth?: number | null;
-    birthDay?: number | null;
-    deathYear?: number | null;
-    deathMonth?: number | null;
-    deathDay?: number | null;
-    isDeceased?: boolean;
-    isInLaw?: boolean;
-    birthOrder?: number | null;
-    generation?: number | null;
-    avatarUrl?: string | null;
-    note?: string | null;
-  }>;
-  relationships: Array<{
-    type: RelationshipType;
-    personAId: string;
-    personBId: string;
-    note?: string | null;
-  }>;
-}
-
 const CHUNK_SIZE = 200;
 
 export const importData = createServerFn({ method: 'POST' })
-  .validator((input: ImportInput) => input)
+  .validator(importDataSchema)
   .handler(async ({ data }) => {
     await requireAdmin();
 
-    if (!data.persons || !data.relationships) {
-      throw new Error('Dữ liệu không hợp lệ. Vui lòng kiểm tra lại file JSON.');
-    }
-
-    if (data.persons.length === 0) {
-      throw new Error('File backup trống — không có thành viên nào để phục hồi.');
-    }
-
     await prisma.$transaction(async (tx) => {
-      // 1. Delete relationships first (FK constraint)
       await tx.relationship.deleteMany();
-
-      // 2. Delete persons
       await tx.person.deleteMany();
 
-      // 3. Insert persons in chunks
       for (let i = 0; i < data.persons.length; i += CHUNK_SIZE) {
         const chunk = data.persons.slice(i, i + CHUNK_SIZE);
         await tx.person.createMany({
@@ -101,8 +82,8 @@ export const importData = createServerFn({ method: 'POST' })
             deathYear: p.deathYear ?? null,
             deathMonth: p.deathMonth ?? null,
             deathDay: p.deathDay ?? null,
-            isDeceased: p.isDeceased ?? false,
-            isInLaw: p.isInLaw ?? false,
+            isDeceased: p.isDeceased,
+            isInLaw: p.isInLaw,
             birthOrder: p.birthOrder ?? null,
             generation: p.generation ?? null,
             avatarUrl: p.avatarUrl ?? null,
@@ -111,7 +92,6 @@ export const importData = createServerFn({ method: 'POST' })
         });
       }
 
-      // 4. Insert relationships in chunks
       for (let i = 0; i < data.relationships.length; i += CHUNK_SIZE) {
         const chunk = data.relationships.slice(i, i + CHUNK_SIZE);
         await tx.relationship.createMany({

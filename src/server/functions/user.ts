@@ -1,21 +1,37 @@
 import { createServerFn } from '@tanstack/react-start';
-import { getRequestHeaders } from '@tanstack/react-start/server';
+import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import type { UserRole } from '@/types';
+import { requireAdmin } from './_auth';
 
-async function requireAdmin() {
-  const headers = getRequestHeaders();
-  const session = await auth.api.getSession({ headers });
-  if (!session) throw new Error('Vui lòng đăng nhập.');
-  if (session.user.role !== 'admin') throw new Error('Từ chối truy cập. Chỉ admin mới có quyền này.');
-  return session.user;
-}
+// ─── Schemas ────────────────────────────────────────────────────────────────
+
+const roleEnum = z.enum(['admin', 'member']);
+
+const changeRoleSchema = z.object({
+  userId: z.string().uuid(),
+  newRole: roleEnum,
+});
+
+const userIdSchema = z.object({ userId: z.string().uuid() });
+
+const createUserSchema = z.object({
+  email: z.string().email('Email không hợp lệ.'),
+  password: z.string().min(8, 'Mật khẩu phải có ít nhất 8 ký tự.'),
+  name: z.string().optional(),
+  role: roleEnum.optional(),
+  isActive: z.boolean().optional(),
+});
+
+const toggleStatusSchema = z.object({
+  userId: z.string().uuid(),
+  isActive: z.boolean(),
+});
 
 // ─── Change User Role ───────────────────────────────────────────────────────
 
 export const changeRole = createServerFn({ method: 'POST' })
-  .validator((input: { userId: string; newRole: UserRole }) => input)
+  .validator(changeRoleSchema)
   .handler(async ({ data }) => {
     const admin = await requireAdmin();
 
@@ -34,7 +50,7 @@ export const changeRole = createServerFn({ method: 'POST' })
 // ─── Delete User ────────────────────────────────────────────────────────────
 
 export const deleteUser = createServerFn({ method: 'POST' })
-  .validator((input: { userId: string }) => input)
+  .validator(userIdSchema)
   .handler(async ({ data }) => {
     const admin = await requireAdmin();
 
@@ -49,22 +65,10 @@ export const deleteUser = createServerFn({ method: 'POST' })
 
 // ─── Admin Create User ──────────────────────────────────────────────────────
 
-interface CreateUserInput {
-  email: string;
-  password: string;
-  name?: string;
-  role?: UserRole;
-  isActive?: boolean;
-}
-
 export const createUser = createServerFn({ method: 'POST' })
-  .validator((input: CreateUserInput) => input)
+  .validator(createUserSchema)
   .handler(async ({ data }) => {
     await requireAdmin();
-
-    if (!data.email || !data.password) {
-      throw new Error('Email và mật khẩu là bắt buộc.');
-    }
 
     const existing = await prisma.user.findUnique({ where: { email: data.email } });
     if (existing) {
@@ -95,7 +99,7 @@ export const createUser = createServerFn({ method: 'POST' })
 // ─── Toggle User Status ─────────────────────────────────────────────────────
 
 export const toggleStatus = createServerFn({ method: 'POST' })
-  .validator((input: { userId: string; isActive: boolean }) => input)
+  .validator(toggleStatusSchema)
   .handler(async ({ data }) => {
     const admin = await requireAdmin();
 

@@ -1,28 +1,26 @@
 import { createServerFn } from '@tanstack/react-start';
-import { getRequestHeaders } from '@tanstack/react-start/server';
-import { auth } from '@/lib/auth';
+import { z } from 'zod';
 import { prisma } from '@/lib/db';
-import type { RelationshipType } from '@/types';
+import { requireAuth } from './_auth';
 
-async function requireAuth() {
-  const headers = getRequestHeaders();
-  const session = await auth.api.getSession({ headers });
-  if (!session) throw new Error('Vui lòng đăng nhập.');
-  if (!session.user.isActive) throw new Error('Tài khoản chưa được kích hoạt.');
-  return session.user;
-}
+// ─── Schemas ────────────────────────────────────────────────────────────────
+
+const relationshipTypeEnum = z.enum(['marriage', 'biological_child', 'adopted_child']);
+
+const createRelationshipSchema = z.object({
+  type: relationshipTypeEnum,
+  personAId: z.string().uuid(),
+  personBId: z.string().uuid(),
+  note: z.string().nullish(),
+});
+
+const idSchema = z.object({ id: z.string().uuid() });
+const personIdSchema = z.object({ personId: z.string().uuid() });
 
 // ─── Create Relationship ────────────────────────────────────────────────────
 
-interface CreateRelationshipInput {
-  type: RelationshipType;
-  personAId: string;
-  personBId: string;
-  note?: string | null;
-}
-
 export const createRelationship = createServerFn({ method: 'POST' })
-  .validator((input: CreateRelationshipInput) => input)
+  .validator(createRelationshipSchema)
   .handler(async ({ data }) => {
     await requireAuth();
 
@@ -49,7 +47,7 @@ export const createRelationship = createServerFn({ method: 'POST' })
 // ─── Delete Relationship ────────────────────────────────────────────────────
 
 export const deleteRelationship = createServerFn({ method: 'POST' })
-  .validator((input: { id: string }) => input)
+  .validator(idSchema)
   .handler(async ({ data }) => {
     await requireAuth();
 
@@ -69,7 +67,7 @@ export const getRelationships = createServerFn({ method: 'GET' }).handler(async 
 // ─── Get Relationships For Person ───────────────────────────────────────────
 
 export const getRelationshipsForPerson = createServerFn({ method: 'GET' })
-  .validator((input: { personId: string }) => input)
+  .validator(personIdSchema)
   .handler(async ({ data }) => {
     return prisma.relationship.findMany({
       where: {
