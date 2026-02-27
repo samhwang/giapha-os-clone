@@ -67,7 +67,7 @@ describe('changeRoleHandler', () => {
   it('should prevent changing own role', async () => {
     await seedUser({ id: ADMIN_ID, role: 'admin' });
 
-    await expect(changeRoleHandler({ userId: ADMIN_ID, newRole: 'member' })).rejects.toThrow('Không thể thay đổi vai trò của chính mình.');
+    await expect(changeRoleHandler({ userId: ADMIN_ID, newRole: 'member' })).rejects.toThrow('error.user.selfRole');
   });
 });
 
@@ -85,7 +85,7 @@ describe('deleteUserHandler', () => {
   it('should prevent self-deletion', async () => {
     await seedUser({ id: ADMIN_ID });
 
-    await expect(deleteUserHandler({ userId: ADMIN_ID })).rejects.toThrow('Không thể xoá tài khoản của chính mình.');
+    await expect(deleteUserHandler({ userId: ADMIN_ID })).rejects.toThrow('error.user.selfDelete');
   });
 });
 
@@ -112,7 +112,7 @@ describe('createUserHandler', () => {
   it('should throw when email already exists', async () => {
     await seedUser({ email: 'existing@test.com' });
 
-    await expect(createUserHandler({ email: 'existing@test.com', password: 'password123' })).rejects.toThrow('Email đã được sử dụng.');
+    await expect(createUserHandler({ email: 'existing@test.com', password: 'password123' })).rejects.toThrow('error.user.emailTaken');
   });
 });
 
@@ -130,7 +130,7 @@ describe('toggleStatusHandler', () => {
   it('should prevent toggling own status', async () => {
     await seedUser({ id: ADMIN_ID });
 
-    await expect(toggleStatusHandler({ userId: ADMIN_ID, isActive: false })).rejects.toThrow('Không thể thay đổi trạng thái của chính mình.');
+    await expect(toggleStatusHandler({ userId: ADMIN_ID, isActive: false })).rejects.toThrow('error.user.selfStatus');
   });
 });
 

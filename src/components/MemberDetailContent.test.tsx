@@ -50,7 +50,7 @@ describe('MemberDetailContent', () => {
 
   it('shows generation and birth order badges', () => {
     render(<MemberDetailContent person={basePerson} privateData={null} isAdmin={false} />);
-    expect(screen.getByText(/Đời thứ 3/)).toBeInTheDocument();
+    expect(screen.getByText(/Đời 3/)).toBeInTheDocument();
     expect(screen.getByText(/Con trưởng/)).toBeInTheDocument();
   });
 

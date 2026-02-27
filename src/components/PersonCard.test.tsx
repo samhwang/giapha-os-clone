@@ -53,7 +53,7 @@ describe('PersonCard', () => {
   it('shows generation badge', () => {
     const person = createPerson({ fullName: 'Vạn Công Trí', generation: 3 });
     render(<PersonCard person={person} />);
-    expect(screen.getByText('Đời thứ 3')).toBeInTheDocument();
+    expect(screen.getByText('Đời 3')).toBeInTheDocument();
   });
 
   it('opens modal on click', async () => {

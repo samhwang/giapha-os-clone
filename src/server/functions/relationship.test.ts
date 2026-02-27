@@ -54,7 +54,7 @@ describe('createRelationshipHandler', () => {
     const person = await seedPerson('Self');
 
     await expect(createRelationshipHandler({ type: 'marriage', personAId: person.id, personBId: person.id })).rejects.toThrow(
-      'Không thể tạo quan hệ với chính mình.'
+      'error.relationship.selfRelation'
     );
   });
 
@@ -65,7 +65,7 @@ describe('createRelationshipHandler', () => {
     await createRelationshipHandler({ type: 'biological_child', personAId: personA.id, personBId: personB.id });
 
     await expect(createRelationshipHandler({ type: 'biological_child', personAId: personA.id, personBId: personB.id })).rejects.toThrow(
-      'Mối quan hệ này đã tồn tại.'
+      'error.relationship.duplicate'
     );
   });
 
@@ -77,7 +77,7 @@ describe('createRelationshipHandler', () => {
 
     // Reversed direction should also be detected as duplicate
     await expect(createRelationshipHandler({ type: 'biological_child', personAId: personB.id, personBId: personA.id })).rejects.toThrow(
-      'Mối quan hệ này đã tồn tại.'
+      'error.relationship.duplicate'
     );
   });
 

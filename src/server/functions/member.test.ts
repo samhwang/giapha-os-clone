@@ -100,7 +100,7 @@ describe('deleteMemberHandler', () => {
       data: { type: 'marriage', personAId: personA.id, personBId: personB.id },
     });
 
-    await expect(deleteMemberHandler({ id: personA.id })).rejects.toThrow('Không thể xoá');
+    await expect(deleteMemberHandler({ id: personA.id })).rejects.toThrow('error.member.hasRelationships');
   });
 
   it('should require admin role', async () => {
@@ -136,7 +136,7 @@ describe('uploadPersonAvatarHandler', () => {
         contentType: 'image/jpeg',
         base64: Buffer.from('data').toString('base64'),
       })
-    ).rejects.toThrow('Không tìm thấy thành viên.');
+    ).rejects.toThrow('error.member.notFound');
   });
 });
 
