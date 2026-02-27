@@ -9,18 +9,6 @@ vi.mock('./_auth', () => ({
   requireAdmin: (...args: unknown[]) => mockRequireAdmin(...args),
 }));
 
-const { mockSignUpEmail } = vi.hoisted(() => ({
-  mockSignUpEmail: vi.fn().mockResolvedValue({ user: { id: crypto.randomUUID() } }),
-}));
-
-vi.mock('../../lib/auth', () => ({
-  auth: {
-    api: {
-      signUpEmail: mockSignUpEmail,
-    },
-  },
-}));
-
 const prisma = getDbClient();
 
 const ADMIN_ID = crypto.randomUUID();
@@ -88,14 +76,11 @@ describe('deleteUser', () => {
 
 describe('createUser', () => {
   it('should create a new user via Better Auth signup', async () => {
-    const newUserId = crypto.randomUUID();
-    mockSignUpEmail.mockResolvedValue({ user: { id: newUserId } });
-    // Pre-create the user record that Better Auth would create
-    await seedUser({ id: newUserId, email: 'will-be-overridden@test.com' });
+    const email = `new-${crypto.randomUUID()}@test.com`;
 
     const result = await createUser({
       data: {
-        email: 'new@test.com',
+        email,
         password: 'password123',
         role: 'member',
         isActive: true,
@@ -103,9 +88,11 @@ describe('createUser', () => {
     });
 
     expect(result).toEqual({ success: true });
-    expect(mockSignUpEmail).toHaveBeenCalledWith({
-      body: { email: 'new@test.com', password: 'password123', name: 'new@test.com' },
-    });
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    expect(user).not.toBeNull();
+    expect(user?.role).toBe('member');
+    expect(user?.isActive).toBe(true);
   });
 
   it('should throw when email already exists', async () => {
