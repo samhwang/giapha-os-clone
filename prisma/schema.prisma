@@ -123,6 +123,10 @@ model Person {
   relationsB     Relationship[]        @relation("personB")
 
   @@map("persons")
+  @@index([generation])
+  @@index([isDeceased])
+  @@index([birthYear])
+  @@index([isInLaw])
 }
 
 model PersonDetailsPrivate {
