@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { changeRole, createUser, deleteUser, toggleStatus } from '@/server/functions/user';
-import type { UserProfile, UserRole } from '@/types';
+import { changeRole, createUser, deleteUser, toggleStatus } from '../server/functions/user';
+import type { UserProfile, UserRole } from '../types';
 
 interface AdminUserListProps {
   initialUsers: UserProfile[];

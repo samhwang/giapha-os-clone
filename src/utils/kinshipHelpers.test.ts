@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { PersonNode, RelEdge } from '@/types';
+import type { PersonNode, RelEdge } from '../types';
 import { computeKinship } from './kinshipHelpers';
 
 // ── Test data builders ──────────────────────────────────────────────────────

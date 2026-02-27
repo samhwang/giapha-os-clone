@@ -1,4 +1,4 @@
-import type { Gender, RelationshipType, UserRole } from '@/types';
+import type { Gender, RelationshipType, UserRole } from '../src/types';
 
 // ============================================================
 // Type definitions for test fixtures

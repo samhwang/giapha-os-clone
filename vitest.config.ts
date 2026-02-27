@@ -1,13 +1,11 @@
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [tsconfigPaths()],
   test: {
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/routeTree.gen.ts', 'src/test-utils/**', 'src/**/*.test.{ts,tsx}'],
+      exclude: ['src/routeTree.gen.ts', 'test/**', 'src/**/*.test.{ts,tsx}'],
     },
     projects: [
       {
@@ -39,6 +37,6 @@ export default defineConfig({
         },
       },
     ],
-    setupFiles: ['./src/test-utils/setup.ts'],
+    setupFiles: ['./test/setup.ts'],
   },
 });

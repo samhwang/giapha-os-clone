@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
-import AdminUserList from '@/components/AdminUserList';
-import { getUsers } from '@/server/functions/user';
+import AdminUserList from '../../components/AdminUserList';
+import { getUsers } from '../../server/functions/user';
 
 export const Route = createFileRoute('/dashboard/users')({
   beforeLoad: ({ context }) => {

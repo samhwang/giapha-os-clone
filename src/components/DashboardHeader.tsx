@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
-import HeaderMenu from '@/components/HeaderMenu';
-import config from '@/lib/config';
+import config from '../lib/config';
+import HeaderMenu from './HeaderMenu';
 
 interface DashboardHeaderProps {
   isAdmin: boolean;

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import type { Person } from '@/types';
-import { formatDisplayDate } from '@/utils/dateHelpers';
+import type { Person } from '../types';
+import { formatDisplayDate } from '../utils/dateHelpers';
 import { useDashboard } from './DashboardContext';
 import DefaultAvatar from './DefaultAvatar';
 import { FemaleIcon, MaleIcon } from './GenderIcons';

@@ -1,5 +1,5 @@
 import { Minus, Plus } from 'lucide-react';
-import type { Person } from '@/types';
+import type { Person } from '../types';
 import { useDashboard } from './DashboardContext';
 import DefaultAvatar from './DefaultAvatar';
 

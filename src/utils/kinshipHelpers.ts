@@ -1,4 +1,4 @@
-import type { KinshipResult, PersonNode, RelEdge } from '@/types';
+import type { KinshipResult, PersonNode, RelEdge } from '../types';
 
 // ── Helpers ──────────────────────────────────────────────────────────
 

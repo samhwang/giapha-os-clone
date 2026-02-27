@@ -2,10 +2,10 @@ import { useNavigate } from '@tanstack/react-router';
 import { Trash2 } from 'lucide-react';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createPerson, getPersons } from '@/server/functions/member';
-import { createRelationship, deleteRelationship, getRelationshipsForPerson } from '@/server/functions/relationship';
-import type { Person, RelationshipType } from '@/types';
-import { formatDisplayDate } from '@/utils/dateHelpers';
+import { createPerson, getPersons } from '../server/functions/member';
+import { createRelationship, deleteRelationship, getRelationshipsForPerson } from '../server/functions/relationship';
+import type { Person, RelationshipType } from '../types';
+import { formatDisplayDate } from '../utils/dateHelpers';
 import { DashboardContext, useDashboard } from './DashboardContext';
 import DefaultAvatar from './DefaultAvatar';
 

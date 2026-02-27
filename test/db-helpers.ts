@@ -1,4 +1,4 @@
-import { getDbClient } from '@/lib/db';
+import { getDbClient } from '../src/lib/db';
 
 export async function cleanDatabase() {
   const prisma = getDbClient();

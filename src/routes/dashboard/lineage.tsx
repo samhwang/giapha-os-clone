@@ -1,8 +1,8 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
-import LineageManager from '@/components/LineageManager';
-import { getPersons } from '@/server/functions/member';
-import { getRelationships } from '@/server/functions/relationship';
+import LineageManager from '../../components/LineageManager';
+import { getPersons } from '../../server/functions/member';
+import { getRelationships } from '../../server/functions/relationship';
 
 export const Route = createFileRoute('/dashboard/lineage')({
   beforeLoad: ({ context }) => {

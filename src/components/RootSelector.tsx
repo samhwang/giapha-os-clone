@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Check, ChevronDown, Search } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Person } from '@/types';
+import type { Person } from '../types';
 import { useDashboard } from './DashboardContext';
 import DefaultAvatar from './DefaultAvatar';
 import { FemaleIcon, MaleIcon } from './GenderIcons';

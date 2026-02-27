@@ -23,7 +23,7 @@ process.env.DATABASE_URL = workerUrl.toString();
 
 // Cleanup after all tests in this file
 afterAll(async () => {
-  const { getDbClient } = await import('@/lib/db');
+  const { getDbClient } = await import('../src/lib/db');
   await getDbClient().$disconnect();
 
   const dropClient = new pg.Client({ connectionString: adminUrl.toString() });

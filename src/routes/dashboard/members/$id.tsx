@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import DeleteMemberButton from '@/components/DeleteMemberButton';
-import MemberDetailContent from '@/components/MemberDetailContent';
-import { getPersonById } from '@/server/functions/member';
-import type { Person } from '@/types';
+import DeleteMemberButton from '../../../components/DeleteMemberButton';
+import MemberDetailContent from '../../../components/MemberDetailContent';
+import { getPersonById } from '../../../server/functions/member';
+import type { Person } from '../../../types';
 
 export const Route = createFileRoute('/dashboard/members/$id')({
   loader: async ({ params }) => {

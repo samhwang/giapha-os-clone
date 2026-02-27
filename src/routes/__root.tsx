@@ -1,8 +1,8 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import { createI18nInstance, type Language } from '@/i18n';
-import { getLanguage } from '@/i18n/getLanguage';
-import config from '@/lib/config';
+import { createI18nInstance, type Language } from '../i18n';
+import { getLanguage } from '../i18n/getLanguage';
+import config from '../lib/config';
 import appCss from '../styles.css?url';
 
 export const Route = createRootRoute({

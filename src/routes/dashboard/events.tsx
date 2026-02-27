@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
-import EventsList from '@/components/EventsList';
-import MemberDetailModal from '@/components/MemberDetailModal';
-import { getPersons } from '@/server/functions/member';
+import EventsList from '../../components/EventsList';
+import MemberDetailModal from '../../components/MemberDetailModal';
+import { getPersons } from '../../server/functions/member';
 
 export const Route = createFileRoute('/dashboard/events')({
   loader: async () => {

@@ -2,8 +2,8 @@ import { Link } from '@tanstack/react-router';
 import { ArrowUpDown, Filter, Plus, Search } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import PersonCard from '@/components/PersonCard';
-import type { Person } from '@/types';
+import type { Person } from '../types';
+import PersonCard from './PersonCard';
 
 export default function DashboardMemberList({ initialPersons }: { initialPersons: Person[] }) {
   const { t } = useTranslation();

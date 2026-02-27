@@ -1,6 +1,6 @@
 import { Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { type Language, supportedLanguages } from '@/i18n';
+import { type Language, supportedLanguages } from '../i18n';
 
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 

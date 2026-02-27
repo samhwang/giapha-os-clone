@@ -1,5 +1,5 @@
 import { getLunarDate, getSolarDate } from '@dqcai/vn-lunar';
-import type { EventType, FamilyEvent } from '@/types';
+import type { EventType, FamilyEvent } from '../types';
 
 /**
  * Finds the next solar Date on which a given lunar (month, day) falls,

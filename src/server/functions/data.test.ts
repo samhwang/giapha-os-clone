@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { getDbClient } from '@/lib/db';
+import { getDbClient } from '../../lib/db';
 
 // ─── Mocks ──────────────────────────────────────────────────────────────────
 

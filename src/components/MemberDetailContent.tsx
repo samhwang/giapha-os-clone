@@ -1,8 +1,8 @@
 import { motion, type Variants } from 'framer-motion';
 import { Briefcase, Info, Leaf, MapPin, Phone, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { Person } from '@/types';
-import { calculateAge, formatDisplayDate, getLunarDateString } from '@/utils/dateHelpers';
+import type { Person } from '../types';
+import { calculateAge, formatDisplayDate, getLunarDateString } from '../utils/dateHelpers';
 import DefaultAvatar from './DefaultAvatar';
 import { FemaleIcon, MaleIcon } from './GenderIcons';
 import RelationshipManager from './RelationshipManager';

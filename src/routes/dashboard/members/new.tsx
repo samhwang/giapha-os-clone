@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import MemberForm from '@/components/MemberForm';
+import MemberForm from '../../../components/MemberForm';
 
 export const Route = createFileRoute('/dashboard/members/new')({
   component: NewMemberPage,
