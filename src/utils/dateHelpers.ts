@@ -1,7 +1,7 @@
 import { getLunarDate } from '@dqcai/vn-lunar';
 
-export function formatDisplayDate(year: number | null, month: number | null, day: number | null): string {
-  if (!year && !month && !day) return 'Chưa rõ';
+export function formatDisplayDate(year: number | null, month: number | null, day: number | null, unknownLabel = 'Chưa rõ'): string {
+  if (!year && !month && !day) return unknownLabel;
 
   const parts = [];
   if (day) parts.push(day.toString().padStart(2, '0'));

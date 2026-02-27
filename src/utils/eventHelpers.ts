@@ -37,7 +37,8 @@ export function computeEvents(
     deathMonth: number | null;
     deathDay: number | null;
     isDeceased: boolean;
-  }[]
+  }[],
+  lunarSuffix = 'ÂL'
 ): FamilyEvent[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -82,7 +83,7 @@ export function computeEvents(
           type: 'death_anniversary' as EventType,
           nextOccurrence: next,
           daysUntil,
-          eventDateLabel: `${lDay.toString().padStart(2, '0')}/${lMonth.toString().padStart(2, '0')} ÂL`,
+          eventDateLabel: `${lDay.toString().padStart(2, '0')}/${lMonth.toString().padStart(2, '0')} ${lunarSuffix}`,
           originYear: p.deathYear,
         });
       } catch {

@@ -60,8 +60,8 @@ export default function PersonCard({ person }: PersonCardProps) {
               />
             </svg>
             <span className="truncate">
-              {formatDisplayDate(person.birthYear, person.birthMonth, person.birthDay)}
-              {person.isDeceased && ` → ${formatDisplayDate(person.deathYear, person.deathMonth, person.deathDay)}`}
+              {formatDisplayDate(person.birthYear, person.birthMonth, person.birthDay, t('common.unknown'))}
+              {person.isDeceased && ` → ${formatDisplayDate(person.deathYear, person.deathMonth, person.deathDay, t('common.unknown'))}`}
             </span>
           </p>
           {(person.isDeceased || person.isInLaw || person.birthOrder != null || person.generation != null) && (

@@ -107,7 +107,9 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                   <h3 className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">{t('member.birth')}</h3>
                 </div>
                 <div className="space-y-1.5 pl-4 border-l-2 border-stone-100">
-                  <p className="text-stone-800 font-semibold text-sm sm:text-base">{formatDisplayDate(person.birthYear, person.birthMonth, person.birthDay)}</p>
+                  <p className="text-stone-800 font-semibold text-sm sm:text-base">
+                    {formatDisplayDate(person.birthYear, person.birthMonth, person.birthDay, t('common.unknown'))}
+                  </p>
                   {(person.birthYear || person.birthMonth || person.birthDay) && (
                     <p className="text-sm font-medium text-stone-500 flex items-center gap-1.5">
                       <span className="text-[10px] border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
@@ -129,7 +131,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                   </div>
                   <div className="space-y-1.5 pl-4 border-l-2 border-stone-100">
                     <p className="text-stone-800 font-semibold text-sm sm:text-base">
-                      {formatDisplayDate(person.deathYear, person.deathMonth, person.deathDay)}
+                      {formatDisplayDate(person.deathYear, person.deathMonth, person.deathDay, t('common.unknown'))}
                     </p>
                     {(person.deathYear || person.deathMonth || person.deathDay) && (
                       <p className="text-xs font-medium text-stone-500 flex items-center gap-1.5">

@@ -83,7 +83,7 @@ export default function EventsList({ persons }: EventsListProps) {
   const [filter, setFilter] = useState<'all' | 'birthday' | 'death_anniversary'>('all');
   const [showCount, setShowCount] = useState(20);
 
-  const allEvents = useMemo(() => computeEvents(persons), [persons]);
+  const allEvents = useMemo(() => computeEvents(persons, t('common.lunarSuffix')), [persons, t]);
   const filtered = useMemo(() => (filter === 'all' ? allEvents : allEvents.filter((e) => e.type === filter)), [allEvents, filter]);
 
   const upcoming = filtered.filter((e) => e.daysUntil <= 365);

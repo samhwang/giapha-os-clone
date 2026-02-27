@@ -492,7 +492,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                         </span>
                         <span className="font-medium text-stone-800">{p.fullName}</span>
                       </div>
-                      <span className="text-[10px] text-stone-400">{formatDisplayDate(p.birthYear, p.birthMonth, p.birthDay)}</span>
+                      <span className="text-[10px] text-stone-400">{formatDisplayDate(p.birthYear, p.birthMonth, p.birthDay, t('common.unknown'))}</span>
                     </button>
                   ))}
                 </div>
