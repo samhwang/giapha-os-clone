@@ -19,66 +19,56 @@ const createRelationshipSchema = z.object({
 const idSchema = z.object({ id: z.uuid() });
 const personIdSchema = z.object({ personId: z.uuid() });
 
-// ─── Handlers ───────────────────────────────────────────────────────────────
-
-export async function createRelationshipHandler(data: z.output<typeof createRelationshipSchema>) {
-  await requireAuth();
-
-  if (data.personAId === data.personBId) {
-    throw new Error('error.relationship.selfRelation');
-  }
-
-  const existing = await prisma.relationship.findFirst({
-    where: {
-      OR: [
-        { personAId: data.personAId, personBId: data.personBId, type: data.type },
-        { personAId: data.personBId, personBId: data.personAId, type: data.type },
-      ],
-    },
-  });
-
-  if (existing) {
-    throw new Error('error.relationship.duplicate');
-  }
-
-  return prisma.relationship.create({ data });
-}
-
-export async function deleteRelationshipHandler(data: z.output<typeof idSchema>) {
-  await requireAuth();
-
-  await prisma.relationship.delete({ where: { id: data.id } });
-
-  return { success: true };
-}
-
-export async function getRelationshipsHandler() {
-  return prisma.relationship.findMany({
-    orderBy: { createdAt: 'asc' },
-  });
-}
-
-export async function getRelationshipsForPersonHandler(data: z.output<typeof personIdSchema>) {
-  return prisma.relationship.findMany({
-    where: {
-      OR: [{ personAId: data.personId }, { personBId: data.personId }],
-    },
-    orderBy: { createdAt: 'asc' },
-  });
-}
-
 // ─── Server Functions ───────────────────────────────────────────────────────
 
 export const createRelationship = createServerFn({ method: 'POST' })
   .inputValidator(createRelationshipSchema)
-  .handler(async ({ data }) => createRelationshipHandler(data));
+  .handler(async ({ data }) => {
+    await requireAuth();
+
+    if (data.personAId === data.personBId) {
+      throw new Error('error.relationship.selfRelation');
+    }
+
+    const existing = await prisma.relationship.findFirst({
+      where: {
+        OR: [
+          { personAId: data.personAId, personBId: data.personBId, type: data.type },
+          { personAId: data.personBId, personBId: data.personAId, type: data.type },
+        ],
+      },
+    });
+
+    if (existing) {
+      throw new Error('error.relationship.duplicate');
+    }
+
+    return prisma.relationship.create({ data });
+  });
 
 export const deleteRelationship = createServerFn({ method: 'POST' })
   .inputValidator(idSchema)
-  .handler(async ({ data }) => deleteRelationshipHandler(data));
+  .handler(async ({ data }) => {
+    await requireAuth();
 
-export const getRelationships = createServerFn({ method: 'GET' }).handler(async () => getRelationshipsHandler());
+    await prisma.relationship.delete({ where: { id: data.id } });
+
+    return { success: true };
+  });
+
+export const getRelationships = createServerFn({ method: 'GET' }).handler(async () => {
+  return prisma.relationship.findMany({
+    orderBy: { createdAt: 'asc' },
+  });
+});
 
 export const getRelationshipsForPerson = createServerFn({ method: 'GET' })
   .inputValidator(personIdSchema)
-  .handler(async ({ data }) => getRelationshipsForPersonHandler(data));
+  .handler(async ({ data }) => {
+    return prisma.relationship.findMany({
+      where: {
+        OR: [{ personAId: data.personId }, { personBId: data.personId }],
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+  });

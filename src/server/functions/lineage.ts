@@ -17,30 +17,26 @@ const updateBatchSchema = z.object({
   ),
 });
 
-// ─── Handlers ───────────────────────────────────────────────────────────────
-
-export async function updateBatchHandler(data: z.output<typeof updateBatchSchema>) {
-  await requireAuth();
-
-  if (data.updates.length === 0) return { success: true, updated: 0 };
-
-  await prisma.$transaction(
-    data.updates.map((u) =>
-      prisma.person.update({
-        where: { id: u.id },
-        data: {
-          generation: u.generation,
-          birthOrder: u.birthOrder,
-        },
-      })
-    )
-  );
-
-  return { success: true, updated: data.updates.length };
-}
-
 // ─── Server Functions ───────────────────────────────────────────────────────
 
 export const updateBatch = createServerFn({ method: 'POST' })
   .inputValidator(updateBatchSchema)
-  .handler(async ({ data }) => updateBatchHandler(data));
+  .handler(async ({ data }) => {
+    await requireAuth();
+
+    if (data.updates.length === 0) return { success: true, updated: 0 };
+
+    await prisma.$transaction(
+      data.updates.map((u) =>
+        prisma.person.update({
+          where: { id: u.id },
+          data: {
+            generation: u.generation,
+            birthOrder: u.birthOrder,
+          },
+        })
+      )
+    );
+
+    return { success: true, updated: data.updates.length };
+  });

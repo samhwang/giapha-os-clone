@@ -30,80 +30,88 @@ const toggleStatusSchema = z.object({
   isActive: z.boolean(),
 });
 
-// ─── Handlers ───────────────────────────────────────────────────────────────
+// ─── Server Functions ───────────────────────────────────────────────────────
 
-export async function changeRoleHandler(data: z.output<typeof changeRoleSchema>) {
-  const admin = await requireAdmin();
+export const changeRole = createServerFn({ method: 'POST' })
+  .inputValidator(changeRoleSchema)
+  .handler(async ({ data }) => {
+    const admin = await requireAdmin();
 
-  if (data.userId === admin.id) {
-    throw new Error('error.user.selfRole');
-  }
+    if (data.userId === admin.id) {
+      throw new Error('error.user.selfRole');
+    }
 
-  await prisma.user.update({
-    where: { id: data.userId },
-    data: { role: data.newRole },
-  });
-
-  return { success: true };
-}
-
-export async function deleteUserHandler(data: z.output<typeof userIdSchema>) {
-  const admin = await requireAdmin();
-
-  if (data.userId === admin.id) {
-    throw new Error('error.user.selfDelete');
-  }
-
-  await prisma.user.delete({ where: { id: data.userId } });
-
-  return { success: true };
-}
-
-export async function createUserHandler(data: z.output<typeof createUserSchema>) {
-  await requireAdmin();
-
-  const existing = await prisma.user.findUnique({ where: { email: data.email } });
-  if (existing) {
-    throw new Error('error.user.emailTaken');
-  }
-
-  const ctx = await auth.api.signUpEmail({
-    body: {
-      email: data.email,
-      password: data.password,
-      name: data.name || data.email,
-    },
-  });
-
-  if (ctx.user) {
     await prisma.user.update({
-      where: { id: ctx.user.id },
-      data: {
-        role: data.role ?? 'member',
-        isActive: data.isActive ?? true,
+      where: { id: data.userId },
+      data: { role: data.newRole },
+    });
+
+    return { success: true };
+  });
+
+export const deleteUser = createServerFn({ method: 'POST' })
+  .inputValidator(userIdSchema)
+  .handler(async ({ data }) => {
+    const admin = await requireAdmin();
+
+    if (data.userId === admin.id) {
+      throw new Error('error.user.selfDelete');
+    }
+
+    await prisma.user.delete({ where: { id: data.userId } });
+
+    return { success: true };
+  });
+
+export const createUser = createServerFn({ method: 'POST' })
+  .inputValidator(createUserSchema)
+  .handler(async ({ data }) => {
+    await requireAdmin();
+
+    const existing = await prisma.user.findUnique({ where: { email: data.email } });
+    if (existing) {
+      throw new Error('error.user.emailTaken');
+    }
+
+    const ctx = await auth.api.signUpEmail({
+      body: {
+        email: data.email,
+        password: data.password,
+        name: data.name || data.email,
       },
     });
-  }
 
-  return { success: true };
-}
+    if (ctx.user) {
+      await prisma.user.update({
+        where: { id: ctx.user.id },
+        data: {
+          role: data.role ?? 'member',
+          isActive: data.isActive ?? true,
+        },
+      });
+    }
 
-export async function toggleStatusHandler(data: z.output<typeof toggleStatusSchema>) {
-  const admin = await requireAdmin();
-
-  if (data.userId === admin.id) {
-    throw new Error('error.user.selfStatus');
-  }
-
-  await prisma.user.update({
-    where: { id: data.userId },
-    data: { isActive: data.isActive },
+    return { success: true };
   });
 
-  return { success: true };
-}
+export const toggleStatus = createServerFn({ method: 'POST' })
+  .inputValidator(toggleStatusSchema)
+  .handler(async ({ data }) => {
+    const admin = await requireAdmin();
 
-export async function getUsersHandler() {
+    if (data.userId === admin.id) {
+      throw new Error('error.user.selfStatus');
+    }
+
+    await prisma.user.update({
+      where: { id: data.userId },
+      data: { isActive: data.isActive },
+    });
+
+    return { success: true };
+  });
+
+export const getUsers = createServerFn({ method: 'GET' }).handler(async () => {
   await requireAdmin();
 
   return prisma.user.findMany({
@@ -118,24 +126,4 @@ export async function getUsersHandler() {
     },
     orderBy: { createdAt: 'asc' },
   });
-}
-
-// ─── Server Functions ───────────────────────────────────────────────────────
-
-export const changeRole = createServerFn({ method: 'POST' })
-  .inputValidator(changeRoleSchema)
-  .handler(async ({ data }) => changeRoleHandler(data));
-
-export const deleteUser = createServerFn({ method: 'POST' })
-  .inputValidator(userIdSchema)
-  .handler(async ({ data }) => deleteUserHandler(data));
-
-export const createUser = createServerFn({ method: 'POST' })
-  .inputValidator(createUserSchema)
-  .handler(async ({ data }) => createUserHandler(data));
-
-export const toggleStatus = createServerFn({ method: 'POST' })
-  .inputValidator(toggleStatusSchema)
-  .handler(async ({ data }) => toggleStatusHandler(data));
-
-export const getUsers = createServerFn({ method: 'GET' }).handler(async () => getUsersHandler());
+});

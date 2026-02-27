@@ -40,11 +40,11 @@ const importDataSchema = z.object({
   relationships: z.array(importRelationshipSchema),
 });
 
-// ─── Handlers ───────────────────────────────────────────────────────────────
+// ─── Server Functions ───────────────────────────────────────────────────────
 
 const CHUNK_SIZE = 200;
 
-export async function exportDataHandler() {
+export const exportData = createServerFn({ method: 'GET' }).handler(async () => {
   await requireAdmin();
 
   const persons = await prisma.person.findMany({ orderBy: { createdAt: 'asc' } });
@@ -58,64 +58,58 @@ export async function exportDataHandler() {
   };
 
   return payload;
-}
-
-export async function importDataHandler(data: z.output<typeof importDataSchema>) {
-  await requireAdmin();
-
-  await prisma.$transaction(async (tx) => {
-    await tx.relationship.deleteMany();
-    await tx.person.deleteMany();
-
-    for (let i = 0; i < data.persons.length; i += CHUNK_SIZE) {
-      const chunk = data.persons.slice(i, i + CHUNK_SIZE);
-      await tx.person.createMany({
-        data: chunk.map((p) => ({
-          id: p.id,
-          fullName: p.fullName,
-          gender: p.gender,
-          birthYear: p.birthYear ?? null,
-          birthMonth: p.birthMonth ?? null,
-          birthDay: p.birthDay ?? null,
-          deathYear: p.deathYear ?? null,
-          deathMonth: p.deathMonth ?? null,
-          deathDay: p.deathDay ?? null,
-          isDeceased: p.isDeceased,
-          isInLaw: p.isInLaw,
-          birthOrder: p.birthOrder ?? null,
-          generation: p.generation ?? null,
-          avatarUrl: p.avatarUrl ?? null,
-          note: p.note ?? null,
-        })),
-      });
-    }
-
-    for (let i = 0; i < data.relationships.length; i += CHUNK_SIZE) {
-      const chunk = data.relationships.slice(i, i + CHUNK_SIZE);
-      await tx.relationship.createMany({
-        data: chunk.map((r) => ({
-          type: r.type,
-          personAId: r.personAId,
-          personBId: r.personBId,
-          note: r.note ?? null,
-        })),
-      });
-    }
-  });
-
-  return {
-    success: true,
-    imported: {
-      persons: data.persons.length,
-      relationships: data.relationships.length,
-    },
-  };
-}
-
-// ─── Server Functions ───────────────────────────────────────────────────────
-
-export const exportData = createServerFn({ method: 'GET' }).handler(async () => exportDataHandler());
+});
 
 export const importData = createServerFn({ method: 'POST' })
   .inputValidator(importDataSchema)
-  .handler(async ({ data }) => importDataHandler(data));
+  .handler(async ({ data }) => {
+    await requireAdmin();
+
+    await prisma.$transaction(async (tx) => {
+      await tx.relationship.deleteMany();
+      await tx.person.deleteMany();
+
+      for (let i = 0; i < data.persons.length; i += CHUNK_SIZE) {
+        const chunk = data.persons.slice(i, i + CHUNK_SIZE);
+        await tx.person.createMany({
+          data: chunk.map((p) => ({
+            id: p.id,
+            fullName: p.fullName,
+            gender: p.gender,
+            birthYear: p.birthYear ?? null,
+            birthMonth: p.birthMonth ?? null,
+            birthDay: p.birthDay ?? null,
+            deathYear: p.deathYear ?? null,
+            deathMonth: p.deathMonth ?? null,
+            deathDay: p.deathDay ?? null,
+            isDeceased: p.isDeceased,
+            isInLaw: p.isInLaw,
+            birthOrder: p.birthOrder ?? null,
+            generation: p.generation ?? null,
+            avatarUrl: p.avatarUrl ?? null,
+            note: p.note ?? null,
+          })),
+        });
+      }
+
+      for (let i = 0; i < data.relationships.length; i += CHUNK_SIZE) {
+        const chunk = data.relationships.slice(i, i + CHUNK_SIZE);
+        await tx.relationship.createMany({
+          data: chunk.map((r) => ({
+            type: r.type,
+            personAId: r.personAId,
+            personBId: r.personBId,
+            note: r.note ?? null,
+          })),
+        });
+      }
+    });
+
+    return {
+      success: true,
+      imported: {
+        persons: data.persons.length,
+        relationships: data.relationships.length,
+      },
+    };
+  });
