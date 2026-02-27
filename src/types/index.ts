@@ -30,12 +30,6 @@ export interface Person {
   updatedAt: Date;
 }
 
-export interface PersonWithPrivateDetails extends Person {
-  phoneNumber?: string | null;
-  occupation?: string | null;
-  currentResidence?: string | null;
-}
-
 export interface Relationship {
   id: string;
   type: RelationshipType;
@@ -54,16 +48,6 @@ export interface UserProfile {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-}
-
-// ============================================================
-// Helper types for UI
-// ============================================================
-
-export interface PersonWithDetails extends Person {
-  spouses?: Person[];
-  children?: Person[];
-  parents?: Person[];
 }
 
 // ============================================================

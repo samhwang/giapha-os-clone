@@ -1,8 +1,15 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { getDbClient } from '../../lib/db';
-import type { BackupPayload } from '../../types';
+import type { Person, Relationship } from '../../types';
 import { requireAdmin } from './_auth';
+
+interface BackupPayload {
+  version: number;
+  timestamp: string;
+  persons: Person[];
+  relationships: Relationship[];
+}
 
 const prisma = getDbClient();
 
