@@ -1,17 +1,14 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { getDbClient } from '../../lib/db';
+import { ERRORS } from '../../lib/errors';
 import { deleteAvatar, uploadAvatar } from '../../lib/storage';
 import { requireAdmin, requireAuth } from './_auth';
 
-const prisma = getDbClient();
-
-// ─── Schemas ────────────────────────────────────────────────────────────────
-
 const genderEnum = z.enum(['male', 'female', 'other']);
 
-const createPersonSchema = z.object({
-  fullName: z.string().min(1, 'error.member.nameRequired'),
+const basePersonFields = {
+  fullName: z.string().min(1),
   gender: genderEnum,
   birthYear: z.number().int().nullish(),
   birthMonth: z.number().int().min(1).max(12).nullish(),
@@ -27,27 +24,14 @@ const createPersonSchema = z.object({
   phoneNumber: z.string().nullish(),
   occupation: z.string().nullish(),
   currentResidence: z.string().nullish(),
-});
+};
+
+const createPersonSchema = z.object(basePersonFields);
 
 const updatePersonSchema = z.object({
   id: z.uuid(),
-  fullName: z.string().min(1).optional(),
-  gender: genderEnum.optional(),
-  birthYear: z.number().int().nullish(),
-  birthMonth: z.number().int().min(1).max(12).nullish(),
-  birthDay: z.number().int().min(1).max(31).nullish(),
-  deathYear: z.number().int().nullish(),
-  deathMonth: z.number().int().min(1).max(12).nullish(),
-  deathDay: z.number().int().min(1).max(31).nullish(),
-  isDeceased: z.boolean().optional(),
-  isInLaw: z.boolean().optional(),
-  birthOrder: z.number().int().nullish(),
-  generation: z.number().int().nullish(),
+  ...basePersonFields,
   avatarUrl: z.string().nullish(),
-  note: z.string().nullish(),
-  phoneNumber: z.string().nullish(),
-  occupation: z.string().nullish(),
-  currentResidence: z.string().nullish(),
 });
 
 const idSchema = z.object({ id: z.uuid() });
@@ -59,17 +43,16 @@ const uploadAvatarSchema = z.object({
   base64: z.string().min(1),
 });
 
-// ─── Server Functions ───────────────────────────────────────────────────────
-
 export const createPerson = createServerFn({ method: 'POST' })
   .inputValidator(createPersonSchema)
   .handler(async ({ data }) => {
     await requireAuth();
+    const db = getDbClient();
 
     const { phoneNumber, occupation, currentResidence, ...personData } = data;
     const hasPrivateDetails = phoneNumber || occupation || currentResidence;
 
-    return prisma.person.create({
+    return db.person.create({
       data: {
         ...personData,
         ...(hasPrivateDetails && {
@@ -90,16 +73,17 @@ export const updatePerson = createServerFn({ method: 'POST' })
   .inputValidator(updatePersonSchema)
   .handler(async ({ data }) => {
     await requireAuth();
+    const db = getDbClient();
 
     const { id, phoneNumber, occupation, currentResidence, ...personData } = data;
 
-    await prisma.person.update({
+    await db.person.update({
       where: { id },
       data: personData,
     });
 
     if (phoneNumber !== undefined || occupation !== undefined || currentResidence !== undefined) {
-      await prisma.personDetailsPrivate.upsert({
+      await db.personDetailsPrivate.upsert({
         where: { personId: id },
         create: {
           personId: id,
@@ -115,7 +99,7 @@ export const updatePerson = createServerFn({ method: 'POST' })
       });
     }
 
-    return prisma.person.findUniqueOrThrow({
+    return db.person.findUniqueOrThrow({
       where: { id },
       include: { privateDetails: true },
     });
@@ -125,23 +109,16 @@ export const deleteMember = createServerFn({ method: 'POST' })
   .inputValidator(idSchema)
   .handler(async ({ data }) => {
     await requireAdmin();
+    const db = getDbClient();
 
-    const relationshipCount = await prisma.relationship.count({
-      where: {
-        OR: [{ personAId: data.id }, { personBId: data.id }],
-      },
-    });
+    const person = await db.person.findUnique({ where: { id: data.id } });
+    if (!person) throw new Error(ERRORS.MEMBER.NOT_FOUND);
 
-    if (relationshipCount > 0) {
-      throw new Error('error.member.hasRelationships');
-    }
-
-    const person = await prisma.person.findUnique({ where: { id: data.id } });
-    if (person?.avatarUrl) {
+    if (person.avatarUrl) {
       await deleteAvatar(person.avatarUrl);
     }
 
-    await prisma.person.delete({ where: { id: data.id } });
+    await db.person.delete({ where: { id: data.id } });
 
     return { success: true };
   });
@@ -150,9 +127,10 @@ export const uploadPersonAvatar = createServerFn({ method: 'POST' })
   .inputValidator(uploadAvatarSchema)
   .handler(async ({ data }) => {
     await requireAuth();
+    const db = getDbClient();
 
-    const existing = await prisma.person.findUnique({ where: { id: data.personId } });
-    if (!existing) throw new Error('error.member.notFound');
+    const existing = await db.person.findUnique({ where: { id: data.personId } });
+    if (!existing) throw new Error(ERRORS.MEMBER.NOT_FOUND);
 
     if (existing.avatarUrl) {
       await deleteAvatar(existing.avatarUrl);
@@ -161,14 +139,15 @@ export const uploadPersonAvatar = createServerFn({ method: 'POST' })
     const buffer = Buffer.from(data.base64, 'base64');
     const url = await uploadAvatar(buffer, data.personId, data.filename, data.contentType);
 
-    return prisma.person.update({
+    return db.person.update({
       where: { id: data.personId },
       data: { avatarUrl: url },
     });
   });
 
 export const getPersons = createServerFn({ method: 'GET' }).handler(async () => {
-  return prisma.person.findMany({
+  const db = getDbClient();
+  return db.person.findMany({
     orderBy: { createdAt: 'asc' },
   });
 });
@@ -176,7 +155,8 @@ export const getPersons = createServerFn({ method: 'GET' }).handler(async () => 
 export const getPersonById = createServerFn({ method: 'GET' })
   .inputValidator(idSchema)
   .handler(async ({ data }) => {
-    return prisma.person.findUnique({
+    const db = getDbClient();
+    return db.person.findUnique({
       where: { id: data.id },
       include: { privateDetails: true },
     });

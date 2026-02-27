@@ -1,11 +1,8 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { getDbClient } from '../../lib/db';
+import { ERRORS } from '../../lib/errors';
 import { requireAuth } from './_auth';
-
-const prisma = getDbClient();
-
-// ─── Schemas ────────────────────────────────────────────────────────────────
 
 const relationshipTypeEnum = z.enum(['marriage', 'biological_child', 'adopted_child']);
 
@@ -19,18 +16,17 @@ const createRelationshipSchema = z.object({
 const idSchema = z.object({ id: z.uuid() });
 const personIdSchema = z.object({ personId: z.uuid() });
 
-// ─── Server Functions ───────────────────────────────────────────────────────
-
 export const createRelationship = createServerFn({ method: 'POST' })
   .inputValidator(createRelationshipSchema)
   .handler(async ({ data }) => {
     await requireAuth();
+    const db = getDbClient();
 
     if (data.personAId === data.personBId) {
-      throw new Error('error.relationship.selfRelation');
+      throw new Error(ERRORS.RELATIONSHIP.SELF_RELATION);
     }
 
-    const existing = await prisma.relationship.findFirst({
+    const existing = await db.relationship.findFirst({
       where: {
         OR: [
           { personAId: data.personAId, personBId: data.personBId, type: data.type },
@@ -40,24 +36,26 @@ export const createRelationship = createServerFn({ method: 'POST' })
     });
 
     if (existing) {
-      throw new Error('error.relationship.duplicate');
+      throw new Error(ERRORS.RELATIONSHIP.DUPLICATE);
     }
 
-    return prisma.relationship.create({ data });
+    return db.relationship.create({ data });
   });
 
 export const deleteRelationship = createServerFn({ method: 'POST' })
   .inputValidator(idSchema)
   .handler(async ({ data }) => {
     await requireAuth();
+    const db = getDbClient();
 
-    await prisma.relationship.delete({ where: { id: data.id } });
+    await db.relationship.delete({ where: { id: data.id } });
 
     return { success: true };
   });
 
 export const getRelationships = createServerFn({ method: 'GET' }).handler(async () => {
-  return prisma.relationship.findMany({
+  const db = getDbClient();
+  return db.relationship.findMany({
     orderBy: { createdAt: 'asc' },
   });
 });
@@ -65,7 +63,8 @@ export const getRelationships = createServerFn({ method: 'GET' }).handler(async 
 export const getRelationshipsForPerson = createServerFn({ method: 'GET' })
   .inputValidator(personIdSchema)
   .handler(async ({ data }) => {
-    return prisma.relationship.findMany({
+    const db = getDbClient();
+    return db.relationship.findMany({
       where: {
         OR: [{ personAId: data.personId }, { personBId: data.personId }],
       },
