@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Info, KeyRound, Mail, Shield, UserPlus } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Footer from '@/components/Footer';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { authClient } from '@/lib/auth-client';
@@ -19,6 +20,7 @@ function LoginPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,29 +32,29 @@ function LoginPage() {
       if (isLogin) {
         const { error } = await authClient.signIn.email({ email, password });
         if (error) {
-          setError(error.message || 'Đăng nhập thất bại.');
+          setError(error.message || t('auth.loginFailed'));
         } else {
           navigate({ to: '/dashboard' });
         }
       } else {
         if (password !== confirmPassword) {
-          setError('Mật khẩu xác nhận không khớp.');
+          setError(t('auth.passwordMismatch'));
           setLoading(false);
           return;
         }
 
         const { error } = await authClient.signUp.email({ email, password, name: email });
         if (error) {
-          setError(error.message || 'Đăng ký thất bại.');
+          setError(error.message || t('auth.registerFailed'));
         } else {
-          setSuccessMessage('Đăng ký thành công! Vui lòng chờ admin kích hoạt tài khoản để xem nội dung.');
+          setSuccessMessage(t('auth.registerSuccess'));
           setIsLogin(true);
           setConfirmPassword('');
           setPassword('');
         }
       }
     } catch {
-      setError('Đã xảy ra lỗi không mong muốn.');
+      setError(t('auth.unexpectedError'));
     } finally {
       setLoading(false);
     }
@@ -84,17 +86,15 @@ function LoginPage() {
             >
               <Shield className="size-8 text-amber-600" />
             </Link>
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight">{isLogin ? 'Đăng nhập' : 'Đăng ký'}</h2>
-            <p className="mt-3 text-sm text-stone-500 font-medium tracking-wide">
-              {isLogin ? 'Đăng nhập để truy cập gia phả.' : 'Tạo tài khoản thành viên mới.'}
-            </p>
+            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight">{isLogin ? t('auth.login') : t('auth.register')}</h2>
+            <p className="mt-3 text-sm text-stone-500 font-medium tracking-wide">{isLogin ? t('auth.loginSubtitle') : t('auth.registerSubtitle')}</p>
           </div>
 
           <form className="space-y-5 relative z-10" onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="relative">
                 <label htmlFor="email-address" className="block text-[13px] font-semibold text-stone-600 mb-1.5 ml-1">
-                  Email
+                  {t('auth.emailLabel')}
                 </label>
                 <div className="relative flex items-center group">
                   <Mail className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
@@ -105,7 +105,7 @@ function LoginPage() {
                     autoComplete="email"
                     required
                     className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
-                    placeholder="name@example.com"
+                    placeholder={t('auth.emailPlaceholder')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -114,7 +114,7 @@ function LoginPage() {
 
               <div className="relative">
                 <label htmlFor="password" className="block text-[13px] font-semibold text-stone-600 mb-1.5 ml-1">
-                  Mật khẩu
+                  {t('auth.passwordLabel')}
                 </label>
                 <div className="relative flex items-center group">
                   <KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
@@ -125,7 +125,7 @@ function LoginPage() {
                     autoComplete={isLogin ? 'current-password' : 'new-password'}
                     required
                     className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
-                    placeholder="Nhập mật khẩu"
+                    placeholder={t('auth.passwordPlaceholder')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
@@ -142,7 +142,7 @@ function LoginPage() {
                     className="relative overflow-hidden"
                   >
                     <label htmlFor="confirmPassword" className="block text-[13px] font-semibold text-stone-600 mb-1.5 ml-1">
-                      Xác nhận mật khẩu
+                      {t('auth.confirmPasswordLabel')}
                     </label>
                     <div className="relative flex items-center group">
                       <KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
@@ -153,7 +153,7 @@ function LoginPage() {
                         autoComplete="new-password"
                         required={!isLogin}
                         className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
-                        placeholder="Nhập lại mật khẩu"
+                        placeholder={t('auth.confirmPasswordPlaceholder')}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
@@ -204,11 +204,11 @@ function LoginPage() {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       />
                     </svg>
-                    Đang xử lý...
+                    {t('common.processing')}
                   </span>
                 ) : (
                   <>
-                    {isLogin ? 'Đăng nhập' : 'Tạo tài khoản'}
+                    {isLogin ? t('auth.loginButton') : t('auth.createAccountButton')}
                     {!isLogin && <UserPlus className="size-4 ml-1" />}
                   </>
                 )}
@@ -216,7 +216,7 @@ function LoginPage() {
 
               <div className="relative flex items-center py-2 opacity-60">
                 <div className="grow border-t border-stone-200" />
-                <span className="shrink-0 mx-4 text-stone-400 text-[11px] uppercase tracking-wider font-bold">Hoặc</span>
+                <span className="shrink-0 mx-4 text-stone-400 text-[11px] uppercase tracking-wider font-bold">{t('common.or')}</span>
                 <div className="grow border-t border-stone-200" />
               </div>
 
@@ -229,7 +229,7 @@ function LoginPage() {
                 }}
                 className="w-full text-sm font-semibold text-stone-600 hover:text-stone-900 bg-white hover:bg-stone-50 border border-stone-200/80 py-3.5 rounded-xl shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] focus:outline-none transition-all duration-200"
               >
-                {isLogin ? 'Chưa có tài khoản? Đăng ký ngay' : 'Đã có tài khoản? Đăng nhập'}
+                {isLogin ? t('auth.noAccount') : t('auth.hasAccount')}
               </button>
             </div>
           </form>
@@ -241,7 +241,7 @@ function LoginPage() {
         className="absolute top-6 left-6 z-20 flex items-center gap-2 text-stone-500 hover:text-stone-900 font-semibold text-sm transition-all duration-300 group bg-white/60 px-5 py-2.5 rounded-full backdrop-blur-md shadow-sm border border-stone-200 hover:border-stone-300 hover:shadow-md"
       >
         <ArrowLeft className="size-4 group-hover:-translate-x-1 transition-transform" />
-        Trang chủ
+        {t('common.homepage')}
       </Link>
 
       <div className="absolute top-6 right-6 z-20 flex items-center gap-3">
@@ -251,7 +251,7 @@ function LoginPage() {
           className="flex items-center gap-2 text-stone-500 hover:text-stone-900 font-semibold text-sm transition-all duration-300 group bg-white/60 px-5 py-2.5 rounded-full backdrop-blur-md shadow-sm border border-stone-200 hover:border-stone-300 hover:shadow-md"
         >
           <Info className="size-4 group-hover:scale-110 transition-transform" />
-          Giới thiệu
+          {t('common.about')}
         </Link>
       </div>
 
