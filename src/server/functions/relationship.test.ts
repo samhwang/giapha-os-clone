@@ -10,11 +10,15 @@ vi.mock('@tanstack/react-start', () => ({
         validatorSchema = schema as typeof validatorSchema;
         return builder;
       },
+      inputValidator: (schema: unknown) => {
+        validatorSchema = schema as typeof validatorSchema;
+        return builder;
+      },
       handler: (fn: (opts: { data: unknown }) => unknown) => {
         const callable = async (input: unknown) => {
-          let data = input;
+          let data = (input as { data?: unknown })?.data ?? input;
           if (validatorSchema) {
-            data = typeof validatorSchema === 'function' ? validatorSchema(input) : validatorSchema.parse?.(input);
+            data = typeof validatorSchema === 'function' ? validatorSchema(data) : validatorSchema.parse?.(data);
           }
           return fn({ data });
         };
@@ -65,27 +69,29 @@ describe('createRelationship', () => {
     mockPrisma.relationship.findFirst.mockResolvedValue(null);
     mockPrisma.relationship.create.mockResolvedValue({ id: UUID_REL, ...input });
 
-    const result = await createRelationship(input);
+    const result = await createRelationship({ data: input });
 
     expect(result.id).toBe(UUID_REL);
     expect(mockPrisma.relationship.create).toHaveBeenCalledWith({ data: input });
   });
 
   it('should throw on self-relationship', async () => {
-    await expect(createRelationship({ type: 'marriage', personAId: UUID_A, personBId: UUID_A })).rejects.toThrow('Không thể tạo quan hệ với chính mình.');
+    await expect(createRelationship({ data: { type: 'marriage', personAId: UUID_A, personBId: UUID_A } })).rejects.toThrow(
+      'Không thể tạo quan hệ với chính mình.'
+    );
   });
 
   it('should throw on duplicate relationship', async () => {
     mockPrisma.relationship.findFirst.mockResolvedValue({ id: 'existing' });
 
-    await expect(createRelationship({ type: 'marriage', personAId: UUID_A, personBId: UUID_B })).rejects.toThrow('Mối quan hệ này đã tồn tại.');
+    await expect(createRelationship({ data: { type: 'marriage', personAId: UUID_A, personBId: UUID_B } })).rejects.toThrow('Mối quan hệ này đã tồn tại.');
   });
 
   it('should check both directions for duplicates', async () => {
     mockPrisma.relationship.findFirst.mockResolvedValue(null);
     mockPrisma.relationship.create.mockResolvedValue({ id: UUID_REL });
 
-    await createRelationship({ type: 'biological_child', personAId: UUID_A, personBId: UUID_B });
+    await createRelationship({ data: { type: 'biological_child', personAId: UUID_A, personBId: UUID_B } });
 
     expect(mockPrisma.relationship.findFirst).toHaveBeenCalledWith({
       where: {
@@ -100,7 +106,7 @@ describe('createRelationship', () => {
   it('should throw when not authenticated', async () => {
     mockRequireAuth.mockRejectedValue(new Error('Vui lòng đăng nhập.'));
 
-    await expect(createRelationship({ type: 'marriage', personAId: UUID_A, personBId: UUID_B })).rejects.toThrow('Vui lòng đăng nhập.');
+    await expect(createRelationship({ data: { type: 'marriage', personAId: UUID_A, personBId: UUID_B } })).rejects.toThrow('Vui lòng đăng nhập.');
   });
 });
 
@@ -108,7 +114,7 @@ describe('deleteRelationship', () => {
   it('should delete a relationship', async () => {
     mockPrisma.relationship.delete.mockResolvedValue({});
 
-    const result = await deleteRelationship({ id: UUID_REL });
+    const result = await deleteRelationship({ data: { id: UUID_REL } });
 
     expect(result).toEqual({ success: true });
     expect(mockPrisma.relationship.delete).toHaveBeenCalledWith({ where: { id: UUID_REL } });
@@ -131,7 +137,7 @@ describe('getRelationshipsForPerson', () => {
     const rels = [{ id: UUID_REL, personAId: UUID_A, personBId: UUID_B }];
     mockPrisma.relationship.findMany.mockResolvedValue(rels);
 
-    const result = await getRelationshipsForPerson({ personId: UUID_A });
+    const result = await getRelationshipsForPerson({ data: { personId: UUID_A } });
 
     expect(result).toEqual(rels);
     expect(mockPrisma.relationship.findMany).toHaveBeenCalledWith({

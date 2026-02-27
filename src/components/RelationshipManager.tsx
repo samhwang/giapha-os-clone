@@ -64,7 +64,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
 
   const fetchRelationships = useCallback(async () => {
     try {
-      const rels = await getRelationshipsForPerson({ personId });
+      const rels = await getRelationshipsForPerson({ data: { personId } });
       const persons = await getPersons();
       setAllPersons(persons);
 
@@ -100,7 +100,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
 
       if (childrenIds.length > 0) {
         for (const childId of childrenIds) {
-          const childRels = await getRelationshipsForPerson({ personId: childId });
+          const childRels = await getRelationshipsForPerson({ data: { personId: childId } });
           const childPerson = personsMap.get(childId);
           if (!childPerson) continue;
 
@@ -177,10 +177,12 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
       else if (newRelType === 'adopted_child') type = 'adopted_child';
 
       await createRelationship({
-        personAId,
-        personBId,
-        type,
-        note: newRelNote || null,
+        data: {
+          personAId,
+          personBId,
+          type,
+          note: newRelNote || null,
+        },
       });
 
       setIsAdding(false);
@@ -211,22 +213,28 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
         const birthYear = child.birthYear.trim() !== '' ? Number.parseInt(child.birthYear, 10) : undefined;
 
         const newPerson = await createPerson({
-          fullName: child.name.trim(),
-          gender: child.gender,
-          ...(birthYear && !Number.isNaN(birthYear) ? { birthYear } : {}),
+          data: {
+            fullName: child.name.trim(),
+            gender: child.gender,
+            ...(birthYear && !Number.isNaN(birthYear) ? { birthYear } : {}),
+          },
         });
 
         await createRelationship({
-          personAId: personId,
-          personBId: newPerson.id,
-          type: 'biological_child',
+          data: {
+            personAId: personId,
+            personBId: newPerson.id,
+            type: 'biological_child',
+          },
         });
 
         if (selectedSpouseId && selectedSpouseId !== 'unknown') {
           await createRelationship({
-            personAId: selectedSpouseId,
-            personBId: newPerson.id,
-            type: 'biological_child',
+            data: {
+              personAId: selectedSpouseId,
+              personBId: newPerson.id,
+              type: 'biological_child',
+            },
           });
         }
 
@@ -262,16 +270,20 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
       const birthYear = newSpouseBirthYear.trim() !== '' ? Number.parseInt(newSpouseBirthYear, 10) : undefined;
 
       const newPerson = await createPerson({
-        fullName: newSpouseName.trim(),
-        gender: newSpouseGender as 'male' | 'female' | 'other',
-        ...(birthYear && !Number.isNaN(birthYear) ? { birthYear } : {}),
+        data: {
+          fullName: newSpouseName.trim(),
+          gender: newSpouseGender as 'male' | 'female' | 'other',
+          ...(birthYear && !Number.isNaN(birthYear) ? { birthYear } : {}),
+        },
       });
 
       await createRelationship({
-        personAId: personId,
-        personBId: newPerson.id,
-        type: 'marriage',
-        note: newSpouseNote.trim() || null,
+        data: {
+          personAId: personId,
+          personBId: newPerson.id,
+          type: 'marriage',
+          note: newSpouseNote.trim() || null,
+        },
       });
 
       setIsAddingSpouse(false);
@@ -290,7 +302,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
   const handleDelete = async (relId: string) => {
     if (!confirm('Bạn có chắc chắn muốn xóa mối quan hệ này?')) return;
     try {
-      await deleteRelationship({ id: relId });
+      await deleteRelationship({ data: { id: relId } });
       fetchRelationships();
     } catch (err) {
       const e = err as Error;

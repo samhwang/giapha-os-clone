@@ -103,9 +103,9 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
       let personId = initialData?.id;
 
       if (isEditing && personId) {
-        await updatePerson({ id: personId, ...personData });
+        await updatePerson({ data: { id: personId, ...personData } });
       } else {
-        const result = await createPerson(personData);
+        const result = await createPerson({ data: personData });
         personId = result.id;
       }
 
@@ -117,10 +117,12 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
           reader.readAsDataURL(avatarFile);
         });
         await uploadPersonAvatar({
-          id: personId,
-          fileName: avatarFile.name,
-          base64Data: base64,
-          contentType: avatarFile.type,
+          data: {
+            personId,
+            filename: avatarFile.name,
+            base64: base64,
+            contentType: avatarFile.type,
+          },
         });
       }
 

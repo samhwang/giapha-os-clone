@@ -1,4 +1,4 @@
-import { Solar } from 'lunar-javascript';
+import { getLunarDate } from '@dqcai/vn-lunar';
 
 export function formatDisplayDate(year: number | null, month: number | null, day: number | null): string {
   if (!year && !month && !day) return 'Chưa rõ';
@@ -15,14 +15,12 @@ export function getLunarDateString(year: number | null, month: number | null, da
   if (!year || !month || !day) return null;
 
   try {
-    const solar = Solar.fromYmd(year, month, day);
-    const lunar = solar.getLunar();
+    const lunar = getLunarDate(day, month, year);
 
-    const lDay = lunar.getDay().toString().padStart(2, '0');
-    const lMonthRaw = lunar.getMonth();
-    const isLeap = lMonthRaw < 0;
-    const lMonth = Math.abs(lMonthRaw).toString().padStart(2, '0');
-    const lYear = lunar.getYear();
+    const lDay = lunar.day.toString().padStart(2, '0');
+    const lMonth = lunar.month.toString().padStart(2, '0');
+    const lYear = lunar.year;
+    const isLeap = lunar.leap;
 
     return `${lDay}/${lMonth}${isLeap ? ' nhuận' : ''}/${lYear}`;
   } catch (error) {

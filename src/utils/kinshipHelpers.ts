@@ -203,7 +203,7 @@ function findBloodKinship(
 
   for (const [id, dataA] of ancA) {
     if (ancB.has(id)) {
-      const dist = dataA.depth + ancB.get(id)?.depth;
+      const dist = dataA.depth + (ancB.get(id)?.depth ?? 0);
       if (dist < minDistance) {
         minDistance = dist;
         lcaId = id;

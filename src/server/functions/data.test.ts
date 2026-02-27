@@ -10,11 +10,15 @@ vi.mock('@tanstack/react-start', () => ({
         validatorSchema = schema as typeof validatorSchema;
         return builder;
       },
+      inputValidator: (schema: unknown) => {
+        validatorSchema = schema as typeof validatorSchema;
+        return builder;
+      },
       handler: (fn: (opts: { data: unknown }) => unknown) => {
         const callable = async (input: unknown) => {
-          let data = input;
+          let data = (input as { data?: unknown })?.data ?? input;
           if (validatorSchema) {
-            data = typeof validatorSchema === 'function' ? validatorSchema(input) : validatorSchema.parse?.(input);
+            data = typeof validatorSchema === 'function' ? validatorSchema(data) : validatorSchema.parse?.(data);
           }
           return fn({ data });
         };
@@ -102,7 +106,7 @@ describe('importData', () => {
   };
 
   it('should delete existing data and import new data in transaction', async () => {
-    const result = await importData(validPayload);
+    const result = await importData({ data: validPayload });
 
     expect(result).toEqual({
       success: true,
@@ -117,14 +121,16 @@ describe('importData', () => {
   it('should reject empty persons array via Zod', async () => {
     await expect(
       importData({
-        persons: [],
-        relationships: [],
+        data: {
+          persons: [],
+          relationships: [],
+        },
       })
     ).rejects.toThrow();
   });
 
   it('should sanitize person data on import', async () => {
-    await importData(validPayload);
+    await importData({ data: validPayload });
 
     const createManyCall = mockTx.person.createMany.mock.calls[0][0];
     expect(createManyCall.data[0]).toMatchObject({
@@ -139,6 +145,6 @@ describe('importData', () => {
   it('should require admin access', async () => {
     mockRequireAdmin.mockRejectedValue(new Error('Từ chối truy cập.'));
 
-    await expect(importData(validPayload)).rejects.toThrow('Từ chối truy cập.');
+    await expect(importData({ data: validPayload })).rejects.toThrow('Từ chối truy cập.');
   });
 });

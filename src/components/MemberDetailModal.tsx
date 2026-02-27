@@ -24,7 +24,7 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
       setLoading(true);
       setError(null);
       try {
-        const result = await getPersonById({ id });
+        const result = await getPersonById({ data: { id } });
         if (!result) throw new Error('Không thể tải thông tin thành viên.');
         setPerson(result as Person);
         if (isAdmin && result.privateDetails) {

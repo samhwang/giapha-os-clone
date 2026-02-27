@@ -65,7 +65,8 @@ export const importData = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     await requireAdmin();
 
-    await prisma.$transaction(async (tx) => {
+    // biome-ignore lint/suspicious/noExplicitAny: Prisma transaction client type
+    await prisma.$transaction(async (tx: any) => {
       await tx.relationship.deleteMany();
       await tx.person.deleteMany();
 

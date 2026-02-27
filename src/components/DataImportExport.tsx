@@ -60,8 +60,10 @@ export default function DataImportExport() {
       }
 
       const result = await importData({
-        persons: payload.persons,
-        relationships: payload.relationships,
+        data: {
+          persons: payload.persons,
+          relationships: payload.relationships,
+        },
       });
 
       setImportStatus({

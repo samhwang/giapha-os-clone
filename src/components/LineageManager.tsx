@@ -182,11 +182,13 @@ export default function LineageManager({ persons, relationships }: LineageManage
     try {
       const changedOnly = updates.filter((u) => u.changed);
       await updateBatch({
-        updates: changedOnly.map((u) => ({
-          id: u.id,
-          generation: u.newGeneration,
-          birthOrder: u.newBirthOrder,
-        })),
+        data: {
+          updates: changedOnly.map((u) => ({
+            id: u.id,
+            generation: u.newGeneration,
+            birthOrder: u.newBirthOrder,
+          })),
+        },
       });
       setApplied(true);
     } catch (err) {

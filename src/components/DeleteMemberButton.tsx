@@ -17,7 +17,7 @@ export default function DeleteMemberButton({ memberId }: DeleteMemberButtonProps
 
     setIsDeleting(true);
     try {
-      await deleteMember({ id: memberId });
+      await deleteMember({ data: { id: memberId } });
       navigate({ to: '/dashboard' });
     } catch (error) {
       console.error('Delete failed:', error);

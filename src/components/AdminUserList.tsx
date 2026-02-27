@@ -33,7 +33,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
   const handleRoleChange = async (userId: string, newRole: UserRole) => {
     try {
       setLoadingId(userId);
-      await changeRole({ userId, newRole });
+      await changeRole({ data: { userId, newRole } });
       setUsers(users.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
       showNotification('Đã cập nhật vai trò người dùng thành công.', 'success');
     } catch (error: unknown) {
@@ -46,7 +46,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
   const handleStatusChange = async (userId: string, newStatus: boolean) => {
     try {
       setLoadingId(userId);
-      await toggleStatus({ userId, isActive: newStatus });
+      await toggleStatus({ data: { userId, isActive: newStatus } });
       setUsers(users.map((u) => (u.id === userId ? { ...u, isActive: newStatus } : u)));
       showNotification(`Đã ${newStatus ? 'duyệt' : 'khoá'} người dùng thành công.`, 'success');
     } catch (error: unknown) {
@@ -60,7 +60,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
     if (!confirm('Bạn có chắc chắn muốn xóa user này khỏi hệ thống vĩnh viễn không?')) return;
     try {
       setLoadingId(userId);
-      await deleteUser({ userId });
+      await deleteUser({ data: { userId } });
       setUsers(users.filter((u) => u.id !== userId));
       showNotification('Đã xóa người dùng thành công.', 'success');
     } catch (error: unknown) {
@@ -76,10 +76,12 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
     const formData = new FormData(e.currentTarget);
     try {
       await createUser({
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
-        role: (formData.get('role') as UserRole) || 'member',
-        isActive: formData.get('is_active') === 'true',
+        data: {
+          email: formData.get('email') as string,
+          password: formData.get('password') as string,
+          role: (formData.get('role') as UserRole) || 'member',
+          isActive: formData.get('is_active') === 'true',
+        },
       });
       showNotification('Tạo người dùng thành công! Họ có thể đăng nhập ngay bây giờ.', 'success');
       setIsCreateModalOpen(false);

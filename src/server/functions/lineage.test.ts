@@ -10,11 +10,15 @@ vi.mock('@tanstack/react-start', () => ({
         validatorSchema = schema as typeof validatorSchema;
         return builder;
       },
+      inputValidator: (schema: unknown) => {
+        validatorSchema = schema as typeof validatorSchema;
+        return builder;
+      },
       handler: (fn: (opts: { data: unknown }) => unknown) => {
         const callable = async (input: unknown) => {
-          let data = input;
+          let data = (input as { data?: unknown })?.data ?? input;
           if (validatorSchema) {
-            data = typeof validatorSchema === 'function' ? validatorSchema(input) : validatorSchema.parse?.(input);
+            data = typeof validatorSchema === 'function' ? validatorSchema(data) : validatorSchema.parse?.(data);
           }
           return fn({ data });
         };
@@ -59,7 +63,7 @@ beforeEach(() => {
 
 describe('updateBatch', () => {
   it('should return early for empty updates', async () => {
-    const result = await updateBatch({ updates: [] });
+    const result = await updateBatch({ data: { updates: [] } });
 
     expect(result).toEqual({ success: true, updated: 0 });
     expect(mockPrisma.$transaction).not.toHaveBeenCalled();
@@ -71,7 +75,7 @@ describe('updateBatch', () => {
       { id: UUID_B, generation: 2, birthOrder: 2 },
     ];
 
-    const result = await updateBatch({ updates });
+    const result = await updateBatch({ data: { updates } });
 
     expect(result).toEqual({ success: true, updated: 2 });
     expect(mockPrisma.$transaction).toHaveBeenCalled();
@@ -80,7 +84,7 @@ describe('updateBatch', () => {
   it('should update generation and birthOrder for each person', async () => {
     const updates = [{ id: UUID_A, generation: 3, birthOrder: null }];
 
-    await updateBatch({ updates });
+    await updateBatch({ data: { updates } });
 
     expect(mockPrisma.person.update).toHaveBeenCalledWith({
       where: { id: UUID_A },
@@ -91,6 +95,6 @@ describe('updateBatch', () => {
   it('should require authentication', async () => {
     mockRequireAuth.mockRejectedValue(new Error('Vui lòng đăng nhập.'));
 
-    await expect(updateBatch({ updates: [{ id: UUID_A, generation: 1, birthOrder: 1 }] })).rejects.toThrow('Vui lòng đăng nhập.');
+    await expect(updateBatch({ data: { updates: [{ id: UUID_A, generation: 1, birthOrder: 1 }] } })).rejects.toThrow('Vui lòng đăng nhập.');
   });
 });

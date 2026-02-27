@@ -13,5 +13,6 @@ __unconfig*
 coverage
 .content-collections
 src/generated
+src/routeTree.gen.ts
 base
 

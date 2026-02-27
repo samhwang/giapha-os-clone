@@ -65,10 +65,7 @@ describe('getLunarDateString', () => {
 });
 
 describe('calculateAge', () => {
-  let _realDateNow: typeof Date.now;
-
   beforeEach(() => {
-    _realDateNow = Date.now;
     // Mock current year to 2025
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2025, 0, 1));

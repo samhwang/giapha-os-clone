@@ -6,7 +6,7 @@ import type { Person } from '@/types';
 
 export const Route = createFileRoute('/dashboard/members/$id')({
   loader: async ({ params }) => {
-    const person = await getPersonById({ id: params.id });
+    const person = await getPersonById({ data: { id: params.id } });
     if (!person) throw new Error('Không tìm thấy thành viên.');
     return { person, privateData: person.privateDetails };
   },

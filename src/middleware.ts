@@ -6,14 +6,10 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
   const headers = getRequestHeaders();
   const session = await auth.api.getSession({ headers });
 
-  if (!session) {
-    return next({ context: { user: null } });
-  }
-
   return next({
     context: {
-      user: session.user,
-      session: session.session,
+      user: session?.user ?? null,
+      session: session?.session ?? null,
     },
   });
 });
