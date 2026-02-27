@@ -1,5 +1,5 @@
-import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
-import { I18nextProvider } from 'react-i18next';
+import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router';
+import { I18nextProvider, useTranslation } from 'react-i18next';
 import { createI18nInstance, type Language } from '@/i18n';
 import { getLanguage } from '@/i18n/getLanguage';
 import config from '@/lib/config';
@@ -25,7 +25,23 @@ export const Route = createRootRoute({
     ],
   }),
   component: RootComponent,
+  notFoundComponent: NotFoundComponent,
 });
+
+function NotFoundComponent() {
+  const { t } = useTranslation();
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-4xl font-serif font-bold text-stone-800">404</h1>
+        <p className="mt-2 text-stone-600">{t('notFound.message')}</p>
+        <Link to="/" className="mt-4 inline-block text-amber-700 hover:text-amber-800 underline">
+          {t('notFound.goHome')}
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 function RootComponent() {
   const { language } = Route.useRouteContext() as { language: Language };
