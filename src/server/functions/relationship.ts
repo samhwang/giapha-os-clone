@@ -19,62 +19,66 @@ const createRelationshipSchema = z.object({
 const idSchema = z.object({ id: z.uuid() });
 const personIdSchema = z.object({ personId: z.uuid() });
 
-// ─── Create Relationship ────────────────────────────────────────────────────
+// ─── Handlers ───────────────────────────────────────────────────────────────
 
-export const createRelationship = createServerFn({ method: 'POST' })
-  .inputValidator(createRelationshipSchema)
-  .handler(async ({ data }) => {
-    await requireAuth();
+export async function createRelationshipHandler(data: z.output<typeof createRelationshipSchema>) {
+  await requireAuth();
 
-    if (data.personAId === data.personBId) {
-      throw new Error('Không thể tạo quan hệ với chính mình.');
-    }
+  if (data.personAId === data.personBId) {
+    throw new Error('Không thể tạo quan hệ với chính mình.');
+  }
 
-    const existing = await prisma.relationship.findFirst({
-      where: {
-        OR: [
-          { personAId: data.personAId, personBId: data.personBId, type: data.type },
-          { personAId: data.personBId, personBId: data.personAId, type: data.type },
-        ],
-      },
-    });
-
-    if (existing) {
-      throw new Error('Mối quan hệ này đã tồn tại.');
-    }
-
-    return prisma.relationship.create({ data });
+  const existing = await prisma.relationship.findFirst({
+    where: {
+      OR: [
+        { personAId: data.personAId, personBId: data.personBId, type: data.type },
+        { personAId: data.personBId, personBId: data.personAId, type: data.type },
+      ],
+    },
   });
 
-// ─── Delete Relationship ────────────────────────────────────────────────────
+  if (existing) {
+    throw new Error('Mối quan hệ này đã tồn tại.');
+  }
 
-export const deleteRelationship = createServerFn({ method: 'POST' })
-  .inputValidator(idSchema)
-  .handler(async ({ data }) => {
-    await requireAuth();
+  return prisma.relationship.create({ data });
+}
 
-    await prisma.relationship.delete({ where: { id: data.id } });
+export async function deleteRelationshipHandler(data: z.output<typeof idSchema>) {
+  await requireAuth();
 
-    return { success: true };
-  });
+  await prisma.relationship.delete({ where: { id: data.id } });
 
-// ─── Get Relationships ──────────────────────────────────────────────────────
+  return { success: true };
+}
 
-export const getRelationships = createServerFn({ method: 'GET' }).handler(async () => {
+export async function getRelationshipsHandler() {
   return prisma.relationship.findMany({
     orderBy: { createdAt: 'asc' },
   });
-});
+}
 
-// ─── Get Relationships For Person ───────────────────────────────────────────
+export async function getRelationshipsForPersonHandler(data: z.output<typeof personIdSchema>) {
+  return prisma.relationship.findMany({
+    where: {
+      OR: [{ personAId: data.personId }, { personBId: data.personId }],
+    },
+    orderBy: { createdAt: 'asc' },
+  });
+}
+
+// ─── Server Functions ───────────────────────────────────────────────────────
+
+export const createRelationship = createServerFn({ method: 'POST' })
+  .inputValidator(createRelationshipSchema)
+  .handler(async ({ data }) => createRelationshipHandler(data));
+
+export const deleteRelationship = createServerFn({ method: 'POST' })
+  .inputValidator(idSchema)
+  .handler(async ({ data }) => deleteRelationshipHandler(data));
+
+export const getRelationships = createServerFn({ method: 'GET' }).handler(async () => getRelationshipsHandler());
 
 export const getRelationshipsForPerson = createServerFn({ method: 'GET' })
   .inputValidator(personIdSchema)
-  .handler(async ({ data }) => {
-    return prisma.relationship.findMany({
-      where: {
-        OR: [{ personAId: data.personId }, { personBId: data.personId }],
-      },
-      orderBy: { createdAt: 'asc' },
-    });
-  });
+  .handler(async ({ data }) => getRelationshipsForPersonHandler(data));

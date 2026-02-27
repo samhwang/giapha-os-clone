@@ -59,135 +59,139 @@ const uploadAvatarSchema = z.object({
   base64: z.string().min(1),
 });
 
-// ─── Create Person ──────────────────────────────────────────────────────────
+// ─── Handlers ───────────────────────────────────────────────────────────────
 
-export const createPerson = createServerFn({ method: 'POST' })
-  .inputValidator(createPersonSchema)
-  .handler(async ({ data }) => {
-    await requireAuth();
+export async function createPersonHandler(data: z.output<typeof createPersonSchema>) {
+  await requireAuth();
 
-    const { phoneNumber, occupation, currentResidence, ...personData } = data;
-    const hasPrivateDetails = phoneNumber || occupation || currentResidence;
+  const { phoneNumber, occupation, currentResidence, ...personData } = data;
+  const hasPrivateDetails = phoneNumber || occupation || currentResidence;
 
-    return prisma.person.create({
-      data: {
-        ...personData,
-        ...(hasPrivateDetails && {
-          privateDetails: {
-            create: {
-              phoneNumber: phoneNumber ?? null,
-              occupation: occupation ?? null,
-              currentResidence: currentResidence ?? null,
-            },
+  return prisma.person.create({
+    data: {
+      ...personData,
+      ...(hasPrivateDetails && {
+        privateDetails: {
+          create: {
+            phoneNumber: phoneNumber ?? null,
+            occupation: occupation ?? null,
+            currentResidence: currentResidence ?? null,
           },
-        }),
+        },
+      }),
+    },
+    include: { privateDetails: true },
+  });
+}
+
+export async function updatePersonHandler(data: z.output<typeof updatePersonSchema>) {
+  await requireAuth();
+
+  const { id, phoneNumber, occupation, currentResidence, ...personData } = data;
+
+  await prisma.person.update({
+    where: { id },
+    data: personData,
+  });
+
+  if (phoneNumber !== undefined || occupation !== undefined || currentResidence !== undefined) {
+    await prisma.personDetailsPrivate.upsert({
+      where: { personId: id },
+      create: {
+        personId: id,
+        phoneNumber: phoneNumber ?? null,
+        occupation: occupation ?? null,
+        currentResidence: currentResidence ?? null,
       },
-      include: { privateDetails: true },
-    });
-  });
-
-// ─── Update Person ──────────────────────────────────────────────────────────
-
-export const updatePerson = createServerFn({ method: 'POST' })
-  .inputValidator(updatePersonSchema)
-  .handler(async ({ data }) => {
-    await requireAuth();
-
-    const { id, phoneNumber, occupation, currentResidence, ...personData } = data;
-
-    await prisma.person.update({
-      where: { id },
-      data: personData,
-    });
-
-    if (phoneNumber !== undefined || occupation !== undefined || currentResidence !== undefined) {
-      await prisma.personDetailsPrivate.upsert({
-        where: { personId: id },
-        create: {
-          personId: id,
-          phoneNumber: phoneNumber ?? null,
-          occupation: occupation ?? null,
-          currentResidence: currentResidence ?? null,
-        },
-        update: {
-          ...(phoneNumber !== undefined && { phoneNumber }),
-          ...(occupation !== undefined && { occupation }),
-          ...(currentResidence !== undefined && { currentResidence }),
-        },
-      });
-    }
-
-    return prisma.person.findUniqueOrThrow({
-      where: { id },
-      include: { privateDetails: true },
-    });
-  });
-
-// ─── Delete Member ──────────────────────────────────────────────────────────
-
-export const deleteMember = createServerFn({ method: 'POST' })
-  .inputValidator(idSchema)
-  .handler(async ({ data }) => {
-    await requireAdmin();
-
-    const relationshipCount = await prisma.relationship.count({
-      where: {
-        OR: [{ personAId: data.id }, { personBId: data.id }],
+      update: {
+        ...(phoneNumber !== undefined && { phoneNumber }),
+        ...(occupation !== undefined && { occupation }),
+        ...(currentResidence !== undefined && { currentResidence }),
       },
     });
+  }
 
-    if (relationshipCount > 0) {
-      throw new Error('Không thể xoá. Vui lòng xoá hết các mối quan hệ gia đình của người này trước.');
-    }
+  return prisma.person.findUniqueOrThrow({
+    where: { id },
+    include: { privateDetails: true },
+  });
+}
 
-    const person = await prisma.person.findUnique({ where: { id: data.id } });
-    if (person?.avatarUrl) {
-      await deleteAvatar(person.avatarUrl);
-    }
+export async function deleteMemberHandler(data: z.output<typeof idSchema>) {
+  await requireAdmin();
 
-    await prisma.person.delete({ where: { id: data.id } });
-
-    return { success: true };
+  const relationshipCount = await prisma.relationship.count({
+    where: {
+      OR: [{ personAId: data.id }, { personBId: data.id }],
+    },
   });
 
-// ─── Upload Avatar ──────────────────────────────────────────────────────────
+  if (relationshipCount > 0) {
+    throw new Error('Không thể xoá. Vui lòng xoá hết các mối quan hệ gia đình của người này trước.');
+  }
 
-export const uploadPersonAvatar = createServerFn({ method: 'POST' })
-  .inputValidator(uploadAvatarSchema)
-  .handler(async ({ data }) => {
-    await requireAuth();
+  const person = await prisma.person.findUnique({ where: { id: data.id } });
+  if (person?.avatarUrl) {
+    await deleteAvatar(person.avatarUrl);
+  }
 
-    const existing = await prisma.person.findUnique({ where: { id: data.personId } });
-    if (!existing) throw new Error('Không tìm thấy thành viên.');
+  await prisma.person.delete({ where: { id: data.id } });
 
-    if (existing.avatarUrl) {
-      await deleteAvatar(existing.avatarUrl);
-    }
+  return { success: true };
+}
 
-    const buffer = Buffer.from(data.base64, 'base64');
-    const url = await uploadAvatar(buffer, data.personId, data.filename, data.contentType);
+export async function uploadPersonAvatarHandler(data: z.output<typeof uploadAvatarSchema>) {
+  await requireAuth();
 
-    return prisma.person.update({
-      where: { id: data.personId },
-      data: { avatarUrl: url },
-    });
+  const existing = await prisma.person.findUnique({ where: { id: data.personId } });
+  if (!existing) throw new Error('Không tìm thấy thành viên.');
+
+  if (existing.avatarUrl) {
+    await deleteAvatar(existing.avatarUrl);
+  }
+
+  const buffer = Buffer.from(data.base64, 'base64');
+  const url = await uploadAvatar(buffer, data.personId, data.filename, data.contentType);
+
+  return prisma.person.update({
+    where: { id: data.personId },
+    data: { avatarUrl: url },
   });
+}
 
-// ─── Get Persons ────────────────────────────────────────────────────────────
-
-export const getPersons = createServerFn({ method: 'GET' }).handler(async () => {
+export async function getPersonsHandler() {
   return prisma.person.findMany({
     orderBy: { createdAt: 'asc' },
   });
-});
+}
 
-// ─── Get Person By ID ───────────────────────────────────────────────────────
+export async function getPersonByIdHandler(data: z.output<typeof idSchema>) {
+  return prisma.person.findUnique({
+    where: { id: data.id },
+    include: { privateDetails: true },
+  });
+}
+
+// ─── Server Functions ───────────────────────────────────────────────────────
+
+export const createPerson = createServerFn({ method: 'POST' })
+  .inputValidator(createPersonSchema)
+  .handler(async ({ data }) => createPersonHandler(data));
+
+export const updatePerson = createServerFn({ method: 'POST' })
+  .inputValidator(updatePersonSchema)
+  .handler(async ({ data }) => updatePersonHandler(data));
+
+export const deleteMember = createServerFn({ method: 'POST' })
+  .inputValidator(idSchema)
+  .handler(async ({ data }) => deleteMemberHandler(data));
+
+export const uploadPersonAvatar = createServerFn({ method: 'POST' })
+  .inputValidator(uploadAvatarSchema)
+  .handler(async ({ data }) => uploadPersonAvatarHandler(data));
+
+export const getPersons = createServerFn({ method: 'GET' }).handler(async () => getPersonsHandler());
 
 export const getPersonById = createServerFn({ method: 'GET' })
   .inputValidator(idSchema)
-  .handler(async ({ data }) => {
-    return prisma.person.findUnique({
-      where: { id: data.id },
-      include: { privateDetails: true },
-    });
-  });
+  .handler(async ({ data }) => getPersonByIdHandler(data));
