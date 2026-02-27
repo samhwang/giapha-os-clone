@@ -14,6 +14,7 @@ export function createI18nInstance(lang: Language = defaultLanguage) {
     lng: lang,
     fallbackLng: defaultLanguage,
     interpolation: { escapeValue: false },
+    showSupportNotice: false,
   });
   return instance;
 }
