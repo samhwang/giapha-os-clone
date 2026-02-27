@@ -30,8 +30,23 @@ const createPersonSchema = z.object(basePersonFields);
 
 const updatePersonSchema = z.object({
   id: z.uuid(),
-  ...basePersonFields,
+  fullName: z.string().min(1).optional(),
+  gender: genderEnum.optional(),
+  birthYear: z.number().int().nullish(),
+  birthMonth: z.number().int().min(1).max(12).nullish(),
+  birthDay: z.number().int().min(1).max(31).nullish(),
+  deathYear: z.number().int().nullish(),
+  deathMonth: z.number().int().min(1).max(12).nullish(),
+  deathDay: z.number().int().min(1).max(31).nullish(),
+  isDeceased: z.boolean().optional(),
+  isInLaw: z.boolean().optional(),
+  birthOrder: z.number().int().nullish(),
+  generation: z.number().int().nullish(),
   avatarUrl: z.string().nullish(),
+  note: z.string().nullish(),
+  phoneNumber: z.string().nullish(),
+  occupation: z.string().nullish(),
+  currentResidence: z.string().nullish(),
 });
 
 const idSchema = z.object({ id: z.uuid() });
