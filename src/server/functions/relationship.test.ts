@@ -10,9 +10,7 @@ vi.mock('./_auth', () => ({
   requireAdmin: vi.fn(),
 }));
 
-// ─── Imports ────────────────────────────────────────────────────────────────
-
-const { createRelationship, deleteRelationship, getRelationships, getRelationshipsForPerson } = await import('./relationship');
+import { createRelationship, deleteRelationship, getRelationships, getRelationshipsForPerson } from './relationship';
 
 const prisma = getDbClient();
 

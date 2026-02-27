@@ -10,9 +10,7 @@ vi.mock('./_auth', () => ({
   requireAdmin: vi.fn(),
 }));
 
-// ─── Imports ────────────────────────────────────────────────────────────────
-
-const { updateBatch } = await import('./lineage');
+import { updateBatch } from './lineage';
 
 const prisma = getDbClient();
 
