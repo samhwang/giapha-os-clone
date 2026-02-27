@@ -1,7 +1,7 @@
 import pg from 'pg';
 import { afterAll } from 'vitest';
 
-const baseUrl = process.env.DATABASE_URL!;
+const baseUrl = process.env.DATABASE_URL || '';
 const parsed = new URL(baseUrl);
 const templateDb = parsed.pathname.slice(1);
 const workerDb = `${templateDb}_${process.env.VITEST_POOL_ID ?? process.pid}`;
