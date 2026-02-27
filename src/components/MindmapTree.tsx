@@ -100,10 +100,10 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
                   </div>
                 )}
                 <div className="flex flex-col min-w-0 flex-1">
-                  <span className="font-bold text-[14px] text-stone-900 group-hover/card:text-amber-700 transition-colors leading-tight truncate mb-0.5">
+                  <span className="font-bold text-sm text-stone-900 group-hover/card:text-amber-700 transition-colors leading-tight truncate mb-0.5">
                     {data.person.fullName}
                   </span>
-                  <span className="text-[11px] text-stone-500 font-medium truncate flex items-center gap-1">
+                  <span className="text-xs-plus text-stone-500 font-medium truncate flex items-center gap-1">
                     <svg className="size-3 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" role="img" aria-label="Ngày">
                       <title>Ngày</title>
                       <path
@@ -121,7 +121,7 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
                   {data.person.isInLaw && (
                     <div className="flex flex-wrap items-center gap-1 mt-1.5 shrink-0">
                       <span
-                        className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest shadow-xs border ${
+                        className={`inline-flex items-center px-1.5 py-0.5 rounded text-3xs font-bold uppercase tracking-widest shadow-xs border ${
                           data.person.gender === 'male'
                             ? 'bg-sky-50 text-sky-700 border-sky-200/60'
                             : data.person.gender === 'female'
@@ -152,7 +152,7 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
                     >
                       {showAvatar && (
                         <div
-                          className={`size-8 rounded-full overflow-hidden flex items-center justify-center text-white text-[10px] font-bold shadow-sm ring-2 ring-white transition-transform duration-300 group-hover/spouse:scale-105
+                          className={`size-8 rounded-full overflow-hidden flex items-center justify-center text-white text-2xs font-bold shadow-sm ring-2 ring-white transition-transform duration-300 group-hover/spouse:scale-105
                           ${spouseData.person.gender === 'male' ? 'bg-linear-to-br from-sky-400 to-sky-700' : spouseData.person.gender === 'female' ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
                         >
                           {spouseData.person.avatarUrl ? (
@@ -162,9 +162,7 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
                           )}
                         </div>
                       )}
-                      <span className="text-[10px] font-bold text-stone-600 truncate max-w-[50px] text-center">
-                        {spouseData.person.fullName.split(' ').pop()}
-                      </span>
+                      <span className="text-2xs font-bold text-stone-600 truncate max-w-[50px] text-center">{spouseData.person.fullName.split(' ').pop()}</span>
                     </button>
                   ))}
                 </div>
