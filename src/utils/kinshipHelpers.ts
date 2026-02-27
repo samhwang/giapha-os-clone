@@ -1,11 +1,12 @@
 import type { KinshipResult, PersonNode, RelEdge } from '../types';
 
-// ── Helpers ──────────────────────────────────────────────────────────
+const DEPTH_SIBLING = 1;
+const DEPTH_GREAT_AUNT = 3;
+const DEPTH_GREAT_GREAT_AUNT = 4;
 
-/**
- * Compare seniority between two persons (siblings or same generation).
- * Priority: birthOrder > birthYear
- */
+const ANCESTORS = ['', 'Cha/Mẹ', 'Ông/Bà', 'Cụ', 'Kỵ', 'Sơ', 'Tiệm', 'Tiểu', 'Di', 'Diễn'];
+const DESCENDANTS = ['', 'Con', 'Cháu', 'Chắt', 'Chít', 'Chút', 'Chét', 'Chót', 'Chẹt'];
+
 function compareSeniority(a: PersonNode, b: PersonNode): 'senior' | 'junior' | 'equal' {
   if (a.id === b.id) return 'equal';
 
@@ -21,11 +22,6 @@ function compareSeniority(a: PersonNode, b: PersonNode): 'senior' | 'junior' | '
 
   return 'equal';
 }
-
-// ── Vietnamese Terminology Constants ──────────────────────────────────────
-
-const ANCESTORS = ['', 'Cha/Mẹ', 'Ông/Bà', 'Cụ', 'Kỵ', 'Sơ', 'Tiệm', 'Tiểu', 'Di', 'Diễn'];
-const DESCENDANTS = ['', 'Con', 'Cháu', 'Chắt', 'Chít', 'Chút', 'Chét', 'Chót', 'Chẹt'];
 
 function getDirectAncestorTerm(depth: number, gender: 'male' | 'female' | 'other', isPaternal: boolean): string {
   if (depth === 1) return gender === 'female' ? 'Mẹ' : 'Cha';
@@ -47,8 +43,6 @@ function getDirectDescendantTerm(depth: number, gender: 'male' | 'female' | 'oth
   return base + suffix;
 }
 
-// ── Core Algorithm ──────────────────────────────────────────────────────────
-
 function resolveBloodTerms(
   depthA: number,
   depthB: number,
@@ -60,7 +54,6 @@ function resolveBloodTerms(
   const genderA = personA.gender;
   const genderB = personB.gender;
 
-  // 1. Direct lineage (A is ancestor/descendant of B)
   if (depthA === 0) {
     const firstChildOfA = pathB[pathB.length - 1];
     if (!firstChildOfA) return ['Hậu duệ', 'Tiền bối', 'Quan hệ Trực hệ'];
@@ -79,7 +72,6 @@ function resolveBloodTerms(
     return [aCallsB, bCallsA, 'Quan hệ Trực hệ'];
   }
 
-  // 2. Lateral relationships (siblings or cousins)
   const branchA = pathA[pathA.length - 1];
   const branchB = pathB[pathB.length - 1];
   if (!branchA || !branchB) return ['Họ hàng', 'Họ hàng', 'Quan hệ họ hàng'];
@@ -87,8 +79,7 @@ function resolveBloodTerms(
   const seniority = compareSeniority(branchA, branchB);
   const isPaternalA = branchA.gender === 'male';
 
-  // Siblings (same parents)
-  if (depthA === 1 && depthB === 1) {
+  if (depthA === DEPTH_SIBLING && depthB === DEPTH_SIBLING) {
     const aSenior = compareSeniority(personA, personB);
     if (aSenior === 'senior') {
       return [genderB === 'female' ? 'Em gái' : 'Em trai', genderA === 'female' ? 'Chị gái' : 'Anh trai', 'Anh chị em ruột'];
@@ -96,8 +87,7 @@ function resolveBloodTerms(
     return [genderB === 'female' ? 'Chị gái' : 'Anh trai', genderA === 'female' ? 'Em gái' : 'Em trai', 'Anh chị em ruột'];
   }
 
-  // Uncle/aunt (depthA > 1, depthB = 1)
-  if (depthA > 1 && depthB === 1) {
+  if (depthA > DEPTH_SIBLING && depthB === DEPTH_SIBLING) {
     let termForB = '';
     const isPaternalSide = branchA.gender === 'male';
 
@@ -116,21 +106,19 @@ function resolveBloodTerms(
     }
 
     let prefix = '';
-    if (depthA === 3) prefix = genderB === 'female' ? 'Bà ' : 'Ông ';
-    else if (depthA === 4) prefix = genderB === 'female' ? 'Cụ bà ' : 'Cụ ông ';
-    else if (depthA > 4) prefix = `${ANCESTORS[depthA - 1]} `;
+    if (depthA === DEPTH_GREAT_AUNT) prefix = genderB === 'female' ? 'Bà ' : 'Ông ';
+    else if (depthA === DEPTH_GREAT_GREAT_AUNT) prefix = genderB === 'female' ? 'Cụ bà ' : 'Cụ ông ';
+    else if (depthA > DEPTH_GREAT_GREAT_AUNT) prefix = `${ANCESTORS[depthA - 1]} `;
 
     return [(prefix + termForB).trim(), getDirectDescendantTerm(depthA, genderA), isPaternalSide ? 'Bên Nội (Vế trên)' : 'Bên Ngoại (Vế trên)'];
   }
 
-  // Reverse of uncle/aunt
-  if (depthA === 1 && depthB > 1) {
+  if (depthA === DEPTH_SIBLING && depthB > DEPTH_SIBLING) {
     const [bCallsA, aCallsB, desc] = resolveBloodTerms(depthB, depthA, personB, personA, pathB, pathA);
     return [aCallsB, bCallsA, desc];
   }
 
-  // Cousins (both depth > 1)
-  if (depthA > 1 && depthB > 1) {
+  if (depthA > DEPTH_SIBLING && depthB > DEPTH_SIBLING) {
     const side = isPaternalA ? 'Nội' : 'Ngoại';
 
     if (depthA === depthB) {
@@ -163,9 +151,18 @@ function resolveBloodTerms(
   return ['Người trong họ', 'Người trong họ', 'Quan hệ họ hàng'];
 }
 
-// ── Data Processing ──────────────────────────────────────────────────────────
+const ancestryCache = new WeakMap<Map<string, PersonNode>, Map<string, { depth: number; path: PersonNode[] }>>();
 
-function getAncestryData(id: string, parentMap: Map<string, string[]>, personsMap: Map<string, PersonNode>) {
+function getAncestryData(
+  id: string,
+  parentMap: Map<string, string[]>,
+  personsMap: Map<string, PersonNode>
+): Map<string, { depth: number; path: PersonNode[] }> {
+  const cached = ancestryCache.get(personsMap);
+  if (cached?.has(id)) {
+    return cached;
+  }
+
   const depths = new Map<string, { depth: number; path: PersonNode[] }>();
   const queue: { id: string; depth: number; path: PersonNode[] }[] = [{ id, depth: 0, path: [] }];
 
@@ -188,6 +185,11 @@ function getAncestryData(id: string, parentMap: Map<string, string[]>, personsMa
       }
     }
   }
+
+  if (!ancestryCache.has(personsMap)) {
+    ancestryCache.set(personsMap, depths);
+  }
+
   return depths;
 }
 
@@ -235,7 +237,49 @@ function findBloodKinship(
   };
 }
 
-// ── Main Entry Point ──────────────────────────────────────────────────────────
+function transformByMarriage(res: KinshipResult, referrer: PersonNode, spouse: PersonNode, direction: 'a-to-b' | 'b-to-a'): KinshipResult {
+  let aCallsB = res.aCallsB;
+  let bCallsA = res.bCallsA;
+
+  if (direction === 'a-to-b') {
+    if (res.bCallsA.startsWith('Con')) {
+      bCallsA = referrer.gender === 'male' ? 'Con rể' : 'Con dâu';
+    } else if (res.bCallsA.startsWith('Cháu')) {
+      bCallsA = referrer.gender === 'male' ? 'Cháu rể' : 'Cháu dâu';
+    } else if (res.bCallsA.includes('Anh trai')) {
+      bCallsA = 'Anh rể';
+    } else if (res.bCallsA.includes('Chị gái')) {
+      bCallsA = 'Chị dâu';
+    } else if (res.bCallsA.includes('Em')) {
+      bCallsA = referrer.gender === 'male' ? 'Em rể' : 'Em dâu';
+    } else if (res.bCallsA === 'Chú' || res.bCallsA === 'Cậu' || res.bCallsA.includes('Dượng')) {
+      bCallsA = 'Dượng';
+    } else if (res.bCallsA === 'Cô' || res.bCallsA === 'Dì' || res.bCallsA.includes('Thím') || res.bCallsA.includes('Mợ')) {
+      bCallsA = spouse.gender === 'male' ? (res.bCallsA === 'Chú' ? 'Thím' : 'Mợ') : 'Dượng';
+    }
+
+    if (res.aCallsB === 'Chú') aCallsB = 'Chú';
+    else if (res.aCallsB === 'Cô') aCallsB = 'Cô';
+    else if (res.aCallsB === 'Cậu') aCallsB = 'Cậu';
+    else if (res.aCallsB === 'Dì') aCallsB = 'Dì';
+  } else {
+    if (res.aCallsB.startsWith('Con')) {
+      aCallsB = referrer.gender === 'male' ? 'Con rể' : 'Con dâu';
+    } else if (res.aCallsB.startsWith('Cháu')) {
+      aCallsB = referrer.gender === 'male' ? 'Cháu rể' : 'Cháu dâu';
+    } else if (res.aCallsB.includes('Anh trai')) {
+      aCallsB = 'Anh rể';
+    } else if (res.aCallsB.includes('Chị gái')) {
+      aCallsB = 'Chị dâu';
+    } else if (res.aCallsB.includes('Em')) {
+      aCallsB = referrer.gender === 'male' ? 'Em rể' : 'Em dâu';
+    } else if (res.aCallsB === 'Chú' || res.aCallsB === 'Cậu') {
+      aCallsB = spouse.gender === 'male' ? 'Dượng' : res.aCallsB === 'Chú' ? 'Thím' : 'Mợ';
+    }
+  }
+
+  return { ...res, aCallsB, bCallsA };
+}
 
 export function computeKinship(personA: PersonNode, personB: PersonNode, persons: PersonNode[], relationships: RelEdge[]): KinshipResult | null {
   if (personA.id === personB.id) return null;
@@ -259,7 +303,6 @@ export function computeKinship(personA: PersonNode, personB: PersonNode, persons
     }
   }
 
-  // 0. Check direct marriage
   const spousesA = spouseMap.get(personA.id) ?? [];
   if (spousesA.includes(personB.id)) {
     return {
@@ -271,79 +314,33 @@ export function computeKinship(personA: PersonNode, personB: PersonNode, persons
     };
   }
 
-  // 1. Check blood kinship
   const blood = findBloodKinship(personA, personB, personsMap, parentMap);
   if (blood) return blood;
 
-  // 2. Check via A's spouse
   for (const sId of spousesA) {
     if (sId === personB.id) continue;
     const spouseA = personsMap.get(sId);
     if (!spouseA) continue;
     const res = findBloodKinship(spouseA, personB, personsMap, parentMap);
     if (res) {
-      let aCallsB = res.aCallsB;
-      let bCallsA = res.bCallsA;
-
-      if (res.bCallsA.startsWith('Con')) {
-        bCallsA = personA.gender === 'male' ? 'Con rể' : 'Con dâu';
-      } else if (res.bCallsA.startsWith('Cháu')) {
-        bCallsA = personA.gender === 'male' ? 'Cháu rể' : 'Cháu dâu';
-      } else if (res.bCallsA.includes('Anh trai')) {
-        bCallsA = 'Anh rể';
-      } else if (res.bCallsA.includes('Chị gái')) {
-        bCallsA = 'Chị dâu';
-      } else if (res.bCallsA.includes('Em')) {
-        bCallsA = personA.gender === 'male' ? 'Em rể' : 'Em dâu';
-      } else if (res.bCallsA === 'Chú' || res.bCallsA === 'Cậu' || res.bCallsA.includes('Dượng')) {
-        bCallsA = 'Dượng';
-      } else if (res.bCallsA === 'Cô' || res.bCallsA === 'Dì' || res.bCallsA.includes('Thím') || res.bCallsA.includes('Mợ')) {
-        bCallsA = spouseA.gender === 'male' ? (res.bCallsA === 'Chú' ? 'Thím' : 'Mợ') : 'Dượng';
-      }
-
-      if (res.aCallsB === 'Chú') aCallsB = 'Chú';
-      else if (res.aCallsB === 'Cô') aCallsB = 'Cô';
-      else if (res.aCallsB === 'Cậu') aCallsB = 'Cậu';
-      else if (res.aCallsB === 'Dì') aCallsB = 'Dì';
-
+      const transformed = transformByMarriage(res, personA, spouseA, 'a-to-b');
       return {
-        ...res,
-        aCallsB,
-        bCallsA,
+        ...transformed,
         description: `Thông qua hôn nhân của ${spouseA.fullName}`,
         pathLabels: [`${personA.fullName} là vợ/chồng của ${spouseA.fullName}`, ...res.pathLabels],
       };
     }
   }
 
-  // 3. Check via B's spouse
   const spousesB = spouseMap.get(personB.id) ?? [];
   for (const sId of spousesB) {
     const spouseB = personsMap.get(sId);
     if (!spouseB) continue;
     const res = findBloodKinship(personA, spouseB, personsMap, parentMap);
     if (res) {
-      let aCallsB = res.aCallsB;
-      const bCallsA = res.bCallsA;
-
-      if (res.aCallsB.startsWith('Con')) {
-        aCallsB = personB.gender === 'male' ? 'Con rể' : 'Con dâu';
-      } else if (res.aCallsB.startsWith('Cháu')) {
-        aCallsB = personB.gender === 'male' ? 'Cháu rể' : 'Cháu dâu';
-      } else if (res.aCallsB.includes('Anh trai')) {
-        aCallsB = 'Anh rể';
-      } else if (res.aCallsB.includes('Chị gái')) {
-        aCallsB = 'Chị dâu';
-      } else if (res.aCallsB.includes('Em')) {
-        aCallsB = personB.gender === 'male' ? 'Em rể' : 'Em dâu';
-      } else if (res.aCallsB === 'Chú' || res.aCallsB === 'Cậu') {
-        aCallsB = spouseB.gender === 'male' ? 'Dượng' : res.aCallsB === 'Chú' ? 'Thím' : 'Mợ';
-      }
-
+      const transformed = transformByMarriage(res, personB, spouseB, 'b-to-a');
       return {
-        ...res,
-        aCallsB,
-        bCallsA,
+        ...transformed,
         description: `Thông qua hôn nhân của ${spouseB.fullName}`,
         pathLabels: [...res.pathLabels, `${personB.fullName} là vợ/chồng của ${spouseB.fullName}`],
       };
