@@ -2,6 +2,8 @@
 
 A self-hosted Vietnamese genealogy and family tree management application. This is a reimplementation of [Gia Pha OS](https://github.com/homielab/giapha-os) using a fully self-hosted stack — no third-party cloud dependencies.
 
+This is a mainly Vietnamese app. It does support English, but only for usage purposes. The main kinship term stays Vietnamese.
+
 ## Tech Stack
 
 - **Framework**: [TanStack Start](https://tanstack.com/start) (React 19, TypeScript)
