@@ -18,8 +18,8 @@ const changeRoleSchema = z.object({
 const userIdSchema = z.object({ userId: z.uuid() });
 
 const createUserSchema = z.object({
-  email: z.email('Email không hợp lệ.'),
-  password: z.string().min(8, 'Mật khẩu phải có ít nhất 8 ký tự.'),
+  email: z.email('error.user.invalidEmail'),
+  password: z.string().min(8, 'error.user.passwordMin'),
   name: z.string().optional(),
   role: roleEnum.optional(),
   isActive: z.boolean().optional(),
@@ -36,7 +36,7 @@ export async function changeRoleHandler(data: z.output<typeof changeRoleSchema>)
   const admin = await requireAdmin();
 
   if (data.userId === admin.id) {
-    throw new Error('Không thể thay đổi vai trò của chính mình.');
+    throw new Error('error.user.selfRole');
   }
 
   await prisma.user.update({
@@ -51,7 +51,7 @@ export async function deleteUserHandler(data: z.output<typeof userIdSchema>) {
   const admin = await requireAdmin();
 
   if (data.userId === admin.id) {
-    throw new Error('Không thể xoá tài khoản của chính mình.');
+    throw new Error('error.user.selfDelete');
   }
 
   await prisma.user.delete({ where: { id: data.userId } });
@@ -64,7 +64,7 @@ export async function createUserHandler(data: z.output<typeof createUserSchema>)
 
   const existing = await prisma.user.findUnique({ where: { email: data.email } });
   if (existing) {
-    throw new Error('Email đã được sử dụng.');
+    throw new Error('error.user.emailTaken');
   }
 
   const ctx = await auth.api.signUpEmail({
@@ -92,7 +92,7 @@ export async function toggleStatusHandler(data: z.output<typeof toggleStatusSche
   const admin = await requireAdmin();
 
   if (data.userId === admin.id) {
-    throw new Error('Không thể thay đổi trạng thái của chính mình.');
+    throw new Error('error.user.selfStatus');
   }
 
   await prisma.user.update({

@@ -25,7 +25,7 @@ export async function createRelationshipHandler(data: z.output<typeof createRela
   await requireAuth();
 
   if (data.personAId === data.personBId) {
-    throw new Error('Không thể tạo quan hệ với chính mình.');
+    throw new Error('error.relationship.selfRelation');
   }
 
   const existing = await prisma.relationship.findFirst({
@@ -38,7 +38,7 @@ export async function createRelationshipHandler(data: z.output<typeof createRela
   });
 
   if (existing) {
-    throw new Error('Mối quan hệ này đã tồn tại.');
+    throw new Error('error.relationship.duplicate');
   }
 
   return prisma.relationship.create({ data });

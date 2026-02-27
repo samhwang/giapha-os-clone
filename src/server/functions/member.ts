@@ -11,7 +11,7 @@ const prisma = getDbClient();
 const genderEnum = z.enum(['male', 'female', 'other']);
 
 const createPersonSchema = z.object({
-  fullName: z.string().min(1, 'Tên là bắt buộc.'),
+  fullName: z.string().min(1, 'error.member.nameRequired'),
   gender: genderEnum,
   birthYear: z.number().int().nullish(),
   birthMonth: z.number().int().min(1).max(12).nullish(),
@@ -127,7 +127,7 @@ export async function deleteMemberHandler(data: z.output<typeof idSchema>) {
   });
 
   if (relationshipCount > 0) {
-    throw new Error('Không thể xoá. Vui lòng xoá hết các mối quan hệ gia đình của người này trước.');
+    throw new Error('error.member.hasRelationships');
   }
 
   const person = await prisma.person.findUnique({ where: { id: data.id } });
@@ -144,7 +144,7 @@ export async function uploadPersonAvatarHandler(data: z.output<typeof uploadAvat
   await requireAuth();
 
   const existing = await prisma.person.findUnique({ where: { id: data.personId } });
-  if (!existing) throw new Error('Không tìm thấy thành viên.');
+  if (!existing) throw new Error('error.member.notFound');
 
   if (existing.avatarUrl) {
     await deleteAvatar(existing.avatarUrl);

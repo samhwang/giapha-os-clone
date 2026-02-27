@@ -36,7 +36,7 @@ const importRelationshipSchema = z.object({
 const importDataSchema = z.object({
   version: z.number().optional(),
   timestamp: z.string().optional(),
-  persons: z.array(importPersonSchema).min(1, 'File backup trống — không có thành viên nào để phục hồi.'),
+  persons: z.array(importPersonSchema).min(1, 'error.data.emptyBackup'),
   relationships: z.array(importRelationshipSchema),
 });
 
