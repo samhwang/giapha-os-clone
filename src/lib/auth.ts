@@ -16,7 +16,6 @@ export const auth = betterAuth({
       isActive: {
         type: 'boolean',
         defaultValue: false,
-        fieldName: 'is_active',
       },
     },
   },
