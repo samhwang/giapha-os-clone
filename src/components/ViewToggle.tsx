@@ -1,17 +1,19 @@
 import { motion } from 'framer-motion';
 import { List, ListTree, Network } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useDashboard } from './DashboardContext';
 
 export type ViewMode = 'list' | 'tree' | 'mindmap';
 
-const tabs = [
-  { id: 'list', label: 'Danh sách', icon: <List className="size-4" /> },
-  { id: 'tree', label: 'Sơ đồ cây', icon: <Network className="size-4" /> },
-  { id: 'mindmap', label: 'Mindmap', icon: <ListTree className="size-4" /> },
-] as const;
-
 export default function ViewToggle() {
   const { view: currentView, setView } = useDashboard();
+  const { t } = useTranslation();
+
+  const tabs = [
+    { id: 'list' as const, label: t('nav.list'), icon: <List className="size-4" /> },
+    { id: 'tree' as const, label: t('nav.treeView'), icon: <Network className="size-4" /> },
+    { id: 'mindmap' as const, label: 'Mindmap', icon: <ListTree className="size-4" /> },
+  ];
 
   return (
     <div className="flex bg-stone-200/50 p-1.5 rounded-full shadow-inner w-fit mx-auto mt-4 mb-2 relative border border-stone-200/60 backdrop-blur-sm z-10">

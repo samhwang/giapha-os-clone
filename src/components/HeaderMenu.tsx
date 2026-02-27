@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BarChart2, CalendarClock, ChevronDown, Database, GitMerge, Info, Network, Settings, UserCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import LogoutButton from './LogoutButton';
 
@@ -13,6 +14,7 @@ interface HeaderMenuProps {
 export default function HeaderMenu({ isAdmin, userEmail }: HeaderMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -28,16 +30,16 @@ export default function HeaderMenu({ isAdmin, userEmail }: HeaderMenuProps) {
   const menuItems = [
     ...(isAdmin
       ? [
-          { to: '/dashboard/users', icon: <Settings className="size-4" />, label: 'Quản lý Người dùng' },
-          { to: '/dashboard/lineage', icon: <Network className="size-4" />, label: 'Thứ tự gia phả' },
-          { to: '/dashboard/data', icon: <Database className="size-4" />, label: 'Sao lưu & Phục hồi' },
+          { to: '/dashboard/users', icon: <Settings className="size-4" />, label: t('nav.userManagement') },
+          { to: '/dashboard/lineage', icon: <Network className="size-4" />, label: t('nav.lineageOrder') },
+          { to: '/dashboard/data', icon: <Database className="size-4" />, label: t('nav.backupRestore') },
         ]
       : []),
-    { to: '/dashboard/events', icon: <CalendarClock className="size-4" />, label: 'Sự kiện' },
-    { to: '/dashboard/kinship', icon: <GitMerge className="size-4" />, label: 'Tra cứu danh xưng' },
-    { to: '/dashboard/stats', icon: <BarChart2 className="size-4" />, label: 'Thống kê gia phả' },
-    { to: '/about', icon: <Info className="size-4" />, label: 'Giới thiệu & Liên hệ' },
-  ] as const;
+    { to: '/dashboard/events', icon: <CalendarClock className="size-4" />, label: t('nav.events') },
+    { to: '/dashboard/kinship', icon: <GitMerge className="size-4" />, label: t('nav.kinshipLookup') },
+    { to: '/dashboard/stats', icon: <BarChart2 className="size-4" />, label: t('nav.familyStats') },
+    { to: '/about', icon: <Info className="size-4" />, label: t('nav.aboutContact') },
+  ];
 
   return (
     <div className="relative" ref={menuRef}>
@@ -62,7 +64,7 @@ export default function HeaderMenu({ isAdmin, userEmail }: HeaderMenuProps) {
             className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-stone-200/60 py-2 z-50 overflow-hidden"
           >
             <div className="px-4 py-3 border-b border-stone-100 bg-stone-50/50">
-              <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-0.5">Tài khoản</p>
+              <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-0.5">{t('nav.account')}</p>
               <p className="text-sm font-medium text-stone-900 truncate">{userEmail}</p>
             </div>
 

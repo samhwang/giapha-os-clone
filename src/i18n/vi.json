@@ -89,7 +89,18 @@
     "kinshipLookup": "Tra cứu danh xưng",
     "familyStats": "Thống kê gia phả",
     "aboutContact": "Giới thiệu & Liên hệ",
-    "account": "Tài khoản"
+    "account": "Tài khoản",
+    "list": "Danh sách",
+    "treeView": "Sơ đồ cây",
+    "mindmap": "Mindmap",
+    "hideAvatar": "Ẩn ảnh",
+    "showAvatar": "Hiện ảnh",
+    "rootDisplay": "Gốc hiển thị",
+    "selectPerson": "Chọn người...",
+    "searchMember": "Tìm thành viên...",
+    "noSearchResults": "Không tìm thấy kết quả",
+    "tryDifferentSearch": "Thử tìm với tên khác",
+    "generationN": "Đời thứ {{gen}}"
   },
   "member": {
     "addMember": "Thêm thành viên",

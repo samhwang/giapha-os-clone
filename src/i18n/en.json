@@ -89,7 +89,18 @@
     "kinshipLookup": "Kinship Lookup",
     "familyStats": "Family Stats",
     "aboutContact": "About & Contact",
-    "account": "Account"
+    "account": "Account",
+    "list": "List",
+    "treeView": "Tree View",
+    "mindmap": "Mindmap",
+    "hideAvatar": "Hide photos",
+    "showAvatar": "Show photos",
+    "rootDisplay": "Root display",
+    "selectPerson": "Select person...",
+    "searchMember": "Search member...",
+    "noSearchResults": "No results found",
+    "tryDifferentSearch": "Try a different name",
+    "generationN": "Generation {{gen}}"
   },
   "member": {
     "addMember": "Add Member",
