@@ -32,13 +32,13 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
       {/* Header / Cover */}
       <div className="h-28 sm:h-36 bg-linear-to-r from-stone-200 via-stone-100 to-stone-200 relative shrink-0">
         <div
-          className={`absolute right-0 -top-20 w-64 h-64 rounded-full blur-[60px] opacity-40 ${person.gender === 'male' ? 'bg-sky-300' : person.gender === 'female' ? 'bg-rose-300' : 'bg-stone-300'}`}
+          className={`absolute right-0 -top-20 w-64 h-64 rounded-full blur-4xl opacity-40 ${person.gender === 'male' ? 'bg-sky-300' : person.gender === 'female' ? 'bg-rose-300' : 'bg-stone-300'}`}
         />
-        <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full blur-[60px] opacity-20 bg-amber-200" />
+        <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full blur-4xl opacity-20 bg-amber-200" />
 
         <motion.div variants={itemVariants} className="absolute -bottom-12 sm:-bottom-16 left-6 sm:left-8 z-10">
           <div
-            className={`h-24 w-24 sm:h-32 sm:w-32 rounded-full border-4 sm:border-[6px] border-white flex items-center justify-center text-3xl sm:text-4xl font-bold text-white overflow-hidden shadow-xl shrink-0
+            className={`h-24 w-24 sm:h-32 sm:w-32 rounded-full border-4 sm:border-4 border-white flex items-center justify-center text-3xl sm:text-4xl font-bold text-white overflow-hidden shadow-xl shrink-0
              ${person.gender === 'male' ? 'bg-linear-to-br from-sky-400 to-sky-700' : person.gender === 'female' ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
           >
             {person.avatarUrl ? (
@@ -67,13 +67,13 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
             <h1 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 flex items-center gap-2 sm:gap-3 flex-wrap">
               {person.fullName}
               {isDeceased && (
-                <span className="text-[10px] sm:text-xs font-sans font-bold text-stone-500 border border-stone-200/80 bg-stone-100/50 rounded-md px-2 py-0.5 whitespace-nowrap uppercase tracking-wider shadow-xs">
+                <span className="text-2xs sm:text-xs font-sans font-bold text-stone-500 border border-stone-200/80 bg-stone-100/50 rounded-md px-2 py-0.5 whitespace-nowrap uppercase tracking-wider shadow-xs">
                   {t('member.filterDeceased')}
                 </span>
               )}
               {person.isInLaw && (
                 <span
-                  className={`text-[10px] sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border uppercase tracking-wider ${
+                  className={`text-2xs sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border uppercase tracking-wider ${
                     person.gender === 'female'
                       ? 'text-rose-700 bg-rose-50/50 border-rose-200/60'
                       : person.gender === 'male'
@@ -85,12 +85,12 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                 </span>
               )}
               {person.birthOrder != null && (
-                <span className="text-[10px] sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border text-amber-700 bg-amber-50/60 border-amber-200/60 uppercase tracking-wider">
+                <span className="text-2xs sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border text-amber-700 bg-amber-50/60 border-amber-200/60 uppercase tracking-wider">
                   {person.birthOrder === 1 ? t('member.birthOrderFirst') : t('member.birthOrderN', { order: person.birthOrder })}
                 </span>
               )}
               {person.generation != null && (
-                <span className="text-[10px] sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border text-emerald-700 bg-emerald-50/60 border-emerald-200/60 uppercase tracking-wider">
+                <span className="text-2xs sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border text-emerald-700 bg-emerald-50/60 border-emerald-200/60 uppercase tracking-wider">
                   {t('stats.generationLabel', { gen: person.generation })}
                 </span>
               )}
@@ -104,7 +104,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
-                  <h3 className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">{t('member.birth')}</h3>
+                  <h3 className="text-xs-plus font-bold text-stone-400 uppercase tracking-widest">{t('member.birth')}</h3>
                 </div>
                 <div className="space-y-1.5 pl-4 border-l-2 border-stone-100">
                   <p className="text-stone-800 font-semibold text-sm sm:text-base">
@@ -112,7 +112,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                   </p>
                   {(person.birthYear || person.birthMonth || person.birthDay) && (
                     <p className="text-sm font-medium text-stone-500 flex items-center gap-1.5">
-                      <span className="text-[10px] border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
+                      <span className="text-2xs border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
                       {getLunarDateString(person.birthYear, person.birthMonth, person.birthDay) || t('common.unknown')}
                     </p>
                   )}
@@ -127,7 +127,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span className="size-2 rounded-full bg-stone-400 shadow-[0_0_8px_rgba(156,163,175,0.5)]" />
-                    <h3 className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">{t('member.death')}</h3>
+                    <h3 className="text-xs-plus font-bold text-stone-400 uppercase tracking-widest">{t('member.death')}</h3>
                   </div>
                   <div className="space-y-1.5 pl-4 border-l-2 border-stone-100">
                     <p className="text-stone-800 font-semibold text-sm sm:text-base">
@@ -135,7 +135,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                     </p>
                     {(person.deathYear || person.deathMonth || person.deathDay) && (
                       <p className="text-xs font-medium text-stone-500 flex items-center gap-1.5">
-                        <span className="text-[10px] border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
+                        <span className="text-2xs border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
                         {getLunarDateString(person.deathYear, person.deathMonth, person.deathDay) || t('common.unknown')}
                       </p>
                     )}
@@ -157,7 +157,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                       <span
                         className={`size-2 rounded-full ${ageData.isDeceased ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]' : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]'}`}
                       />
-                      <p className="text-[11px] font-bold text-amber-800/60 uppercase tracking-widest">
+                      <p className="text-xs-plus font-bold text-amber-800/60 uppercase tracking-widest">
                         {ageData.isDeceased ? (ageData.age >= 60 ? t('member.longevity') : t('member.lifespan')) : t('member.age')}
                       </p>
                     </div>
@@ -211,7 +211,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                   </h3>
                   <dl className="space-y-4 text-sm sm:text-base">
                     <div>
-                      <dt className="text-[11px] font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                      <dt className="text-xs-plus font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
                         <Phone className="w-3.5 h-3.5" /> {t('member.phone')}
                       </dt>
                       <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-stone-200/60 shadow-xs">
@@ -219,7 +219,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-[11px] font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                      <dt className="text-xs-plus font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
                         <Briefcase className="w-3.5 h-3.5" /> {t('member.occupation')}
                       </dt>
                       <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-stone-200/60 shadow-xs">
@@ -227,7 +227,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-[11px] font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                      <dt className="text-xs-plus font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
                         <MapPin className="w-3.5 h-3.5" /> {t('member.currentResidence')}
                       </dt>
                       <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-stone-200/60 shadow-xs">
