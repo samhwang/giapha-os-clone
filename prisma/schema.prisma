@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// Enums
+// ============================================================
+
+enum Gender {
+  male
+  female
+  other
+}
+
+enum RelationshipType {
+  marriage
+  biological_child
+  adopted_child
+}
+
+enum UserRole {
+  admin
+  member
+}
+
+// ============================================================
+// Auth models (Better Auth managed)
+// ============================================================
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String?
+  emailVerified Boolean   @default(false) @map("email_verified")
+  image         String?
+  role          UserRole  @default(member)
+  isActive      Boolean   @default(false) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  sessions      Session[]
+  accounts      Account[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(uuid())
+  userId                String    @map("user_id")
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  idToken               String?   @map("id_token")
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+model Verification {
+  id         String    @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime  @map("expires_at")
+  createdAt  DateTime? @default(now()) @map("created_at")
+  updatedAt  DateTime? @updatedAt @map("updated_at")
+
+  @@map("verifications")
+}
+
+// ============================================================
+// Domain models
+// ============================================================
+
+model Person {
+  id             String                @id @default(uuid())
+  fullName       String                @map("full_name")
+  gender         Gender                @default(male)
+  birthYear      Int?                  @map("birth_year")
+  birthMonth     Int?                  @map("birth_month")
+  birthDay       Int?                  @map("birth_day")
+  deathYear      Int?                  @map("death_year")
+  deathMonth     Int?                  @map("death_month")
+  deathDay       Int?                  @map("death_day")
+  isDeceased     Boolean               @default(false) @map("is_deceased")
+  isInLaw        Boolean               @default(false) @map("is_in_law")
+  birthOrder     Int?                  @map("birth_order")
+  generation     Int?
+  avatarUrl      String?               @map("avatar_url")
+  note           String?
+  createdAt      DateTime              @default(now()) @map("created_at")
+  updatedAt      DateTime              @updatedAt @map("updated_at")
+  privateDetails PersonDetailsPrivate?
+  relationsA     Relationship[]        @relation("personA")
+  relationsB     Relationship[]        @relation("personB")
+
+  @@map("persons")
+}
+
+model PersonDetailsPrivate {
+  personId         String   @id @map("person_id")
+  person           Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
+  phoneNumber      String?  @map("phone_number")
+  occupation       String?
+  currentResidence String?  @map("current_residence")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("person_details_private")
+}
+
+model Relationship {
+  id        String           @id @default(uuid())
+  type      RelationshipType
+  personA   Person           @relation("personA", fields: [personAId], references: [id], onDelete: Cascade)
+  personAId String           @map("person_a")
+  personB   Person           @relation("personB", fields: [personBId], references: [id], onDelete: Cascade)
+  personBId String           @map("person_b")
+  note      String?
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  @@unique([personAId, personBId, type])
+  @@map("relationships")
+}
