@@ -1,6 +1,6 @@
+import { createPerson } from '@test/fixtures';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { createPerson } from '@/test-utils/fixtures';
 import MemberDetailContent from './MemberDetailContent';
 
 vi.mock('./RelationshipManager', () => ({
