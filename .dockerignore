@@ -1,0 +1,17 @@
+node_modules
+.output
+.nitro
+.vinxi
+.tanstack
+.content-collections
+.env
+.env.*
+!.env.sample
+coverage
+dist
+base
+.git
+.husky
+.agents
+.claude
+*.md
