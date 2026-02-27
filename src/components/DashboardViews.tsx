@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
-import AvatarToggle from '@/components/AvatarToggle';
-import { useDashboard } from '@/components/DashboardContext';
-import DashboardMemberList from '@/components/DashboardMemberList';
-import ExportButton from '@/components/ExportButton';
-import FamilyTree from '@/components/FamilyTree';
-import MindmapTree from '@/components/MindmapTree';
-import RootSelector from '@/components/RootSelector';
-import type { Person, Relationship } from '@/types';
+import type { Person, Relationship } from '../types';
+import AvatarToggle from './AvatarToggle';
+import { useDashboard } from './DashboardContext';
+import DashboardMemberList from './DashboardMemberList';
+import ExportButton from './ExportButton';
+import FamilyTree from './FamilyTree';
+import MindmapTree from './MindmapTree';
+import RootSelector from './RootSelector';
 
 interface DashboardViewsProps {
   persons: Person[];

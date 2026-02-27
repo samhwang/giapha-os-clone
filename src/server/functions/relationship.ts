@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
-import { getDbClient } from '@/lib/db';
+import { getDbClient } from '../../lib/db';
 import { requireAuth } from './_auth';
 
 const prisma = getDbClient();

@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Crown, Flower2, Heart, HeartOff, Mars, Skull, Users, Venus } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Person, Relationship } from '@/types';
+import type { Person, Relationship } from '../types';
 
 interface FamilyStatsProps {
   persons: Person[];

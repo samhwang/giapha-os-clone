@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Info, Mail, ShieldAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import Footer from '@/components/Footer';
+import Footer from '../components/Footer';
 
 export const Route = createFileRoute('/about')({
   component: AboutPage,

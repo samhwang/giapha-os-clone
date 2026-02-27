@@ -2,8 +2,8 @@ import { motion } from 'framer-motion';
 import { Cake, CalendarDays, Clock, Flower } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { FamilyEvent } from '@/types';
-import { computeEvents } from '@/utils/eventHelpers';
+import type { FamilyEvent } from '../types';
+import { computeEvents } from '../utils/eventHelpers';
 import { useDashboard } from './DashboardContext';
 
 interface EventsListProps {

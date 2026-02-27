@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import type { Person, Relationship } from '@/types';
+import type { Person, Relationship } from '../types';
 import FamilyNodeCard from './FamilyNodeCard';
 
 interface SpouseData {

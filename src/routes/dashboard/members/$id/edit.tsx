@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import MemberForm from '@/components/MemberForm';
-import { getPersonById } from '@/server/functions/member';
+import MemberForm from '../../../../components/MemberForm';
+import { getPersonById } from '../../../../server/functions/member';
 
 export const Route = createFileRoute('/dashboard/members/$id/edit')({
   loader: async ({ params }) => {

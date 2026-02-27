@@ -2,8 +2,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeftRight, BookOpen, GitMerge, Info, Search, Sparkles, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { PersonNode, RelEdge } from '@/types';
-import { computeKinship } from '@/utils/kinshipHelpers';
+import type { PersonNode, RelEdge } from '../types';
+import { computeKinship } from '../utils/kinshipHelpers';
 import DefaultAvatar from './DefaultAvatar';
 import { FemaleIcon, MaleIcon } from './GenderIcons';
 

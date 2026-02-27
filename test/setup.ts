@@ -1,7 +1,7 @@
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { afterEach, vi } from 'vitest';
-import { createI18nInstance } from '@/i18n';
+import { createI18nInstance } from '../src/i18n';
 
 // Stub createServerFn so .handler(fn) returns fn directly in tests.
 // Without this, createServerFn goes through the client-side HTTP/RPC path

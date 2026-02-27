@@ -2,7 +2,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { authClient } from '@/lib/auth-client';
+import { authClient } from '../lib/auth-client';
 
 export default function LogoutButton() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);

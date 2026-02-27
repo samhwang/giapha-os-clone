@@ -2,8 +2,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, RefreshCw, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { updateBatch } from '@/server/functions/lineage';
-import type { Person, Relationship } from '@/types';
+import { updateBatch } from '../server/functions/lineage';
+import type { Person, Relationship } from '../types';
 
 interface LineageManagerProps {
   persons: Person[];

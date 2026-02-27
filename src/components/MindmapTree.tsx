@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, ChevronRight, Share2 } from 'lucide-react';
 import { useState } from 'react';
-import type { Person, Relationship } from '@/types';
-import { formatDisplayDate } from '@/utils/dateHelpers';
+import type { Person, Relationship } from '../types';
+import { formatDisplayDate } from '../utils/dateHelpers';
 import { useDashboard } from './DashboardContext';
 import DefaultAvatar from './DefaultAvatar';
 

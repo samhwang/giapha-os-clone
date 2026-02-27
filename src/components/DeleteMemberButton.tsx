@@ -1,7 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { deleteMember } from '@/server/functions/member';
+import { deleteMember } from '../server/functions/member';
 
 interface DeleteMemberButtonProps {
   memberId: string;

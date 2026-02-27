@@ -3,8 +3,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, ExternalLink, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getPersonById } from '@/server/functions/member';
-import type { Person } from '@/types';
+import { getPersonById } from '../server/functions/member';
+import type { Person } from '../types';
 import { useDashboard } from './DashboardContext';
 import MemberDetailContent from './MemberDetailContent';
 

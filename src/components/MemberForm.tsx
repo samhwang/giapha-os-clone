@@ -3,8 +3,8 @@ import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import { AlertCircle, Briefcase, Image as ImageIcon, Loader2, Lock, MapPin, Phone, Settings2, Trash2, User } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createPerson, updatePerson, uploadPersonAvatar } from '@/server/functions/member';
-import type { Gender, Person } from '@/types';
+import { createPerson, updatePerson, uploadPersonAvatar } from '../server/functions/member';
+import type { Gender, Person } from '../types';
 
 interface MemberFormData extends Person {
   phoneNumber?: string | null;
