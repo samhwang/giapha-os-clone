@@ -4,6 +4,7 @@ import type { Person } from '@/types';
 import { calculateAge, formatDisplayDate, getLunarDateString } from '@/utils/dateHelpers';
 import DefaultAvatar from './DefaultAvatar';
 import { FemaleIcon, MaleIcon } from './GenderIcons';
+import RelationshipManager from './RelationshipManager';
 
 interface MemberDetailContentProps {
   person: Person;
@@ -190,7 +191,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                 Gia đình
               </h2>
               <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-6 rounded-2xl border border-stone-200/60 shadow-sm relative z-0">
-                <p className="text-stone-400 italic text-sm">Quản lý quan hệ sẽ được bổ sung.</p>
+                <RelationshipManager personId={person.id} isAdmin={isAdmin} personGender={person.gender} />
               </div>
             </motion.section>
           </div>
