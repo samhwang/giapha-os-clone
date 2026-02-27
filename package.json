@@ -24,7 +24,7 @@
     "lint:fix:unsafe": "biome check --write --unsafe .",
     "ci": "biome ci .",
     "typecheck": "tsc",
-    "prisma:push": "prisma db push --skip-generate"
+    "prisma:push": "prisma db push"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.999.0",

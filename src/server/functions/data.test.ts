@@ -66,6 +66,13 @@ describe('importDataHandler', () => {
         isDeceased: false,
         isInLaw: false,
       },
+      {
+        id: UUID_B,
+        fullName: 'Nguyễn Thị',
+        gender: 'female' as const,
+        isDeceased: false,
+        isInLaw: false,
+      },
     ],
     relationships: [
       {
@@ -77,22 +84,18 @@ describe('importDataHandler', () => {
   };
 
   it('should delete existing data and import new data', async () => {
-    // Seed some existing data
+    // Seed some existing data that will be replaced
     await prisma.person.create({ data: { fullName: 'Old Person', gender: 'male' } });
-
-    // Need person B to exist for the relationship FK constraint
-    await prisma.person.create({ data: { id: UUID_B, fullName: 'Person B', gender: 'female' } });
 
     const result = await importDataHandler(validPayload);
 
     expect(result).toEqual({
       success: true,
-      imported: { persons: 1, relationships: 1 },
+      imported: { persons: 2, relationships: 1 },
     });
 
     const persons = await prisma.person.findMany();
-    expect(persons).toHaveLength(1);
-    expect(persons[0].fullName).toBe('Nguyễn Vạn');
+    expect(persons).toHaveLength(2);
   });
 
   it('should handle import with only persons (no relationships)', async () => {

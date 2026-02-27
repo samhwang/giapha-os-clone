@@ -9,6 +9,7 @@ export default defineConfig({
     setupFiles: ['./src/test-utils/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
     environmentMatchGlobs: [['src/server/**/*.test.ts', 'node']],
+    fileParallelism: false,
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
