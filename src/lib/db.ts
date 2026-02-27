@@ -4,12 +4,9 @@ import { env } from './env';
 
 let prisma: PrismaClient | undefined;
 
-const adapter = new PrismaPg({ connectionString: env.DATABASE_URL });
-
-prisma = new PrismaClient({ adapter });
-
 export function getDbClient() {
   if (!prisma) {
+    const adapter = new PrismaPg({ connectionString: env.DATABASE_URL });
     prisma = new PrismaClient({ adapter });
   }
 
