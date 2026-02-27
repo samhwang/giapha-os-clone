@@ -5,8 +5,6 @@ import viteReact from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-const config = defineConfig({
+export default defineConfig({
   plugins: [devtools(), tsconfigPaths({ projects: ['./tsconfig.json'] }), tailwindcss(), tanstackStart(), viteReact()],
 });
-
-export default config;
