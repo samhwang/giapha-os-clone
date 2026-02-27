@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { Person } from '@/types';
 import { formatDisplayDate } from '@/utils/dateHelpers';
 import { useDashboard } from './DashboardContext';
@@ -9,6 +10,7 @@ interface PersonCardProps {
 }
 
 export default function PersonCard({ person }: PersonCardProps) {
+  const { t } = useTranslation();
   const { setMemberModalId } = useDashboard();
 
   const getGenderStyle = (gender: string) => {
@@ -48,8 +50,8 @@ export default function PersonCard({ person }: PersonCardProps) {
             {person.fullName}
           </h3>
           <p className="text-sm font-medium text-stone-500 truncate flex items-center gap-1.5">
-            <svg className="size-4 shrink-0 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" role="img" aria-label="Ngày">
-              <title>Ngày</title>
+            <svg className="size-4 shrink-0 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" role="img" aria-label={t('common.day')}>
+              <title>{t('common.day')}</title>
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -66,7 +68,7 @@ export default function PersonCard({ person }: PersonCardProps) {
             <div className="flex flex-wrap items-center gap-1.5 shrink-0 mt-2">
               {person.isDeceased && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-bold bg-stone-100 text-stone-500 uppercase tracking-widest border border-stone-200/60 shadow-xs">
-                  Đã mất
+                  {t('member.filterDeceased')}
                 </span>
               )}
               {person.isInLaw && (
@@ -79,17 +81,17 @@ export default function PersonCard({ person }: PersonCardProps) {
                         : 'bg-stone-50 text-stone-700 border-stone-200/60'
                   }`}
                 >
-                  {person.gender === 'male' ? 'Rể' : person.gender === 'female' ? 'Dâu' : 'Khách'}
+                  {person.gender === 'male' ? t('member.filterInLawMale') : person.gender === 'female' ? t('member.filterInLawFemale') : t('member.inLawOther')}
                 </span>
               )}
               {person.birthOrder != null && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200/60 uppercase tracking-widest shadow-xs">
-                  {person.birthOrder === 1 ? 'Con trưởng' : `Con thứ ${person.birthOrder}`}
+                  {person.birthOrder === 1 ? t('member.birthOrderFirst') : t('member.birthOrderN', { order: person.birthOrder })}
                 </span>
               )}
               {person.generation != null && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 uppercase tracking-widest shadow-xs">
-                  Đời thứ {person.generation}
+                  {t('stats.generationLabel', { gen: person.generation })}
                 </span>
               )}
             </div>

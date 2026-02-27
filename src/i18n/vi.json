@@ -155,7 +155,21 @@
     "noResults": "Không tìm thấy thành viên phù hợp.",
     "emptyState": "Chưa có thành viên nào. Hãy thêm thành viên đầu tiên.",
     "birthOrderFirst": "Con trưởng",
-    "birthOrderN": "Con thứ {{order}}"
+    "birthOrderN": "Con thứ {{order}}",
+    "fullNamePlaceholder": "Nhập họ và tên...",
+    "birth": "Sinh",
+    "death": "Mất",
+    "lunarCalendar": "Âm lịch",
+    "longevity": "Hưởng thọ",
+    "lifespan": "Hưởng dương",
+    "age": "Tuổi",
+    "ageSuffix": "tuổi",
+    "family": "Gia đình",
+    "noNote": "Chưa có ghi chú.",
+    "contactInfo": "Thông tin liên hệ",
+    "notUpdated": "Chưa cập nhật",
+    "contactAdminOnly": "Thông tin liên hệ chỉ hiển thị với Quản trị viên.",
+    "inLawOther": "Khách"
   },
   "relationship": {
     "loadingFamily": "Đang tải thông tin gia đình...",

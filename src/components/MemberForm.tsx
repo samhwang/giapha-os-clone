@@ -2,6 +2,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import { AlertCircle, Briefcase, Image as ImageIcon, Loader2, Lock, MapPin, Phone, Settings2, Trash2, User } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPerson, updatePerson, uploadPersonAvatar } from '@/server/functions/member';
 import type { Gender, Person } from '@/types';
 
@@ -20,6 +21,7 @@ interface MemberFormProps {
 }
 
 export default function MemberForm({ initialData, isEditing = false, isAdmin = false, onSuccess, onCancel }: MemberFormProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,19 +63,19 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
     };
 
     if (!isValidDate(birthDay, birthMonth, birthYear)) {
-      setError('Ngày sinh không hợp lệ. Vui lòng kiểm tra lại.');
+      setError(t('member.invalidBirthDate'));
       setLoading(false);
       return;
     }
 
     if (isDeceased && !isValidDate(deathDay, deathMonth, deathYear)) {
-      setError('Ngày mất không hợp lệ. Vui lòng kiểm tra lại.');
+      setError(t('member.invalidDeathDate'));
       setLoading(false);
       return;
     }
 
     if (isDeceased && birthYear !== '' && deathYear !== '' && deathYear < birthYear) {
-      setError('Năm mất phải lớn hơn hoặc bằng năm sinh.');
+      setError(t('member.deathBeforeBirth'));
       setLoading(false);
       return;
     }
@@ -126,7 +128,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
         });
       }
 
-      if (!personId) throw new Error('Không lấy được ID thành viên sau khi lưu.');
+      if (!personId) throw new Error(t('member.noIdAfterSave'));
 
       if (onSuccess) {
         onSuccess(personId);
@@ -135,7 +137,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
       }
     } catch (err) {
       console.error('Error saving member:', err);
-      setError(err instanceof Error ? err.message : 'Đã xảy ra lỗi khi lưu.');
+      setError(err instanceof Error ? err.message : t('member.saveError'));
     } finally {
       setLoading(false);
     }
@@ -159,12 +161,12 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
       >
         <h3 className="text-lg sm:text-xl font-serif font-bold text-stone-800 mb-6 border-b border-stone-100 pb-4 flex items-center gap-2">
           <User className="size-5 text-amber-600" />
-          Thông tin chung
+          {t('member.generalInfo')}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2">
             <label htmlFor="fullName" className="block text-sm font-semibold text-stone-700 mb-1.5">
-              Họ và Tên <span className="text-red-500">*</span>
+              {t('member.fullName')} <span className="text-red-500">*</span>
             </label>
             <input
               id="fullName"
@@ -173,19 +175,19 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className={inputClasses}
-              placeholder="Nhập họ và tên..."
+              placeholder={t('member.fullNamePlaceholder')}
             />
           </div>
 
           <div>
             <label htmlFor="gender" className="block text-sm font-semibold text-stone-700 mb-1.5">
-              Giới tính <span className="text-red-500">*</span>
+              {t('member.gender')} <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <select id="gender" value={gender} onChange={(e) => setGender(e.target.value as Gender)} className={`${inputClasses} appearance-none`}>
-                <option value="male">Nam</option>
-                <option value="female">Nữ</option>
-                <option value="other">Khác</option>
+                <option value="male">{t('common.male')}</option>
+                <option value="female">{t('common.female')}</option>
+                <option value="other">{t('common.other')}</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-stone-500">
                 <Settings2 className="size-4" />
@@ -211,31 +213,31 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                   </motion.svg>
                 </div>
               </div>
-              <span className="text-sm font-semibold text-stone-700 group-hover:text-amber-700 transition-colors">Là con Dâu hoặc con Rể</span>
+              <span className="text-sm font-semibold text-stone-700 group-hover:text-amber-700 transition-colors">{t('member.isInLaw')}</span>
             </label>
           </div>
 
           <div>
             <label htmlFor="birthOrder" className="block text-sm font-semibold text-stone-700 mb-1.5">
-              Thứ tự sinh trong gia đình
+              {t('member.birthOrder')}
             </label>
             <input
               id="birthOrder"
               type="number"
               min="1"
-              placeholder="Ví dụ: 1 (con trưởng), 2 (con thứ hai)..."
+              placeholder={t('member.birthOrderPlaceholder')}
               value={birthOrder}
               onChange={(e) => setBirthOrder(e.target.value ? Number(e.target.value) : '')}
               className={inputClasses}
             />
             <p className="mt-1.5 text-xs text-stone-400 flex items-center gap-1">
-              <span>💡</span> Để trống nếu không rõ hoặc không có anh/chị/em
+              <span>💡</span> {t('member.birthOrderHint')}
             </p>
           </div>
 
           <div className="md:col-span-2 mt-2">
             <label htmlFor="avatarFile" className="block text-sm font-semibold text-stone-700 mb-2.5">
-              Ảnh đại diện
+              {t('member.avatar')}
             </label>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 bg-stone-50/50 p-4 rounded-xl border border-stone-100">
               <div
@@ -269,7 +271,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                       className="flex items-center gap-2 text-sm font-medium px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200/50 hover:bg-amber-100 hover:border-amber-300 transition-colors rounded-lg"
                     >
                       <ImageIcon className="size-4" />
-                      Chọn ảnh mới
+                      {t('member.choosePhoto')}
                     </button>
                   </div>
                   {avatarPreview && (
@@ -283,13 +285,13 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                       className="flex items-center gap-2 text-sm text-rose-600 hover:text-rose-700 font-medium px-4 py-2 border border-rose-200 rounded-lg bg-rose-50 hover:bg-rose-100 transition-colors"
                     >
                       <Trash2 className="size-4" />
-                      Xóa ảnh
+                      {t('member.removePhoto')}
                     </button>
                   )}
                 </div>
                 <p className="mt-2.5 text-xs text-stone-500 flex items-center gap-1.5">
                   <AlertCircle className="w-3.5 h-3.5 text-stone-400" />
-                  Hỗ trợ PNG, JPG, GIF tối đa 2MB.
+                  {t('member.photoHint')}
                 </p>
               </div>
             </div>
@@ -297,13 +299,13 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
 
           <div className="md:col-span-2">
             <label htmlFor="birthDay" className="block text-sm font-semibold text-stone-700 mb-1.5">
-              Ngày sinh dương lịch
+              {t('member.solarBirthDate')}
             </label>
             <div className="grid grid-cols-3 gap-3">
               <input
                 id="birthDay"
                 type="number"
-                placeholder="Ngày"
+                placeholder={t('common.day')}
                 min="1"
                 max="31"
                 value={birthDay}
@@ -312,7 +314,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               />
               <input
                 type="number"
-                placeholder="Tháng"
+                placeholder={t('common.month')}
                 min="1"
                 max="12"
                 value={birthMonth}
@@ -321,7 +323,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               />
               <input
                 type="number"
-                placeholder="Năm"
+                placeholder={t('common.year')}
                 value={birthYear}
                 onChange={(e) => setBirthYear(e.target.value ? Number(e.target.value) : '')}
                 className={inputClasses}
@@ -360,7 +362,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                     </motion.svg>
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-stone-700 group-hover:text-stone-900 transition-colors">Đã qua đời</span>
+                <span className="text-sm font-semibold text-stone-700 group-hover:text-stone-900 transition-colors">{t('member.isDeceased')}</span>
               </label>
             </div>
 
@@ -373,13 +375,13 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                   className="overflow-hidden"
                 >
                   <label htmlFor="deathDay" className="block text-sm font-semibold text-stone-700 mb-1.5">
-                    Ngày mất
+                    {t('member.deathDate')}
                   </label>
                   <div className="grid grid-cols-3 gap-3 pt-1">
                     <input
                       id="deathDay"
                       type="number"
-                      placeholder="Ngày"
+                      placeholder={t('common.day')}
                       min="1"
                       max="31"
                       value={deathDay}
@@ -388,7 +390,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                     />
                     <input
                       type="number"
-                      placeholder="Tháng"
+                      placeholder={t('common.month')}
                       min="1"
                       max="12"
                       value={deathMonth}
@@ -397,7 +399,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                     />
                     <input
                       type="number"
-                      placeholder="Năm"
+                      placeholder={t('common.year')}
                       value={deathYear}
                       onChange={(e) => setDeathYear(e.target.value ? Number(e.target.value) : '')}
                       className={inputClasses}
@@ -410,14 +412,14 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
 
           <div className="md:col-span-2">
             <label htmlFor="note" className="block text-sm font-semibold text-stone-700 mb-1.5">
-              Ghi chú
+              {t('common.note')}
             </label>
             <textarea
               id="note"
               rows={3}
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Thêm thông tin bổ sung, tiểu sử..."
+              placeholder={t('member.notePlaceholder')}
               className={`${inputClasses} resize-none`}
             />
           </div>
@@ -437,15 +439,15 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             <span className="p-1.5 bg-amber-100/80 text-amber-700 rounded-lg shadow-xs">
               <Lock className="size-4" />
             </span>
-            <span>Thông tin riêng tư</span>
+            <span>{t('member.privateInfo')}</span>
             <span className="text-[10px] ml-auto sm:ml-2 font-bold bg-amber-200/80 text-amber-800 uppercase tracking-wider px-2.5 py-1 rounded-md shadow-xs border border-amber-300/60">
-              Chỉ Admin
+              {t('member.adminOnly')}
             </span>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
             <div>
               <label htmlFor="phoneNumber" className="flex items-center gap-1.5 text-sm font-semibold text-amber-900/80 mb-1.5">
-                <Phone className="size-4" /> Số điện thoại
+                <Phone className="size-4" /> {t('member.phone')}
               </label>
               <input
                 id="phoneNumber"
@@ -453,39 +455,39 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 disabled={isDeceased}
-                placeholder="Ví dụ: 0912345678"
+                placeholder={t('member.phonePlaceholder')}
                 className={`${inputClasses} disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed`}
               />
               {isDeceased && (
                 <p className="text-[11px] font-medium text-rose-500 mt-1.5 flex items-center gap-1">
                   <AlertCircle className="size-3" />
-                  Không thể nhập SĐT cho người đã mất
+                  {t('member.phoneDeceasedError')}
                 </p>
               )}
             </div>
             <div>
               <label htmlFor="occupation" className="flex items-center gap-1.5 text-sm font-semibold text-amber-900/80 mb-1.5">
-                <Briefcase className="size-4" /> Nghề nghiệp
+                <Briefcase className="size-4" /> {t('member.occupation')}
               </label>
               <input
                 id="occupation"
                 type="text"
                 value={occupation}
                 onChange={(e) => setOccupation(e.target.value)}
-                placeholder="Ví dụ: Kỹ sư, Bác sĩ..."
+                placeholder={t('member.occupationPlaceholder')}
                 className={inputClasses}
               />
             </div>
             <div className="md:col-span-2">
               <label htmlFor="currentResidence" className="flex items-center gap-1.5 text-sm font-semibold text-amber-900/80 mb-1.5">
-                <MapPin className="size-4" /> Nơi ở hiện tại
+                <MapPin className="size-4" /> {t('member.currentResidence')}
               </label>
               <input
                 id="currentResidence"
                 type="text"
                 value={currentResidence}
                 onChange={(e) => setCurrentResidence(e.target.value)}
-                placeholder="Địa chỉ cư trú..."
+                placeholder={t('member.residencePlaceholder')}
                 className={inputClasses}
               />
             </div>
@@ -509,11 +511,11 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
 
       <motion.div variants={formSectionVariants} initial="hidden" animate="show" transition={{ delay: 0.2 }} className="flex justify-end gap-3 sm:gap-4 pt-6">
         <button type="button" onClick={() => (onCancel ? onCancel() : navigate({ to: '/dashboard' }))} className="btn">
-          Hủy bỏ
+          {t('member.cancelButton')}
         </button>
         <button type="submit" disabled={loading} className="btn-primary">
           {loading && <Loader2 className="size-4 animate-spin" />}
-          {loading ? 'Đang lưu...' : isEditing ? 'Lưu thay đổi' : 'Thêm thành viên'}
+          {loading ? t('common.saving') : isEditing ? t('member.saveChanges') : t('member.addMember')}
         </button>
       </motion.div>
     </form>

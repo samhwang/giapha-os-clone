@@ -1,10 +1,12 @@
 import { Link } from '@tanstack/react-router';
 import { ArrowUpDown, Filter, Plus, Search } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import PersonCard from '@/components/PersonCard';
 import type { Person } from '@/types';
 
 export default function DashboardMemberList({ initialPersons }: { initialPersons: Person[] }) {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState('birth_asc');
   const [filterOption, setFilterOption] = useState('all');
@@ -64,7 +66,7 @@ export default function DashboardMemberList({ initialPersons }: { initialPersons
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
               <input
                 type="text"
-                placeholder="Tìm kiếm thành viên..."
+                placeholder={t('member.searchPlaceholder')}
                 className="bg-white/90 text-stone-900 w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200/80 shadow-sm placeholder-stone-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 transition-all"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -78,17 +80,17 @@ export default function DashboardMemberList({ initialPersons }: { initialPersons
                   value={filterOption}
                   onChange={(e) => setFilterOption(e.target.value)}
                 >
-                  <option value="all">Tất cả</option>
-                  <option value="male">Nam</option>
-                  <option value="female">Nữ</option>
-                  <option value="in_law_female">Dâu</option>
-                  <option value="in_law_male">Rể</option>
-                  <option value="deceased">Đã mất</option>
-                  <option value="first_child">Con trưởng</option>
+                  <option value="all">{t('member.filterAll')}</option>
+                  <option value="male">{t('common.male')}</option>
+                  <option value="female">{t('common.female')}</option>
+                  <option value="in_law_female">{t('member.filterInLawFemale')}</option>
+                  <option value="in_law_male">{t('member.filterInLawMale')}</option>
+                  <option value="deceased">{t('member.filterDeceased')}</option>
+                  <option value="first_child">{t('member.filterFirstborn')}</option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="size-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Mở">
-                    <title>Mở</title>
+                  <svg className="size-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label={t('member.openMenu')}>
+                    <title>{t('member.openMenu')}</title>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </div>
@@ -101,14 +103,14 @@ export default function DashboardMemberList({ initialPersons }: { initialPersons
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
                 >
-                  <option value="birth_asc">Năm sinh (Tăng dần)</option>
-                  <option value="birth_desc">Năm sinh (Giảm dần)</option>
-                  <option value="name_asc">Tên (A-Z)</option>
-                  <option value="name_desc">Tên (Z-A)</option>
+                  <option value="birth_asc">{t('member.sortBirthAsc')}</option>
+                  <option value="birth_desc">{t('member.sortBirthDesc')}</option>
+                  <option value="name_asc">{t('member.sortNameAsc')}</option>
+                  <option value="name_desc">{t('member.sortNameDesc')}</option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="size-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Mở">
-                    <title>Mở</title>
+                  <svg className="size-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label={t('member.openMenu')}>
+                    <title>{t('member.openMenu')}</title>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </div>
@@ -117,7 +119,7 @@ export default function DashboardMemberList({ initialPersons }: { initialPersons
           </div>
           <Link to="/dashboard/members/new" className="btn-primary">
             <Plus className="size-4" strokeWidth={2.5} />
-            Thêm thành viên
+            {t('member.addMember')}
           </Link>
         </div>
       </div>
@@ -129,9 +131,7 @@ export default function DashboardMemberList({ initialPersons }: { initialPersons
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 text-stone-400 italic">
-          {initialPersons.length > 0 ? 'Không tìm thấy thành viên phù hợp.' : 'Chưa có thành viên nào. Hãy thêm thành viên đầu tiên.'}
-        </div>
+        <div className="text-center py-12 text-stone-400 italic">{initialPersons.length > 0 ? t('member.noResults') : t('member.emptyState')}</div>
       )}
     </>
   );

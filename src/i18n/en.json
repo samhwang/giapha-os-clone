@@ -155,7 +155,21 @@
     "noResults": "No matching members found.",
     "emptyState": "No members yet. Add the first member.",
     "birthOrderFirst": "Firstborn",
-    "birthOrderN": "Child #{{order}}"
+    "birthOrderN": "Child #{{order}}",
+    "fullNamePlaceholder": "Enter full name...",
+    "birth": "Birth",
+    "death": "Death",
+    "lunarCalendar": "Lunar",
+    "longevity": "Longevity",
+    "lifespan": "Lifespan",
+    "age": "Age",
+    "ageSuffix": "years old",
+    "family": "Family",
+    "noNote": "No notes yet.",
+    "contactInfo": "Contact Information",
+    "notUpdated": "Not updated",
+    "contactAdminOnly": "Contact information is only visible to administrators.",
+    "inLawOther": "Guest"
   },
   "relationship": {
     "loadingFamily": "Loading family information...",

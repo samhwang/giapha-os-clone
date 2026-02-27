@@ -2,12 +2,14 @@ import { Link } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, ExternalLink, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getPersonById } from '@/server/functions/member';
 import type { Person } from '@/types';
 import { useDashboard } from './DashboardContext';
 import MemberDetailContent from './MemberDetailContent';
 
 export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
+  const { t } = useTranslation();
   const { memberModalId: memberId, setMemberModalId } = useDashboard();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,19 +27,19 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
       setError(null);
       try {
         const result = await getPersonById({ data: { id } });
-        if (!result) throw new Error('Không thể tải thông tin thành viên.');
+        if (!result) throw new Error(t('member.loadError'));
         setPerson(result as Person);
         if (isAdmin && result.privateDetails) {
           setPrivateData(result.privateDetails);
         }
       } catch (err) {
         console.error('Error fetching member details:', err);
-        setError(err instanceof Error ? err.message : 'Đã xảy ra lỗi hệ thống.');
+        setError(err instanceof Error ? err.message : t('member.systemError'));
       } finally {
         setLoading(false);
       }
     },
-    [isAdmin]
+    [isAdmin, t]
   );
 
   useEffect(() => {
@@ -95,14 +97,14 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
                   className="flex items-center gap-1.5 px-4 py-2 bg-amber-100/80 backdrop-blur-md text-amber-800 rounded-full hover:bg-amber-200 font-semibold text-sm shadow-sm border border-amber-200/50 transition-colors"
                 >
                   <ExternalLink className="size-4" />
-                  <span className="hidden sm:inline">Xem chi tiết</span>
+                  <span className="hidden sm:inline">{t('member.viewDetail')}</span>
                 </Link>
               )}
               <button
                 type="button"
                 onClick={closeModal}
                 className="size-10 flex items-center justify-center bg-stone-100/80 backdrop-blur-md text-stone-600 rounded-full hover:bg-stone-200 hover:text-stone-900 shadow-sm border border-stone-200/50 transition-colors"
-                aria-label="Đóng"
+                aria-label={t('common.close')}
               >
                 <X className="size-5" />
               </button>
@@ -111,7 +113,7 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
             {loading ? (
               <div className="flex-1 min-h-[400px] flex items-center justify-center flex-col gap-4">
                 <div className="size-10 border-4 border-amber-600 border-t-transparent rounded-full animate-spin" />
-                <p className="text-stone-500 font-medium">Đang tải...</p>
+                <p className="text-stone-500 font-medium">{t('common.loading')}</p>
               </div>
             ) : error ? (
               <div className="flex-1 min-h-[400px] flex items-center justify-center flex-col gap-4 p-8 text-center">
@@ -124,7 +126,7 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
                   onClick={closeModal}
                   className="mt-2 px-6 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-full transition-colors"
                 >
-                  Đóng
+                  {t('common.close')}
                 </button>
               </div>
             ) : person ? (

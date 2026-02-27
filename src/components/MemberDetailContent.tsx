@@ -1,5 +1,6 @@
 import { motion, type Variants } from 'framer-motion';
 import { Briefcase, Info, Leaf, MapPin, Phone, Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Person } from '@/types';
 import { calculateAge, formatDisplayDate, getLunarDateString } from '@/utils/dateHelpers';
 import DefaultAvatar from './DefaultAvatar';
@@ -13,6 +14,7 @@ interface MemberDetailContentProps {
 }
 
 export default function MemberDetailContent({ person, privateData, isAdmin }: MemberDetailContentProps) {
+  const { t } = useTranslation();
   const isDeceased = person.isDeceased;
 
   const containerVariants: Variants = {
@@ -66,7 +68,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
               {person.fullName}
               {isDeceased && (
                 <span className="text-[10px] sm:text-xs font-sans font-bold text-stone-500 border border-stone-200/80 bg-stone-100/50 rounded-md px-2 py-0.5 whitespace-nowrap uppercase tracking-wider shadow-xs">
-                  Đã mất
+                  {t('member.filterDeceased')}
                 </span>
               )}
               {person.isInLaw && (
@@ -79,17 +81,17 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                         : 'text-stone-700 bg-stone-50/50 border-stone-200/60'
                   }`}
                 >
-                  {person.gender === 'female' ? 'Dâu' : person.gender === 'male' ? 'Rể' : 'Khách'}
+                  {person.gender === 'female' ? t('member.filterInLawFemale') : person.gender === 'male' ? t('member.filterInLawMale') : t('member.inLawOther')}
                 </span>
               )}
               {person.birthOrder != null && (
                 <span className="text-[10px] sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border text-amber-700 bg-amber-50/60 border-amber-200/60 uppercase tracking-wider">
-                  {person.birthOrder === 1 ? 'Con trưởng' : `Con thứ ${person.birthOrder}`}
+                  {person.birthOrder === 1 ? t('member.birthOrderFirst') : t('member.birthOrderN', { order: person.birthOrder })}
                 </span>
               )}
               {person.generation != null && (
                 <span className="text-[10px] sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border text-emerald-700 bg-emerald-50/60 border-emerald-200/60 uppercase tracking-wider">
-                  Đời thứ {person.generation}
+                  {t('stats.generationLabel', { gen: person.generation })}
                 </span>
               )}
             </h1>
@@ -102,14 +104,14 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
-                  <h3 className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">Sinh</h3>
+                  <h3 className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">{t('member.birth')}</h3>
                 </div>
                 <div className="space-y-1.5 pl-4 border-l-2 border-stone-100">
                   <p className="text-stone-800 font-semibold text-sm sm:text-base">{formatDisplayDate(person.birthYear, person.birthMonth, person.birthDay)}</p>
                   {(person.birthYear || person.birthMonth || person.birthDay) && (
                     <p className="text-sm font-medium text-stone-500 flex items-center gap-1.5">
-                      <span className="text-[10px] border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">Âm lịch</span>
-                      {getLunarDateString(person.birthYear, person.birthMonth, person.birthDay) || 'Chưa rõ'}
+                      <span className="text-[10px] border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
+                      {getLunarDateString(person.birthYear, person.birthMonth, person.birthDay) || t('common.unknown')}
                     </p>
                   )}
                 </div>
@@ -123,7 +125,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span className="size-2 rounded-full bg-stone-400 shadow-[0_0_8px_rgba(156,163,175,0.5)]" />
-                    <h3 className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">Mất</h3>
+                    <h3 className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">{t('member.death')}</h3>
                   </div>
                   <div className="space-y-1.5 pl-4 border-l-2 border-stone-100">
                     <p className="text-stone-800 font-semibold text-sm sm:text-base">
@@ -131,8 +133,8 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                     </p>
                     {(person.deathYear || person.deathMonth || person.deathDay) && (
                       <p className="text-xs font-medium text-stone-500 flex items-center gap-1.5">
-                        <span className="text-[10px] border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">Âm lịch</span>
-                        {getLunarDateString(person.deathYear, person.deathMonth, person.deathDay) || 'Chưa rõ'}
+                        <span className="text-[10px] border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
+                        {getLunarDateString(person.deathYear, person.deathMonth, person.deathDay) || t('common.unknown')}
                       </p>
                     )}
                   </div>
@@ -154,13 +156,13 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                         className={`size-2 rounded-full ${ageData.isDeceased ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]' : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]'}`}
                       />
                       <p className="text-[11px] font-bold text-amber-800/60 uppercase tracking-widest">
-                        {ageData.isDeceased ? (ageData.age >= 60 ? 'Hưởng thọ' : 'Hưởng dương') : 'Tuổi'}
+                        {ageData.isDeceased ? (ageData.age >= 60 ? t('member.longevity') : t('member.lifespan')) : t('member.age')}
                       </p>
                     </div>
                     <div className="pl-4 relative z-10">
                       <p className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-linear-to-br from-amber-700 to-amber-900 tracking-tight">
                         {ageData.age}
-                        <span className="text-xs sm:text-sm font-bold text-amber-700/60 ml-1.5 uppercase tracking-wider">tuổi</span>
+                        <span className="text-xs sm:text-sm font-bold text-amber-700/60 ml-1.5 uppercase tracking-wider">{t('member.ageSuffix')}</span>
                       </p>
                     </div>
                   </motion.div>
@@ -176,11 +178,11 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
             <motion.section variants={itemVariants}>
               <h2 className="text-base sm:text-lg font-bold text-stone-800 mb-4 flex items-center gap-2">
                 <Info className="size-5 text-amber-600" />
-                Ghi chú
+                {t('common.note')}
               </h2>
               <div className="bg-white/80 backdrop-blur-sm p-5 sm:p-6 rounded-2xl border border-stone-200/60 shadow-sm">
                 <p className="text-stone-600 whitespace-pre-wrap text-sm sm:text-base leading-relaxed">
-                  {person.note || <span className="text-stone-400 italic">Chưa có ghi chú.</span>}
+                  {person.note || <span className="text-stone-400 italic">{t('member.noNote')}</span>}
                 </p>
               </div>
             </motion.section>
@@ -188,7 +190,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
             <motion.section variants={itemVariants}>
               <h2 className="text-base sm:text-lg font-bold text-stone-800 mb-4 flex items-center gap-2">
                 <Users className="size-5 text-amber-600" />
-                Gia đình
+                {t('member.family')}
               </h2>
               <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-6 rounded-2xl border border-stone-200/60 shadow-sm relative z-0">
                 <RelationshipManager personId={person.id} isAdmin={isAdmin} personGender={person.gender} />
@@ -203,31 +205,31 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                 <div className="bg-stone-50 p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-sm">
                   <h3 className="font-bold text-stone-900 mb-4 flex items-center gap-2 text-sm sm:text-base border-b border-stone-200/60 pb-3">
                     <span className="bg-amber-100/80 text-amber-700 p-1.5 rounded-lg border border-amber-200/50">🔒</span>
-                    Thông tin liên hệ
+                    {t('member.contactInfo')}
                   </h3>
                   <dl className="space-y-4 text-sm sm:text-base">
                     <div>
                       <dt className="text-[11px] font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                        <Phone className="w-3.5 h-3.5" /> Số điện thoại
+                        <Phone className="w-3.5 h-3.5" /> {t('member.phone')}
                       </dt>
                       <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-stone-200/60 shadow-xs">
-                        {privateData?.phoneNumber || <span className="text-stone-400 font-normal">Chưa cập nhật</span>}
+                        {privateData?.phoneNumber || <span className="text-stone-400 font-normal">{t('member.notUpdated')}</span>}
                       </dd>
                     </div>
                     <div>
                       <dt className="text-[11px] font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                        <Briefcase className="w-3.5 h-3.5" /> Nghề nghiệp
+                        <Briefcase className="w-3.5 h-3.5" /> {t('member.occupation')}
                       </dt>
                       <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-stone-200/60 shadow-xs">
-                        {privateData?.occupation || <span className="text-stone-400 font-normal">Chưa cập nhật</span>}
+                        {privateData?.occupation || <span className="text-stone-400 font-normal">{t('member.notUpdated')}</span>}
                       </dd>
                     </div>
                     <div>
                       <dt className="text-[11px] font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                        <MapPin className="w-3.5 h-3.5" /> Nơi ở hiện tại
+                        <MapPin className="w-3.5 h-3.5" /> {t('member.currentResidence')}
                       </dt>
                       <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-stone-200/60 shadow-xs">
-                        {privateData?.currentResidence || <span className="text-stone-400 font-normal">Chưa cập nhật</span>}
+                        {privateData?.currentResidence || <span className="text-stone-400 font-normal">{t('member.notUpdated')}</span>}
                       </dd>
                     </div>
                   </dl>
@@ -235,7 +237,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
               ) : (
                 <div className="bg-stone-50/50 p-5 rounded-2xl border border-stone-200 border-dashed flex flex-col items-center justify-center text-center gap-2">
                   <span className="text-2xl opacity-50">🔒</span>
-                  <p className="text-sm font-medium text-stone-500">Thông tin liên hệ chỉ hiển thị với Quản trị viên.</p>
+                  <p className="text-sm font-medium text-stone-500">{t('member.contactAdminOnly')}</p>
                 </div>
               )}
             </motion.div>
