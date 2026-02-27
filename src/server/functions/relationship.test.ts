@@ -13,7 +13,7 @@ vi.mock('./_auth', () => ({
 
 // ─── Imports ────────────────────────────────────────────────────────────────
 
-const { createRelationshipHandler, deleteRelationshipHandler, getRelationshipsHandler, getRelationshipsForPersonHandler } = await import('./relationship');
+const { createRelationship, deleteRelationship, getRelationships, getRelationshipsForPerson } = await import('./relationship');
 
 const prisma = getDbClient();
 
@@ -33,15 +33,17 @@ beforeEach(async () => {
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
 
-describe('createRelationshipHandler', () => {
+describe('createRelationship', () => {
   it('should create a new relationship', async () => {
     const personA = await seedPerson('Person A');
     const personB = await seedPerson('Person B', 'female');
 
-    const result = await createRelationshipHandler({
-      type: 'marriage',
-      personAId: personA.id,
-      personBId: personB.id,
+    const result = await createRelationship({
+      data: {
+        type: 'marriage',
+        personAId: personA.id,
+        personBId: personB.id,
+      },
     });
 
     expect(result.type).toBe('marriage');
@@ -53,7 +55,7 @@ describe('createRelationshipHandler', () => {
   it('should throw on self-relationship', async () => {
     const person = await seedPerson('Self');
 
-    await expect(createRelationshipHandler({ type: 'marriage', personAId: person.id, personBId: person.id })).rejects.toThrow(
+    await expect(createRelationship({ data: { type: 'marriage', personAId: person.id, personBId: person.id } })).rejects.toThrow(
       'error.relationship.selfRelation'
     );
   });
@@ -62,9 +64,9 @@ describe('createRelationshipHandler', () => {
     const personA = await seedPerson('Parent');
     const personB = await seedPerson('Child');
 
-    await createRelationshipHandler({ type: 'biological_child', personAId: personA.id, personBId: personB.id });
+    await createRelationship({ data: { type: 'biological_child', personAId: personA.id, personBId: personB.id } });
 
-    await expect(createRelationshipHandler({ type: 'biological_child', personAId: personA.id, personBId: personB.id })).rejects.toThrow(
+    await expect(createRelationship({ data: { type: 'biological_child', personAId: personA.id, personBId: personB.id } })).rejects.toThrow(
       'error.relationship.duplicate'
     );
   });
@@ -73,10 +75,10 @@ describe('createRelationshipHandler', () => {
     const personA = await seedPerson('A');
     const personB = await seedPerson('B');
 
-    await createRelationshipHandler({ type: 'biological_child', personAId: personA.id, personBId: personB.id });
+    await createRelationship({ data: { type: 'biological_child', personAId: personA.id, personBId: personB.id } });
 
     // Reversed direction should also be detected as duplicate
-    await expect(createRelationshipHandler({ type: 'biological_child', personAId: personB.id, personBId: personA.id })).rejects.toThrow(
+    await expect(createRelationship({ data: { type: 'biological_child', personAId: personB.id, personBId: personA.id } })).rejects.toThrow(
       'error.relationship.duplicate'
     );
   });
@@ -85,22 +87,24 @@ describe('createRelationshipHandler', () => {
     mockRequireAuth.mockRejectedValue(new Error('Vui lòng đăng nhập.'));
 
     await expect(
-      createRelationshipHandler({
-        type: 'marriage',
-        personAId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-        personBId: 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22',
+      createRelationship({
+        data: {
+          type: 'marriage',
+          personAId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+          personBId: 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22',
+        },
       })
     ).rejects.toThrow('Vui lòng đăng nhập.');
   });
 });
 
-describe('deleteRelationshipHandler', () => {
+describe('deleteRelationship', () => {
   it('should delete a relationship', async () => {
     const personA = await seedPerson('A');
     const personB = await seedPerson('B');
-    const rel = await createRelationshipHandler({ type: 'marriage', personAId: personA.id, personBId: personB.id });
+    const rel = await createRelationship({ data: { type: 'marriage', personAId: personA.id, personBId: personB.id } });
 
-    const result = await deleteRelationshipHandler({ id: rel.id });
+    const result = await deleteRelationship({ data: { id: rel.id } });
 
     expect(result).toEqual({ success: true });
     const found = await prisma.relationship.findUnique({ where: { id: rel.id } });
@@ -108,33 +112,33 @@ describe('deleteRelationshipHandler', () => {
   });
 });
 
-describe('getRelationshipsHandler', () => {
+describe('getRelationships', () => {
   it('should return all relationships', async () => {
     const personA = await seedPerson('A');
     const personB = await seedPerson('B');
-    await createRelationshipHandler({ type: 'marriage', personAId: personA.id, personBId: personB.id });
+    await createRelationship({ data: { type: 'marriage', personAId: personA.id, personBId: personB.id } });
 
-    const result = await getRelationshipsHandler();
+    const result = await getRelationships();
 
     expect(result).toHaveLength(1);
     expect(result[0].type).toBe('marriage');
   });
 
   it('should return empty array when no relationships', async () => {
-    const result = await getRelationshipsHandler();
+    const result = await getRelationships();
     expect(result).toEqual([]);
   });
 });
 
-describe('getRelationshipsForPersonHandler', () => {
+describe('getRelationshipsForPerson', () => {
   it('should return relationships involving the person', async () => {
     const personA = await seedPerson('A');
     const personB = await seedPerson('B');
     const personC = await seedPerson('C');
-    await createRelationshipHandler({ type: 'marriage', personAId: personA.id, personBId: personB.id });
-    await createRelationshipHandler({ type: 'biological_child', personAId: personA.id, personBId: personC.id });
+    await createRelationship({ data: { type: 'marriage', personAId: personA.id, personBId: personB.id } });
+    await createRelationship({ data: { type: 'biological_child', personAId: personA.id, personBId: personC.id } });
 
-    const result = await getRelationshipsForPersonHandler({ personId: personA.id });
+    const result = await getRelationshipsForPerson({ data: { personId: personA.id } });
 
     expect(result).toHaveLength(2);
   });
@@ -143,9 +147,9 @@ describe('getRelationshipsForPersonHandler', () => {
     const personA = await seedPerson('A');
     const personB = await seedPerson('B');
     const personC = await seedPerson('C');
-    await createRelationshipHandler({ type: 'marriage', personAId: personA.id, personBId: personB.id });
+    await createRelationship({ data: { type: 'marriage', personAId: personA.id, personBId: personB.id } });
 
-    const result = await getRelationshipsForPersonHandler({ personId: personC.id });
+    const result = await getRelationshipsForPerson({ data: { personId: personC.id } });
 
     expect(result).toEqual([]);
   });

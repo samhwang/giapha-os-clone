@@ -13,7 +13,7 @@ vi.mock('./_auth', () => ({
 
 // ─── Imports ────────────────────────────────────────────────────────────────
 
-const { exportDataHandler, importDataHandler } = await import('./data');
+const { exportData, importData } = await import('./data');
 
 const prisma = getDbClient();
 
@@ -32,7 +32,7 @@ beforeEach(async () => {
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
 
-describe('exportDataHandler', () => {
+describe('exportData', () => {
   it('should return backup payload with persons and relationships', async () => {
     await prisma.person.create({ data: { id: UUID_A, fullName: 'Nguyễn Vạn', gender: 'male' } });
     await prisma.person.create({ data: { id: UUID_B, fullName: 'Trần Thị', gender: 'female' } });
@@ -40,7 +40,7 @@ describe('exportDataHandler', () => {
       data: { type: 'marriage', personAId: UUID_A, personBId: UUID_B },
     });
 
-    const result = await exportDataHandler();
+    const result = await exportData();
 
     expect(result.version).toBe(2);
     expect(result.timestamp).toBeDefined();
@@ -51,11 +51,11 @@ describe('exportDataHandler', () => {
   it('should require admin access', async () => {
     mockRequireAdmin.mockRejectedValue(new Error('Từ chối truy cập.'));
 
-    await expect(exportDataHandler()).rejects.toThrow('Từ chối truy cập.');
+    await expect(exportData()).rejects.toThrow('Từ chối truy cập.');
   });
 });
 
-describe('importDataHandler', () => {
+describe('importData', () => {
   const validPayload = {
     version: 2,
     persons: [
@@ -87,7 +87,7 @@ describe('importDataHandler', () => {
     // Seed some existing data that will be replaced
     await prisma.person.create({ data: { fullName: 'Old Person', gender: 'male' } });
 
-    const result = await importDataHandler(validPayload);
+    const result = await importData({ data: validPayload });
 
     expect(result).toEqual({
       success: true,
@@ -99,9 +99,11 @@ describe('importDataHandler', () => {
   });
 
   it('should handle import with only persons (no relationships)', async () => {
-    const result = await importDataHandler({
-      persons: [{ id: UUID_A, fullName: 'Solo', gender: 'male', isDeceased: false, isInLaw: false }],
-      relationships: [],
+    const result = await importData({
+      data: {
+        persons: [{ id: UUID_A, fullName: 'Solo', gender: 'male', isDeceased: false, isInLaw: false }],
+        relationships: [],
+      },
     });
 
     expect(result.imported.persons).toBe(1);
@@ -111,6 +113,6 @@ describe('importDataHandler', () => {
   it('should require admin access', async () => {
     mockRequireAdmin.mockRejectedValue(new Error('Từ chối truy cập.'));
 
-    await expect(importDataHandler(validPayload)).rejects.toThrow('Từ chối truy cập.');
+    await expect(importData({ data: validPayload })).rejects.toThrow('Từ chối truy cập.');
   });
 });

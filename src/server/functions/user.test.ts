@@ -22,7 +22,7 @@ vi.mock('@/lib/auth', () => ({
 
 // ─── Imports ────────────────────────────────────────────────────────────────
 
-const { changeRoleHandler, deleteUserHandler, createUserHandler, toggleStatusHandler, getUsersHandler } = await import('./user');
+const { changeRole, deleteUser, createUser, toggleStatus, getUsers } = await import('./user');
 
 const prisma = getDbClient();
 
@@ -53,11 +53,11 @@ beforeEach(async () => {
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
 
-describe('changeRoleHandler', () => {
+describe('changeRole', () => {
   it('should change another user role', async () => {
     const user = await seedUser({ role: 'member' });
 
-    const result = await changeRoleHandler({ userId: user.id, newRole: 'admin' });
+    const result = await changeRole({ data: { userId: user.id, newRole: 'admin' } });
 
     expect(result).toEqual({ success: true });
     const updated = await prisma.user.findUnique({ where: { id: user.id } });
@@ -67,15 +67,15 @@ describe('changeRoleHandler', () => {
   it('should prevent changing own role', async () => {
     await seedUser({ id: ADMIN_ID, role: 'admin' });
 
-    await expect(changeRoleHandler({ userId: ADMIN_ID, newRole: 'member' })).rejects.toThrow('error.user.selfRole');
+    await expect(changeRole({ data: { userId: ADMIN_ID, newRole: 'member' } })).rejects.toThrow('error.user.selfRole');
   });
 });
 
-describe('deleteUserHandler', () => {
+describe('deleteUser', () => {
   it('should delete another user', async () => {
     const user = await seedUser();
 
-    const result = await deleteUserHandler({ userId: user.id });
+    const result = await deleteUser({ data: { userId: user.id } });
 
     expect(result).toEqual({ success: true });
     const found = await prisma.user.findUnique({ where: { id: user.id } });
@@ -85,22 +85,24 @@ describe('deleteUserHandler', () => {
   it('should prevent self-deletion', async () => {
     await seedUser({ id: ADMIN_ID });
 
-    await expect(deleteUserHandler({ userId: ADMIN_ID })).rejects.toThrow('error.user.selfDelete');
+    await expect(deleteUser({ data: { userId: ADMIN_ID } })).rejects.toThrow('error.user.selfDelete');
   });
 });
 
-describe('createUserHandler', () => {
+describe('createUser', () => {
   it('should create a new user via Better Auth signup', async () => {
     const newUserId = crypto.randomUUID();
     mockSignUpEmail.mockResolvedValue({ user: { id: newUserId } });
     // Pre-create the user record that Better Auth would create
     await seedUser({ id: newUserId, email: 'will-be-overridden@test.com' });
 
-    const result = await createUserHandler({
-      email: 'new@test.com',
-      password: 'password123',
-      role: 'member',
-      isActive: true,
+    const result = await createUser({
+      data: {
+        email: 'new@test.com',
+        password: 'password123',
+        role: 'member',
+        isActive: true,
+      },
     });
 
     expect(result).toEqual({ success: true });
@@ -112,15 +114,15 @@ describe('createUserHandler', () => {
   it('should throw when email already exists', async () => {
     await seedUser({ email: 'existing@test.com' });
 
-    await expect(createUserHandler({ email: 'existing@test.com', password: 'password123' })).rejects.toThrow('error.user.emailTaken');
+    await expect(createUser({ data: { email: 'existing@test.com', password: 'password123' } })).rejects.toThrow('error.user.emailTaken');
   });
 });
 
-describe('toggleStatusHandler', () => {
+describe('toggleStatus', () => {
   it('should toggle another user status', async () => {
     const user = await seedUser({ isActive: true });
 
-    const result = await toggleStatusHandler({ userId: user.id, isActive: false });
+    const result = await toggleStatus({ data: { userId: user.id, isActive: false } });
 
     expect(result).toEqual({ success: true });
     const updated = await prisma.user.findUnique({ where: { id: user.id } });
@@ -130,16 +132,16 @@ describe('toggleStatusHandler', () => {
   it('should prevent toggling own status', async () => {
     await seedUser({ id: ADMIN_ID });
 
-    await expect(toggleStatusHandler({ userId: ADMIN_ID, isActive: false })).rejects.toThrow('error.user.selfStatus');
+    await expect(toggleStatus({ data: { userId: ADMIN_ID, isActive: false } })).rejects.toThrow('error.user.selfStatus');
   });
 });
 
-describe('getUsersHandler', () => {
+describe('getUsers', () => {
   it('should return all users with selected fields', async () => {
     await seedUser({ email: 'user1@test.com', role: 'admin' });
     await seedUser({ email: 'user2@test.com', role: 'member' });
 
-    const result = await getUsersHandler();
+    const result = await getUsers();
 
     expect(result).toHaveLength(2);
     expect(result[0]).toHaveProperty('email');

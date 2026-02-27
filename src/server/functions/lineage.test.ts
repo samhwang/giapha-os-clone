@@ -13,7 +13,7 @@ vi.mock('./_auth', () => ({
 
 // ─── Imports ────────────────────────────────────────────────────────────────
 
-const { updateBatchHandler } = await import('./lineage');
+const { updateBatch } = await import('./lineage');
 
 const prisma = getDbClient();
 
@@ -27,9 +27,9 @@ beforeEach(async () => {
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
 
-describe('updateBatchHandler', () => {
+describe('updateBatch', () => {
   it('should return early for empty updates', async () => {
-    const result = await updateBatchHandler({ updates: [] });
+    const result = await updateBatch({ data: { updates: [] } });
 
     expect(result).toEqual({ success: true, updated: 0 });
   });
@@ -38,11 +38,13 @@ describe('updateBatchHandler', () => {
     const personA = await prisma.person.create({ data: { fullName: 'A', gender: 'male' } });
     const personB = await prisma.person.create({ data: { fullName: 'B', gender: 'female' } });
 
-    const result = await updateBatchHandler({
-      updates: [
-        { id: personA.id, generation: 1, birthOrder: 1 },
-        { id: personB.id, generation: 2, birthOrder: 2 },
-      ],
+    const result = await updateBatch({
+      data: {
+        updates: [
+          { id: personA.id, generation: 1, birthOrder: 1 },
+          { id: personB.id, generation: 2, birthOrder: 2 },
+        ],
+      },
     });
 
     expect(result).toEqual({ success: true, updated: 2 });
@@ -61,8 +63,10 @@ describe('updateBatchHandler', () => {
       data: { fullName: 'Test', gender: 'male', generation: 5, birthOrder: 3 },
     });
 
-    await updateBatchHandler({
-      updates: [{ id: person.id, generation: null, birthOrder: null }],
+    await updateBatch({
+      data: {
+        updates: [{ id: person.id, generation: null, birthOrder: null }],
+      },
     });
 
     const updated = await prisma.person.findUnique({ where: { id: person.id } });
@@ -73,7 +77,7 @@ describe('updateBatchHandler', () => {
   it('should require authentication', async () => {
     mockRequireAuth.mockRejectedValue(new Error('Vui lòng đăng nhập.'));
 
-    await expect(updateBatchHandler({ updates: [{ id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', generation: 1, birthOrder: 1 }] })).rejects.toThrow(
+    await expect(updateBatch({ data: { updates: [{ id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', generation: 1, birthOrder: 1 }] } })).rejects.toThrow(
       'Vui lòng đăng nhập.'
     );
   });
