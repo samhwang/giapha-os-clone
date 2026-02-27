@@ -62,12 +62,12 @@ function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fafaf9] select-none selection:bg-amber-200 selection:text-amber-900 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-size-[24px_24px] pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_800px_at_50%_-30%,#fef3c7,transparent)] pointer-events-none" />
 
       <div className="absolute top-0 inset-x-0 h-screen overflow-hidden pointer-events-none flex justify-center">
-        <div className="absolute top-[-10%] right-[-5%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] bg-amber-300/20 rounded-full blur-[100px] mix-blend-multiply" />
-        <div className="absolute bottom-[0%] left-[-10%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] bg-rose-200/20 rounded-full blur-[120px] mix-blend-multiply" />
+        <div className="absolute top-[-10%] right-[-5%] w-[50vw] h-[50vw] max-w-150 max-h-150 bg-amber-300/20 rounded-full blur-[100px] mix-blend-multiply" />
+        <div className="absolute bottom-[0%] left-[-10%] w-[60vw] h-[60vw] max-w-200 max-h-200 bg-rose-200/20 rounded-full blur-[120px] mix-blend-multiply" />
       </div>
 
       <div className="flex-1 flex items-center justify-center px-4 py-12 relative z-10 w-full">
