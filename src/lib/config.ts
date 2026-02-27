@@ -1,5 +1,7 @@
+import { env } from './env';
+
 const config = {
-  siteName: process.env.SITE_NAME || 'Gia Phả OS',
+  siteName: env.SITE_NAME,
 };
 
 export default config;
