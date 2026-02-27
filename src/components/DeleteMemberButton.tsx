@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { deleteMember } from '@/server/functions/member';
 
 interface DeleteMemberButtonProps {
@@ -9,9 +10,10 @@ interface DeleteMemberButtonProps {
 export default function DeleteMemberButton({ memberId }: DeleteMemberButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleDelete = async () => {
-    if (!window.confirm('Bạn có chắc chắn muốn xoá hồ sơ này không? Hành động này không thể hoàn tác.')) {
+    if (!window.confirm(t('member.deleteConfirm'))) {
       return;
     }
 
@@ -21,7 +23,7 @@ export default function DeleteMemberButton({ memberId }: DeleteMemberButtonProps
       navigate({ to: '/dashboard' });
     } catch (error) {
       console.error('Delete failed:', error);
-      alert(error instanceof Error ? error.message : 'Đã xảy ra lỗi khi xoá hồ sơ.');
+      alert(error instanceof Error ? error.message : t('member.deleteError'));
       setIsDeleting(false);
     }
   };
@@ -33,7 +35,7 @@ export default function DeleteMemberButton({ memberId }: DeleteMemberButtonProps
       disabled={isDeleting}
       className="px-4 py-2 bg-red-100 text-red-800 rounded-md hover:bg-red-200 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
     >
-      {isDeleting ? 'Đang xoá...' : 'Xoá hồ sơ'}
+      {isDeleting ? t('common.deleting') : t('member.deleteButton')}
     </button>
   );
 }

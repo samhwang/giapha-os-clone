@@ -1,6 +1,9 @@
 import { Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function LoadingComponent() {
+  const { t } = useTranslation();
+
   return (
     <main className="max-w-5xl mx-auto flex-1 overflow-auto bg-stone-50/50 flex flex-col items-center justify-center p-4">
       <div className="flex flex-col items-center justify-center space-y-4">
@@ -10,7 +13,7 @@ export default function LoadingComponent() {
             <Loader2 className="size-8 text-amber-600 animate-spin" />
           </div>
         </div>
-        <p className="text-stone-500 font-medium animate-pulse">Đang tải dữ liệu gia phả...</p>
+        <p className="text-stone-500 font-medium animate-pulse">{t('common.loadingFamilyData')}</p>
       </div>
     </main>
   );

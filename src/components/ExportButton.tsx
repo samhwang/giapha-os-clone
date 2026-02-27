@@ -3,8 +3,10 @@ import { toJpeg, toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 import { Download, FileImage, FileText, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function ExportButton() {
+  const { t } = useTranslation();
   const [isExporting, setIsExporting] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -27,7 +29,7 @@ export default function ExportButton() {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       const element = document.getElementById('export-container');
-      if (!element) throw new Error('Không tìm thấy vùng dữ liệu để xuất.');
+      if (!element) throw new Error('No export container found');
 
       const exportOptions = {
         cacheBust: true,
@@ -65,7 +67,7 @@ export default function ExportButton() {
       }
     } catch (error) {
       console.error('Export error:', error);
-      alert('Đã xảy ra lỗi khi xuất file. Vui lòng thử lại.');
+      alert(t('export.exportError'));
     } finally {
       setIsExporting(false);
     }
@@ -75,7 +77,7 @@ export default function ExportButton() {
     <div className="relative" ref={menuRef}>
       <button type="button" onClick={() => setShowMenu(!showMenu)} disabled={isExporting} className="btn">
         {isExporting ? <Loader2 className="size-4 shrink-0 animate-spin" /> : <Download className="size-4 shrink-0" />}
-        <span className="tracking-wide min-w-max">{isExporting ? 'Đang xuất...' : 'Xuất file'}</span>
+        <span className="tracking-wide min-w-max">{isExporting ? t('export.exporting') : t('export.exportFile')}</span>
       </button>
 
       <AnimatePresence>
@@ -93,7 +95,7 @@ export default function ExportButton() {
               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-stone-700 hover:text-amber-700 hover:bg-amber-50 transition-colors text-left"
             >
               <FileImage className="size-4" />
-              Lưu thành Ảnh (PNG)
+              {t('export.saveAsPng')}
             </button>
             <button
               type="button"
@@ -101,7 +103,7 @@ export default function ExportButton() {
               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-stone-700 hover:text-amber-700 hover:bg-amber-50 transition-colors text-left"
             >
               <FileText className="size-4" />
-              Lưu thành PDF
+              {t('export.saveAsPdf')}
             </button>
           </motion.div>
         )}

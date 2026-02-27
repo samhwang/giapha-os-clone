@@ -33,7 +33,8 @@
     "weeksFromNow": "{{weeks}} weeks away",
     "monthsFromNow": "{{months}} months away",
     "homepage": "Home",
-    "about": "About"
+    "about": "About",
+    "loadingFamilyData": "Loading family tree data..."
   },
   "auth": {
     "login": "Login",

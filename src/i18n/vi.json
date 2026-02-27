@@ -33,7 +33,8 @@
     "weeksFromNow": "{{weeks}} tuần nữa",
     "monthsFromNow": "{{months}} tháng nữa",
     "homepage": "Trang chủ",
-    "about": "Giới thiệu"
+    "about": "Giới thiệu",
+    "loadingFamilyData": "Đang tải dữ liệu gia phả..."
   },
   "auth": {
     "login": "Đăng nhập",

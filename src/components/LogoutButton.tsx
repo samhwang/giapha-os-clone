@@ -1,11 +1,13 @@
 import { useNavigate } from '@tanstack/react-router';
 import { LogOut } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { authClient } from '@/lib/auth-client';
 
 export default function LogoutButton() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -13,7 +15,7 @@ export default function LogoutButton() {
       await authClient.signOut();
       navigate({ to: '/login' });
     } catch (err) {
-      console.error('Lỗi đăng xuất:', err);
+      console.error('Logout error:', err);
       setIsLoggingOut(false);
     }
   };
@@ -26,7 +28,7 @@ export default function LogoutButton() {
       className="flex items-center gap-2 w-full px-3 py-2 text-sm text-stone-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
     >
       <LogOut className="size-4" />
-      {isLoggingOut ? 'Đang đăng xuất...' : 'Đăng xuất'}
+      {isLoggingOut ? t('auth.loggingOut') : t('auth.logout')}
     </button>
   );
 }
