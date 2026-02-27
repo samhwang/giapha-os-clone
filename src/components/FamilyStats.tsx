@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Crown, Flower2, Heart, HeartOff, Mars, Skull, Users, Venus } from 'lucide-react';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Person, Relationship } from '@/types';
 
 interface FamilyStatsProps {
@@ -47,10 +48,11 @@ function StatCard({ label, value, total, icon, color, delay = 0 }: StatCardProps
 }
 
 function GenerationRow({ gen, count, max, delay }: { gen: number; count: number; max: number; delay: number }) {
+  const { t } = useTranslation();
   const pct = max > 0 ? (count / max) * 100 : 0;
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs font-bold text-stone-500 w-14 shrink-0">Đời {gen}</span>
+      <span className="text-xs font-bold text-stone-500 w-14 shrink-0">{t('stats.generationLabel', { gen })}</span>
       <div className="flex-1 h-2 bg-stone-100 rounded-full overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
@@ -65,6 +67,7 @@ function GenerationRow({ gen, count, max, delay }: { gen: number; count: number;
 }
 
 export default function FamilyStats({ persons, relationships }: FamilyStatsProps) {
+  const { t } = useTranslation();
   const stats = useMemo(() => {
     const total = persons.length;
     const male = persons.filter((p) => p.gender === 'male').length;
@@ -98,15 +101,15 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
   }, [persons, relationships]);
 
   const cards = [
-    { label: 'Tổng thành viên', value: stats.total, icon: <Users className="size-5 text-stone-600" />, color: 'bg-stone-400' },
-    { label: 'Nam', value: stats.male, icon: <Mars className="size-5 text-blue-600" />, color: 'bg-blue-400' },
-    { label: 'Nữ', value: stats.female, icon: <Venus className="size-5 text-pink-500" />, color: 'bg-pink-400' },
-    { label: 'Con dâu', value: stats.daughtersInLaw, icon: <Flower2 className="size-5 text-rose-500" />, color: 'bg-rose-400' },
-    { label: 'Con rể', value: stats.sonsInLaw, icon: <Users className="size-5 text-indigo-500" />, color: 'bg-indigo-400' },
-    { label: 'Đã kết hôn', value: stats.married, icon: <Heart className="size-5 text-red-500" />, color: 'bg-red-400' },
-    { label: 'Chưa kết hôn', value: stats.unmarried, icon: <HeartOff className="size-5 text-stone-400" />, color: 'bg-stone-300' },
-    { label: 'Đã mất', value: stats.deceased, icon: <Skull className="size-5 text-stone-500" />, color: 'bg-stone-400' },
-    { label: 'Con trưởng', value: stats.firstBorn, icon: <Crown className="size-5 text-amber-500" />, color: 'bg-amber-400' },
+    { label: t('stats.totalMembers'), value: stats.total, icon: <Users className="size-5 text-stone-600" />, color: 'bg-stone-400' },
+    { label: t('common.male'), value: stats.male, icon: <Mars className="size-5 text-blue-600" />, color: 'bg-blue-400' },
+    { label: t('common.female'), value: stats.female, icon: <Venus className="size-5 text-pink-500" />, color: 'bg-pink-400' },
+    { label: t('stats.inLawFemale'), value: stats.daughtersInLaw, icon: <Flower2 className="size-5 text-rose-500" />, color: 'bg-rose-400' },
+    { label: t('stats.inLawMale'), value: stats.sonsInLaw, icon: <Users className="size-5 text-indigo-500" />, color: 'bg-indigo-400' },
+    { label: t('stats.married'), value: stats.married, icon: <Heart className="size-5 text-red-500" />, color: 'bg-red-400' },
+    { label: t('stats.unmarried'), value: stats.unmarried, icon: <HeartOff className="size-5 text-stone-400" />, color: 'bg-stone-300' },
+    { label: t('stats.deceased'), value: stats.deceased, icon: <Skull className="size-5 text-stone-500" />, color: 'bg-stone-400' },
+    { label: t('stats.firstborn'), value: stats.firstBorn, icon: <Crown className="size-5 text-amber-500" />, color: 'bg-amber-400' },
   ];
 
   return (
@@ -126,14 +129,14 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
         >
           <h2 className="text-base font-bold text-stone-700 mb-5 flex items-center gap-2">
             <Crown className="size-4 text-amber-500" />
-            Phân bố theo thế hệ
+            {t('stats.generationDistribution')}
           </h2>
           <div className="space-y-3">
             {stats.generationBreakdown.map(({ gen, count }, i) => (
               <GenerationRow key={gen} gen={gen} count={count} max={stats.total} delay={0.55 + i * 0.07} />
             ))}
           </div>
-          <p className="text-xs text-stone-400 mt-4 italic">* Chỉ tính các thành viên đã được gán số thế hệ</p>
+          <p className="text-xs text-stone-400 mt-4 italic">{t('stats.generationNote')}</p>
         </motion.div>
       )}
 
@@ -145,7 +148,7 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
       >
         <h2 className="text-base font-bold text-stone-700 mb-5 flex items-center gap-2">
           <Users className="size-4 text-stone-500" />
-          Tỉ lệ giới tính
+          {t('stats.genderRatio')}
         </h2>
         <div className="flex h-5 rounded-full overflow-hidden gap-px">
           {stats.total > 0 && (
@@ -155,14 +158,14 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
                 animate={{ flex: stats.male }}
                 transition={{ duration: 0.7, delay: 0.7 }}
                 className="bg-blue-400 flex items-center justify-center"
-                title={`Nam: ${stats.male}`}
+                title={`${t('common.male')}: ${stats.male}`}
               />
               <motion.div
                 initial={{ flex: 0 }}
                 animate={{ flex: stats.female }}
                 transition={{ duration: 0.7, delay: 0.7 }}
                 className="bg-pink-400 flex items-center justify-center"
-                title={`Nữ: ${stats.female}`}
+                title={`${t('common.female')}: ${stats.female}`}
               />
             </>
           )}
@@ -170,11 +173,11 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
         <div className="flex gap-6 mt-3 text-sm">
           <span className="flex items-center gap-2 text-stone-600">
             <span className="size-3 rounded-full bg-blue-400 inline-block" />
-            Nam — {stats.male} người ({stats.total > 0 ? Math.round((stats.male / stats.total) * 100) : 0}%)
+            {t('stats.maleCount', { count: stats.male, percentage: stats.total > 0 ? Math.round((stats.male / stats.total) * 100) : 0 })}
           </span>
           <span className="flex items-center gap-2 text-stone-600">
             <span className="size-3 rounded-full bg-pink-400 inline-block" />
-            Nữ — {stats.female} người ({stats.total > 0 ? Math.round((stats.female / stats.total) * 100) : 0}%)
+            {t('stats.femaleCount', { count: stats.female, percentage: stats.total > 0 ? Math.round((stats.female / stats.total) * 100) : 0 })}
           </span>
         </div>
       </motion.div>

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Cake, CalendarDays, Clock, Flower } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { FamilyEvent } from '@/types';
 import { computeEvents } from '@/utils/eventHelpers';
 import { useDashboard } from './DashboardContext';
@@ -19,19 +20,16 @@ interface EventsListProps {
   }[];
 }
 
-const DAY_LABELS: Record<number, string> = {
-  0: 'Hôm nay',
-  1: 'Ngày mai',
-};
-
-function daysUntilLabel(days: number): string {
-  if (days in DAY_LABELS) return DAY_LABELS[days];
-  if (days <= 30) return `${days} ngày nữa`;
-  if (days <= 60) return `${Math.ceil(days / 7)} tuần nữa`;
-  return `${Math.ceil(days / 30)} tháng nữa`;
+function daysUntilLabel(days: number, t: (key: string, opts?: Record<string, unknown>) => string): string {
+  if (days === 0) return t('common.today');
+  if (days === 1) return t('common.tomorrow');
+  if (days <= 30) return t('common.daysFromNow', { days });
+  if (days <= 60) return t('common.weeksFromNow', { weeks: Math.ceil(days / 7) });
+  return t('common.monthsFromNow', { months: Math.ceil(days / 30) });
 }
 
 function EventCard({ event, index }: { event: FamilyEvent; index: number }) {
+  const { t } = useTranslation();
   const isBirthday = event.type === 'birthday';
   const isToday = event.daysUntil === 0;
   const isSoon = event.daysUntil <= 7;
@@ -63,7 +61,7 @@ function EventCard({ event, index }: { event: FamilyEvent; index: number }) {
         <p className="font-semibold text-stone-800 truncate group-hover:text-amber-700 transition-colors">{event.personName}</p>
         <p className="text-sm text-stone-500 flex items-center gap-1.5 mt-0.5">
           <CalendarDays className="size-3.5 shrink-0" />
-          {isBirthday ? 'Sinh nhật' : 'Ngày giỗ'} — <span className="font-medium text-stone-600">{event.eventDateLabel}</span>
+          {isBirthday ? t('events.birthday') : t('events.deathAnniversary')} — <span className="font-medium text-stone-600">{event.eventDateLabel}</span>
           {event.originYear && <span className="text-stone-400">({event.originYear})</span>}
         </p>
       </div>
@@ -74,13 +72,14 @@ function EventCard({ event, index }: { event: FamilyEvent; index: number }) {
         }`}
       >
         <Clock className="size-3" />
-        {daysUntilLabel(event.daysUntil)}
+        {daysUntilLabel(event.daysUntil, t)}
       </div>
     </motion.button>
   );
 }
 
 export default function EventsList({ persons }: EventsListProps) {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<'all' | 'birthday' | 'death_anniversary'>('all');
   const [showCount, setShowCount] = useState(20);
 
@@ -103,9 +102,9 @@ export default function EventsList({ persons }: EventsListProps) {
         >
           <span className="text-2xl">🎊</span>
           <p className="text-sm font-medium text-amber-800">
-            {todayCount > 0 && <span className="font-bold">{todayCount} sự kiện hôm nay</span>}
+            {todayCount > 0 && <span className="font-bold">{t('events.todayCount', { count: todayCount })}</span>}
             {todayCount > 0 && soonCount > 0 && ' · '}
-            {soonCount > 0 && <span>{soonCount} sự kiện trong 7 ngày tới</span>}
+            {soonCount > 0 && <span>{t('events.soonCount', { count: soonCount })}</span>}
           </p>
         </motion.div>
       )}
@@ -113,9 +112,9 @@ export default function EventsList({ persons }: EventsListProps) {
       <div className="flex gap-2">
         {(
           [
-            { key: 'all', label: 'Tất cả' },
-            { key: 'birthday', label: 'Sinh nhật' },
-            { key: 'death_anniversary', label: 'Ngày giỗ' },
+            { key: 'all', label: t('events.allTab') },
+            { key: 'birthday', label: t('events.birthdayTab') },
+            { key: 'death_anniversary', label: t('events.deathAnniversaryTab') },
           ] as const
         ).map((tab) => (
           <button
@@ -131,14 +130,14 @@ export default function EventsList({ persons }: EventsListProps) {
             {tab.label}
           </button>
         ))}
-        <span className="ml-auto text-xs text-stone-400 self-center">{filtered.length} sự kiện trong năm</span>
+        <span className="ml-auto text-xs text-stone-400 self-center">{t('events.yearCount', { count: filtered.length })}</span>
       </div>
 
       {visible.length === 0 ? (
         <div className="text-center py-16 text-stone-400">
           <CalendarDays className="size-10 mx-auto mb-3 opacity-40" />
-          <p className="font-medium">Không có sự kiện nào</p>
-          <p className="text-sm mt-1">Hãy bổ sung ngày sinh hoặc ngày mất cho thành viên</p>
+          <p className="font-medium">{t('events.emptyTitle')}</p>
+          <p className="text-sm mt-1">{t('events.emptyDesc')}</p>
         </div>
       ) : (
         <div className="space-y-2.5">
@@ -154,7 +153,7 @@ export default function EventsList({ persons }: EventsListProps) {
           onClick={() => setShowCount((n) => n + 20)}
           className="w-full py-3 text-sm font-semibold text-stone-500 hover:text-amber-600 transition-colors"
         >
-          Xem thêm {upcoming.length - showCount} sự kiện…
+          {t('events.showMore', { count: upcoming.length - showCount })}
         </button>
       )}
     </div>
