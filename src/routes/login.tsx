@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Info, KeyRound, Mail, Shield, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import Footer from '@/components/Footer';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { authClient } from '@/lib/auth-client';
 
 export const Route = createFileRoute('/login')({
@@ -243,13 +244,16 @@ function LoginPage() {
         Trang chủ
       </Link>
 
-      <Link
-        to="/about"
-        className="absolute top-6 right-6 z-20 flex items-center gap-2 text-stone-500 hover:text-stone-900 font-semibold text-sm transition-all duration-300 group bg-white/60 px-5 py-2.5 rounded-full backdrop-blur-md shadow-sm border border-stone-200 hover:border-stone-300 hover:shadow-md"
-      >
-        <Info className="size-4 group-hover:scale-110 transition-transform" />
-        Giới thiệu
-      </Link>
+      <div className="absolute top-6 right-6 z-20 flex items-center gap-3">
+        <LanguageSwitcher className="bg-white/60 px-4 py-2.5 rounded-full backdrop-blur-md shadow-sm border border-stone-200 hover:border-stone-300 hover:shadow-md" />
+        <Link
+          to="/about"
+          className="flex items-center gap-2 text-stone-500 hover:text-stone-900 font-semibold text-sm transition-all duration-300 group bg-white/60 px-5 py-2.5 rounded-full backdrop-blur-md shadow-sm border border-stone-200 hover:border-stone-300 hover:shadow-md"
+        >
+          <Info className="size-4 group-hover:scale-110 transition-transform" />
+          Giới thiệu
+        </Link>
+      </div>
 
       <Footer className="bg-transparent relative z-10 border-none mt-auto" />
     </div>

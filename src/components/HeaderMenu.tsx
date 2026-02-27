@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BarChart2, CalendarClock, ChevronDown, Database, GitMerge, Info, Network, Settings, UserCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import LanguageSwitcher from './LanguageSwitcher';
 import LogoutButton from './LogoutButton';
 
 interface HeaderMenuProps {
@@ -77,6 +78,9 @@ export default function HeaderMenu({ isAdmin, userEmail }: HeaderMenuProps) {
                   {item.label}
                 </Link>
               ))}
+              <div className="px-4 py-2">
+                <LanguageSwitcher />
+              </div>
               <LogoutButton />
             </div>
           </motion.div>
