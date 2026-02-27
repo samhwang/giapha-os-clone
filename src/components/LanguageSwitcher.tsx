@@ -2,11 +2,13 @@ import { Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { type Language, supportedLanguages } from '@/i18n';
 
+const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
+
 export default function LanguageSwitcher({ className = '' }: { className?: string }) {
   const { i18n, t } = useTranslation();
 
   const switchLanguage = (lang: Language) => {
-    document.cookie = `lang=${lang};path=/;max-age=${60 * 60 * 24 * 365}`;
+    cookieStore.set({ name: 'lang', value: lang, path: '/', expires: Date.now() + ONE_YEAR_MS });
     i18n.changeLanguage(lang);
   };
 

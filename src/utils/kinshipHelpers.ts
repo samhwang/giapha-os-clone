@@ -170,7 +170,9 @@ function getAncestryData(id: string, parentMap: Map<string, string[]>, personsMa
   const queue: { id: string; depth: number; path: PersonNode[] }[] = [{ id, depth: 0, path: [] }];
 
   while (queue.length > 0) {
-    const { id: currentId, depth, path } = queue.shift()!;
+    const item = queue.shift();
+    if (!item) break;
+    const { id: currentId, depth, path } = item;
     if (!depths.has(currentId)) {
       depths.set(currentId, { depth, path });
 
@@ -213,8 +215,9 @@ function findBloodKinship(
 
   if (!lcaId) return null;
 
-  const dataA = ancA.get(lcaId)!;
-  const dataB = ancB.get(lcaId)!;
+  const dataA = ancA.get(lcaId);
+  const dataB = ancB.get(lcaId);
+  if (!dataA || !dataB) return null;
 
   const [aCallsB, bCallsA, description] = resolveBloodTerms(dataA.depth, dataB.depth, personA, personB, dataA.path, dataB.path);
 
