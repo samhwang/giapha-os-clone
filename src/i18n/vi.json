@@ -374,6 +374,11 @@
     "kinshipTitle": "Tra Cứu Quan Hệ",
     "kinshipDesc": "Tìm mối quan hệ huyết thống giữa hai thành viên trong gia phả"
   },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "message": "Trang bạn đang tìm không tồn tại.",
+    "goHome": "Về trang chủ"
+  },
   "error": {
     "generic": "Đã xảy ra lỗi.",
     "auth": {
