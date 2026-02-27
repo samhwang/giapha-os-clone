@@ -16,4 +16,5 @@ src/generated
 src/routeTree.gen.ts
 base
 .docker
+.claude
 

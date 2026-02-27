@@ -16,7 +16,8 @@
       "!**/dist",
       "!**/coverage",
       "!**/generated",
-      "!**/.content-collections"
+      "!**/.content-collections",
+      "!**/.claude"
     ]
   },
   "linter": {
