@@ -111,12 +111,12 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
             </div>
 
             {loading ? (
-              <div className="flex-1 min-h-[400px] flex items-center justify-center flex-col gap-4">
+              <div className="flex-1 min-h-100 flex items-center justify-center flex-col gap-4">
                 <div className="size-10 border-4 border-amber-600 border-t-transparent rounded-full animate-spin" />
                 <p className="text-stone-500 font-medium">{t('common.loading')}</p>
               </div>
             ) : error ? (
-              <div className="flex-1 min-h-[400px] flex items-center justify-center flex-col gap-4 p-8 text-center">
+              <div className="flex-1 min-h-100 flex items-center justify-center flex-col gap-4 p-8 text-center">
                 <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-2 shadow-inner">
                   <AlertCircle className="size-8" />
                 </div>
