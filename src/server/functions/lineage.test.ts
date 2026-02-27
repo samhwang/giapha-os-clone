@@ -1,100 +1,80 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getDbClient } from '@/lib/db';
+import { cleanDatabase } from '@/test-utils/db-helpers';
 
 // ─── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock('@tanstack/react-start', () => ({
-  createServerFn: vi.fn(() => {
-    let validatorSchema: { parse?: (input: unknown) => unknown } | ((input: unknown) => unknown) | null = null;
-    const builder = {
-      validator: (schema: unknown) => {
-        validatorSchema = schema as typeof validatorSchema;
-        return builder;
-      },
-      inputValidator: (schema: unknown) => {
-        validatorSchema = schema as typeof validatorSchema;
-        return builder;
-      },
-      handler: (fn: (opts: { data: unknown }) => unknown) => {
-        const callable = async (input: unknown) => {
-          let data = (input as { data?: unknown })?.data ?? input;
-          if (validatorSchema) {
-            data = typeof validatorSchema === 'function' ? validatorSchema(data) : validatorSchema.parse?.(data);
-          }
-          return fn({ data });
-        };
-        return callable;
-      },
-    };
-    return builder;
-  }),
-}));
-
 const mockRequireAuth = vi.fn();
+
 vi.mock('./_auth', () => ({
   requireAuth: (...args: unknown[]) => mockRequireAuth(...args),
   requireAdmin: vi.fn(),
 }));
 
-const mockPrisma = {
-  person: {
-    update: vi.fn(),
-  },
-  $transaction: vi.fn(),
-};
+// ─── Imports ────────────────────────────────────────────────────────────────
 
-vi.mock('@/lib/db', () => ({
-  prisma: mockPrisma,
-}));
+const { updateBatchHandler } = await import('./lineage');
 
-const { updateBatch } = await import('./lineage');
+const prisma = getDbClient();
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// ─── Setup ──────────────────────────────────────────────────────────────────
 
-const UUID_A = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
-const UUID_B = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22';
-
-beforeEach(() => {
+beforeEach(async () => {
   vi.clearAllMocks();
   mockRequireAuth.mockResolvedValue({ id: 'user-1', isActive: true });
-  mockPrisma.$transaction.mockResolvedValue([]);
+  await cleanDatabase();
 });
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
 
-describe('updateBatch', () => {
+describe('updateBatchHandler', () => {
   it('should return early for empty updates', async () => {
-    const result = await updateBatch({ data: { updates: [] } });
+    const result = await updateBatchHandler({ updates: [] });
 
     expect(result).toEqual({ success: true, updated: 0 });
-    expect(mockPrisma.$transaction).not.toHaveBeenCalled();
-  });
-
-  it('should run batch update in a transaction', async () => {
-    const updates = [
-      { id: UUID_A, generation: 1, birthOrder: 1 },
-      { id: UUID_B, generation: 2, birthOrder: 2 },
-    ];
-
-    const result = await updateBatch({ data: { updates } });
-
-    expect(result).toEqual({ success: true, updated: 2 });
-    expect(mockPrisma.$transaction).toHaveBeenCalled();
   });
 
   it('should update generation and birthOrder for each person', async () => {
-    const updates = [{ id: UUID_A, generation: 3, birthOrder: null }];
+    const personA = await prisma.person.create({ data: { fullName: 'A', gender: 'male' } });
+    const personB = await prisma.person.create({ data: { fullName: 'B', gender: 'female' } });
 
-    await updateBatch({ data: { updates } });
-
-    expect(mockPrisma.person.update).toHaveBeenCalledWith({
-      where: { id: UUID_A },
-      data: { generation: 3, birthOrder: null },
+    const result = await updateBatchHandler({
+      updates: [
+        { id: personA.id, generation: 1, birthOrder: 1 },
+        { id: personB.id, generation: 2, birthOrder: 2 },
+      ],
     });
+
+    expect(result).toEqual({ success: true, updated: 2 });
+
+    const updatedA = await prisma.person.findUnique({ where: { id: personA.id } });
+    expect(updatedA?.generation).toBe(1);
+    expect(updatedA?.birthOrder).toBe(1);
+
+    const updatedB = await prisma.person.findUnique({ where: { id: personB.id } });
+    expect(updatedB?.generation).toBe(2);
+    expect(updatedB?.birthOrder).toBe(2);
+  });
+
+  it('should handle null values for generation and birthOrder', async () => {
+    const person = await prisma.person.create({
+      data: { fullName: 'Test', gender: 'male', generation: 5, birthOrder: 3 },
+    });
+
+    await updateBatchHandler({
+      updates: [{ id: person.id, generation: null, birthOrder: null }],
+    });
+
+    const updated = await prisma.person.findUnique({ where: { id: person.id } });
+    expect(updated?.generation).toBeNull();
+    expect(updated?.birthOrder).toBeNull();
   });
 
   it('should require authentication', async () => {
     mockRequireAuth.mockRejectedValue(new Error('Vui lòng đăng nhập.'));
 
-    await expect(updateBatch({ data: { updates: [{ id: UUID_A, generation: 1, birthOrder: 1 }] } })).rejects.toThrow('Vui lòng đăng nhập.');
+    await expect(updateBatchHandler({ updates: [{ id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', generation: 1, birthOrder: 1 }] })).rejects.toThrow(
+      'Vui lòng đăng nhập.'
+    );
   });
 });

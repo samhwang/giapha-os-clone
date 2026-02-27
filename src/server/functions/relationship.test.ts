@@ -1,150 +1,152 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getDbClient } from '@/lib/db';
+import { cleanDatabase } from '@/test-utils/db-helpers';
 
 // ─── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock('@tanstack/react-start', () => ({
-  createServerFn: vi.fn(() => {
-    let validatorSchema: { parse?: (input: unknown) => unknown } | ((input: unknown) => unknown) | null = null;
-    const builder = {
-      validator: (schema: unknown) => {
-        validatorSchema = schema as typeof validatorSchema;
-        return builder;
-      },
-      inputValidator: (schema: unknown) => {
-        validatorSchema = schema as typeof validatorSchema;
-        return builder;
-      },
-      handler: (fn: (opts: { data: unknown }) => unknown) => {
-        const callable = async (input: unknown) => {
-          let data = (input as { data?: unknown })?.data ?? input;
-          if (validatorSchema) {
-            data = typeof validatorSchema === 'function' ? validatorSchema(data) : validatorSchema.parse?.(data);
-          }
-          return fn({ data });
-        };
-        return callable;
-      },
-    };
-    return builder;
-  }),
-}));
-
 const mockRequireAuth = vi.fn();
+
 vi.mock('./_auth', () => ({
   requireAuth: (...args: unknown[]) => mockRequireAuth(...args),
   requireAdmin: vi.fn(),
 }));
 
-const mockPrisma = {
-  relationship: {
-    create: vi.fn(),
-    delete: vi.fn(),
-    findFirst: vi.fn(),
-    findMany: vi.fn(),
-  },
-};
+// ─── Imports ────────────────────────────────────────────────────────────────
 
-vi.mock('@/lib/db', () => ({
-  prisma: mockPrisma,
-}));
+const { createRelationshipHandler, deleteRelationshipHandler, getRelationshipsHandler, getRelationshipsForPersonHandler } = await import('./relationship');
 
-const { createRelationship, deleteRelationship, getRelationships, getRelationshipsForPerson } = await import('./relationship');
+const prisma = getDbClient();
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-const UUID_A = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
-const UUID_B = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22';
-const UUID_REL = 'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33';
+async function seedPerson(name: string, gender: 'male' | 'female' = 'male') {
+  return prisma.person.create({ data: { fullName: name, gender } });
+}
 
-beforeEach(() => {
+// ─── Setup ──────────────────────────────────────────────────────────────────
+
+beforeEach(async () => {
   vi.clearAllMocks();
   mockRequireAuth.mockResolvedValue({ id: 'user-1', isActive: true });
+  await cleanDatabase();
 });
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
 
-describe('createRelationship', () => {
+describe('createRelationshipHandler', () => {
   it('should create a new relationship', async () => {
-    const input = { type: 'marriage' as const, personAId: UUID_A, personBId: UUID_B };
-    mockPrisma.relationship.findFirst.mockResolvedValue(null);
-    mockPrisma.relationship.create.mockResolvedValue({ id: UUID_REL, ...input });
+    const personA = await seedPerson('Person A');
+    const personB = await seedPerson('Person B', 'female');
 
-    const result = await createRelationship({ data: input });
+    const result = await createRelationshipHandler({
+      type: 'marriage',
+      personAId: personA.id,
+      personBId: personB.id,
+    });
 
-    expect(result.id).toBe(UUID_REL);
-    expect(mockPrisma.relationship.create).toHaveBeenCalledWith({ data: input });
+    expect(result.type).toBe('marriage');
+    expect(result.personAId).toBe(personA.id);
+    expect(result.personBId).toBe(personB.id);
+    expect(result.id).toBeDefined();
   });
 
   it('should throw on self-relationship', async () => {
-    await expect(createRelationship({ data: { type: 'marriage', personAId: UUID_A, personBId: UUID_A } })).rejects.toThrow(
+    const person = await seedPerson('Self');
+
+    await expect(createRelationshipHandler({ type: 'marriage', personAId: person.id, personBId: person.id })).rejects.toThrow(
       'Không thể tạo quan hệ với chính mình.'
     );
   });
 
   it('should throw on duplicate relationship', async () => {
-    mockPrisma.relationship.findFirst.mockResolvedValue({ id: 'existing' });
+    const personA = await seedPerson('Parent');
+    const personB = await seedPerson('Child');
 
-    await expect(createRelationship({ data: { type: 'marriage', personAId: UUID_A, personBId: UUID_B } })).rejects.toThrow('Mối quan hệ này đã tồn tại.');
+    await createRelationshipHandler({ type: 'biological_child', personAId: personA.id, personBId: personB.id });
+
+    await expect(createRelationshipHandler({ type: 'biological_child', personAId: personA.id, personBId: personB.id })).rejects.toThrow(
+      'Mối quan hệ này đã tồn tại.'
+    );
   });
 
   it('should check both directions for duplicates', async () => {
-    mockPrisma.relationship.findFirst.mockResolvedValue(null);
-    mockPrisma.relationship.create.mockResolvedValue({ id: UUID_REL });
+    const personA = await seedPerson('A');
+    const personB = await seedPerson('B');
 
-    await createRelationship({ data: { type: 'biological_child', personAId: UUID_A, personBId: UUID_B } });
+    await createRelationshipHandler({ type: 'biological_child', personAId: personA.id, personBId: personB.id });
 
-    expect(mockPrisma.relationship.findFirst).toHaveBeenCalledWith({
-      where: {
-        OR: [
-          { personAId: UUID_A, personBId: UUID_B, type: 'biological_child' },
-          { personAId: UUID_B, personBId: UUID_A, type: 'biological_child' },
-        ],
-      },
-    });
+    // Reversed direction should also be detected as duplicate
+    await expect(createRelationshipHandler({ type: 'biological_child', personAId: personB.id, personBId: personA.id })).rejects.toThrow(
+      'Mối quan hệ này đã tồn tại.'
+    );
   });
 
   it('should throw when not authenticated', async () => {
     mockRequireAuth.mockRejectedValue(new Error('Vui lòng đăng nhập.'));
 
-    await expect(createRelationship({ data: { type: 'marriage', personAId: UUID_A, personBId: UUID_B } })).rejects.toThrow('Vui lòng đăng nhập.');
+    await expect(
+      createRelationshipHandler({
+        type: 'marriage',
+        personAId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+        personBId: 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22',
+      })
+    ).rejects.toThrow('Vui lòng đăng nhập.');
   });
 });
 
-describe('deleteRelationship', () => {
+describe('deleteRelationshipHandler', () => {
   it('should delete a relationship', async () => {
-    mockPrisma.relationship.delete.mockResolvedValue({});
+    const personA = await seedPerson('A');
+    const personB = await seedPerson('B');
+    const rel = await createRelationshipHandler({ type: 'marriage', personAId: personA.id, personBId: personB.id });
 
-    const result = await deleteRelationship({ data: { id: UUID_REL } });
+    const result = await deleteRelationshipHandler({ id: rel.id });
 
     expect(result).toEqual({ success: true });
-    expect(mockPrisma.relationship.delete).toHaveBeenCalledWith({ where: { id: UUID_REL } });
+    const found = await prisma.relationship.findUnique({ where: { id: rel.id } });
+    expect(found).toBeNull();
   });
 });
 
-describe('getRelationships', () => {
+describe('getRelationshipsHandler', () => {
   it('should return all relationships', async () => {
-    const rels = [{ id: UUID_REL, type: 'marriage' }];
-    mockPrisma.relationship.findMany.mockResolvedValue(rels);
+    const personA = await seedPerson('A');
+    const personB = await seedPerson('B');
+    await createRelationshipHandler({ type: 'marriage', personAId: personA.id, personBId: personB.id });
 
-    const result = await getRelationships();
+    const result = await getRelationshipsHandler();
 
-    expect(result).toEqual(rels);
+    expect(result).toHaveLength(1);
+    expect(result[0].type).toBe('marriage');
+  });
+
+  it('should return empty array when no relationships', async () => {
+    const result = await getRelationshipsHandler();
+    expect(result).toEqual([]);
   });
 });
 
-describe('getRelationshipsForPerson', () => {
+describe('getRelationshipsForPersonHandler', () => {
   it('should return relationships involving the person', async () => {
-    const rels = [{ id: UUID_REL, personAId: UUID_A, personBId: UUID_B }];
-    mockPrisma.relationship.findMany.mockResolvedValue(rels);
+    const personA = await seedPerson('A');
+    const personB = await seedPerson('B');
+    const personC = await seedPerson('C');
+    await createRelationshipHandler({ type: 'marriage', personAId: personA.id, personBId: personB.id });
+    await createRelationshipHandler({ type: 'biological_child', personAId: personA.id, personBId: personC.id });
 
-    const result = await getRelationshipsForPerson({ data: { personId: UUID_A } });
+    const result = await getRelationshipsForPersonHandler({ personId: personA.id });
 
-    expect(result).toEqual(rels);
-    expect(mockPrisma.relationship.findMany).toHaveBeenCalledWith({
-      where: {
-        OR: [{ personAId: UUID_A }, { personBId: UUID_A }],
-      },
-      orderBy: { createdAt: 'asc' },
-    });
+    expect(result).toHaveLength(2);
+  });
+
+  it('should not return unrelated relationships', async () => {
+    const personA = await seedPerson('A');
+    const personB = await seedPerson('B');
+    const personC = await seedPerson('C');
+    await createRelationshipHandler({ type: 'marriage', personAId: personA.id, personBId: personB.id });
+
+    const result = await getRelationshipsForPersonHandler({ personId: personC.id });
+
+    expect(result).toEqual([]);
   });
 });

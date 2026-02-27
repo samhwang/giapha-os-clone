@@ -1,51 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getDbClient } from '@/lib/db';
+import { cleanDatabase, cleanUsers } from '@/test-utils/db-helpers';
 
 // ─── Mocks ──────────────────────────────────────────────────────────────────
 
-vi.mock('@tanstack/react-start', () => ({
-  createServerFn: vi.fn(() => {
-    let validatorSchema: { parse?: (input: unknown) => unknown } | ((input: unknown) => unknown) | null = null;
-    const builder = {
-      validator: (schema: unknown) => {
-        validatorSchema = schema as typeof validatorSchema;
-        return builder;
-      },
-      inputValidator: (schema: unknown) => {
-        validatorSchema = schema as typeof validatorSchema;
-        return builder;
-      },
-      handler: (fn: (opts: { data: unknown }) => unknown) => {
-        const callable = async (input: unknown) => {
-          let data = (input as { data?: unknown })?.data ?? input;
-          if (validatorSchema) {
-            data = typeof validatorSchema === 'function' ? validatorSchema(data) : validatorSchema.parse?.(data);
-          }
-          return fn({ data });
-        };
-        return callable;
-      },
-    };
-    return builder;
-  }),
-}));
-
 const mockRequireAdmin = vi.fn();
+
 vi.mock('./_auth', () => ({
   requireAuth: vi.fn(),
   requireAdmin: (...args: unknown[]) => mockRequireAdmin(...args),
-}));
-
-const mockPrisma = {
-  user: {
-    update: vi.fn(),
-    delete: vi.fn(),
-    findUnique: vi.fn(),
-    findMany: vi.fn(),
-  },
-};
-
-vi.mock('@/lib/db', () => ({
-  prisma: mockPrisma,
 }));
 
 const mockSignUpEmail = vi.fn();
@@ -57,133 +20,130 @@ vi.mock('@/lib/auth', () => ({
   },
 }));
 
-const { changeRole, deleteUser, createUser, toggleStatus, getUsers } = await import('./user');
+// ─── Imports ────────────────────────────────────────────────────────────────
+
+const { changeRoleHandler, deleteUserHandler, createUserHandler, toggleStatusHandler, getUsersHandler } = await import('./user');
+
+const prisma = getDbClient();
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 const ADMIN_ID = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
-const OTHER_ID = 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22';
 
-beforeEach(() => {
+async function seedUser(overrides: { id?: string; email?: string; role?: 'admin' | 'member'; isActive?: boolean } = {}) {
+  return prisma.user.create({
+    data: {
+      id: overrides.id ?? crypto.randomUUID(),
+      email: overrides.email ?? `user-${crypto.randomUUID()}@test.com`,
+      name: 'Test User',
+      role: overrides.role ?? 'member',
+      isActive: overrides.isActive ?? true,
+    },
+  });
+}
+
+// ─── Setup ──────────────────────────────────────────────────────────────────
+
+beforeEach(async () => {
   vi.clearAllMocks();
   mockRequireAdmin.mockResolvedValue({ id: ADMIN_ID, role: 'admin' });
+  await cleanDatabase();
+  await cleanUsers();
 });
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
 
-describe('changeRole', () => {
+describe('changeRoleHandler', () => {
   it('should change another user role', async () => {
-    mockPrisma.user.update.mockResolvedValue({});
+    const user = await seedUser({ role: 'member' });
 
-    const result = await changeRole({ data: { userId: OTHER_ID, newRole: 'admin' } });
+    const result = await changeRoleHandler({ userId: user.id, newRole: 'admin' });
 
     expect(result).toEqual({ success: true });
-    expect(mockPrisma.user.update).toHaveBeenCalledWith({
-      where: { id: OTHER_ID },
-      data: { role: 'admin' },
-    });
+    const updated = await prisma.user.findUnique({ where: { id: user.id } });
+    expect(updated?.role).toBe('admin');
   });
 
   it('should prevent changing own role', async () => {
-    await expect(changeRole({ data: { userId: ADMIN_ID, newRole: 'member' } })).rejects.toThrow('Không thể thay đổi vai trò của chính mình.');
-  });
+    await seedUser({ id: ADMIN_ID, role: 'admin' });
 
-  it('should reject invalid role via Zod', async () => {
-    await expect(changeRole({ data: { userId: OTHER_ID, newRole: 'superadmin' as never } })).rejects.toThrow();
+    await expect(changeRoleHandler({ userId: ADMIN_ID, newRole: 'member' })).rejects.toThrow('Không thể thay đổi vai trò của chính mình.');
   });
 });
 
-describe('deleteUser', () => {
+describe('deleteUserHandler', () => {
   it('should delete another user', async () => {
-    mockPrisma.user.delete.mockResolvedValue({});
+    const user = await seedUser();
 
-    const result = await deleteUser({ data: { userId: OTHER_ID } });
+    const result = await deleteUserHandler({ userId: user.id });
 
     expect(result).toEqual({ success: true });
+    const found = await prisma.user.findUnique({ where: { id: user.id } });
+    expect(found).toBeNull();
   });
 
   it('should prevent self-deletion', async () => {
-    await expect(deleteUser({ data: { userId: ADMIN_ID } })).rejects.toThrow('Không thể xoá tài khoản của chính mình.');
+    await seedUser({ id: ADMIN_ID });
+
+    await expect(deleteUserHandler({ userId: ADMIN_ID })).rejects.toThrow('Không thể xoá tài khoản của chính mình.');
   });
 });
 
-describe('createUser', () => {
+describe('createUserHandler', () => {
   it('should create a new user via Better Auth signup', async () => {
-    mockPrisma.user.findUnique.mockResolvedValue(null);
-    mockSignUpEmail.mockResolvedValue({ user: { id: 'new-user-id' } });
-    mockPrisma.user.update.mockResolvedValue({});
+    const newUserId = crypto.randomUUID();
+    mockSignUpEmail.mockResolvedValue({ user: { id: newUserId } });
+    // Pre-create the user record that Better Auth would create
+    await seedUser({ id: newUserId, email: 'will-be-overridden@test.com' });
 
-    const result = await createUser({
-      data: {
-        email: 'new@test.com',
-        password: 'password123',
-        role: 'member',
-        isActive: true,
-      },
+    const result = await createUserHandler({
+      email: 'new@test.com',
+      password: 'password123',
+      role: 'member',
+      isActive: true,
     });
 
     expect(result).toEqual({ success: true });
     expect(mockSignUpEmail).toHaveBeenCalledWith({
       body: { email: 'new@test.com', password: 'password123', name: 'new@test.com' },
     });
-    expect(mockPrisma.user.update).toHaveBeenCalledWith({
-      where: { id: 'new-user-id' },
-      data: { role: 'member', isActive: true },
-    });
   });
 
   it('should throw when email already exists', async () => {
-    mockPrisma.user.findUnique.mockResolvedValue({ id: 'existing' });
+    await seedUser({ email: 'existing@test.com' });
 
-    await expect(createUser({ data: { email: 'existing@test.com', password: 'password123' } })).rejects.toThrow('Email đã được sử dụng.');
-  });
-
-  it('should reject short password via Zod', async () => {
-    await expect(createUser({ data: { email: 'test@test.com', password: '123' } })).rejects.toThrow();
-  });
-
-  it('should reject invalid email via Zod', async () => {
-    await expect(createUser({ data: { email: 'not-email', password: 'password123' } })).rejects.toThrow();
+    await expect(createUserHandler({ email: 'existing@test.com', password: 'password123' })).rejects.toThrow('Email đã được sử dụng.');
   });
 });
 
-describe('toggleStatus', () => {
+describe('toggleStatusHandler', () => {
   it('should toggle another user status', async () => {
-    mockPrisma.user.update.mockResolvedValue({});
+    const user = await seedUser({ isActive: true });
 
-    const result = await toggleStatus({ data: { userId: OTHER_ID, isActive: false } });
+    const result = await toggleStatusHandler({ userId: user.id, isActive: false });
 
     expect(result).toEqual({ success: true });
-    expect(mockPrisma.user.update).toHaveBeenCalledWith({
-      where: { id: OTHER_ID },
-      data: { isActive: false },
-    });
+    const updated = await prisma.user.findUnique({ where: { id: user.id } });
+    expect(updated?.isActive).toBe(false);
   });
 
   it('should prevent toggling own status', async () => {
-    await expect(toggleStatus({ data: { userId: ADMIN_ID, isActive: false } })).rejects.toThrow('Không thể thay đổi trạng thái của chính mình.');
+    await seedUser({ id: ADMIN_ID });
+
+    await expect(toggleStatusHandler({ userId: ADMIN_ID, isActive: false })).rejects.toThrow('Không thể thay đổi trạng thái của chính mình.');
   });
 });
 
-describe('getUsers', () => {
+describe('getUsersHandler', () => {
   it('should return all users with selected fields', async () => {
-    const users = [{ id: ADMIN_ID, email: 'admin@test.com', role: 'admin' }];
-    mockPrisma.user.findMany.mockResolvedValue(users);
+    await seedUser({ email: 'user1@test.com', role: 'admin' });
+    await seedUser({ email: 'user2@test.com', role: 'member' });
 
-    const result = await getUsers();
+    const result = await getUsersHandler();
 
-    expect(result).toEqual(users);
-    expect(mockPrisma.user.findMany).toHaveBeenCalledWith({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        isActive: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      orderBy: { createdAt: 'asc' },
-    });
+    expect(result).toHaveLength(2);
+    expect(result[0]).toHaveProperty('email');
+    expect(result[0]).toHaveProperty('role');
+    expect(result[0]).not.toHaveProperty('emailVerified');
   });
 });

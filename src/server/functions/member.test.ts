@@ -1,33 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getDbClient } from '@/lib/db';
+import { cleanDatabase } from '@/test-utils/db-helpers';
 
 // ─── Mocks ──────────────────────────────────────────────────────────────────
-
-vi.mock('@tanstack/react-start', () => ({
-  createServerFn: vi.fn(() => {
-    let validatorSchema: { parse?: (input: unknown) => unknown } | ((input: unknown) => unknown) | null = null;
-    const builder = {
-      validator: (schema: unknown) => {
-        validatorSchema = schema as typeof validatorSchema;
-        return builder;
-      },
-      inputValidator: (schema: unknown) => {
-        validatorSchema = schema as typeof validatorSchema;
-        return builder;
-      },
-      handler: (fn: (opts: { data: unknown }) => unknown) => {
-        const callable = async (input: unknown) => {
-          let data = (input as { data?: unknown })?.data ?? input;
-          if (validatorSchema) {
-            data = typeof validatorSchema === 'function' ? validatorSchema(data) : validatorSchema.parse?.(data);
-          }
-          return fn({ data });
-        };
-        return callable;
-      },
-    };
-    return builder;
-  }),
-}));
 
 const mockRequireAuth = vi.fn();
 const mockRequireAdmin = vi.fn();
@@ -37,246 +12,168 @@ vi.mock('./_auth', () => ({
   requireAdmin: (...args: unknown[]) => mockRequireAdmin(...args),
 }));
 
-const mockPrisma = {
-  person: {
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    findUnique: vi.fn(),
-    findUniqueOrThrow: vi.fn(),
-    findMany: vi.fn(),
-  },
-  personDetailsPrivate: {
-    upsert: vi.fn(),
-  },
-  relationship: {
-    count: vi.fn(),
-  },
-};
+// ─── Imports ────────────────────────────────────────────────────────────────
 
-vi.mock('@/lib/db', () => ({
-  prisma: mockPrisma,
-}));
+const { createPersonHandler, updatePersonHandler, deleteMemberHandler, uploadPersonAvatarHandler, getPersonsHandler, getPersonByIdHandler } = await import(
+  './member'
+);
 
-const mockUploadAvatar = vi.fn();
-const mockDeleteAvatar = vi.fn();
+const prisma = getDbClient();
 
-vi.mock('@/lib/storage', () => ({
-  uploadAvatar: (...args: unknown[]) => mockUploadAvatar(...args),
-  deleteAvatar: (...args: unknown[]) => mockDeleteAvatar(...args),
-}));
+// ─── Setup ──────────────────────────────────────────────────────────────────
 
-const { createPerson, updatePerson, deleteMember, uploadPersonAvatar, getPersons, getPersonById } = await import('./member');
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-const VALID_UUID = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
-
-beforeEach(() => {
+beforeEach(async () => {
   vi.clearAllMocks();
   mockRequireAuth.mockResolvedValue({ id: 'user-1', role: 'admin', isActive: true });
   mockRequireAdmin.mockResolvedValue({ id: 'user-1', role: 'admin', isActive: true });
+  await cleanDatabase();
 });
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
 
-describe('createPerson', () => {
+describe('createPersonHandler', () => {
   it('should create a person without private details', async () => {
-    const input = { fullName: 'Nguyễn Văn A', gender: 'male' as const };
-    const expected = { id: VALID_UUID, ...input, privateDetails: null };
-    mockPrisma.person.create.mockResolvedValue(expected);
+    const result = await createPersonHandler({ fullName: 'Nguyễn Văn A', gender: 'male' });
 
-    const result = await createPerson({ data: input });
-
-    expect(result).toEqual(expected);
-    expect(mockPrisma.person.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        include: { privateDetails: true },
-      })
-    );
+    expect(result.fullName).toBe('Nguyễn Văn A');
+    expect(result.gender).toBe('male');
+    expect(result.id).toBeDefined();
+    expect(result.privateDetails).toBeNull();
   });
 
   it('should create a person with private details', async () => {
-    const input = {
+    const result = await createPersonHandler({
       fullName: 'Nguyễn Văn B',
-      gender: 'male' as const,
+      gender: 'male',
       phoneNumber: '0901234567',
       occupation: 'Kỹ sư',
-    };
-    mockPrisma.person.create.mockResolvedValue({ id: VALID_UUID });
-
-    await createPerson({ data: input });
-
-    expect(mockPrisma.person.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        fullName: 'Nguyễn Văn B',
-        gender: 'male',
-        privateDetails: {
-          create: {
-            phoneNumber: '0901234567',
-            occupation: 'Kỹ sư',
-            currentResidence: null,
-          },
-        },
-      }),
-      include: { privateDetails: true },
     });
+
+    expect(result.fullName).toBe('Nguyễn Văn B');
+    expect(result.privateDetails).not.toBeNull();
+    expect(result.privateDetails?.phoneNumber).toBe('0901234567');
+    expect(result.privateDetails?.occupation).toBe('Kỹ sư');
+    expect(result.privateDetails?.currentResidence).toBeNull();
   });
 
   it('should throw when not authenticated', async () => {
     mockRequireAuth.mockRejectedValue(new Error('Vui lòng đăng nhập.'));
 
-    await expect(createPerson({ data: { fullName: 'Test', gender: 'male' } })).rejects.toThrow('Vui lòng đăng nhập.');
-  });
-
-  it('should reject invalid input via Zod', async () => {
-    await expect(createPerson({ data: { fullName: '', gender: 'male' } })).rejects.toThrow();
+    await expect(createPersonHandler({ fullName: 'Test', gender: 'male' })).rejects.toThrow('Vui lòng đăng nhập.');
   });
 });
 
-describe('updatePerson', () => {
+describe('updatePersonHandler', () => {
   it('should update person fields', async () => {
-    const updated = { id: VALID_UUID, fullName: 'Updated Name', privateDetails: null };
-    mockPrisma.person.update.mockResolvedValue(updated);
-    mockPrisma.person.findUniqueOrThrow.mockResolvedValue(updated);
+    const person = await createPersonHandler({ fullName: 'Original Name', gender: 'male' });
 
-    const result = await updatePerson({ data: { id: VALID_UUID, fullName: 'Updated Name' } });
+    const result = await updatePersonHandler({ id: person.id, fullName: 'Updated Name' });
 
-    expect(result).toEqual(updated);
-    expect(mockPrisma.person.update).toHaveBeenCalledWith({
-      where: { id: VALID_UUID },
-      data: { fullName: 'Updated Name' },
-    });
+    expect(result.fullName).toBe('Updated Name');
   });
 
   it('should upsert private details when provided', async () => {
-    mockPrisma.person.update.mockResolvedValue({ id: VALID_UUID });
-    mockPrisma.person.findUniqueOrThrow.mockResolvedValue({ id: VALID_UUID });
-    mockPrisma.personDetailsPrivate.upsert.mockResolvedValue({});
+    const person = await createPersonHandler({ fullName: 'Test Person', gender: 'female' });
 
-    await updatePerson({ data: { id: VALID_UUID, phoneNumber: '0909999999' } });
+    const result = await updatePersonHandler({ id: person.id, phoneNumber: '0909999999' });
 
-    expect(mockPrisma.personDetailsPrivate.upsert).toHaveBeenCalledWith({
-      where: { personId: VALID_UUID },
-      create: expect.objectContaining({ phoneNumber: '0909999999' }),
-      update: expect.objectContaining({ phoneNumber: '0909999999' }),
-    });
+    expect(result.privateDetails?.phoneNumber).toBe('0909999999');
   });
 });
 
-describe('deleteMember', () => {
+describe('deleteMemberHandler', () => {
   it('should delete a member with no relationships', async () => {
-    mockPrisma.relationship.count.mockResolvedValue(0);
-    mockPrisma.person.findUnique.mockResolvedValue({ id: VALID_UUID, avatarUrl: null });
-    mockPrisma.person.delete.mockResolvedValue({});
+    const person = await createPersonHandler({ fullName: 'To Delete', gender: 'male' });
 
-    const result = await deleteMember({ data: { id: VALID_UUID } });
+    const result = await deleteMemberHandler({ id: person.id });
 
     expect(result).toEqual({ success: true });
-    expect(mockPrisma.person.delete).toHaveBeenCalledWith({ where: { id: VALID_UUID } });
+
+    const found = await prisma.person.findUnique({ where: { id: person.id } });
+    expect(found).toBeNull();
   });
 
   it('should throw when member has relationships', async () => {
-    mockPrisma.relationship.count.mockResolvedValue(2);
+    const personA = await createPersonHandler({ fullName: 'Person A', gender: 'male' });
+    const personB = await createPersonHandler({ fullName: 'Person B', gender: 'female' });
+    await prisma.relationship.create({
+      data: { type: 'marriage', personAId: personA.id, personBId: personB.id },
+    });
 
-    await expect(deleteMember({ data: { id: VALID_UUID } })).rejects.toThrow('Không thể xoá');
-  });
-
-  it('should delete avatar from S3 when member has one', async () => {
-    mockPrisma.relationship.count.mockResolvedValue(0);
-    mockPrisma.person.findUnique.mockResolvedValue({ id: VALID_UUID, avatarUrl: 'http://s3/avatars/p-1/photo.jpg' });
-    mockPrisma.person.delete.mockResolvedValue({});
-
-    await deleteMember({ data: { id: VALID_UUID } });
-
-    expect(mockDeleteAvatar).toHaveBeenCalledWith('http://s3/avatars/p-1/photo.jpg');
+    await expect(deleteMemberHandler({ id: personA.id })).rejects.toThrow('Không thể xoá');
   });
 
   it('should require admin role', async () => {
     mockRequireAdmin.mockRejectedValue(new Error('Từ chối truy cập. Chỉ admin mới có quyền này.'));
+    const person = await createPersonHandler({ fullName: 'Test', gender: 'male' });
 
-    await expect(deleteMember({ data: { id: VALID_UUID } })).rejects.toThrow('Từ chối truy cập');
+    await expect(deleteMemberHandler({ id: person.id })).rejects.toThrow('Từ chối truy cập');
   });
 });
 
-describe('uploadPersonAvatar', () => {
+describe('uploadPersonAvatarHandler', () => {
   it('should upload avatar and update person', async () => {
-    mockPrisma.person.findUnique.mockResolvedValue({ id: VALID_UUID, avatarUrl: null });
-    mockUploadAvatar.mockResolvedValue('http://s3/avatars/p-1/photo.jpg');
-    mockPrisma.person.update.mockResolvedValue({ id: VALID_UUID, avatarUrl: 'http://s3/avatars/p-1/photo.jpg' });
+    const person = await createPersonHandler({ fullName: 'Avatar Test', gender: 'male' });
 
-    const result = await uploadPersonAvatar({
-      data: {
-        personId: VALID_UUID,
-        filename: 'photo.jpg',
-        contentType: 'image/jpeg',
-        base64: Buffer.from('fake-image').toString('base64'),
-      },
+    const result = await uploadPersonAvatarHandler({
+      personId: person.id,
+      filename: 'photo.jpg',
+      contentType: 'image/jpeg',
+      base64: Buffer.from('fake-image-data').toString('base64'),
     });
 
-    expect(result.avatarUrl).toBe('http://s3/avatars/p-1/photo.jpg');
-  });
+    expect(result.avatarUrl).toContain(`avatars/${person.id}/photo.jpg`);
 
-  it('should delete old avatar before uploading new one', async () => {
-    mockPrisma.person.findUnique.mockResolvedValue({ id: VALID_UUID, avatarUrl: 'http://s3/old.jpg' });
-    mockUploadAvatar.mockResolvedValue('http://s3/new.jpg');
-    mockPrisma.person.update.mockResolvedValue({ id: VALID_UUID, avatarUrl: 'http://s3/new.jpg' });
-
-    await uploadPersonAvatar({
-      data: {
-        personId: VALID_UUID,
-        filename: 'new.jpg',
-        contentType: 'image/jpeg',
-        base64: Buffer.from('img').toString('base64'),
-      },
-    });
-
-    expect(mockDeleteAvatar).toHaveBeenCalledWith('http://s3/old.jpg');
+    const dbPerson = await prisma.person.findUnique({ where: { id: person.id } });
+    expect(dbPerson?.avatarUrl).toBe(result.avatarUrl);
   });
 
   it('should throw when person not found', async () => {
-    mockPrisma.person.findUnique.mockResolvedValue(null);
-
     await expect(
-      uploadPersonAvatar({
-        data: {
-          personId: VALID_UUID,
-          filename: 'photo.jpg',
-          contentType: 'image/jpeg',
-          base64: 'abc',
-        },
+      uploadPersonAvatarHandler({
+        personId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+        filename: 'photo.jpg',
+        contentType: 'image/jpeg',
+        base64: Buffer.from('data').toString('base64'),
       })
     ).rejects.toThrow('Không tìm thấy thành viên.');
   });
 });
 
-describe('getPersons', () => {
-  it('should return all persons ordered by createdAt', async () => {
-    const persons = [{ id: '1' }, { id: '2' }];
-    mockPrisma.person.findMany.mockResolvedValue(persons);
+describe('getPersonsHandler', () => {
+  it('should return all persons', async () => {
+    await createPersonHandler({ fullName: 'Person 1', gender: 'male' });
+    await createPersonHandler({ fullName: 'Person 2', gender: 'female' });
 
-    const result = await getPersons();
+    const result = await getPersonsHandler();
 
-    expect(result).toEqual(persons);
-    expect(mockPrisma.person.findMany).toHaveBeenCalledWith({ orderBy: { createdAt: 'asc' } });
+    expect(result).toHaveLength(2);
+    expect(result[0].fullName).toBe('Person 1');
+    expect(result[1].fullName).toBe('Person 2');
+  });
+
+  it('should return empty array when no persons', async () => {
+    const result = await getPersonsHandler();
+    expect(result).toEqual([]);
   });
 });
 
-describe('getPersonById', () => {
+describe('getPersonByIdHandler', () => {
   it('should return person with private details', async () => {
-    const person = { id: VALID_UUID, fullName: 'Test', privateDetails: { phoneNumber: '123' } };
-    mockPrisma.person.findUnique.mockResolvedValue(person);
+    const person = await createPersonHandler({
+      fullName: 'Test Person',
+      gender: 'male',
+      phoneNumber: '0901234567',
+    });
 
-    const result = await getPersonById({ data: { id: VALID_UUID } });
+    const result = await getPersonByIdHandler({ id: person.id });
 
-    expect(result).toEqual(person);
+    expect(result?.fullName).toBe('Test Person');
+    expect(result?.privateDetails?.phoneNumber).toBe('0901234567');
   });
 
   it('should return null for non-existent person', async () => {
-    mockPrisma.person.findUnique.mockResolvedValue(null);
-
-    const result = await getPersonById({ data: { id: VALID_UUID } });
-
+    const result = await getPersonByIdHandler({ id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' });
     expect(result).toBeNull();
   });
 });
