@@ -50,30 +50,36 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
    ./scripts/setup-garage.sh
    ```
 
-3. **Install dependencies**
+3. **Set up Better Auth token**
+
+  ```bash
+  pnpm run auth:secret
+  ```
+
+4. **Install dependencies**
 
    ```bash
    pnpm install
    ```
 
-4. **Configure environment**
+5. **Configure environment**
 
    ```bash
    cp .env.sample .env
-   # Edit .env with your S3 keys from the Garage setup output
+   # Edit .env with your S3 keys from the Garage and Better Auth setup output
    ```
 
-5. **Set up database**
+6. **Set up database**
 
    ```bash
-   pnpm prisma db push
-   pnpm prisma db seed
+   pnpm run prisma:migrate:dev
+   pnpm run prisma:seed
    ```
 
-6. **Start development server**
+7. **Start development server**
 
    ```bash
-   pnpm dev
+   pnpm run dev
    ```
 
    Open [http://localhost:3000](http://localhost:3000). The first user to sign up automatically becomes admin.
@@ -82,20 +88,28 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 
 | Command | Description |
 |---|---|
-| `pnpm dev` | Start development server |
-| `pnpm build` | Production build |
-| `pnpm start` | Start production server |
-| `pnpm test` | Run tests in watch mode |
-| `pnpm test:run` | Run tests once |
-| `pnpm test:coverage` | Run tests with coverage report |
-| `pnpm lint` | Check linting (Biome) |
-| `pnpm lint:fix` | Auto-fix lint issues |
-| `pnpm typecheck` | TypeScript type checking |
-| `pnpm ci` | Strict CI linting check |
-| `pnpm prisma studio` | Open Prisma database GUI |
-| `pnpm prisma db push` | Push schema to database |
-| `pnpm prisma db seed` | Seed database with sample data |
-| `pnpm prisma migrate dev` | Create and apply migration |
+| `pnpm run dev` | Start development server |
+| `pnpm run build` | Production build |
+| `pnpm run start` | Start production server |
+| `pnpm run test` | Run tests in watch mode |
+| `pnpm run test:run` | Run tests once |
+| `pnpm run test:coverage` | Run tests with coverage report |
+| `pnpm run test:ui` | Run UI component tests |
+| `pnpm run test:server` | Run server function tests |
+| `pnpm run test:integration` | Run integration tests |
+| `pnpm run lint` | Check linting (Biome) |
+| `pnpm run lint:fix` | Auto-fix lint issues |
+| `pnpm run typecheck` | TypeScript type checking |
+| `pnpm run ci` | Strict CI linting check |
+| `pnpm run prisma:studio` | Open Prisma database GUI |
+| `pnpm run prisma:push` | Push schema to database |
+| `pnpm run prisma:generate` | Generate Prisma client |
+| `pnpm run prisma:seed` | Seed database with sample data |
+| `pnpm run prisma:migrate:dev` | Create and apply migration |
+| `pnpm run prisma:migrate:prod` | Deploy migration |
+| `pnpm run prisma:format` | Format Prisma schema |
+| `pnpm run auth:secret` | Generate Better Auth secret |
+| `pnpm run auth:generate` | Generate Better Auth client |
 
 ## Project Structure
 
