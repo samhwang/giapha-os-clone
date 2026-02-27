@@ -9,11 +9,11 @@ import { requireAdmin } from './_auth';
 const roleEnum = z.enum(['admin', 'member']);
 
 const changeRoleSchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.uuid(),
   newRole: roleEnum,
 });
 
-const userIdSchema = z.object({ userId: z.string().uuid() });
+const userIdSchema = z.object({ userId: z.uuid() });
 
 const createUserSchema = z.object({
   email: z.string().email('Email không hợp lệ.'),
@@ -24,14 +24,14 @@ const createUserSchema = z.object({
 });
 
 const toggleStatusSchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.uuid(),
   isActive: z.boolean(),
 });
 
 // ─── Change User Role ───────────────────────────────────────────────────────
 
 export const changeRole = createServerFn({ method: 'POST' })
-  .validator(changeRoleSchema)
+  .inputValidator(changeRoleSchema)
   .handler(async ({ data }) => {
     const admin = await requireAdmin();
 
@@ -50,7 +50,7 @@ export const changeRole = createServerFn({ method: 'POST' })
 // ─── Delete User ────────────────────────────────────────────────────────────
 
 export const deleteUser = createServerFn({ method: 'POST' })
-  .validator(userIdSchema)
+  .inputValidator(userIdSchema)
   .handler(async ({ data }) => {
     const admin = await requireAdmin();
 
@@ -66,7 +66,7 @@ export const deleteUser = createServerFn({ method: 'POST' })
 // ─── Admin Create User ──────────────────────────────────────────────────────
 
 export const createUser = createServerFn({ method: 'POST' })
-  .validator(createUserSchema)
+  .inputValidator(createUserSchema)
   .handler(async ({ data }) => {
     await requireAdmin();
 
@@ -99,7 +99,7 @@ export const createUser = createServerFn({ method: 'POST' })
 // ─── Toggle User Status ─────────────────────────────────────────────────────
 
 export const toggleStatus = createServerFn({ method: 'POST' })
-  .validator(toggleStatusSchema)
+  .inputValidator(toggleStatusSchema)
   .handler(async ({ data }) => {
     const admin = await requireAdmin();
 

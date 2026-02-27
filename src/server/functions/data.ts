@@ -7,7 +7,7 @@ import { requireAdmin } from './_auth';
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
 const importPersonSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   fullName: z.string().min(1),
   gender: z.enum(['male', 'female', 'other']),
   birthYear: z.number().int().nullish(),
@@ -26,8 +26,8 @@ const importPersonSchema = z.object({
 
 const importRelationshipSchema = z.object({
   type: z.enum(['marriage', 'biological_child', 'adopted_child']),
-  personAId: z.string().uuid(),
-  personBId: z.string().uuid(),
+  personAId: z.uuid(),
+  personBId: z.uuid(),
   note: z.string().nullish(),
 });
 
@@ -61,7 +61,7 @@ export const exportData = createServerFn({ method: 'GET' }).handler(async () => 
 const CHUNK_SIZE = 200;
 
 export const importData = createServerFn({ method: 'POST' })
-  .validator(importDataSchema)
+  .inputValidator(importDataSchema)
   .handler(async ({ data }) => {
     await requireAdmin();
 

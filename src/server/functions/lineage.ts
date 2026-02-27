@@ -8,7 +8,7 @@ import { requireAuth } from './_auth';
 const updateBatchSchema = z.object({
   updates: z.array(
     z.object({
-      id: z.string().uuid(),
+      id: z.uuid(),
       generation: z.number().int().nullable(),
       birthOrder: z.number().int().nullable(),
     })
@@ -18,7 +18,7 @@ const updateBatchSchema = z.object({
 // ─── Update Batch ───────────────────────────────────────────────────────────
 
 export const updateBatch = createServerFn({ method: 'POST' })
-  .validator(updateBatchSchema)
+  .inputValidator(updateBatchSchema)
   .handler(async ({ data }) => {
     await requireAuth();
 

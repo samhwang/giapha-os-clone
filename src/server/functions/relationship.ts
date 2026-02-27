@@ -9,18 +9,18 @@ const relationshipTypeEnum = z.enum(['marriage', 'biological_child', 'adopted_ch
 
 const createRelationshipSchema = z.object({
   type: relationshipTypeEnum,
-  personAId: z.string().uuid(),
-  personBId: z.string().uuid(),
+  personAId: z.uuid(),
+  personBId: z.uuid(),
   note: z.string().nullish(),
 });
 
-const idSchema = z.object({ id: z.string().uuid() });
-const personIdSchema = z.object({ personId: z.string().uuid() });
+const idSchema = z.object({ id: z.uuid() });
+const personIdSchema = z.object({ personId: z.uuid() });
 
 // ─── Create Relationship ────────────────────────────────────────────────────
 
 export const createRelationship = createServerFn({ method: 'POST' })
-  .validator(createRelationshipSchema)
+  .inputValidator(createRelationshipSchema)
   .handler(async ({ data }) => {
     await requireAuth();
 
@@ -47,7 +47,7 @@ export const createRelationship = createServerFn({ method: 'POST' })
 // ─── Delete Relationship ────────────────────────────────────────────────────
 
 export const deleteRelationship = createServerFn({ method: 'POST' })
-  .validator(idSchema)
+  .inputValidator(idSchema)
   .handler(async ({ data }) => {
     await requireAuth();
 
@@ -67,7 +67,7 @@ export const getRelationships = createServerFn({ method: 'GET' }).handler(async 
 // ─── Get Relationships For Person ───────────────────────────────────────────
 
 export const getRelationshipsForPerson = createServerFn({ method: 'GET' })
-  .validator(personIdSchema)
+  .inputValidator(personIdSchema)
   .handler(async ({ data }) => {
     return prisma.relationship.findMany({
       where: {

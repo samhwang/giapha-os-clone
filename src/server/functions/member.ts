@@ -28,7 +28,7 @@ const createPersonSchema = z.object({
 });
 
 const updatePersonSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   fullName: z.string().min(1).optional(),
   gender: genderEnum.optional(),
   birthYear: z.number().int().nullish(),
@@ -48,10 +48,10 @@ const updatePersonSchema = z.object({
   currentResidence: z.string().nullish(),
 });
 
-const idSchema = z.object({ id: z.string().uuid() });
+const idSchema = z.object({ id: z.uuid() });
 
 const uploadAvatarSchema = z.object({
-  personId: z.string().uuid(),
+  personId: z.uuid(),
   filename: z.string().min(1),
   contentType: z.string().min(1),
   base64: z.string().min(1),
@@ -60,7 +60,7 @@ const uploadAvatarSchema = z.object({
 // ─── Create Person ──────────────────────────────────────────────────────────
 
 export const createPerson = createServerFn({ method: 'POST' })
-  .validator(createPersonSchema)
+  .inputValidator(createPersonSchema)
   .handler(async ({ data }) => {
     await requireAuth();
 
@@ -87,7 +87,7 @@ export const createPerson = createServerFn({ method: 'POST' })
 // ─── Update Person ──────────────────────────────────────────────────────────
 
 export const updatePerson = createServerFn({ method: 'POST' })
-  .validator(updatePersonSchema)
+  .inputValidator(updatePersonSchema)
   .handler(async ({ data }) => {
     await requireAuth();
 
@@ -124,7 +124,7 @@ export const updatePerson = createServerFn({ method: 'POST' })
 // ─── Delete Member ──────────────────────────────────────────────────────────
 
 export const deleteMember = createServerFn({ method: 'POST' })
-  .validator(idSchema)
+  .inputValidator(idSchema)
   .handler(async ({ data }) => {
     await requireAdmin();
 
@@ -151,7 +151,7 @@ export const deleteMember = createServerFn({ method: 'POST' })
 // ─── Upload Avatar ──────────────────────────────────────────────────────────
 
 export const uploadPersonAvatar = createServerFn({ method: 'POST' })
-  .validator(uploadAvatarSchema)
+  .inputValidator(uploadAvatarSchema)
   .handler(async ({ data }) => {
     await requireAuth();
 
@@ -182,7 +182,7 @@ export const getPersons = createServerFn({ method: 'GET' }).handler(async () => 
 // ─── Get Person By ID ───────────────────────────────────────────────────────
 
 export const getPersonById = createServerFn({ method: 'GET' })
-  .validator(idSchema)
+  .inputValidator(idSchema)
   .handler(async ({ data }) => {
     return prisma.person.findUnique({
       where: { id: data.id },
