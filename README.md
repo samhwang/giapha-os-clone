@@ -30,6 +30,7 @@ A self-hosted Vietnamese genealogy and family tree management application. This 
 - [Node.js](https://nodejs.org/) v22.x
 - [pnpm](https://pnpm.io/) v10.x
 - [Docker](https://www.docker.com/) + Docker Compose
+- [jq](https://jqlang.github.io/jq/) (used by `setup-garage.sh`)
 
 ## Quick Start
 

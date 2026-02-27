@@ -11,8 +11,9 @@ done
 echo "==> Garage is ready."
 
 # Get the node ID
-NODE_ID=$(curl -sf "$GARAGE_ADMIN_API/v1/status" | python3 -c "import sys,json; print(json.load(sys.stdin)['node'])" 2>/dev/null)
-if [ -z "$NODE_ID" ]; then
+STATUS_RESULT=$(curl -sf "$GARAGE_ADMIN_API/v1/status")
+NODE_ID=$(echo "$STATUS_RESULT" | jq -r '.node')
+if [ -z "$NODE_ID" ] || [ "$NODE_ID" = "null" ]; then
   echo "ERROR: Could not retrieve Garage node ID."
   exit 1
 fi
@@ -25,7 +26,8 @@ curl -sf -X POST "$GARAGE_ADMIN_API/v1/layout" \
   -d "[{\"id\": \"$NODE_ID\", \"zone\": \"dc1\", \"capacity\": 1, \"tags\": [\"dev\"]}]" > /dev/null
 
 # Apply the layout
-LAYOUT_VERSION=$(curl -sf "$GARAGE_ADMIN_API/v1/layout" | python3 -c "import sys,json; print(json.load(sys.stdin)['version'] + 1)")
+LAYOUT_RESULT=$(curl -sf "$GARAGE_ADMIN_API/v1/layout")
+LAYOUT_VERSION=$(echo "$LAYOUT_RESULT" | jq '.version + 1')
 curl -sf -X POST "$GARAGE_ADMIN_API/v1/layout/apply" \
   -H "Content-Type: application/json" \
   -d "{\"version\": $LAYOUT_VERSION}" > /dev/null
@@ -36,7 +38,7 @@ echo "==> Creating bucket '$BUCKET_NAME'..."
 BUCKET_RESULT=$(curl -sf -X POST "$GARAGE_ADMIN_API/v1/bucket" \
   -H "Content-Type: application/json" \
   -d "{\"globalAlias\": \"$BUCKET_NAME\"}")
-BUCKET_ID=$(echo "$BUCKET_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+BUCKET_ID=$(echo "$BUCKET_RESULT" | jq -r '.id')
 echo "==> Bucket created: $BUCKET_ID"
 
 # Allow public read access
@@ -50,9 +52,9 @@ echo "==> Creating API key..."
 KEY_RESULT=$(curl -sf -X POST "$GARAGE_ADMIN_API/v1/key" \
   -H "Content-Type: application/json" \
   -d '{"name": "giapha-app"}')
-ACCESS_KEY=$(echo "$KEY_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin)['accessKeyId'])")
-SECRET_KEY=$(echo "$KEY_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin)['secretAccessKey'])")
-KEY_ID=$(echo "$KEY_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])")
+ACCESS_KEY=$(echo "$KEY_RESULT" | jq -r '.accessKeyId')
+SECRET_KEY=$(echo "$KEY_RESULT" | jq -r '.secretAccessKey')
+KEY_ID=$(echo "$KEY_RESULT" | jq -r '.id')
 
 # Grant the key access to the bucket
 curl -sf -X POST "$GARAGE_ADMIN_API/v1/bucket/allow" \
