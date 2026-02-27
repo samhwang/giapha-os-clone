@@ -144,6 +144,9 @@ importers:
       lint-staged:
         specifier: ^16.2.7
         version: 16.2.7
+      pg:
+        specifier: ^8.19.0
+        version: 8.19.0
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
