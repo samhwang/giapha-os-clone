@@ -23,7 +23,8 @@
     "lint:fix": "biome check --write .",
     "lint:fix:unsafe": "biome check --write --unsafe .",
     "ci": "biome ci .",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "prisma:push": "prisma db push --skip-generate"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.999.0",
@@ -58,6 +59,7 @@
     "@content-collections/vite": "^0.2.8",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/devtools-vite": "^0.3.11",
+    "@testcontainers/postgresql": "^11.12.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.2.0",
@@ -71,6 +73,7 @@
     "jsdom": "^27.0.0",
     "lint-staged": "^16.2.7",
     "remark-gfm": "^4.0.1",
+    "testcontainers": "^11.12.0",
     "tsx": "^4.21.0",
     "typescript": "^5.7.2",
     "vite": "^7.1.7",
