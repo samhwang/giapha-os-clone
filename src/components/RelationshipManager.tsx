@@ -1,6 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
 import { Trash2 } from 'lucide-react';
 import { useCallback, useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPerson, getPersons } from '@/server/functions/member';
 import { createRelationship, deleteRelationship, getRelationshipsForPerson } from '@/server/functions/relationship';
 import type { Person, RelationshipType } from '@/types';
@@ -23,6 +24,7 @@ interface EnrichedRelationship {
 }
 
 export default function RelationshipManager({ personId, isAdmin, personGender }: RelationshipManagerProps) {
+  const { t } = useTranslation();
   const dashboardContext = useContext(DashboardContext);
   const { setMemberModalId } = useDashboard();
   const navigate = useNavigate();
@@ -113,10 +115,10 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
             const spouseGender = spousePerson.gender;
             let noteLabel =
               spouseGender === 'female'
-                ? `Con dâu (vợ của ${childPerson.fullName})`
+                ? t('relationship.daughterInLaw', { name: childPerson.fullName })
                 : spouseGender === 'male'
-                  ? `Con rể (chồng của ${childPerson.fullName})`
-                  : `Vợ/chồng của ${childPerson.fullName}`;
+                  ? t('relationship.sonInLaw', { name: childPerson.fullName })
+                  : t('relationship.spouseOf', { name: childPerson.fullName });
 
             if (m.note) noteLabel += ` - ${m.note}`;
 
@@ -137,7 +139,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
     } finally {
       setLoading(false);
     }
-  }, [personId]);
+  }, [personId, t]);
 
   useEffect(() => {
     fetchRelationships();
@@ -192,7 +194,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
       fetchRelationships();
     } catch (err) {
       const e = err as Error;
-      alert(`Lỗi: ${e.message}`);
+      alert(`${t('error.generic')} ${e.message}`);
     } finally {
       setProcessing(false);
     }
@@ -201,7 +203,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
   const handleBulkAdd = async () => {
     const validChildren = bulkChildren.filter((c) => c.name.trim() !== '');
     if (validChildren.length === 0) {
-      alert('Vui lòng nhập ít nhất tên của 1 người con.');
+      alert(t('relationship.bulkMinOneChild'));
       return;
     }
 
@@ -247,12 +249,12 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
         setSelectedSpouseId('');
         fetchRelationships();
       } else {
-        alert(`Đã xảy ra lỗi. Chỉ lưu thành công ${successCount}/${validChildren.length} người.`);
+        alert(t('relationship.bulkPartialError', { count: successCount, total: validChildren.length }));
         fetchRelationships();
       }
     } catch (err) {
       const e = err as Error;
-      alert(`Lỗi: ${e.message}`);
+      alert(`${t('error.generic')} ${e.message}`);
     } finally {
       setProcessing(false);
     }
@@ -260,7 +262,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
 
   const handleQuickAddSpouse = async () => {
     if (!newSpouseName.trim()) {
-      alert('Vui lòng nhập tên Vợ/Chồng.');
+      alert(t('relationship.spouseNameRequired'));
       return;
     }
 
@@ -293,36 +295,36 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
       fetchRelationships();
     } catch (err) {
       const e = err as Error;
-      alert(`Lỗi: ${e.message}`);
+      alert(`${t('error.generic')} ${e.message}`);
     } finally {
       setProcessing(false);
     }
   };
 
   const handleDelete = async (relId: string) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa mối quan hệ này?')) return;
+    if (!confirm(t('relationship.deleteConfirm'))) return;
     try {
       await deleteRelationship({ data: { id: relId } });
       fetchRelationships();
     } catch (err) {
       const e = err as Error;
-      alert(`Lỗi: ${e.message}`);
+      alert(`${t('error.generic')} ${e.message}`);
     }
   };
 
   const groupByType = (type: string) => relationships.filter((r) => r.direction === type);
 
-  if (loading) return <div className="text-stone-500 text-sm">Đang tải thông tin gia đình...</div>;
+  if (loading) return <div className="text-stone-500 text-sm">{t('relationship.loadingFamily')}</div>;
 
   return (
     <div className="space-y-6">
       {['parent', 'spouse', 'child', 'child_in_law'].map((group) => {
         const items = groupByType(group);
         let title = '';
-        if (group === 'parent') title = 'Bố / Mẹ';
-        if (group === 'spouse') title = 'Vợ / Chồng';
-        if (group === 'child') title = 'Con cái';
-        if (group === 'child_in_law') title = 'Con dâu / Con rể';
+        if (group === 'parent') title = t('relationship.parents');
+        if (group === 'spouse') title = t('relationship.spouse');
+        if (group === 'child') title = t('relationship.children');
+        if (group === 'child_in_law') title = t('relationship.inLawChildren');
 
         if (items.length === 0 && !isAdmin) return null;
 
@@ -351,7 +353,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                       <div className="flex flex-col">
                         <span className="text-stone-900 font-medium text-sm">{rel.targetPerson.fullName}</span>
                         {rel.note && <span className="text-xs text-amber-600 font-medium italic mt-0.5">({rel.note})</span>}
-                        {rel.type === 'adopted_child' && <span className="text-xs text-stone-400 italic mt-0.5">(Con nuôi)</span>}
+                        {rel.type === 'adopted_child' && <span className="text-xs text-stone-400 italic mt-0.5">({t('relationship.adopted')})</span>}
                       </div>
                     </button>
                     {isAdmin && rel.direction !== 'child_in_law' && (
@@ -359,8 +361,8 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                         type="button"
                         onClick={() => handleDelete(rel.id)}
                         className="text-stone-300 hover:text-red-500 hover:bg-red-50 p-2 sm:p-2.5 rounded-lg transition-colors flex items-center justify-center ml-2"
-                        title="Xóa mối quan hệ"
-                        aria-label="Xóa mối quan hệ"
+                        title={t('relationship.deleteRelationship')}
+                        aria-label={t('relationship.deleteRelationship')}
                       >
                         <Trash2 className="size-4" />
                       </button>
@@ -369,7 +371,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 ))}
               </ul>
             ) : (
-              <p className="text-xs text-stone-400 italic">Chưa có thông tin.</p>
+              <p className="text-xs text-stone-400 italic">{t('relationship.noInfo')}</p>
             )}
           </div>
         );
@@ -383,21 +385,21 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
             onClick={() => setIsAddingBulk(true)}
             className="flex-1 py-3 border-2 border-dashed border-stone-200 bg-stone-50/50 hover:bg-stone-50 rounded-xl sm:rounded-2xl text-stone-500 font-medium text-sm hover:border-sky-400 hover:text-sky-700 transition-all duration-200"
           >
-            + Thêm Con
+            {t('relationship.addChild')}
           </button>
           <button
             type="button"
             onClick={() => setIsAddingSpouse(true)}
             className="flex-1 py-3 border-2 border-dashed border-stone-200 bg-stone-50/50 hover:bg-stone-50 rounded-xl sm:rounded-2xl text-stone-500 font-medium text-sm hover:border-rose-400 hover:text-rose-700 transition-all duration-200"
           >
-            + Thêm Vợ/Chồng
+            {t('relationship.addSpouse')}
           </button>
           <button
             type="button"
             onClick={() => setIsAdding(true)}
             className="flex-1 py-3 border-2 border-dashed border-stone-200 bg-stone-50/50 hover:bg-stone-50 rounded-xl sm:rounded-2xl text-stone-500 font-medium text-sm hover:border-amber-400 hover:text-amber-700 transition-all duration-200"
           >
-            + Thêm Mối Quan Hệ
+            {t('relationship.addRelationship')}
           </button>
         </div>
       )}
@@ -405,16 +407,16 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
       {/* Add Relationship Form */}
       {isAdmin && isAdding && (
         <div className="mt-4 bg-stone-50/50 p-4 sm:p-5 rounded-xl border border-stone-200 shadow-sm">
-          <h4 className="font-bold text-stone-800 mb-3 text-sm">Thêm Quan Hệ Mới</h4>
+          <h4 className="font-bold text-stone-800 mb-3 text-sm">{t('relationship.addNewRelationship')}</h4>
           <div className="space-y-3">
             <div>
               <label htmlFor="relNote" className="block text-xs font-medium text-stone-500 mb-1">
-                Ghi chú mối quan hệ (tuỳ chọn)
+                {t('relationship.noteLabel')}
               </label>
               <input
                 id="relNote"
                 type="text"
-                placeholder="VD: Vợ cả, Vợ hai, Chồng trước..."
+                placeholder={t('relationship.notePlaceholder')}
                 value={newRelNote}
                 onChange={(e) => setNewRelNote(e.target.value)}
                 className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 sm:p-2.5 border mb-3 transition-colors"
@@ -422,7 +424,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
             </div>
             <div>
               <label htmlFor="relDirection" className="block text-xs font-medium text-stone-500 mb-1">
-                Loại quan hệ
+                {t('relationship.typeLabel')}
               </label>
               <select
                 id="relDirection"
@@ -430,16 +432,16 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 onChange={(e) => setNewRelDirection(e.target.value as 'parent' | 'child' | 'spouse')}
                 className="bg-white text-stone-900 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 sm:p-2.5 border transition-colors"
               >
-                <option value="parent">Người này là Con của...</option>
-                <option value="spouse">Người này là Vợ/Chồng của...</option>
-                <option value="child">Người này là Bố/Mẹ của...</option>
+                <option value="parent">{t('relationship.typeChild')}</option>
+                <option value="spouse">{t('relationship.typeSpouse')}</option>
+                <option value="child">{t('relationship.typeParent')}</option>
               </select>
             </div>
 
             {(newRelDirection === 'child' || newRelDirection === 'parent') && (
               <div>
                 <label htmlFor="relType" className="block text-xs font-medium text-stone-500 mb-1">
-                  Chi tiết
+                  {t('relationship.detailLabel')}
                 </label>
                 <select
                   id="relType"
@@ -447,28 +449,28 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                   onChange={(e) => setNewRelType(e.target.value as RelationshipType)}
                   className="bg-white text-stone-900 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 sm:p-2.5 border transition-colors"
                 >
-                  <option value="biological_child">Con ruột</option>
-                  <option value="adopted_child">Con nuôi</option>
+                  <option value="biological_child">{t('relationship.biological')}</option>
+                  <option value="adopted_child">{t('relationship.adopted')}</option>
                 </select>
               </div>
             )}
 
             <div>
               <label htmlFor="relSearch" className="block text-xs font-medium text-stone-500 mb-1">
-                Tìm người thân
+                {t('relationship.searchPerson')}
               </label>
               <input
                 id="relSearch"
                 type="text"
-                placeholder="Nhập tên để tìm..."
+                placeholder={t('relationship.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 sm:p-2.5 border transition-colors"
               />
               {searchResults.length > 0 && (
-                <div className="mt-2 bg-white border border-stone-200 rounded-md shadow-lg max-h-62.5 overflow-y-auto">
+                <div className="mt-2 bg-white border border-stone-200 rounded-md shadow-lg max-h-[250px] overflow-y-auto">
                   <div className="px-3 py-1.5 bg-stone-100 text-[10px] font-bold text-stone-500 uppercase tracking-wide border-b border-stone-200 sticky top-0 z-10">
-                    Kết quả tìm kiếm
+                    {t('relationship.searchResults')}
                   </div>
                   {searchResults.map((p) => (
                     <button
@@ -495,7 +497,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                   ))}
                 </div>
               )}
-              {selectedTargetId && <p className="text-xs text-green-600 mt-1">Đã chọn: {searchTerm}</p>}
+              {selectedTargetId && <p className="text-xs text-green-600 mt-1">{t('relationship.selected', { name: searchTerm })}</p>}
             </div>
 
             <div className="flex gap-2 pt-2">
@@ -505,7 +507,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 disabled={!selectedTargetId || processing}
                 className="flex-1 bg-amber-700 text-white py-2 sm:py-2.5 rounded-md sm:rounded-lg text-sm font-medium hover:bg-amber-800 disabled:opacity-50 transition-colors"
               >
-                {processing ? 'Đang lưu...' : 'Lưu'}
+                {processing ? t('common.saving') : t('common.save')}
               </button>
               <button
                 type="button"
@@ -517,7 +519,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 }}
                 className="px-4 py-2 sm:py-2.5 bg-white border border-stone-300 text-stone-700 rounded-md sm:rounded-lg text-sm hover:bg-stone-50 transition-colors"
               >
-                Hủy
+                {t('common.cancel')}
               </button>
             </div>
           </div>
@@ -527,11 +529,11 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
       {/* Bulk Add Children Form */}
       {isAdmin && isAddingBulk && (
         <div className="mt-4 bg-sky-50/50 p-4 sm:p-5 rounded-xl border border-sky-200 shadow-sm">
-          <h4 className="font-bold text-sky-800 mb-3 text-sm">Thêm Nhanh Nhiều Con</h4>
+          <h4 className="font-bold text-sky-800 mb-3 text-sm">{t('relationship.bulkAddChildren')}</h4>
           <div className="space-y-4">
             <div>
               <label htmlFor="bulkSpouse" className="block text-xs font-medium text-stone-500 mb-1">
-                Chọn người mẹ/cha còn lại
+                {t('relationship.selectOtherParent')}
               </label>
               <select
                 id="bulkSpouse"
@@ -539,7 +541,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 onChange={(e) => setSelectedSpouseId(e.target.value)}
                 className="flex-1 bg-white text-stone-900 text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2 sm:p-2.5 border transition-colors"
               >
-                <option value="unknown">Không rõ (hoặc Vợ/Chồng khác chưa thêm)</option>
+                <option value="unknown">{t('relationship.unknownParent')}</option>
                 {groupByType('spouse').map((rel) => (
                   <option key={rel.id} value={rel.targetPerson.id}>
                     {rel.targetPerson.fullName} {rel.note ? `(${rel.note})` : ''}
@@ -549,14 +551,14 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
             </div>
 
             <div className="space-y-2">
-              <span className="block text-xs font-medium text-stone-500 mb-1">Danh sách các con</span>
+              <span className="block text-xs font-medium text-stone-500 mb-1">{t('relationship.childrenList')}</span>
               {bulkChildren.map((child, index) => (
                 // biome-ignore lint/suspicious/noArrayIndexKey: dynamic form rows without stable IDs
                 <div key={index} className="flex gap-2 items-center">
                   <span className="text-stone-400 text-xs w-4">{index + 1}.</span>
                   <input
                     type="text"
-                    placeholder="Họ và tên..."
+                    placeholder={t('relationship.fullNamePlaceholder')}
                     value={child.name}
                     onChange={(e) => {
                       const newBulk = [...bulkChildren];
@@ -574,13 +576,13 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                     }}
                     className="flex-1 bg-white text-stone-900 text-sm rounded-md border-stone-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2 border"
                   >
-                    <option value="male">Nam</option>
-                    <option value="female">Nữ</option>
-                    <option value="other">Khác</option>
+                    <option value="male">{t('common.male')}</option>
+                    <option value="female">{t('common.female')}</option>
+                    <option value="other">{t('common.other')}</option>
                   </select>
                   <input
                     type="number"
-                    placeholder="Năm sinh"
+                    placeholder={t('relationship.birthYearPlaceholder')}
                     value={child.birthYear}
                     onChange={(e) => {
                       const newBulk = [...bulkChildren];
@@ -611,7 +613,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 }}
                 className="text-sky-600 text-xs font-semibold hover:text-sky-800 mt-2 px-6"
               >
-                + Thêm dòng
+                {t('relationship.addRow')}
               </button>
             </div>
 
@@ -622,7 +624,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 disabled={processing || bulkChildren.every((c) => c.name.trim() === '')}
                 className="flex-1 bg-sky-600 text-white py-2 sm:py-2.5 rounded-md sm:rounded-lg text-sm font-medium hover:bg-sky-700 disabled:opacity-50 transition-colors"
               >
-                {processing ? 'Đang lưu...' : 'Lưu Tất Cả'}
+                {processing ? t('common.saving') : t('relationship.saveAll')}
               </button>
               <button
                 type="button"
@@ -633,7 +635,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 }}
                 className="px-4 py-2 sm:py-2.5 bg-white border border-stone-300 text-stone-700 rounded-md sm:rounded-lg text-sm hover:bg-stone-50 transition-colors"
               >
-                Hủy
+                {t('common.cancel')}
               </button>
             </div>
           </div>
@@ -643,16 +645,16 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
       {/* Quick Add Spouse Form */}
       {isAdmin && isAddingSpouse && (
         <div className="mt-4 bg-rose-50/50 p-4 sm:p-5 rounded-xl border border-rose-200 shadow-sm">
-          <h4 className="font-bold text-rose-800 mb-3 text-sm">Thêm Nhanh Vợ/Chồng</h4>
+          <h4 className="font-bold text-rose-800 mb-3 text-sm">{t('relationship.quickAddSpouse')}</h4>
           <div className="space-y-3">
             <div>
               <label htmlFor="spouseName" className="block text-xs font-medium text-rose-700 mb-1">
-                Họ và Tên *
+                {t('relationship.fullNameRequired')}
               </label>
               <input
                 id="spouseName"
                 type="text"
-                placeholder="Nhập họ và tên..."
+                placeholder={t('member.fullNamePlaceholder')}
                 value={newSpouseName}
                 onChange={(e) => setNewSpouseName(e.target.value)}
                 className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 p-2 sm:p-2.5 border transition-colors"
@@ -660,12 +662,12 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
             </div>
             <div>
               <label htmlFor="spouseBirthYear" className="block text-xs font-medium text-rose-700 mb-1">
-                Năm sinh (Tuỳ chọn)
+                {t('relationship.birthYearOptional')}
               </label>
               <input
                 id="spouseBirthYear"
                 type="number"
-                placeholder="VD: 1980"
+                placeholder={t('relationship.birthYearPlaceholder')}
                 value={newSpouseBirthYear}
                 onChange={(e) => setNewSpouseBirthYear(e.target.value)}
                 className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 p-2 sm:p-2.5 border transition-colors"
@@ -673,19 +675,21 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
             </div>
             <div>
               <label htmlFor="spouseRelNote" className="block text-xs font-medium text-rose-700 mb-1">
-                Ghi chú mối quan hệ (Ví dụ: Vợ cả, Chồng thứ...)
+                {t('relationship.spouseNoteLabel')}
               </label>
               <input
                 id="spouseRelNote"
                 type="text"
-                placeholder="Tuỳ chọn..."
+                placeholder={t('relationship.spouseNotePlaceholder')}
                 value={newSpouseNote}
                 onChange={(e) => setNewSpouseNote(e.target.value)}
                 className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 p-2 sm:p-2.5 border transition-colors"
               />
             </div>
             <p className="text-xs text-stone-500 italic mt-1">
-              * Giới tính sẽ tự động gán là {personGender === 'male' ? 'Nữ' : personGender === 'female' ? 'Nam' : 'Nữ'} (dựa theo giới tính người hiện tại).
+              {t('relationship.autoGenderNote', {
+                gender: personGender === 'male' ? t('common.female') : personGender === 'female' ? t('common.male') : t('common.female'),
+              })}
             </p>
             <div className="flex gap-2 pt-2">
               <button
@@ -694,7 +698,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 disabled={!newSpouseName.trim() || processing}
                 className="flex-1 bg-rose-600 text-white py-2 sm:py-2.5 rounded-md sm:rounded-lg text-sm font-medium hover:bg-rose-700 disabled:opacity-50 transition-colors"
               >
-                {processing ? 'Đang lưu...' : 'Lưu'}
+                {processing ? t('common.saving') : t('common.save')}
               </button>
               <button
                 type="button"
@@ -706,7 +710,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 }}
                 className="px-4 py-2 sm:py-2.5 bg-white border border-stone-300 text-stone-700 rounded-md sm:rounded-lg text-sm hover:bg-stone-50 transition-colors"
               >
-                Hủy
+                {t('common.cancel')}
               </button>
             </div>
           </div>

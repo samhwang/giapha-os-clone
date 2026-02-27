@@ -262,8 +262,17 @@
     "hideGuide": "Ẩn hướng dẫn",
     "showGuide": "Hướng dẫn sử dụng & Bảng danh xưng",
     "howItWorks": "Cách hoạt động",
+    "howStep1": "Hệ thống xây dựng đồ thị gia phả từ toàn bộ quan hệ huyết thống và hôn nhân.",
+    "howStep2": "Tìm <strong>Tổ tiên chung gần nhất (LCA)</strong> để xác định khoảng cách thế hệ.",
+    "howStep3": "Xác định <strong>vế Nội/Ngoại</strong> dựa trên giới tính của tổ tiên tại điểm rẽ nhánh.",
+    "howStep4": "So sánh <strong>thứ bậc (seniority)</strong> giữa các nhánh từ tổ tiên chung để quyết định quan hệ \"Anh/Em\" hoặc \"Bác/Chú\".",
+    "howStep5": "Tra bảng danh xưng tiếng Việt chuyên sâu bao gồm cả các mối quan hệ thông qua hôn nhân.",
     "dataRequirements": "Yêu cầu dữ liệu để kết quả chính xác",
-    "referenceTable": "Bảng danh xưng tham khảo"
+    "dataReq1": "Nhập đầy đủ quan hệ <strong>Cha/Mẹ - Con</strong> và <strong>Kết hôn</strong>.",
+    "dataReq2": "<strong>Giới tính</strong> chính xác để phân biệt Cô/Dì, Chú/Cậu.",
+    "dataReq3": "<strong>Thứ tự sinh (Birth Order)</strong> là yếu tố then chốt để phân định thứ bậc Anh/Em trong dòng họ.",
+    "referenceTable": "Bảng danh xưng tham khảo",
+    "generationShort": "Đ.{{gen}}"
   },
   "admin": {
     "roleUpdated": "Đã cập nhật vai trò người dùng thành công.",

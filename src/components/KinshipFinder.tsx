@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeftRight, BookOpen, GitMerge, Info, Search, Sparkles, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { PersonNode, RelEdge } from '@/types';
 import { computeKinship } from '@/utils/kinshipHelpers';
 import DefaultAvatar from './DefaultAvatar';
@@ -36,6 +37,7 @@ function PersonSelector({
   persons: PersonNode[];
   disabledId?: string;
 }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
 
@@ -70,7 +72,7 @@ function PersonSelector({
           )}
         </div>
 
-        <span className="font-semibold truncate">{selected ? selected.fullName : 'Chọn thành viên...'}</span>
+        <span className="font-semibold truncate">{selected ? selected.fullName : t('kinship.selectMember')}</span>
         {selected?.birthYear && <span className="text-xs text-stone-400 shrink-0">({selected.birthYear})</span>}
       </button>
 
@@ -87,7 +89,7 @@ function PersonSelector({
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400" />
                 <input
-                  placeholder="Tìm tên..."
+                  placeholder={t('kinship.searchName')}
                   className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-stone-200 focus:outline-none focus:border-amber-400"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -96,7 +98,7 @@ function PersonSelector({
             </div>
             <div className="max-h-52 overflow-y-auto">
               {filtered.length === 0 ? (
-                <p className="text-center py-6 text-sm text-stone-400">Không tìm thấy</p>
+                <p className="text-center py-6 text-sm text-stone-400">{t('kinship.notFound')}</p>
               ) : (
                 filtered.map((p) => (
                   <button
@@ -125,7 +127,11 @@ function PersonSelector({
 
                     <span className="text-sm font-medium text-stone-700 truncate">{p.fullName}</span>
                     {p.birthYear && <span className="text-xs text-stone-400 ml-auto shrink-0">{p.birthYear}</span>}
-                    {p.generation != null && <span className="text-xs text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md shrink-0">Đ.{p.generation}</span>}
+                    {p.generation != null && (
+                      <span className="text-xs text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md shrink-0">
+                        {t('kinship.generationShort', { gen: p.generation })}
+                      </span>
+                    )}
                   </button>
                 ))
               )}
@@ -149,6 +155,7 @@ const KINSHIP_TERMS = [
 ];
 
 export default function KinshipFinder({ persons, relationships }: Props) {
+  const { t } = useTranslation();
   const [personA, setPersonA] = useState<PersonNode | null>(null);
   const [personB, setPersonB] = useState<PersonNode | null>(null);
   const [showGuide, setShowGuide] = useState(false);
@@ -167,16 +174,16 @@ export default function KinshipFinder({ persons, relationships }: Props) {
     <div className="space-y-6">
       <div className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-6 shadow-sm">
         <div className="flex items-end gap-3">
-          <PersonSelector label="Thành viên A" selected={personA} onSelect={setPersonA} persons={persons} disabledId={personB?.id} />
+          <PersonSelector label={t('kinship.memberA')} selected={personA} onSelect={setPersonA} persons={persons} disabledId={personB?.id} />
           <button
             type="button"
             onClick={swap}
-            title="Đổi chỗ"
+            title={t('kinship.swap')}
             className="size-10 shrink-0 mb-0.5 flex items-center justify-center rounded-xl bg-stone-100 hover:bg-amber-100 hover:text-amber-600 text-stone-500 transition-all border border-stone-200"
           >
             <ArrowLeftRight className="size-4" />
           </button>
-          <PersonSelector label="Thành viên B" selected={personB} onSelect={setPersonB} persons={persons} disabledId={personA?.id} />
+          <PersonSelector label={t('kinship.memberB')} selected={personB} onSelect={setPersonB} persons={persons} disabledId={personA?.id} />
         </div>
       </div>
 
@@ -184,11 +191,11 @@ export default function KinshipFinder({ persons, relationships }: Props) {
         {!personA || !personB ? (
           <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center py-16 text-stone-400">
             <Users className="size-12 mx-auto mb-3 opacity-30" />
-            <p className="font-medium">Chọn hai thành viên để tính quan hệ</p>
+            <p className="font-medium">{t('kinship.selectTwo')}</p>
           </motion.div>
         ) : result === null ? (
           <motion.div key="same" className="text-center py-8 text-stone-400">
-            Hãy chọn hai người khác nhau.
+            {t('kinship.selectDifferent')}
           </motion.div>
         ) : (
           <motion.div
@@ -212,7 +219,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
                 className="bg-white/90 border border-stone-200/60 rounded-2xl p-5 shadow-sm"
               >
                 <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">
-                  {personA.fullName} gọi {personB.fullName} là
+                  {t('kinship.aCallsB', { personA: personA.fullName, personB: personB.fullName })}
                 </p>
                 <p className="text-4xl font-serif font-bold text-amber-600 capitalize">{result.aCallsB}</p>
               </motion.div>
@@ -224,7 +231,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
                 className="bg-white/90 border border-stone-200/60 rounded-2xl p-5 shadow-sm"
               >
                 <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">
-                  {personB.fullName} gọi {personA.fullName} là
+                  {t('kinship.bCallsA', { personA: personA.fullName, personB: personB.fullName })}
                 </p>
                 <p className="text-4xl font-serif font-bold text-amber-600 capitalize">{result.bCallsA}</p>
               </motion.div>
@@ -239,7 +246,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
               >
                 <div className="flex items-center gap-2 mb-4">
                   <GitMerge className="size-4 text-stone-400" />
-                  <p className="text-xs font-semibold uppercase tracking-wider text-stone-400">Phân tích con đường quan hệ</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-stone-400">{t('kinship.pathAnalysis')}</p>
                 </div>
                 <div className="space-y-4">
                   {result.pathLabels.map((pathLabel, i) => (
@@ -255,7 +262,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
             )}
 
             {(result.aCallsB.includes('/') || result.aCallsB.includes('họ hàng')) && (
-              <p className="text-xs text-stone-400 italic px-1">* Danh xưng chính xác dựa trên giới tính, thứ tự sinh của các nhánh và vế Nội/Ngoại.</p>
+              <p className="text-xs text-stone-400 italic px-1">{t('kinship.kinshipNote')}</p>
             )}
           </motion.div>
         )}
@@ -268,7 +275,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
           className="flex items-center gap-2 text-sm font-semibold text-stone-500 hover:text-amber-600 transition-colors"
         >
           <BookOpen className="size-4" />
-          {showGuide ? 'Ẩn hướng dẫn' : 'Hướng dẫn sử dụng & Bảng danh xưng'}
+          {showGuide ? t('kinship.hideGuide') : t('kinship.showGuide')}
         </button>
 
         <AnimatePresence>
@@ -284,51 +291,38 @@ export default function KinshipFinder({ persons, relationships }: Props) {
                 <div className="bg-blue-50/60 border border-blue-100 rounded-2xl p-5">
                   <p className="text-sm font-bold text-blue-700 flex items-center gap-2 mb-3">
                     <Info className="size-4" />
-                    Cách hoạt động
+                    {t('kinship.howItWorks')}
                   </p>
                   <ol className="space-y-2 text-sm text-blue-800">
-                    <li className="flex gap-2">
-                      <span className="font-bold shrink-0">1.</span>Hệ thống xây dựng đồ thị gia phả từ toàn bộ quan hệ huyết thống và hôn nhân.
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-bold shrink-0">2.</span>Tìm <strong>Tổ tiên chung gần nhất (LCA)</strong> để xác định khoảng cách thế hệ.
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-bold shrink-0">3.</span>Xác định <strong>vế Nội/Ngoại</strong> dựa trên giới tính của tổ tiên tại điểm rẽ nhánh.
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-bold shrink-0">4.</span>So sánh <strong>thứ bậc (seniority)</strong> giữa các nhánh từ tổ tiên chung để quyết định
-                      quan hệ &quot;Anh/Em&quot; hoặc &quot;Bác/Chú&quot;.
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-bold shrink-0">5.</span>Tra bảng danh xưng tiếng Việt chuyên sâu bao gồm cả các mối quan hệ thông qua hôn nhân.
-                    </li>
+                    {[1, 2, 3, 4, 5].map((step) => (
+                      <li key={step} className="flex gap-2">
+                        <span className="font-bold shrink-0">{step}.</span>
+                        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: translation strings are from our own JSON files */}
+                        <span dangerouslySetInnerHTML={{ __html: t(`kinship.howStep${step}`) }} />
+                      </li>
+                    ))}
                   </ol>
                 </div>
 
                 <div className="bg-amber-50/60 border border-amber-100 rounded-2xl p-5">
                   <p className="text-sm font-bold text-amber-700 flex items-center gap-2 mb-2">
                     <Info className="size-4" />
-                    Yêu cầu dữ liệu để kết quả chính xác
+                    {t('kinship.dataRequirements')}
                   </p>
                   <ul className="space-y-1.5 text-sm text-amber-800">
-                    <li className="flex gap-2">
-                      <span className="text-amber-400 shrink-0">•</span>Nhập đầy đủ quan hệ <strong>Cha/Mẹ - Con</strong> và <strong>Kết hôn</strong>.
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-amber-400 shrink-0">•</span>
-                      <strong>Giới tính</strong> chính xác để phân biệt Cô/Dì, Chú/Cậu.
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-amber-400 shrink-0">•</span>
-                      <strong>Thứ tự sinh (Birth Order)</strong> là yếu tố then chốt để phân định thứ bậc Anh/Em trong dòng họ.
-                    </li>
+                    {[1, 2, 3].map((req) => (
+                      <li key={req} className="flex gap-2">
+                        <span className="text-amber-400 shrink-0">•</span>
+                        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: translation strings are from our own JSON files */}
+                        <span dangerouslySetInnerHTML={{ __html: t(`kinship.dataReq${req}`) }} />
+                      </li>
+                    ))}
                   </ul>
                 </div>
 
                 <div className="bg-white/80 border border-stone-200/60 rounded-2xl overflow-hidden">
                   <div className="px-5 py-3 border-b border-stone-100 bg-stone-50/50">
-                    <p className="text-sm font-bold text-stone-600">Bảng danh xưng tham khảo</p>
+                    <p className="text-sm font-bold text-stone-600">{t('kinship.referenceTable')}</p>
                   </div>
                   <div className="divide-y divide-stone-100">
                     {KINSHIP_TERMS.map((row) => (

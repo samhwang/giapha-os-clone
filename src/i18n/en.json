@@ -262,8 +262,17 @@
     "hideGuide": "Hide guide",
     "showGuide": "Usage Guide & Kinship Reference Table",
     "howItWorks": "How it works",
+    "howStep1": "The system builds a family graph from all blood and marriage relationships.",
+    "howStep2": "Finds the <strong>Lowest Common Ancestor (LCA)</strong> to determine generational distance.",
+    "howStep3": "Determines <strong>paternal/maternal side</strong> based on the ancestor's gender at the branching point.",
+    "howStep4": "Compares <strong>seniority</strong> between branches from the common ancestor to determine elder/younger relationships.",
+    "howStep5": "Looks up the comprehensive Vietnamese kinship title table including in-law relationships.",
     "dataRequirements": "Data requirements for accurate results",
-    "referenceTable": "Kinship Reference Table"
+    "dataReq1": "Enter all <strong>Parent-Child</strong> and <strong>Marriage</strong> relationships.",
+    "dataReq2": "Accurate <strong>gender</strong> to distinguish between paternal/maternal aunts and uncles.",
+    "dataReq3": "<strong>Birth Order</strong> is the key factor for determining elder/younger seniority in the lineage.",
+    "referenceTable": "Kinship Reference Table",
+    "generationShort": "G.{{gen}}"
   },
   "admin": {
     "roleUpdated": "User role updated successfully.",
