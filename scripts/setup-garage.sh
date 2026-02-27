@@ -2,6 +2,7 @@
 set -euo pipefail
 
 GARAGE_ADMIN_API="http://localhost:3903"
+GARAGE_ADMIN_TOKEN="dev-admin-token"
 BUCKET_NAME="avatars"
 
 echo "==> Waiting for Garage to be ready..."
@@ -11,7 +12,8 @@ done
 echo "==> Garage is ready."
 
 # Get the node ID
-STATUS_RESULT=$(curl -sf "$GARAGE_ADMIN_API/v1/status")
+STATUS_RESULT=$(curl -sf "$GARAGE_ADMIN_API/v1/status" \
+  -H "Authorization: Bearer $GARAGE_ADMIN_TOKEN")
 NODE_ID=$(echo "$STATUS_RESULT" | jq -r '.node')
 if [ -z "$NODE_ID" ] || [ "$NODE_ID" = "null" ]; then
   echo "ERROR: Could not retrieve Garage node ID."
@@ -22,13 +24,16 @@ echo "==> Node ID: $NODE_ID"
 # Assign the node to a zone with full capacity
 echo "==> Configuring node layout..."
 curl -sf -X POST "$GARAGE_ADMIN_API/v1/layout" \
+  -H "Authorization: Bearer $GARAGE_ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
-  -d "[{\"id\": \"$NODE_ID\", \"zone\": \"dc1\", \"capacity\": 1, \"tags\": [\"dev\"]}]" > /dev/null
+  -d "[{\"id\": \"$NODE_ID\", \"zone\": \"dc1\", \"capacity\": 1073741824, \"tags\": [\"dev\"]}]" > /dev/null
 
 # Apply the layout
-LAYOUT_RESULT=$(curl -sf "$GARAGE_ADMIN_API/v1/layout")
+LAYOUT_RESULT=$(curl -sf "$GARAGE_ADMIN_API/v1/layout" \
+  -H "Authorization: Bearer $GARAGE_ADMIN_TOKEN")
 LAYOUT_VERSION=$(echo "$LAYOUT_RESULT" | jq '.version + 1')
 curl -sf -X POST "$GARAGE_ADMIN_API/v1/layout/apply" \
+  -H "Authorization: Bearer $GARAGE_ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d "{\"version\": $LAYOUT_VERSION}" > /dev/null
 echo "==> Layout applied."
@@ -36,6 +41,7 @@ echo "==> Layout applied."
 # Create the bucket
 echo "==> Creating bucket '$BUCKET_NAME'..."
 BUCKET_RESULT=$(curl -sf -X POST "$GARAGE_ADMIN_API/v1/bucket" \
+  -H "Authorization: Bearer $GARAGE_ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d "{\"globalAlias\": \"$BUCKET_NAME\"}")
 BUCKET_ID=$(echo "$BUCKET_RESULT" | jq -r '.id')
@@ -44,20 +50,23 @@ echo "==> Bucket created: $BUCKET_ID"
 # Allow public read access
 echo "==> Setting bucket to allow public reads..."
 curl -sf -X PUT "$GARAGE_ADMIN_API/v1/bucket?id=$BUCKET_ID" \
+  -H "Authorization: Bearer $GARAGE_ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"websiteAccess":{"enabled":true,"indexDocument":"index.html"}}' > /dev/null
 
 # Create an API key
 echo "==> Creating API key..."
 KEY_RESULT=$(curl -sf -X POST "$GARAGE_ADMIN_API/v1/key" \
+  -H "Authorization: Bearer $GARAGE_ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"name": "giapha-app"}')
 ACCESS_KEY=$(echo "$KEY_RESULT" | jq -r '.accessKeyId')
 SECRET_KEY=$(echo "$KEY_RESULT" | jq -r '.secretAccessKey')
-KEY_ID=$(echo "$KEY_RESULT" | jq -r '.id')
+KEY_ID=$(echo "$KEY_RESULT" | jq -r '.accessKeyId')
 
 # Grant the key access to the bucket
 curl -sf -X POST "$GARAGE_ADMIN_API/v1/bucket/allow" \
+  -H "Authorization: Bearer $GARAGE_ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d "{\"bucketId\": \"$BUCKET_ID\", \"accessKeyId\": \"$KEY_ID\", \"permissions\": {\"read\": true, \"write\": true, \"owner\": true}}" > /dev/null
 
