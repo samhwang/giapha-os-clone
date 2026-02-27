@@ -42,8 +42,7 @@ function EditMemberPage() {
         </Link>
       </div>
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 relative z-10 w-full flex-1">
-        {/* biome-ignore lint/suspicious/noExplicitAny: Prisma return type mismatch with form props */}
-        <MemberForm initialData={initialData as any} isEditing isAdmin />
+        <MemberForm initialData={initialData} isEditing isAdmin />
       </main>
     </div>
   );

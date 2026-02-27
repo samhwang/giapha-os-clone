@@ -1,8 +1,10 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/db';
+import { getDbClient } from '@/lib/db';
 import { requireAdmin } from './_auth';
+
+const prisma = getDbClient();
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
@@ -16,7 +18,7 @@ const changeRoleSchema = z.object({
 const userIdSchema = z.object({ userId: z.uuid() });
 
 const createUserSchema = z.object({
-  email: z.string().email('Email không hợp lệ.'),
+  email: z.email('Email không hợp lệ.'),
   password: z.string().min(8, 'Mật khẩu phải có ít nhất 8 ký tự.'),
   name: z.string().optional(),
   role: roleEnum.optional(),

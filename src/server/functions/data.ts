@@ -1,8 +1,10 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
-import { prisma } from '@/lib/db';
+import { getDbClient } from '@/lib/db';
 import type { BackupPayload } from '@/types';
 import { requireAdmin } from './_auth';
+
+const prisma = getDbClient();
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
@@ -65,8 +67,7 @@ export const importData = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     await requireAdmin();
 
-    // biome-ignore lint/suspicious/noExplicitAny: Prisma transaction client type
-    await prisma.$transaction(async (tx: any) => {
+    await prisma.$transaction(async (tx) => {
       await tx.relationship.deleteMany();
       await tx.person.deleteMany();
 

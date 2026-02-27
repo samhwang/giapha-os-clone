@@ -1,8 +1,10 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
-import { prisma } from '@/lib/db';
+import { getDbClient } from '@/lib/db';
 import { deleteAvatar, uploadAvatar } from '@/lib/storage';
 import { requireAdmin, requireAuth } from './_auth';
+
+const prisma = getDbClient();
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
