@@ -30,7 +30,9 @@
     "prisma:push": "prisma db push",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:prod": "prisma migrate deploy",
-    "prisma:format": "prisma format"
+    "prisma:format": "prisma format",
+    "auth:generate": "npx @better-auth/cli generate",
+    "auth:secret": "npx @better-auth/cli secret"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.999.0",
