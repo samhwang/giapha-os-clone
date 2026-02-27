@@ -1,20 +1,20 @@
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { env } from './env';
+import { serverEnv } from './env.server';
 
 const s3 = new S3Client({
-  endpoint: env.S3_ENDPOINT,
+  endpoint: serverEnv.S3_ENDPOINT,
   region: 'garage',
   credentials: {
-    accessKeyId: env.S3_ACCESS_KEY,
-    secretAccessKey: env.S3_SECRET_KEY,
+    accessKeyId: serverEnv.S3_ACCESS_KEY,
+    secretAccessKey: serverEnv.S3_SECRET_KEY,
   },
   forcePathStyle: true,
 });
 
-const bucket = env.S3_BUCKET;
+const bucket = serverEnv.S3_BUCKET;
 
 export function getPublicUrl(key: string): string {
-  return `${env.S3_ENDPOINT}/${bucket}/${key}`;
+  return `${serverEnv.S3_ENDPOINT}/${bucket}/${key}`;
 }
 
 export async function uploadAvatar(buffer: Buffer, personId: string, filename: string, contentType: string): Promise<string> {
@@ -33,7 +33,7 @@ export async function uploadAvatar(buffer: Buffer, personId: string, filename: s
 }
 
 export async function deleteAvatar(url: string): Promise<void> {
-  const baseUrl = `${env.S3_ENDPOINT}/${bucket}/`;
+  const baseUrl = `${serverEnv.S3_ENDPOINT}/${bucket}/`;
   if (!url.startsWith(baseUrl)) return;
 
   const key = url.slice(baseUrl.length);
