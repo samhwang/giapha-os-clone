@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '../../lib/db';
-
-// ─── Mocks ──────────────────────────────────────────────────────────────────
+import { exportData, importData } from './data';
 
 const mockRequireAdmin = vi.fn();
 
@@ -10,23 +9,15 @@ vi.mock('./_auth', () => ({
   requireAdmin: (...args: unknown[]) => mockRequireAdmin(...args),
 }));
 
-import { exportData, importData } from './data';
-
 const prisma = getDbClient();
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
 
 const UUID_A = crypto.randomUUID();
 const UUID_B = crypto.randomUUID();
-
-// ─── Setup ──────────────────────────────────────────────────────────────────
 
 beforeEach(() => {
   vi.clearAllMocks();
   mockRequireAdmin.mockResolvedValue({ id: 'user-1', role: 'admin' });
 });
-
-// ─── Tests ──────────────────────────────────────────────────────────────────
 
 describe('exportData', () => {
   it('should return backup payload with persons and relationships', async () => {

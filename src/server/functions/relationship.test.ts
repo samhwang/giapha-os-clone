@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '../../lib/db';
-
-// ─── Mocks ──────────────────────────────────────────────────────────────────
+import { createRelationship, deleteRelationship, getRelationships, getRelationshipsForPerson } from './relationship';
 
 const mockRequireAuth = vi.fn();
 
@@ -10,24 +9,16 @@ vi.mock('./_auth', () => ({
   requireAdmin: vi.fn(),
 }));
 
-import { createRelationship, deleteRelationship, getRelationships, getRelationshipsForPerson } from './relationship';
-
 const prisma = getDbClient();
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
 
 async function seedPerson(name: string, gender: 'male' | 'female' = 'male') {
   return prisma.person.create({ data: { fullName: name, gender } });
 }
 
-// ─── Setup ──────────────────────────────────────────────────────────────────
-
 beforeEach(() => {
   vi.clearAllMocks();
   mockRequireAuth.mockResolvedValue({ id: 'user-1', isActive: true });
 });
-
-// ─── Tests ──────────────────────────────────────────────────────────────────
 
 describe('createRelationship', () => {
   it('should create a new relationship', async () => {

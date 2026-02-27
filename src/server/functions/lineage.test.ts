@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '../../lib/db';
-
-// ─── Mocks ──────────────────────────────────────────────────────────────────
+import { updateBatch } from './lineage';
 
 const mockRequireAuth = vi.fn();
 
@@ -10,18 +9,12 @@ vi.mock('./_auth', () => ({
   requireAdmin: vi.fn(),
 }));
 
-import { updateBatch } from './lineage';
-
 const prisma = getDbClient();
-
-// ─── Setup ──────────────────────────────────────────────────────────────────
 
 beforeEach(() => {
   vi.clearAllMocks();
   mockRequireAuth.mockResolvedValue({ id: 'user-1', isActive: true });
 });
-
-// ─── Tests ──────────────────────────────────────────────────────────────────
 
 describe('updateBatch', () => {
   it('should return early for empty updates', async () => {

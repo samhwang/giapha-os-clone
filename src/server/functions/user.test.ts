@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '../../lib/db';
-
-// ─── Mocks ──────────────────────────────────────────────────────────────────
+import { changeRole, createUser, deleteUser, getUsers, toggleStatus } from './user';
 
 const mockRequireAdmin = vi.fn();
 
@@ -10,20 +9,19 @@ vi.mock('./_auth', () => ({
   requireAdmin: (...args: unknown[]) => mockRequireAdmin(...args),
 }));
 
-const mockSignUpEmail = vi.fn();
-vi.mock('@/lib/auth', () => ({
+const { mockSignUpEmail } = vi.hoisted(() => ({
+  mockSignUpEmail: vi.fn().mockResolvedValue({ user: { id: crypto.randomUUID() } }),
+}));
+
+vi.mock('../../lib/auth', () => ({
   auth: {
     api: {
-      signUpEmail: (...args: unknown[]) => mockSignUpEmail(...args),
+      signUpEmail: mockSignUpEmail,
     },
   },
 }));
 
-import { changeRole, createUser, deleteUser, getUsers, toggleStatus } from './user';
-
 const prisma = getDbClient();
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
 
 const ADMIN_ID = crypto.randomUUID();
 

@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '../../lib/db';
-
-// ─── Mocks ──────────────────────────────────────────────────────────────────
+import { createPerson, deleteMember, getPersonById, getPersons, updatePerson, uploadPersonAvatar } from './member';
 
 const mockRequireAuth = vi.fn();
 const mockRequireAdmin = vi.fn();
@@ -11,19 +10,13 @@ vi.mock('./_auth', () => ({
   requireAdmin: (...args: unknown[]) => mockRequireAdmin(...args),
 }));
 
-import { createPerson, deleteMember, getPersonById, getPersons, updatePerson, uploadPersonAvatar } from './member';
-
 const prisma = getDbClient();
-
-// ─── Setup ──────────────────────────────────────────────────────────────────
 
 beforeEach(() => {
   vi.clearAllMocks();
   mockRequireAuth.mockResolvedValue({ id: 'user-1', role: 'admin', isActive: true });
   mockRequireAdmin.mockResolvedValue({ id: 'user-1', role: 'admin', isActive: true });
 });
-
-// ─── Tests ──────────────────────────────────────────────────────────────────
 
 describe('createPerson', () => {
   it('should create a person without private details', async () => {
