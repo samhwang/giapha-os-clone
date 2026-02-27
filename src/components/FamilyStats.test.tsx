@@ -1,6 +1,6 @@
+import { createPerson, createRelationship, mockPersons, mockRelationships } from '@test/fixtures';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { createPerson, createRelationship, mockPersons, mockRelationships } from '@/test-utils/fixtures';
 import FamilyStats from './FamilyStats';
 
 describe('FamilyStats', () => {

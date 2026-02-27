@@ -1,7 +1,7 @@
+import { createPerson, createRelationship } from '@test/fixtures';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { createPerson, createRelationship } from '@/test-utils/fixtures';
 import KinshipFinder from './KinshipFinder';
 
 const father = createPerson({ id: 'father', fullName: 'Nguyễn Văn Cha', gender: 'male', generation: 1 });
