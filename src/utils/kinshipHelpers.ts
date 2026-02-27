@@ -282,9 +282,9 @@ export function computeKinship(personA: PersonNode, personB: PersonNode, persons
       let aCallsB = res.aCallsB;
       let bCallsA = res.bCallsA;
 
-      if (res.bCallsA === 'Con') {
+      if (res.bCallsA.startsWith('Con')) {
         bCallsA = personA.gender === 'male' ? 'Con rể' : 'Con dâu';
-      } else if (res.bCallsA === 'Cháu') {
+      } else if (res.bCallsA.startsWith('Cháu')) {
         bCallsA = personA.gender === 'male' ? 'Cháu rể' : 'Cháu dâu';
       } else if (res.bCallsA.includes('Anh trai')) {
         bCallsA = 'Anh rể';
@@ -323,9 +323,9 @@ export function computeKinship(personA: PersonNode, personB: PersonNode, persons
       let aCallsB = res.aCallsB;
       const bCallsA = res.bCallsA;
 
-      if (res.aCallsB === 'Con') {
+      if (res.aCallsB.startsWith('Con')) {
         aCallsB = personB.gender === 'male' ? 'Con rể' : 'Con dâu';
-      } else if (res.aCallsB === 'Cháu') {
+      } else if (res.aCallsB.startsWith('Cháu')) {
         aCallsB = personB.gender === 'male' ? 'Cháu rể' : 'Cháu dâu';
       } else if (res.aCallsB.includes('Anh trai')) {
         aCallsB = 'Anh rể';
