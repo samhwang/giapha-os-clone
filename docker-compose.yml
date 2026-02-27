@@ -20,6 +20,7 @@ services:
     ports:
       - "3900:3900"
       - "3902:3902"
+      - "3903:3903"
     volumes:
       - ./.docker/garage/data:/var/lib/garage
       - ./.docker/garage/garage.toml:/etc/garage.toml
