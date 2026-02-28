@@ -112,6 +112,36 @@ Biome auto-organizes imports:
 - Extract large components into smaller pieces
 - Extract shared logic into utility functions or hooks
 
+## Module Structure
+
+Organize `src/` by domain functionality, not by technical layer:
+
+```
+src/
+├── routes/           # File-based routing (framework requirement)
+├── lib/              # Core infrastructure (db, auth, storage, config)
+├── i18n/             # Internationalization
+├── types/            # Global types
+│
+├── {domain}/         # Functional modules
+│   ├── components/   # Domain-specific React components
+│   ├── server/       # Server functions (API logic)
+│   ├── utils/        # Domain utilities
+│   ├── types/        # Domain-specific types (co-located)
+│   └── index.ts      # Public exports
+│
+└── ui/               # Shared generic components
+    ├── layout/       # Layout components (Header, Footer, etc.)
+    ├── icons/        # Icon components
+    └── common/       # Reusable components (buttons, cards, etc.)
+```
+
+Rules:
+- Each functional module should be self-contained
+- Types belong in the module that uses them; co-locate if only used by 1 file
+- Keep `lib/` for cross-cutting concerns only (db, auth, storage)
+- Use `ui/` for generic components with no domain logic
+
 ## Other Conventions
 
 - Prefer early returns over deeply nested conditionals

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
-import Footer from '../components/Footer';
-import LandingHero from '../components/LandingHero';
 import config from '../lib/config';
+import Footer from '../ui/layout/Footer';
+import LandingHero from '../ui/layout/LandingHero';
 
 export const Route = createFileRoute('/')({
   component: LandingPage,

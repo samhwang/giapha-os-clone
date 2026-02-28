@@ -163,3 +163,4 @@ Dự án này đã phát triển vượt xa một bản clone trực tiếp. M�
 - Biome cho linting/formatting (thay thế ESLint + Prettier)
 - Atomic commits với Conventional Commits
 - Workflow dựa trên agent với `.agents/` rules cho các pattern implementation nhất quán
+- Cấu trúc dự án theo module chức năng

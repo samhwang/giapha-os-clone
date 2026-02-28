@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
-import FamilyStats from '../../components/FamilyStats';
-import { getPersons } from '../../server/functions/member';
-import { getRelationships } from '../../server/functions/relationship';
+import FamilyStats from '../../dashboard/components/FamilyStats';
+import { getPersons } from '../../members/server/member';
+import { getRelationships } from '../../relationships/server/relationship';
 
 export const Route = createFileRoute('/dashboard/stats')({
   loader: async () => {
