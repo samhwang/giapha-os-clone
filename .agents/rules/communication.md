@@ -59,7 +59,8 @@ refactor: extract avatar upload to shared utility
 ## Documentation
 
 - When updating `README.md`, always update `README.vi.md` (Vietnamese version) with the same changes
-- Keep both versions in sync
+- When creating or updating documentation in `docs/en/`, always create/update the corresponding file in `docs/vi/`
+- Keep both language versions in sync
 
 ## Pull Request Structure
 
