@@ -79,6 +79,16 @@ src/server/functions/member.test.ts
 - Full user flows (auth, CRUD operations)
 - Heavier setup, use sparingly
 
+### Layer 5: Browser Tests (E2E/Component)
+
+- Real Chromium browser via Playwright
+- Test full user flows, real DOM APIs, localStorage, fetch
+- No mocking of browser APIs
+- Coexists with jsdom tests (jsdom for fast unit tests, browser for E2E)
+- Files: `src/**/*.browser-test.{ts,tsx}`
+
+Type tests can be inlined within regular test files using `expectTypeOf` from vitest.
+
 ## Query Priority
 
 Follow Testing Library's query priority:
