@@ -1,3 +1,4 @@
+import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -5,7 +6,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/routeTree.gen.ts', 'test/**', 'src/**/*.test.{ts,tsx}'],
+      exclude: ['src/routeTree.gen.ts', 'test/**', 'src/**/*.test.{ts,tsx}', 'src/**/*.browser-test.{ts,tsx}'],
     },
     projects: [
       {
@@ -34,6 +35,17 @@ export default defineConfig({
           include: ['src/routes/**.test.{ts,tsx}'],
           environment: 'jsdom',
           globalSetup: ['./test/globalSetup.ts'],
+        },
+      },
+      {
+        test: {
+          name: 'browser',
+          include: ['src/**/*.browser-test.{ts,tsx}'],
+          browser: {
+            enabled: true,
+            provider: playwright(),
+            instances: [{ browser: 'chromium' }],
+          },
         },
       },
     ],
