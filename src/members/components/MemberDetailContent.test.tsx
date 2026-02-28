@@ -3,11 +3,11 @@ import { describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
 import MemberDetailContent from './MemberDetailContent';
 
-vi.mock('./RelationshipManager', () => ({
+vi.mock('../relationships/components/RelationshipManager', () => ({
   default: () => <div data-testid="relationship-manager" />,
 }));
 
-vi.mock('./DashboardContext', () => ({
+vi.mock('../dashboard/components/DashboardContext', () => ({
   useDashboard: () => ({
     memberModalId: null,
     setMemberModalId: vi.fn(),
