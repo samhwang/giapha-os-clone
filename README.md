@@ -14,7 +14,7 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 - **File Storage**: [Garage](https://garagehq.deuxfleurs.fr/) (S3-compatible)
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) + [Framer Motion](https://www.framer.com/motion/)
 - **Linting/Formatting**: [Biome](https://biomejs.dev/)
-- **Testing**: [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+- **Testing**: [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) + [Vitest Browser Mode](https://vitest.dev/guide/browser/)
 - **Infrastructure**: Docker Compose
 
 ## Features
@@ -97,6 +97,8 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 | `pnpm run test:ui` | Run UI component tests |
 | `pnpm run test:server` | Run server function tests |
 | `pnpm run test:integration` | Run integration tests |
+| `pnpm run test:browser` | Run browser (E2E) tests in watch mode |
+| `pnpm run test:browser:run` | Run browser (E2E) tests once |
 | `pnpm run lint` | Check linting (Biome) |
 | `pnpm run lint:fix` | Auto-fix lint issues |
 | `pnpm run typecheck` | TypeScript type checking |
@@ -129,6 +131,21 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 │   └── utils/            # Pure utility functions
 ├── docker-compose.yml    # PostgreSQL + Garage
 └── biome.json            # Linter/formatter config
+
+## Testing
+
+This project uses Vitest with multiple test projects:
+
+| Layer | Description | Command |
+|-------|-------------|---------|
+| Unit | Utility functions, pure logic | `pnpm run test:ui` |
+| Server | Server functions with mocked Prisma | `pnpm run test:server` |
+| Integration | Route-level tests with jsdom | `pnpm run test:integration` |
+| Browser | E2E tests with real Chromium via Playwright | `pnpm run test:browser:run` |
+
+Browser tests run in a real Chromium browser and test full user flows without mocking browser APIs. Use `*.browser-test.tsx` file pattern for browser tests.
+
+Type tests can be inlined within test files using `expectTypeOf` from vitest.
 ```
 
 ## Attribution
