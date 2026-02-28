@@ -29,6 +29,17 @@ Biome handles both linting and formatting. No ESLint, Prettier, or separate form
 - Prefer Prisma generated types over manual type definitions where possible
 - Use explicit return types for exported functions
 - Use `satisfies` operator for type-checked object literals
+- For Zod schemas, declare the schema and type together in one block, so they can both be imported in one go, depending on the context of work (e.g. either as a type or a value):
+
+```ts
+// Good: Schema and type together
+const CreatePerson = z.object({ name: z.string() });
+type CreatePerson = z.infer<typeof CreatePerson>;
+
+// Bad: Separate declarations
+const createPersonSchema = z.object({ name: z.string() });
+type CreatePerson = z.infer<typeof createPersonSchema>;
+```
 
 ## Naming Conventions
 
