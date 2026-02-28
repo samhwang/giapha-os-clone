@@ -6,7 +6,7 @@ import PersonCard from './PersonCard';
 
 const mockSetMemberModalId = vi.fn();
 
-vi.mock('../dashboard/components/DashboardContext', () => ({
+vi.mock('../../dashboard/components/DashboardContext', () => ({
   useDashboard: () => ({
     memberModalId: null,
     setMemberModalId: mockSetMemberModalId,
