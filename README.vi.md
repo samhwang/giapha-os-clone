@@ -97,6 +97,8 @@
 | `pnpm run test:ui` | Chạy kiểm thử UI components |
 | `pnpm run test:server` | Chạy kiểm thử server functions |
 | `pnpm run test:integration` | Chạy kiểm thử tích hợp |
+| `pnpm run test:browser` | Chạy kiểm thử browser (E2E) ở chế độ watch |
+| `pnpm run test:browser:run` | Chạy kiểm thử browser (E2E) một lần |
 | `pnpm run lint` | Kiểm tra linting (Biome) |
 | `pnpm run lint:fix` | Tự động sửa lỗi lint |
 | `pnpm run typecheck` | Kiểm tra kiểu TypeScript |
@@ -130,6 +132,21 @@
 ├── docker-compose.yml    # PostgreSQL + Garage
 └── biome.json            # Cấu hình linter/formatter
 ```
+
+## Kiểm thử
+
+Dự án này sử dụng Vitest với nhiều loại kiểm thử:
+
+| Loại | Mô tả | Lệnh |
+|-------|-------------|---------|
+| Unit | Hàm tiện ích, logic thuần | `pnpm run test:ui` |
+| Server | Server functions với Prisma mocked | `pnpm run test:server` |
+| Integration | Kiểm thử cấp route với jsdom | `pnpm run test:integration` |
+| Browser | Kiểm thử E2E với Chromium thực qua Playwright | `pnpm run test:browser:run` |
+
+Kiểm thử browser chạy trên Chromium thực và kiểm thử các luồng người dùng hoàn chỉnh mà không mock các API của browser. Sử dụng file pattern `*.browser-test.tsx` cho kiểm thử browser.
+
+Kiểm thử kiểu (type tests) có thể được inline trong các file test sử dụng `expectTypeOf` từ vitest.
 
 ## Ghi Công
 
