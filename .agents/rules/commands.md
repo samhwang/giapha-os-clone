@@ -31,6 +31,8 @@ pnpm prisma migrate dev --name describe_change  # Named migration
 pnpm prisma migrate reset     # Reset database and reapply all migrations + seed
 ```
 
+**Rule**: Always run `pnpm prisma migrate dev --name describe_change` after modifying `prisma/schema.prisma`. Never commit schema changes without a corresponding migration.
+
 ## Garage (S3 Storage)
 
 ```bash
