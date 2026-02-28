@@ -129,6 +129,13 @@ export const deleteMember = createServerFn({ method: 'POST' })
     const person = await db.person.findUnique({ where: { id: data.id } });
     if (!person) throw new Error(ERRORS.MEMBER.NOT_FOUND);
 
+    const relationshipCount = await db.relationship.count({
+      where: { OR: [{ personAId: data.id }, { personBId: data.id }] },
+    });
+    if (relationshipCount > 0) {
+      throw new Error(ERRORS.MEMBER.HAS_RELATIONSHIPS);
+    }
+
     if (person.avatarUrl) {
       await deleteAvatar(person.avatarUrl);
     }
