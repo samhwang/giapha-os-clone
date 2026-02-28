@@ -3,9 +3,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Info, KeyRound, Mail, Shield, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Footer from '../components/Footer';
-import LanguageSwitcher from '../components/LanguageSwitcher';
 import { authClient } from '../lib/auth-client';
+import LanguageSwitcher from '../ui/common/LanguageSwitcher';
+import Footer from '../ui/layout/Footer';
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,

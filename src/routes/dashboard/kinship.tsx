@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
-import KinshipFinder from '../../components/KinshipFinder';
-import { getPersons } from '../../server/functions/member';
-import { getRelationships } from '../../server/functions/relationship';
+import { getPersons } from '../../members/server/member';
+import KinshipFinder from '../../relationships/components/KinshipFinder';
+import { getRelationships } from '../../relationships/server/relationship';
 
 export const Route = createFileRoute('/dashboard/kinship')({
   loader: async () => {

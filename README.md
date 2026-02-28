@@ -163,3 +163,4 @@ This project has evolved significantly beyond being a direct clone. The original
 - Biome for linting/formatting (replacing ESLint + Prettier)
 - Atomic commits with Conventional Commits
 - Agent-based workflow with `.agents/` rules for consistent implementation patterns
+- Module-based project structure organized by domain functionality

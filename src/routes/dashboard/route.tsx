@@ -2,12 +2,12 @@ import { createFileRoute, Link, Outlet, redirect } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start';
 import { getRequestHeaders } from '@tanstack/react-start/server';
 import { useTranslation } from 'react-i18next';
-import { DashboardProvider } from '../../components/DashboardContext';
-import DashboardHeader from '../../components/DashboardHeader';
-import Footer from '../../components/Footer';
-import LogoutButton from '../../components/LogoutButton';
+import { DashboardProvider } from '../../dashboard/components/DashboardContext';
+import DashboardHeader from '../../dashboard/components/DashboardHeader';
 import { auth } from '../../lib/auth';
 import config from '../../lib/config';
+import Footer from '../../ui/layout/Footer';
+import LogoutButton from '../../ui/layout/LogoutButton';
 
 const getSession = createServerFn().handler(async () => {
   const headers = getRequestHeaders();

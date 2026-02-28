@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
-import DashboardViews from '../../components/DashboardViews';
-import MemberDetailModal from '../../components/MemberDetailModal';
-import ViewToggle from '../../components/ViewToggle';
-import { getPersons } from '../../server/functions/member';
-import { getRelationships } from '../../server/functions/relationship';
+import DashboardViews from '../../dashboard/components/DashboardViews';
+import ViewToggle from '../../dashboard/components/ViewToggle';
+import MemberDetailModal from '../../members/components/MemberDetailModal';
+import { getPersons } from '../../members/server/member';
+import { getRelationships } from '../../relationships/server/relationship';
 
 export const Route = createFileRoute('/dashboard/')({
   loader: async () => {
