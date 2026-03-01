@@ -111,8 +111,8 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
         personId = result.id;
       }
 
-      // Upload avatar after person is created/updated
-      if (avatarFile && personId) {
+      const shouldUploadAvatar = avatarFile && personId;
+      if (shouldUploadAvatar) {
         const reader = new FileReader();
         const base64 = await new Promise<string>((resolve) => {
           reader.onload = () => resolve(reader.result as string);
@@ -130,11 +130,8 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
 
       if (!personId) throw new Error(t('member.noIdAfterSave'));
 
-      if (onSuccess) {
-        onSuccess(personId);
-      } else {
-        navigate({ to: '/dashboard/members/$id', params: { id: personId } });
-      }
+      if (onSuccess) return onSuccess(personId);
+      navigate({ to: '/dashboard/members/$id', params: { id: personId } });
     } catch (err) {
       console.error('Error saving member:', err);
       setError(err instanceof Error ? err.message : t('member.saveError'));
