@@ -92,17 +92,9 @@ function resolveBloodTerms(
     const isPaternalSide = branchA.gender === 'male';
 
     if (isPaternalSide) {
-      if (genderB === 'female') {
-        termForB = 'Cô';
-      } else {
-        termForB = seniority === 'senior' ? 'Chú' : 'Bác';
-      }
+      termForB = genderB === 'female' ? 'Cô' : seniority === 'senior' ? 'Chú' : 'Bác';
     } else {
-      if (genderB === 'female') {
-        termForB = 'Dì';
-      } else {
-        termForB = 'Cậu';
-      }
+      termForB = genderB === 'female' ? 'Dì' : 'Cậu';
     }
 
     let prefix = '';
@@ -121,23 +113,20 @@ function resolveBloodTerms(
   if (depthA > DEPTH_SIBLING && depthB > DEPTH_SIBLING) {
     const side = isPaternalA ? 'Nội' : 'Ngoại';
 
+    if (depthA === depthB && seniority === 'senior') {
+      return ['Em họ', genderA === 'female' ? 'Chị họ' : 'Anh họ', `Anh em họ ${side}`];
+    }
     if (depthA === depthB) {
-      if (seniority === 'senior') {
-        return ['Em họ', genderA === 'female' ? 'Chị họ' : 'Anh họ', `Anh em họ ${side}`];
-      }
       return [genderB === 'female' ? 'Chị họ' : 'Anh họ', 'Em họ', `Anh em họ ${side}`];
     }
 
     const genDiff = depthA - depthB;
     if (genDiff > 0) {
       let termForB = 'Họ hàng';
-      if (genDiff === 1) {
-        const isPaternalSide = branchA.gender === 'male';
-        if (isPaternalSide) {
-          termForB = genderB === 'female' ? 'Cô họ' : seniority === 'senior' ? 'Chú họ' : 'Bác họ';
-        } else {
-          termForB = genderB === 'female' ? 'Dì họ' : 'Cậu họ';
-        }
+      if (genDiff === 1 && branchA.gender === 'male') {
+        termForB = genderB === 'female' ? 'Cô họ' : seniority === 'senior' ? 'Chú họ' : 'Bác họ';
+      } else if (genDiff === 1) {
+        termForB = genderB === 'female' ? 'Dì họ' : 'Cậu họ';
       } else {
         termForB = genderB === 'female' ? 'Bà họ' : 'Ông họ';
       }
@@ -171,18 +160,17 @@ function getAncestryData(
     const item = queue.shift();
     if (!item) break;
     const { id: currentId, depth, path } = item;
-    if (!depths.has(currentId)) {
-      depths.set(currentId, { depth, path });
+    if (depths.has(currentId)) continue;
+    depths.set(currentId, { depth, path });
 
-      const currentNode = personsMap.get(currentId);
-      if (!currentNode) continue;
+    const currentNode = personsMap.get(currentId);
+    if (!currentNode) continue;
 
-      const parents = parentMap.get(currentId) ?? [];
-      for (const pId of parents) {
-        const pNode = personsMap.get(pId);
-        if (pNode) {
-          queue.push({ id: pId, depth: depth + 1, path: [...path, currentNode] });
-        }
+    const parents = parentMap.get(currentId) ?? [];
+    for (const pId of parents) {
+      const pNode = personsMap.get(pId);
+      if (pNode) {
+        queue.push({ id: pId, depth: depth + 1, path: [...path, currentNode] });
       }
     }
   }
@@ -209,12 +197,11 @@ function findBloodKinship(
   let minDistance = Number.POSITIVE_INFINITY;
 
   for (const [id, dataA] of ancA) {
-    if (ancB.has(id)) {
-      const dist = dataA.depth + (ancB.get(id)?.depth ?? 0);
-      if (dist < minDistance) {
-        minDistance = dist;
-        lcaId = id;
-      }
+    if (!ancB.has(id)) continue;
+    const dist = dataA.depth + (ancB.get(id)?.depth ?? 0);
+    if (dist < minDistance) {
+      minDistance = dist;
+      lcaId = id;
     }
   }
 
