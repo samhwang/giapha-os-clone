@@ -22,7 +22,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -33,26 +33,27 @@ function LoginPage() {
         const { error } = await authClient.signIn.email({ email, password });
         if (error) {
           setError(error.message || t('auth.loginFailed'));
-        } else {
-          navigate({ to: '/dashboard' });
-        }
-      } else {
-        if (password !== confirmPassword) {
-          setError(t('auth.passwordMismatch'));
-          setLoading(false);
           return;
         }
-
-        const { error } = await authClient.signUp.email({ email, password, name: email });
-        if (error) {
-          setError(error.message || t('auth.registerFailed'));
-        } else {
-          setSuccessMessage(t('auth.registerSuccess'));
-          setIsLogin(true);
-          setConfirmPassword('');
-          setPassword('');
-        }
+        navigate({ to: '/dashboard' });
+        return;
       }
+
+      if (password !== confirmPassword) {
+        setError(t('auth.passwordMismatch'));
+        setLoading(false);
+        return;
+      }
+
+      const { error } = await authClient.signUp.email({ email, password, name: email });
+      if (error) {
+        setError(error.message || t('auth.registerFailed'));
+        return;
+      }
+      setSuccessMessage(t('auth.registerSuccess'));
+      setIsLogin(true);
+      setConfirmPassword('');
+      setPassword('');
     } catch {
       setError(t('auth.unexpectedError'));
     } finally {
