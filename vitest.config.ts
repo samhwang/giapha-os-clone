@@ -11,15 +11,6 @@ export default defineConfig({
       {
         extends: true,
         test: {
-          name: 'unit',
-          include: ['src/**/*.test.ts'],
-          exclude: ['src/**/server/*.test.ts', 'src/server/**/*.test.ts', 'src/lib/storage.test.ts', 'src/routes/**'],
-          environment: 'node',
-        },
-      },
-      {
-        extends: true,
-        test: {
           name: 'ui-components',
           include: ['src/**/**.test.tsx'],
           exclude: ['src/routes'],
@@ -31,7 +22,8 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'server',
-          include: ['src/**/server/*.test.ts', 'src/server/**/*.test.ts', 'src/lib/storage.test.ts'],
+          include: ['src/**/*.test.ts'],
+          exclude: ['src/routes/**'],
           environment: 'node',
           globalSetup: ['./test/globalSetup.ts'],
           setupFiles: ['./test/per-file-db.ts', './test/setup.ts'],

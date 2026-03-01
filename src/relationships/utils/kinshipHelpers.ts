@@ -151,16 +151,16 @@ function resolveBloodTerms(
   return ['Người trong họ', 'Người trong họ', 'Quan hệ họ hàng'];
 }
 
-const ancestryCache = new WeakMap<Map<string, PersonNode>, Map<string, { depth: number; path: PersonNode[] }>>();
+const ancestryCache = new WeakMap<Map<string, PersonNode>, Map<string, Map<string, { depth: number; path: PersonNode[] }>>>();
 
 function getAncestryData(
   id: string,
   parentMap: Map<string, string[]>,
   personsMap: Map<string, PersonNode>
 ): Map<string, { depth: number; path: PersonNode[] }> {
-  const cached = ancestryCache.get(personsMap);
-  if (cached?.has(id)) {
-    return cached;
+  const idCache = ancestryCache.get(personsMap);
+  if (idCache?.has(id)) {
+    return idCache.get(id)!;
   }
 
   const depths = new Map<string, { depth: number; path: PersonNode[] }>();
@@ -186,8 +186,10 @@ function getAncestryData(
     }
   }
 
-  if (!ancestryCache.has(personsMap)) {
-    ancestryCache.set(personsMap, depths);
+  const cache = idCache ?? new Map();
+  cache.set(id, depths);
+  if (!idCache) {
+    ancestryCache.set(personsMap, cache);
   }
 
   return depths;
