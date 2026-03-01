@@ -36,15 +36,16 @@ export default function DataImportExport() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
-        setImportStatus({ type: 'error', message: t('data.invalidJson') });
-        return;
-      }
-      setSelectedFile(file);
-      setShowConfirm(true);
-      setImportStatus(null);
+    if (!file) return;
+
+    const isInvalidJsonFile = file.type !== 'application/json' && !file.name.endsWith('.json');
+    if (isInvalidJsonFile) {
+      setImportStatus({ type: 'error', message: t('data.invalidJson') });
+      return;
     }
+    setSelectedFile(file);
+    setShowConfirm(true);
+    setImportStatus(null);
   };
 
   const handleConfirmImport = async () => {
