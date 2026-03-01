@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type SubmitEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { UserProfile, UserRole } from '../../types';
 import { changeRole, createUser, deleteUser, toggleStatus } from '../server/user';
@@ -72,7 +72,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
     }
   };
 
-  const handleCreateUser = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleCreateUser = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsCreating(true);
     const formData = new FormData(e.currentTarget);
