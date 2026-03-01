@@ -1,11 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
 import RelationshipManager from './RelationshipManager';
 
 vi.mock('../../dashboard/components/DashboardContext', () => ({
-  DashboardContext: { Provider: ({ children }: { children: React.ReactNode }) => children },
+  DashboardContext: { Provider: ({ children }: { children: ReactNode }) => children },
   useDashboard: () => ({
     memberModalId: null,
     setMemberModalId: vi.fn(),

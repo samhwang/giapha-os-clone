@@ -1,18 +1,19 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
 import MemberDetailModal from './MemberDetailModal';
 
 vi.mock('@tanstack/react-router', () => ({
-  Link: ({ children }: { children: React.ReactNode }) => <a href="/mock">{children}</a>,
+  Link: ({ children }: { children: ReactNode }) => <a href="/mock">{children}</a>,
 }));
 
 const mockSetMemberModalId = vi.fn();
 let mockMemberModalId: string | null = null;
 
 vi.mock('../../dashboard/components/DashboardContext', () => ({
-  DashboardContext: { Provider: ({ children }: { children: React.ReactNode }) => children },
+  DashboardContext: { Provider: ({ children }: { children: ReactNode }) => children },
   useDashboard: () => ({
     memberModalId: mockMemberModalId,
     setMemberModalId: mockSetMemberModalId,
