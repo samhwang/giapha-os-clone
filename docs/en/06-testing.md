@@ -37,6 +37,14 @@ pnpm test           # Watch all
 pnpm test:browser   # Watch browser tests
 ```
 
+### Browser Setup
+
+Before running browser tests, install Chromium:
+
+```bash
+npx playwright install chromium
+```
+
 ## Test Layers
 
 ### Layer 1: Utility Functions

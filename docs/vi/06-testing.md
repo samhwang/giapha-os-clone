@@ -37,6 +37,14 @@ pnpm test           # Watch all
 pnpm test:browser   # Watch browser tests
 ```
 
+### Cài Đặt Browser
+
+Trước khi chạy browser tests, cài đặt Chromium:
+
+```bash
+npx playwright install chromium
+```
+
 ## Các Lớp Test
 
 ### Lớp 1: Hàm Tiện Ích
