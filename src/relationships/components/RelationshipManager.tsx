@@ -100,36 +100,34 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
       // Fetch in-laws (spouses of children)
       const childrenIds = formattedRels.filter((r) => r.direction === 'child').map((r) => r.targetPerson.id);
 
-      if (childrenIds.length > 0) {
-        for (const childId of childrenIds) {
-          const childRels = await getRelationshipsForPerson({ data: { personId: childId } });
-          const childPerson = personsMap.get(childId);
-          if (!childPerson) continue;
+      for (const childId of childrenIds) {
+        const childRels = await getRelationshipsForPerson({ data: { personId: childId } });
+        const childPerson = personsMap.get(childId);
+        if (!childPerson) continue;
 
-          for (const m of childRels) {
-            if (m.type !== 'marriage') continue;
-            const spouseId = m.personAId === childId ? m.personBId : m.personAId;
-            const spousePerson = personsMap.get(spouseId);
-            if (!spousePerson) continue;
+        for (const m of childRels) {
+          if (m.type !== 'marriage') continue;
+          const spouseId = m.personAId === childId ? m.personBId : m.personAId;
+          const spousePerson = personsMap.get(spouseId);
+          if (!spousePerson) continue;
 
-            const spouseGender = spousePerson.gender;
-            let noteLabel =
-              spouseGender === 'female'
-                ? t('relationship.daughterInLaw', { name: childPerson.fullName })
-                : spouseGender === 'male'
-                  ? t('relationship.sonInLaw', { name: childPerson.fullName })
-                  : t('relationship.spouseOf', { name: childPerson.fullName });
+          const spouseGender = spousePerson.gender;
+          let noteLabel =
+            spouseGender === 'female'
+              ? t('relationship.daughterInLaw', { name: childPerson.fullName })
+              : spouseGender === 'male'
+                ? t('relationship.sonInLaw', { name: childPerson.fullName })
+                : t('relationship.spouseOf', { name: childPerson.fullName });
 
-            if (m.note) noteLabel += ` - ${m.note}`;
+          if (m.note) noteLabel += ` - ${m.note}`;
 
-            formattedRels.push({
-              id: `${m.id}_inlaw`,
-              type: 'marriage',
-              direction: 'child_in_law',
-              targetPerson: spousePerson,
-              note: noteLabel,
-            });
-          }
+          formattedRels.push({
+            id: `${m.id}_inlaw`,
+            type: 'marriage',
+            direction: 'child_in_law',
+            targetPerson: spousePerson,
+            note: noteLabel,
+          });
         }
       }
 
