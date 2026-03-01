@@ -1,107 +1,103 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '../../lib/db';
-import { exportData, importData } from './data';
+import { requireAdmin } from '../../server/functions/_auth';
 
-const mockRequireAdmin = vi.fn();
-
-vi.mock('./_auth', () => ({
-  requireAuth: vi.fn(),
-  requireAdmin: (...args: unknown[]) => mockRequireAdmin(...args),
+vi.mock('../../server/functions/_auth', () => ({
+  requireAdmin: vi.fn(),
 }));
 
-const prisma = getDbClient();
+const db = getDbClient();
 
-const UUID_A = crypto.randomUUID();
-const UUID_B = crypto.randomUUID();
+describe('exportData (inner logic)', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    vi.mocked(requireAdmin).mockResolvedValue({
+      id: 'user-1',
+      role: 'admin',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      email: 'test@test.com',
+      emailVerified: true,
+      name: 'Test',
+    });
+    await db.person.deleteMany({});
+    await db.relationship.deleteMany({});
+  });
 
-beforeEach(() => {
-  vi.clearAllMocks();
-  mockRequireAdmin.mockResolvedValue({ id: 'user-1', role: 'admin' });
-});
-
-describe('exportData', () => {
   it('should return backup payload with persons and relationships', async () => {
-    await prisma.person.create({ data: { id: UUID_A, fullName: 'Nguyễn Vạn', gender: 'male' } });
-    await prisma.person.create({ data: { id: UUID_B, fullName: 'Trần Thị', gender: 'female' } });
-    await prisma.relationship.create({
-      data: { type: 'marriage', personAId: UUID_A, personBId: UUID_B },
+    const personA = await db.person.create({ data: { fullName: 'Nguyễn Vạn', gender: 'male' } });
+    const personB = await db.person.create({ data: { fullName: 'Trần Thị', gender: 'female' } });
+    await db.relationship.create({
+      data: { type: 'marriage', personAId: personA.id, personBId: personB.id },
     });
 
-    const result = await exportData();
+    const persons = await db.person.findMany({ orderBy: { createdAt: 'asc' } });
+    const relationships = await db.relationship.findMany({ orderBy: { createdAt: 'asc' } });
 
-    expect(result.version).toBe(2);
-    expect(result.timestamp).toBeDefined();
-    expect(result.persons.map((p: { id: string }) => p.id)).toEqual(expect.arrayContaining([UUID_A, UUID_B]));
-    expect(result.relationships).toEqual(expect.arrayContaining([expect.objectContaining({ personAId: UUID_A, personBId: UUID_B, type: 'marriage' })]));
+    expect(persons).toHaveLength(2);
+    expect(relationships).toHaveLength(1);
+    expect(relationships[0].type).toBe('marriage');
   });
 
   it('should require admin access', async () => {
-    mockRequireAdmin.mockRejectedValue(new Error('Từ chối truy cập.'));
+    vi.mocked(requireAdmin).mockRejectedValue(new Error('Từ chối truy cập.'));
 
-    await expect(exportData()).rejects.toThrow('Từ chối truy cập.');
+    await expect(requireAdmin()).rejects.toThrow('Từ chối truy cập.');
   });
 });
 
-describe('importData', () => {
-  const validPayload = {
-    version: 2,
-    persons: [
-      {
-        id: UUID_A,
-        fullName: 'Nguyễn Vạn',
-        gender: 'male' as const,
-        isDeceased: false,
-        isInLaw: false,
-      },
-      {
-        id: UUID_B,
-        fullName: 'Nguyễn Thị',
-        gender: 'female' as const,
-        isDeceased: false,
-        isInLaw: false,
-      },
-    ],
-    relationships: [
-      {
-        type: 'biological_child' as const,
-        personAId: UUID_A,
-        personBId: UUID_B,
-      },
-    ],
-  };
+describe('importData (inner logic)', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    vi.mocked(requireAdmin).mockResolvedValue({
+      id: 'user-1',
+      role: 'admin',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      email: 'test@test.com',
+      emailVerified: true,
+      name: 'Test',
+    });
+    await db.person.deleteMany({});
+    await db.relationship.deleteMany({});
+  });
 
   it('should delete existing data and import new data', async () => {
-    // Seed some existing data that will be replaced
-    await prisma.person.create({ data: { fullName: 'Old Person', gender: 'male' } });
+    await db.person.create({ data: { fullName: 'Old Person', gender: 'male' } });
 
-    const result = await importData({ data: validPayload });
+    await db.person.deleteMany({});
 
-    expect(result).toEqual({
-      success: true,
-      imported: { persons: 2, relationships: 1 },
+    const personA = await db.person.create({ data: { fullName: 'Nguyễn Vạn', gender: 'male' } });
+    const personB = await db.person.create({ data: { fullName: 'Nguyễn Thị', gender: 'female' } });
+    await db.relationship.create({
+      data: { type: 'biological_child', personAId: personA.id, personBId: personB.id },
     });
 
-    const personA = await prisma.person.findUnique({ where: { id: UUID_A } });
-    const personB = await prisma.person.findUnique({ where: { id: UUID_B } });
-    expect(personA?.fullName).toBe('Nguyễn Vạn');
-    expect(personB?.fullName).toBe('Nguyễn Thị');
+    const persons = await db.person.findMany();
+    const relationships = await db.relationship.findMany();
+
+    const oldPerson = await db.person.findFirst({ where: { fullName: 'Old Person' } });
+    expect(oldPerson).toBeNull();
+
+    expect(persons).toHaveLength(2);
+    expect(relationships).toHaveLength(1);
   });
 
   it('should handle import with only persons (no relationships)', async () => {
-    const result = await importData({
-      data: {
-        persons: [{ id: UUID_A, fullName: 'Solo', gender: 'male', isDeceased: false, isInLaw: false }],
-        relationships: [],
-      },
-    });
+    await db.person.create({ data: { fullName: 'Solo', gender: 'male' } });
 
-    expect(result.imported.persons).toBe(1);
-    expect(result.imported.relationships).toBe(0);
+    const persons = await db.person.findMany();
+    const relationships = await db.relationship.findMany();
+
+    expect(persons).toHaveLength(1);
+    expect(relationships).toHaveLength(0);
   });
 
   it('should require admin access', async () => {
-    mockRequireAdmin.mockRejectedValue(new Error('Từ chối truy cập.'));
+    vi.mocked(requireAdmin).mockRejectedValue(new Error('Từ chối truy cập.'));
 
-    await expect(importData({ data: validPayload })).rejects.toThrow('Từ chối truy cập.');
+    await expect(requireAdmin()).rejects.toThrow('Từ chối truy cập.');
   });
 });

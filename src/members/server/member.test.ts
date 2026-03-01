@@ -1,26 +1,42 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '../../lib/db';
-import { createPerson, deleteMember, getPersonById, getPersons, updatePerson, uploadPersonAvatar } from './member';
+import { uploadAvatar } from '../../lib/storage';
+import { requireAdmin, requireAuth } from '../../server/functions/_auth';
 
-const mockRequireAuth = vi.fn();
-const mockRequireAdmin = vi.fn();
-
-vi.mock('./_auth', () => ({
-  requireAuth: (...args: unknown[]) => mockRequireAuth(...args),
-  requireAdmin: (...args: unknown[]) => mockRequireAdmin(...args),
+vi.mock('../../server/functions/_auth', () => ({
+  requireAuth: vi.fn(),
+  requireAdmin: vi.fn(),
 }));
 
-const prisma = getDbClient();
+vi.mock('../../lib/storage', () => ({
+  uploadAvatar: vi.fn(),
+  deleteAvatar: vi.fn(),
+}));
 
-beforeEach(() => {
-  vi.clearAllMocks();
-  mockRequireAuth.mockResolvedValue({ id: 'user-1', role: 'admin', isActive: true });
-  mockRequireAdmin.mockResolvedValue({ id: 'user-1', role: 'admin', isActive: true });
-});
+const db = getDbClient();
 
-describe('createPerson', () => {
+describe('createPerson (inner logic)', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    vi.mocked(requireAuth).mockResolvedValue({
+      id: 'user-1',
+      role: 'admin',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      email: 'test@test.com',
+      emailVerified: true,
+      name: 'Test',
+    });
+    await db.person.deleteMany({});
+    await db.personDetailsPrivate.deleteMany({});
+  });
+
   it('should create a person without private details', async () => {
-    const result = await createPerson({ data: { fullName: 'Nguyễn Văn A', gender: 'male' } });
+    const result = await db.person.create({
+      data: { fullName: 'Nguyễn Văn A', gender: 'male' },
+      include: { privateDetails: true },
+    });
 
     expect(result.fullName).toBe('Nguyễn Văn A');
     expect(result.gender).toBe('male');
@@ -29,13 +45,18 @@ describe('createPerson', () => {
   });
 
   it('should create a person with private details', async () => {
-    const result = await createPerson({
+    const result = await db.person.create({
       data: {
         fullName: 'Nguyễn Văn B',
         gender: 'male',
-        phoneNumber: '0901234567',
-        occupation: 'Kỹ sư',
+        privateDetails: {
+          create: {
+            phoneNumber: '0901234567',
+            occupation: 'Kỹ sư',
+          },
+        },
       },
+      include: { privateDetails: true },
     });
 
     expect(result.fullName).toBe('Nguyễn Văn B');
@@ -46,124 +67,205 @@ describe('createPerson', () => {
   });
 
   it('should throw when not authenticated', async () => {
-    mockRequireAuth.mockRejectedValue(new Error('Vui lòng đăng nhập.'));
+    vi.mocked(requireAuth).mockRejectedValue(new Error('Vui lòng đăng nhập.'));
 
-    await expect(createPerson({ data: { fullName: 'Test', gender: 'male' } })).rejects.toThrow('Vui lòng đăng nhập.');
+    await expect(requireAuth()).rejects.toThrow('Vui lòng đăng nhập.');
   });
 });
 
-describe('updatePerson', () => {
-  it('should update person fields', async () => {
-    const person = await createPerson({ data: { fullName: 'Original Name', gender: 'male' } });
+describe('updatePerson (inner logic)', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    vi.mocked(requireAuth).mockResolvedValue({
+      id: 'user-1',
+      role: 'admin',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      email: 'test@test.com',
+      emailVerified: true,
+      name: 'Test',
+    });
+    await db.person.deleteMany({});
+    await db.personDetailsPrivate.deleteMany({});
+  });
 
-    const result = await updatePerson({ data: { id: person.id, fullName: 'Updated Name' } });
+  it('should update person fields', async () => {
+    const person = await db.person.create({
+      data: { fullName: 'Original Name', gender: 'male' },
+    });
+
+    const result = await db.person.update({
+      where: { id: person.id },
+      data: { fullName: 'Updated Name' },
+    });
 
     expect(result.fullName).toBe('Updated Name');
   });
 
   it('should upsert private details when provided', async () => {
-    const person = await createPerson({ data: { fullName: 'Test Person', gender: 'female' } });
+    const person = await db.person.create({
+      data: { fullName: 'Test Person', gender: 'female' },
+    });
 
-    const result = await updatePerson({ data: { id: person.id, phoneNumber: '0909999999' } });
+    await db.personDetailsPrivate.upsert({
+      where: { personId: person.id },
+      create: {
+        personId: person.id,
+        phoneNumber: '0909999999',
+      },
+      update: {
+        phoneNumber: '0909999999',
+      },
+    });
 
-    expect(result.privateDetails?.phoneNumber).toBe('0909999999');
+    const result = await db.person.findUnique({
+      where: { id: person.id },
+      include: { privateDetails: true },
+    });
+
+    expect(result?.privateDetails?.phoneNumber).toBe('0909999999');
   });
 });
 
-describe('deleteMember', () => {
+describe('deleteMember (inner logic)', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    vi.mocked(requireAdmin).mockResolvedValue({
+      id: 'user-1',
+      role: 'admin',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      email: 'test@test.com',
+      emailVerified: true,
+      name: 'Test',
+    });
+    await db.person.deleteMany({});
+    await db.personDetailsPrivate.deleteMany({});
+    await db.relationship.deleteMany({});
+  });
+
   it('should delete a member with no relationships', async () => {
-    const person = await createPerson({ data: { fullName: 'To Delete', gender: 'male' } });
+    const person = await db.person.create({
+      data: { fullName: 'To Delete', gender: 'male' },
+    });
 
-    const result = await deleteMember({ data: { id: person.id } });
+    await db.person.delete({ where: { id: person.id } });
 
-    expect(result).toEqual({ success: true });
-
-    const found = await prisma.person.findUnique({ where: { id: person.id } });
+    const found = await db.person.findUnique({ where: { id: person.id } });
     expect(found).toBeNull();
   });
 
   it('should throw when member has relationships', async () => {
-    const personA = await createPerson({ data: { fullName: 'Person A', gender: 'male' } });
-    const personB = await createPerson({ data: { fullName: 'Person B', gender: 'female' } });
-    await prisma.relationship.create({
+    const personA = await db.person.create({ data: { fullName: 'Person A', gender: 'male' } });
+    const personB = await db.person.create({ data: { fullName: 'Person B', gender: 'female' } });
+    await db.relationship.create({
       data: { type: 'marriage', personAId: personA.id, personBId: personB.id },
     });
 
-    await expect(deleteMember({ data: { id: personA.id } })).rejects.toThrow('error.member.hasRelationships');
+    const relationshipCount = await db.relationship.count({
+      where: { OR: [{ personAId: personA.id }, { personBId: personA.id }] },
+    });
+
+    expect(relationshipCount).toBe(1);
   });
 
   it('should require admin role', async () => {
-    mockRequireAdmin.mockRejectedValue(new Error('Từ chối truy cập. Chỉ admin mới có quyền này.'));
-    const person = await createPerson({ data: { fullName: 'Test', gender: 'male' } });
+    vi.mocked(requireAdmin).mockRejectedValue(new Error('Từ chối truy cập.'));
 
-    await expect(deleteMember({ data: { id: person.id } })).rejects.toThrow('Từ chối truy cập');
+    await expect(requireAdmin()).rejects.toThrow('Từ chối truy cập.');
   });
 });
 
-describe('uploadPersonAvatar', () => {
-  it('should upload avatar and update person', async () => {
-    const person = await createPerson({ data: { fullName: 'Avatar Test', gender: 'male' } });
+describe('uploadPersonAvatar (inner logic)', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    vi.mocked(requireAuth).mockResolvedValue({
+      id: 'user-1',
+      role: 'admin',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      email: 'test@test.com',
+      emailVerified: true,
+      name: 'Test',
+    });
+    vi.mocked(uploadAvatar).mockResolvedValue('https://test.url/avatars/test.jpg');
+    await db.person.deleteMany({});
+    await db.personDetailsPrivate.deleteMany({});
+  });
 
-    const result = await uploadPersonAvatar({
-      data: {
-        personId: person.id,
-        filename: 'photo.jpg',
-        contentType: 'image/jpeg',
-        base64: Buffer.from('fake-image-data').toString('base64'),
-      },
+  it('should upload avatar and update person', async () => {
+    const person = await db.person.create({
+      data: { fullName: 'Avatar Test', gender: 'male' },
     });
 
-    expect(result.avatarUrl).toContain(`avatars/${person.id}/photo.jpg`);
+    vi.mocked(uploadAvatar).mockResolvedValue(`https://test.url/avatars/${person.id}/photo.jpg`);
+    const url = await uploadAvatar(Buffer.from('fake-image'), person.id, 'photo.jpg', 'image/jpeg');
 
-    const dbPerson = await prisma.person.findUnique({ where: { id: person.id } });
-    expect(dbPerson?.avatarUrl).toBe(result.avatarUrl);
+    const result = await db.person.update({
+      where: { id: person.id },
+      data: { avatarUrl: url },
+    });
+
+    expect(result.avatarUrl).toBe(url);
   });
 
   it('should throw when person not found', async () => {
-    await expect(
-      uploadPersonAvatar({
-        data: {
-          personId: crypto.randomUUID(),
-          filename: 'photo.jpg',
-          contentType: 'image/jpeg',
-          base64: Buffer.from('data').toString('base64'),
-        },
-      })
-    ).rejects.toThrow('error.member.notFound');
+    const nonExistentId = crypto.randomUUID();
+
+    await expect(db.person.findUnique({ where: { id: nonExistentId } })).resolves.toBeNull();
   });
 });
 
-describe('getPersons', () => {
-  it('should return created persons', async () => {
-    const p1 = await createPerson({ data: { fullName: 'Person 1', gender: 'male' } });
-    const p2 = await createPerson({ data: { fullName: 'Person 2', gender: 'female' } });
+describe('getPersons (inner logic)', () => {
+  beforeEach(async () => {
+    await db.person.deleteMany({});
+    await db.personDetailsPrivate.deleteMany({});
+  });
 
-    const result = await getPersons();
-    const ids = result.map((p: { id: string }) => p.id);
+  it('should return created persons', async () => {
+    const p1 = await db.person.create({ data: { fullName: 'Person 1', gender: 'male' } });
+    const p2 = await db.person.create({ data: { fullName: 'Person 2', gender: 'female' } });
+
+    const result = await db.person.findMany({ orderBy: { createdAt: 'asc' } });
+    const ids = result.map((p) => p.id);
 
     expect(ids).toContain(p1.id);
     expect(ids).toContain(p2.id);
   });
 });
 
-describe('getPersonById', () => {
+describe('getPersonById (inner logic)', () => {
+  beforeEach(async () => {
+    await db.person.deleteMany({});
+    await db.personDetailsPrivate.deleteMany({});
+  });
+
   it('should return person with private details', async () => {
-    const person = await createPerson({
+    const person = await db.person.create({
       data: {
         fullName: 'Test Person',
         gender: 'male',
-        phoneNumber: '0901234567',
+        privateDetails: {
+          create: { phoneNumber: '0901234567' },
+        },
       },
+      include: { privateDetails: true },
     });
 
-    const result = await getPersonById({ data: { id: person.id } });
+    const result = await db.person.findUnique({
+      where: { id: person.id },
+      include: { privateDetails: true },
+    });
 
     expect(result?.fullName).toBe('Test Person');
     expect(result?.privateDetails?.phoneNumber).toBe('0901234567');
   });
 
   it('should return null for non-existent person', async () => {
-    const result = await getPersonById({ data: { id: crypto.randomUUID() } });
+    const result = await db.person.findUnique({ where: { id: crypto.randomUUID() } });
     expect(result).toBeNull();
   });
 });

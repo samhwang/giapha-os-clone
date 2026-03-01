@@ -16,6 +16,7 @@ export default defineConfig({
           include: ['src/**/**.test.tsx'],
           exclude: ['src/routes'],
           environment: 'jsdom',
+          setupFiles: ['./test/setup.ts', './test/ui-mocks.ts'],
         },
       },
       {
