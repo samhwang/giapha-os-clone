@@ -142,9 +142,65 @@ Rules:
 - Keep `lib/` for cross-cutting concerns only (db, auth, storage)
 - Use `ui/` for generic components with no domain logic
 
+## Clean Code
+
+Reference: [clean-code-javascript](https://github.com/ryanmcdermott/clean-code-javascript)
+
+### Control Flow
+
+- **Guard clauses first**: Invert conditions and return/continue early to avoid nesting.
+  ```ts
+  // Bad
+  if (file) {
+    if (file.type === 'json') {
+      process(file);
+    }
+  }
+
+  // Good
+  if (!file) return;
+  if (file.type !== 'json') return;
+  process(file);
+  ```
+- **No redundant wrappers**: Don't wrap `for` loops in `if (arr.length > 0)` — iterating an empty array is a no-op.
+- **Extract complex conditions into named booleans**: If a condition needs a comment to explain it, extract it into a `const` instead.
+  ```ts
+  // Bad
+  // Check if we should upload the avatar
+  if (avatarFile && personId) { ... }
+
+  // Good
+  const shouldUploadAvatar = avatarFile && personId;
+  if (shouldUploadAvatar) { ... }
+  ```
+- **Combine nested conditions with `&&`** when the inner block is a single early return.
+- **Collapse nested if/else into ternaries** when the only difference is the assigned value.
+
+### Functions
+
+- **Do one thing**: If a function has sections separated by blank lines or comments, each section is likely a candidate for extraction.
+- **2 parameters or fewer**: Use a single object parameter for 3+ arguments.
+- **Keep logic functions short**: Aim for < 30 lines of logic (excluding JSX).
+- **No flag arguments**: Avoid boolean parameters that make a function do two different things. Split into two functions instead when practical.
+
+### Variables
+
+- **Meaningful names**: No single-letter variables or abbreviations (`generation` not `gen`, `percentage` not `pct`).
+- **Named constants over magic numbers**: Extract unexplained literals into `const DRAG_THRESHOLD = 5`.
+- **Consistent vocabulary**: If a similar pattern exists elsewhere (e.g. `hasPrivateDetails` in create), follow the same naming in related code (e.g. `hasPrivateDetailsToUpdate` in update).
+
+### DRY
+
+- **Extract duplicated logic**: If the same pattern appears in 2+ places, extract a shared helper.
+- **Shared utilities go in `ui/utils/` or the relevant domain `utils/`**.
+
+### Error Handling
+
+- **Never ignore caught errors**: Always log, display, or re-throw.
+- **Never ignore rejected promises**: Attach `.catch()` or use try/catch in async functions.
+
 ## Other Conventions
 
-- Prefer early returns over deeply nested conditionals
 - Destructure props in function parameters
 - Use `const` by default, `let` only when reassignment is needed
 - No `var`
