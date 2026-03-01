@@ -1,49 +1,40 @@
 # Testing
 
-TL;DR: Use Vitest with multiple test projects - unit tests, integration tests, and browser (E2E) tests. Run with `pnpm test`.
+TL;DR: Use Vitest for unit/component/integration tests and Playwright for E2E tests.
 
 ## Test Projects
 
-The project uses Vitest with multiple test projects for different testing needs:
+The project uses two testing tools:
 
-| Project | Purpose | Command |
-|---------|---------|---------|
-| `ui-components` | Unit tests for utilities and components | `pnpm test:ui` |
-| `server` | Server function tests with real PostgreSQL via Testcontainers | `pnpm test:server` |
-| `integration` | Route-level tests with jsdom | `pnpm test:integration` |
-| `browser` | E2E tests with real Chromium via Playwright | `pnpm test:browser:run` |
+| Tool | Purpose | Command |
+|------|---------|---------|
+| **Vitest** | Unit tests, components, server functions, integration | `pnpm test:ui`, `pnpm test:server`, `pnpm test:integration` |
+| **Playwright** | E2E browser tests with real Chromium | `pnpm test:e2e` |
 
 ## Running Tests
 
-### All Tests
+### Vitest Tests
 
 ```bash
-pnpm test:run
+pnpm test:run          # Run all Vitest tests once
+pnpm test             # Watch mode
+pnpm test:ui          # UI component tests
+pnpm test:server      # Server function tests (Testcontainers)
+pnpm test:integration # Route-level integration tests
 ```
 
-### Specific Project
+### Playwright E2E Tests
 
 ```bash
-pnpm test:ui        # Unit tests
-pnpm test:server    # Server tests
-pnpm test:integration  # Integration tests
-pnpm test:browser:run  # Browser tests
+pnpm test:e2e         # Run E2E tests
+pnpm test:e2e:ui      # Run with Playwright UI
 ```
 
-### Watch Mode
+## Why Playwright for E2E?
 
-```bash
-pnpm test           # Watch all
-pnpm test:browser   # Watch browser tests
-```
-
-### Browser Setup
-
-Before running browser tests, install Chromium:
-
-```bash
-npx playwright install chromium
-```
+- TanStack Start's virtual imports (`#tanstack-router-entry`, etc.) don't work with Vitest's browser provider
+- Playwright is the industry standard for React E2E testing
+- Full control over browser context, network interception, storage
 
 ## Test Layers
 
@@ -66,23 +57,28 @@ test('returns correct kinship for parent-child', () => {
 Test business logic with a real PostgreSQL database using Testcontainers. Never mock database connections.
 
 ```typescript
-// src/server/functions/members.test.ts
+// src/members/server/member.test.ts
 import { getDbClient } from '@/lib/db'
 
-test('returns members with details', async () => {
+test('creates person with private details', async () => {
   const db = getDbClient()
   
-  // Seed test data directly
-  await db.person.create({
-    data: { fullName: 'Test User', gender: 'male' }
+  const person = await db.person.create({
+    data: {
+      fullName: 'Test User',
+      gender: 'male',
+      privateDetails: {
+        create: { phoneNumber: '0901234567' }
+      }
+    },
+    include: { privateDetails: true }
   })
   
-  const result = await getMembers()
-  expect(result).toHaveLength(1)
+  expect(person.privateDetails?.phoneNumber).toBe('0901234567')
 })
 ```
 
-The test project is already configured with Testcontainers in `test/globalSetup.ts` and `test/per-file-db.ts`.
+The server test project is configured with Testcontainers in `test/globalSetup.ts` and `test/per-file-db.ts`.
 
 ### Layer 3: Components (React Testing Library)
 
@@ -99,54 +95,75 @@ test('renders person name', () => {
 })
 ```
 
-### Layer 4: Browser Tests (E2E)
+### Layer 4: E2E Tests (Playwright)
 
 Real browser testing with Playwright - no mocking of browser APIs.
 
 ```typescript
-// src/routes/dashboard/index.browser-test.tsx
-import { test, expect } from 'vitest'
+// e2e/landing.spec.ts
+import { test, expect } from '@playwright/test'
 
-test('dashboard loads correctly', async () => {
-  const { getByRole } = render(<Dashboard />)
-  await expect(getByRole('heading')).toBeInTheDocument()
+test('landing page displays correctly', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByRole('heading')).toBeVisible()
 })
 ```
 
-## Writing Browser Tests
+## Writing E2E Tests
 
 ### File Pattern
 
-Use `.browser-test.tsx` extension:
+E2E tests live in the `e2e/` folder:
 
 ```
-src/routes/dashboard/index.browser-test.tsx
-src/routes/login.browser-test.tsx
+e2e/landing.spec.ts
+e2e/login.spec.ts
+e2e/members.spec.ts
 ```
 
 ### Basic Structure
 
 ```typescript
-import { test, expect } from 'vitest'
-import { render } from 'vitest-browser-react'
+import { test, expect } from '@playwright/test'
 
-test('page renders', async () => {
-  const { getByRole } = render(<YourComponent />)
-  await expect(getByRole('heading')).toBeInTheDocument()
+test.describe('Feature Name', () => {
+  test('user flow description', async ({ page }) => {
+    // Navigate
+    await page.goto('/')
+    
+    // Interact
+    await page.getByRole('link', { name: 'Login' }).click()
+    
+    // Assert
+    await expect(page).toHaveURL(/.*\/login/)
+  })
 })
 ```
 
-### Mocking in Browser Tests
+### Authentication
+
+Use `storageState` in Playwright config to persist auth state across tests:
 
 ```typescript
-import { describe, expect, test, vi } from 'vitest'
+// playwright.config.ts
+export default defineConfig({
+  use: {
+    storageState: '.auth/user.json',
+  },
+})
+```
 
-vi.mock('@/lib/some-module', () => ({
-  someFunction: vi.fn(),
-}))
+### Testing Protected Routes
 
-test('works with mocks', async () => {
-  // Test implementation
+```typescript
+test('can access dashboard when logged in', async ({ page }) => {
+  await page.goto('/login')
+  await page.fill('[name="email"]', 'test@example.com')
+  await page.fill('[name="password"]', 'password')
+  await page.click('button[type="submit"]')
+  
+  await expect(page).toHaveURL('/dashboard')
+  await expect(page.getByText('Welcome')).toBeVisible()
 })
 ```
 

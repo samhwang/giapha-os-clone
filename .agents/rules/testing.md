@@ -7,13 +7,14 @@ See [docs/en/06-testing.md](../docs/en/06-testing.md) for comprehensive testing 
 ### Running Tests
 
 ```bash
-pnpm test                    # Watch mode
-pnpm test:run                # Run once
+pnpm test                    # Vitest watch mode
+pnpm test:run                # Vitest run once
 pnpm test:coverage           # With coverage
 pnpm test:ui                 # UI components
 pnpm test:server             # Server functions
 pnpm test:integration        # Route tests
-pnpm test:browser:run        # Browser (E2E)
+pnpm test:e2e                # Playwright E2E tests
+pnpm test:e2e:ui            # Playwright UI mode
 ```
 
 ### Test File Pattern
@@ -22,7 +23,7 @@ pnpm test:browser:run        # Browser (E2E)
 |------|---------|---------|
 | Unit | `.test.ts` | `src/utils/kinshipHelpers.test.ts` |
 | Component | `.test.tsx` | `src/components/PersonCard.test.tsx` |
-| Browser | `.browser-test.tsx` | `src/routes/login.browser-test.tsx` |
+| E2E | `.spec.ts` | `e2e/login.spec.ts` |
 
 ### Coverage Targets
 
@@ -72,18 +73,33 @@ const result = await db.person.create({
 - Coverage target: 70%+
 - Files: `src/components/*.test.tsx`
 
-### Layer 4: Integration (optional)
+### Layer 4: E2E Tests (Playwright)
 
-- Full user flows (auth, CRUD operations)
-- Heavier setup, use sparingly
-
-### Layer 5: Browser Tests (E2E/Component)
-
-- Real Chromium browser via Playwright
+- Real Chromium browser via Playwright (not Vitest browser)
 - Test full user flows, real DOM APIs, localStorage, fetch
 - No mocking of browser APIs
-- Coexists with jsdom tests (jsdom for fast unit tests, browser for E2E)
-- Files: `src/**/*.browser-test.{ts,tsx}`
+- E2E tests live in `e2e/` folder
+- Files: `e2e/**/*.spec.ts`
+
+**Why Playwright instead of Vitest browser?**
+- TanStack Start's virtual imports (`#tanstack-router-entry`, etc.) don't work with Vitest's browser provider
+- Playwright is the industry standard for React E2E testing
+- Full control over browser context, network interception, storage
+
+Example:
+```ts
+// e2e/login.spec.ts
+import { test, expect } from '@playwright/test'
+
+test('login flow works', async ({ page }) => {
+  await page.goto('/login')
+  await page.fill('[name="email"]', 'test@example.com')
+  await page.fill('[name="password"]', 'password')
+  await page.click('button[type="submit"]')
+  
+  await expect(page).toHaveURL('/dashboard')
+})
+```
 
 Type tests can be inlined within regular test files using `expectTypeOf` from vitest.
 
