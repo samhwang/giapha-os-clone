@@ -1,4 +1,5 @@
 import { Minus, Plus } from 'lucide-react';
+import type { MouseEvent } from 'react';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
 import type { Person } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
@@ -9,7 +10,7 @@ interface FamilyNodeCardProps {
   note?: string | null;
   isMainNode?: boolean;
   onClickCard?: () => void;
-  onClickName?: (e: React.MouseEvent) => void;
+  onClickName?: (e: MouseEvent) => void;
   isExpandable?: boolean;
   isExpanded?: boolean;
   isRingVisible?: boolean;

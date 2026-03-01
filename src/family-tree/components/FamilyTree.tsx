@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import type { Person, Relationship } from '../../types';
 import FamilyNodeCard from './FamilyNodeCard';
 import styles from './family-tree.module.css';
@@ -23,7 +23,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
     }
   }, []);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = (e: MouseEvent) => {
     setIsPressed(true);
     hasDraggedRef.current = false;
     setDragStart({ x: e.pageX, y: e.pageY });
@@ -32,7 +32,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
     }
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = (e: MouseEvent) => {
     if (!isPressed || !containerRef.current) return;
     const dx = e.pageX - dragStart.x;
     const dy = e.pageY - dragStart.y;
@@ -53,7 +53,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
     setIsDragging(false);
   };
 
-  const handleClickCapture = (e: React.MouseEvent) => {
+  const handleClickCapture = (e: MouseEvent) => {
     if (hasDraggedRef.current) {
       e.stopPropagation();
       e.preventDefault();
@@ -84,7 +84,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
     return { person: personsMap.get(personId) as Person, spouses: spousesList, children: childrenList };
   };
 
-  const renderTreeNode = (personId: string, visited: Set<string> = new Set()): React.ReactNode => {
+  const renderTreeNode = (personId: string, visited: Set<string> = new Set()): ReactNode => {
     if (visited.has(personId)) return null;
     visited.add(personId);
 
@@ -114,7 +114,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
         {data.children.length > 0 && (
           <ul>
             {data.children.map((child) => (
-              <React.Fragment key={child.id}>{renderTreeNode(child.id, new Set(visited))}</React.Fragment>
+              <Fragment key={child.id}>{renderTreeNode(child.id, new Set(visited))}</Fragment>
             ))}
           </ul>
         )}
@@ -139,7 +139,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
       <div id="export-container" className={`w-max min-w-full mx-auto p-4 ${styles.tree} transition-opacity duration-200 ${isDragging ? 'opacity-90' : ''}`}>
         <ul>
           {roots.map((root) => (
-            <React.Fragment key={root.id}>{renderTreeNode(root.id)}</React.Fragment>
+            <Fragment key={root.id}>{renderTreeNode(root.id)}</Fragment>
           ))}
         </ul>
       </div>
