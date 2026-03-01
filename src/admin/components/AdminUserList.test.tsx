@@ -1,14 +1,19 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createUser } from '../../../test/fixtures';
 import AdminUserList from './AdminUserList';
 
+const mockChangeRole = vi.fn();
+const mockDeleteUser = vi.fn();
+const mockToggleStatus = vi.fn();
+const mockCreateUser = vi.fn();
+
 vi.mock('../server/user', () => ({
-  changeRole: vi.fn(() => Promise.resolve({ success: true })),
-  deleteUser: vi.fn(() => Promise.resolve({ success: true })),
-  toggleStatus: vi.fn(() => Promise.resolve({ success: true })),
-  createUser: vi.fn(() => Promise.resolve({ success: true })),
+  changeRole: (...args: unknown[]) => mockChangeRole(...args),
+  deleteUser: (...args: unknown[]) => mockDeleteUser(...args),
+  toggleStatus: (...args: unknown[]) => mockToggleStatus(...args),
+  createUser: (...args: unknown[]) => mockCreateUser(...args),
 }));
 
 const adminUser = createUser({ id: 'admin-1', email: 'admin@test.com', role: 'admin', isActive: true });
@@ -16,6 +21,20 @@ const memberUser = createUser({ id: 'member-1', email: 'member@test.com', role: 
 const inactiveUser = createUser({ id: 'inactive-1', email: 'inactive@test.com', role: 'member', isActive: false });
 
 describe('AdminUserList', () => {
+  let confirmSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    mockChangeRole.mockReset().mockResolvedValue({ success: true });
+    mockDeleteUser.mockReset().mockResolvedValue({ success: true });
+    mockToggleStatus.mockReset().mockResolvedValue({ success: true });
+    mockCreateUser.mockReset().mockResolvedValue({ success: true });
+    confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+  });
+
+  afterEach(() => {
+    confirmSpy.mockRestore();
+  });
+
   it('renders user list with emails', () => {
     render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />);
     expect(screen.getByText('admin@test.com')).toBeInTheDocument();
@@ -61,5 +80,91 @@ describe('AdminUserList', () => {
   it('shows empty state when no users', () => {
     render(<AdminUserList initialUsers={[]} currentUserId="admin-1" />);
     expect(screen.getByText(/không tìm thấy người dùng/i)).toBeInTheDocument();
+  });
+
+  it('promotes member to admin', async () => {
+    const user = userEvent.setup();
+    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />);
+
+    await user.click(screen.getByText(/lên admin/i));
+
+    await waitFor(() => {
+      expect(mockChangeRole).toHaveBeenCalledWith({ data: { userId: 'member-1', newRole: 'admin' } });
+    });
+    expect(screen.getByText('Đã cập nhật vai trò người dùng thành công.')).toBeInTheDocument();
+  });
+
+  it('locks active user', async () => {
+    const user = userEvent.setup();
+    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />);
+
+    await user.click(screen.getByText(/khoá/i));
+
+    await waitFor(() => {
+      expect(mockToggleStatus).toHaveBeenCalledWith({ data: { userId: 'member-1', isActive: false } });
+    });
+    expect(screen.getByText('Đã khoá người dùng thành công.')).toBeInTheDocument();
+  });
+
+  it('approves inactive user', async () => {
+    const user = userEvent.setup();
+    render(<AdminUserList initialUsers={[adminUser, inactiveUser]} currentUserId="admin-1" />);
+
+    await user.click(screen.getByRole('button', { name: /^duyệt$/i }));
+
+    await waitFor(() => {
+      expect(mockToggleStatus).toHaveBeenCalledWith({ data: { userId: 'inactive-1', isActive: true } });
+    });
+    expect(screen.getByText('Đã duyệt người dùng thành công.')).toBeInTheDocument();
+  });
+
+  it('deletes user after confirm', async () => {
+    confirmSpy.mockReturnValue(true);
+    const user = userEvent.setup();
+    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />);
+
+    await user.click(screen.getByText(/xóa/i));
+
+    await waitFor(() => {
+      expect(mockDeleteUser).toHaveBeenCalledWith({ data: { userId: 'member-1' } });
+    });
+    expect(screen.getByText('Đã xóa người dùng thành công.')).toBeInTheDocument();
+    expect(screen.queryByText('member@test.com')).not.toBeInTheDocument();
+  });
+
+  it('does not delete on cancel', async () => {
+    const user = userEvent.setup();
+    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />);
+
+    await user.click(screen.getByText(/xóa/i));
+    expect(mockDeleteUser).not.toHaveBeenCalled();
+  });
+
+  it('creates user via modal', async () => {
+    const user = userEvent.setup();
+    render(<AdminUserList initialUsers={[adminUser]} currentUserId="admin-1" />);
+
+    await user.click(screen.getByText(/thêm người dùng/i));
+    await user.type(screen.getByLabelText(/email/i), 'new@test.com');
+    await user.type(screen.getByLabelText(/mật khẩu/i), 'password123');
+    await user.click(screen.getByRole('button', { name: /tạo người dùng/i }));
+
+    await waitFor(() => {
+      expect(mockCreateUser).toHaveBeenCalledWith({
+        data: expect.objectContaining({ email: 'new@test.com', password: 'password123' }),
+      });
+    });
+  });
+
+  it('shows error notification on failure', async () => {
+    mockChangeRole.mockRejectedValue(new Error('Role change failed'));
+    const user = userEvent.setup();
+    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />);
+
+    await user.click(screen.getByText(/lên admin/i));
+
+    await waitFor(() => {
+      expect(screen.getByText('Role change failed')).toBeInTheDocument();
+    });
   });
 });
