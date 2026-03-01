@@ -150,6 +150,53 @@ describe('toggleStatus (inner logic)', () => {
   });
 });
 
+describe('createUser (inner logic)', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    vi.mocked(requireAdmin).mockResolvedValue({
+      id: ADMIN_ID,
+      role: 'admin',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      email: 'admin@test.com',
+      emailVerified: true,
+      name: 'Admin',
+    });
+    await db.user.deleteMany({});
+  });
+
+  it('should reject duplicate email', async () => {
+    const email = `duplicate-${crypto.randomUUID()}@test.com`;
+    await seedUser({ email });
+
+    const existing = await db.user.findUnique({ where: { email } });
+    expect(existing).not.toBeNull();
+  });
+
+  it('should create user with specified role', async () => {
+    const email = `new-admin-${crypto.randomUUID()}@test.com`;
+    const user = await seedUser({ email, role: 'admin' });
+
+    expect(user.role).toBe('admin');
+    expect(user.email).toBe(email);
+  });
+
+  it('should create user with isActive status', async () => {
+    const email = `active-${crypto.randomUUID()}@test.com`;
+    const user = await seedUser({ email, isActive: true });
+
+    expect(user.isActive).toBe(true);
+  });
+
+  it('should default to member role', async () => {
+    const email = `member-${crypto.randomUUID()}@test.com`;
+    const user = await seedUser({ email });
+
+    expect(user.role).toBe('member');
+  });
+});
+
 describe('getUsers (inner logic)', () => {
   beforeEach(async () => {
     await db.user.deleteMany({});

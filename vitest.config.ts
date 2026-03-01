@@ -13,7 +13,7 @@ export default defineConfig({
         test: {
           name: 'unit',
           include: ['src/**/*.test.ts'],
-          exclude: ['src/**/server/*.test.ts', 'src/routes/**'],
+          exclude: ['src/**/server/*.test.ts', 'src/server/**/*.test.ts', 'src/lib/storage.test.ts', 'src/routes/**'],
           environment: 'node',
         },
       },
@@ -31,7 +31,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'server',
-          include: ['src/**/server/*.test.ts'],
+          include: ['src/**/server/*.test.ts', 'src/server/**/*.test.ts', 'src/lib/storage.test.ts'],
           environment: 'node',
           globalSetup: ['./test/globalSetup.ts'],
           setupFiles: ['./test/per-file-db.ts', './test/setup.ts'],
