@@ -1,12 +1,12 @@
-# Development
+# Phát Triển
 
-TL;DR: Create routes in `src/routes/`, add loaders for data fetching, actions for form submissions. Use TanStack Router file-based routing.
+TL;DR: Tạo routes trong `src/routes/`, thêm loaders để fetch dữ liệu, actions cho form submissions. Dùng TanStack Router file-based routing.
 
-## Creating Routes
+## Tạo Routes
 
-TanStack Router uses file-based routing. The route file path determines the URL.
+TanStack Router dùng file-based routing. Đường dẫn file route xác định URL.
 
-### Basic Route
+### Route Cơ Bản
 
 ```typescript
 // src/routes/about.tsx → /about
@@ -46,15 +46,15 @@ function MemberDetailPage() {
 
 ## Loaders (Data Fetching)
 
-Loaders run on the server to fetch data before rendering.
+Loaders chạy trên server để fetch dữ liệu trước khi render.
 
 ```typescript
 import { getDbClient } from '@/lib/db'
 
 export const Route = createFileRoute('/dashboard/members')({
   loader: async () => {
-    const prisma = getDbClient()
-    const persons = await prisma.person.findMany({
+    const db = getDbClient()
+    const persons = await db.person.findMany({
       include: { details: true },
     })
     return { persons }
@@ -76,7 +76,7 @@ function MembersPage() {
 
 ## Actions (Form Submissions)
 
-Actions handle form submissions on the server.
+Actions xử lý form submissions trên server.
 
 ```typescript
 export const Route = createFileRoute('/dashboard/members/new')({
@@ -86,7 +86,7 @@ export const Route = createFileRoute('/dashboard/members/new')({
 export const action = async ({ request }: ActionArgs) => {
   const formData = await request.formData()
   
-  const person = await prisma.person.create({
+  const person = await db.person.create({
     data: {
       fullName: formData.get('fullName') as string,
       gender: formData.get('gender') as any,
@@ -118,7 +118,7 @@ function NewMemberPage() {
 
 ## Authentication
 
-### Checking Auth in Loader
+### Kiểm Tra Auth trong Loader
 
 ```typescript
 export const Route = createFileRoute('/dashboard')({
@@ -134,7 +134,7 @@ export const Route = createFileRoute('/dashboard')({
 })
 ```
 
-### Getting User in Component
+### Lấy User trong Component
 
 ```typescript
 import { useRouteContext } from '@tanstack/react-router'
@@ -159,28 +159,28 @@ export const Route = createFileRoute('/admin')({
 })
 ```
 
-## Using the Database
+## Sử Dụng Database
 
-Import the Prisma client from `@/lib/db`:
+Import Prisma client từ `@/lib/db`:
 
 ```typescript
 import { getDbClient } from '@/lib/db'
 
-const prisma = getDbClient()
+const db = getDbClient()
 
 // Query examples
-const persons = await prisma.person.findMany()
-const person = await prisma.person.findUnique({ where: { id: 'xxx' } })
-const created = await prisma.person.create({ data: { ... } })
-const updated = await prisma.person.update({ where: { id: 'xxx' }, data: { ... } })
-const deleted = await prisma.person.delete({ where: { id: 'xxx' } })
+const persons = await db.person.findMany()
+const person = await db.person.findUnique({ where: { id: 'xxx' } })
+const created = await db.person.create({ data: { ... } })
+const updated = await db.person.update({ where: { id: 'xxx' }, data: { ... } })
+const deleted = await db.person.delete({ where: { id: 'xxx' } })
 ```
 
-## Component Organization
+## Tổ Chức Component
 
 ### Shared Components
 
-Put reusable components in `src/components/`:
+Đặt components có thể tái sử dụng trong `src/components/`:
 
 ```
 src/components/
@@ -191,7 +191,7 @@ src/components/
 
 ### Feature Components
 
-Co-locate with routes or in `src/features/`:
+Đặt cùng với routes hoặc trong `src/features/`:
 
 ```
 src/features/
@@ -201,18 +201,18 @@ src/features/
 └── events/
 ```
 
-## Running Development Server
+## Chạy Development Server
 
 ```bash
 pnpm dev
 ```
 
-The app runs at `http://localhost:3000`.
+App chạy tại `http://localhost:3000`.
 
-## Building for Production
+## Build cho Production
 
 ```bash
 pnpm build
 ```
 
-Output goes to `dist/`.
+Output ra thư mục `dist/`.

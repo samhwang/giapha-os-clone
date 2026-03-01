@@ -176,8 +176,8 @@ Chạy script seed được định nghĩa trong `prisma/seed.ts` để điền 
 import { getDbClient } from '@/lib/db'
 
 export const loader = async () => {
-  const prisma = getDbClient()
-  const persons = await prisma.person.findMany({
+  const db = getDbClient()
+  const persons = await db.person.findMany({
     include: {
       relationshipsAsA: true,
       relationshipsAsB: true,
@@ -193,11 +193,11 @@ export const loader = async () => {
 import { getDbClient } from '@/lib/db'
 
 export const action = async ({ request }: ActionArgs) => {
-  const prisma = getDbClient()
+  const db = getDbClient()
   const formData = await request.formData()
   const name = formData.get('name') as string
   
-  const person = await prisma.person.create({
+  const person = await db.person.create({
     data: {
       fullName: name,
       gender: 'male',
@@ -213,32 +213,32 @@ export const action = async ({ request }: ActionArgs) => {
 ```typescript
 import { getDbClient } from '@/lib/db'
 
-const prisma = getDbClient()
+const db = getDbClient()
 
 // Find one
-const person = await prisma.person.findUnique({
+const person = await db.person.findUnique({
   where: { id: 'xxx' },
 })
 
 // Find many with filter
-const persons = await prisma.person.findMany({
+const persons = await db.person.findMany({
   where: { gender: 'male' },
   orderBy: { birthDate: 'asc' },
 })
 
 // Update
-await prisma.person.update({
+await db.person.update({
   where: { id: 'xxx' },
   data: { fullName: 'New Name' },
 })
 
 // Delete
-await prisma.person.delete({
+await db.person.delete({
   where: { id: 'xxx' },
 })
 
 // Relationships
-await prisma.relationship.create({
+await db.relationship.create({
   data: {
     personAId: 'parent-id',
     personBId: 'child-id',
