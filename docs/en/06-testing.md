@@ -9,7 +9,7 @@ The project uses Vitest with multiple test projects for different testing needs:
 | Project | Purpose | Command |
 |---------|---------|---------|
 | `ui-components` | Unit tests for utilities and components | `pnpm test:ui` |
-| `server` | Server function tests with mocked Prisma | `pnpm test:server` |
+| `server` | Server function tests with real PostgreSQL via Testcontainers | `pnpm test:server` |
 | `integration` | Route-level tests with jsdom | `pnpm test:integration` |
 | `browser` | E2E tests with real Chromium via Playwright | `pnpm test:browser:run` |
 
@@ -55,26 +55,26 @@ test('returns correct kinship for parent-child', () => {
 
 ### Layer 2: Server Functions
 
-Test business logic with mocked Prisma.
+Test business logic with a real PostgreSQL database using Testcontainers. Never mock database connections.
 
 ```typescript
 // src/server/functions/members.test.ts
-import { getMembers } from './member'
 import { getDbClient } from '@/lib/db'
 
-vi.mock('@/lib/db', () => ({
-  getDbClient: vi.fn(() => ({
-    person: {
-      findMany: vi.fn().mockResolvedValue([...])
-    }
-  }))
-}))
-
 test('returns members with details', async () => {
+  const db = getDbClient()
+  
+  // Seed test data directly
+  await db.person.create({
+    data: { fullName: 'Test User', gender: 'male' }
+  })
+  
   const result = await getMembers()
-  expect(result).toHaveLength(5)
+  expect(result).toHaveLength(1)
 })
 ```
+
+The test project is already configured with Testcontainers in `test/globalSetup.ts` and `test/per-file-db.ts`.
 
 ### Layer 3: Components (React Testing Library)
 

@@ -9,7 +9,7 @@ Project dùng Vitest với nhiều test projects cho các nhu cầu kiểm thử
 | Project | Mục đích | Lệnh |
 |---------|---------|---------|
 | `ui-components` | Unit tests cho utilities và components | `pnpm test:ui` |
-| `server` | Server function tests với mocked Prisma | `pnpm test:server` |
+| `server` | Server function tests với PostgreSQL thực qua Testcontainers | `pnpm test:server` |
 | `integration` | Route-level tests với jsdom | `pnpm test:integration` |
 | `browser` | E2E tests với Chromium thực qua Playwright | `pnpm test:browser:run` |
 
@@ -55,26 +55,26 @@ test('returns correct kinship for parent-child', () => {
 
 ### Lớp 2: Server Functions
 
-Test business logic với mocked Prisma.
+Test business logic với database PostgreSQL thực sự dùng Testcontainers. Không bao giờ mock database connections.
 
 ```typescript
 // src/server/functions/members.test.ts
-import { getMembers } from './member'
 import { getDbClient } from '@/lib/db'
 
-vi.mock('@/lib/db', () => ({
-  getDbClient: vi.fn(() => ({
-    person: {
-      findMany: vi.fn().mockResolvedValue([...])
-    }
-  }))
-}))
-
 test('returns members with details', async () => {
+  const db = getDbClient()
+  
+  // Seed test data directly
+  await db.person.create({
+    data: { fullName: 'Test User', gender: 'male' }
+  })
+  
   const result = await getMembers()
-  expect(result).toHaveLength(5)
+  expect(result).toHaveLength(1)
 })
 ```
+
+Test project đã được cấu hình với Testcontainers trong `test/globalSetup.ts` và `test/per-file-db.ts`.
 
 ### Lớp 3: Components (React Testing Library)
 
