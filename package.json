@@ -19,8 +19,8 @@
     "test:ui": "vitest --project ui-components",
     "test:server": "vitest --project server",
     "test:integration": "vitest --project integration",
-    "test:browser": "vitest --project browser",
-    "test:browser:run": "vitest run --project browser",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "test:coverage": "vitest run --coverage",
     "prepare": "pnpm run githooks:init",
     "githooks:init": "husky",
@@ -68,6 +68,7 @@
   "devDependencies": {
     "@better-auth/cli": "^1.4.19",
     "@biomejs/biome": "^2.4.4",
+    "@playwright/test": "^1.58.2",
     "@tanstack/devtools-vite": "^0.3.11",
     "@testcontainers/postgresql": "^11.12.0",
     "@testing-library/dom": "^10.4.0",

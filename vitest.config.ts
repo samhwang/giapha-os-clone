@@ -1,4 +1,3 @@
-import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -36,17 +35,6 @@ export default defineConfig({
           include: ['src/routes/**.test.{ts,tsx}'],
           environment: 'jsdom',
           globalSetup: ['./test/globalSetup.ts'],
-        },
-      },
-      {
-        test: {
-          name: 'browser',
-          include: ['src/**/*.browser-test.{ts,tsx}'],
-          browser: {
-            enabled: true,
-            provider: playwright(),
-            instances: [{ browser: 'chromium' }],
-          },
         },
       },
     ],
