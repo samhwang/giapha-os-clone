@@ -56,12 +56,6 @@ refactor: extract avatar upload to shared utility
 - Active voice preferred
 - Concise writing — say what needs to be said, nothing more
 
-## Documentation
-
-- When updating `README.md`, always update `README.vi.md` (Vietnamese version) with the same changes
-- When creating or updating documentation in `docs/en/`, always create/update the corresponding file in `docs/vi/`
-- Keep both language versions in sync
-
 ## Pull Request Structure
 
 ```markdown
