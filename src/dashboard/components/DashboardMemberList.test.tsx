@@ -8,7 +8,7 @@ vi.mock('@tanstack/react-router', () => ({
   Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
 }));
 
-vi.mock('../../dashboard/components/DashboardContext', () => ({
+vi.mock('./DashboardContext', () => ({
   useDashboard: () => ({
     memberModalId: null,
     setMemberModalId: vi.fn(),

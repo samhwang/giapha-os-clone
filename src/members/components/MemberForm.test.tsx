@@ -9,7 +9,7 @@ vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-vi.mock('@/server/functions/member', () => ({
+vi.mock('../server/member', () => ({
   createPerson: vi.fn().mockResolvedValue({ id: 'new-id' }),
   updatePerson: vi.fn().mockResolvedValue({ success: true }),
   uploadPersonAvatar: vi.fn().mockResolvedValue({ success: true }),

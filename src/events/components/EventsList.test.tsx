@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import EventsList from './EventsList';
 
-vi.mock('./DashboardContext', () => ({
+vi.mock('../../dashboard/components/DashboardContext', () => ({
   useDashboard: () => ({
     memberModalId: null,
     setMemberModalId: vi.fn(),

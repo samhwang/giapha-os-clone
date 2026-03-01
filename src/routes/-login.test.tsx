@@ -14,14 +14,14 @@ vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-vi.mock('@/lib/auth-client', () => ({
+vi.mock('../lib/auth-client', () => ({
   authClient: {
     signIn: { email: mockSignIn },
     signUp: { email: mockSignUp },
   },
 }));
 
-vi.mock('@/components/Footer', () => ({
+vi.mock('../ui/layout/Footer', () => ({
   default: () => <footer data-testid="footer" />,
 }));
 
