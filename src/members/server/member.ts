@@ -97,7 +97,8 @@ export const updatePerson = createServerFn({ method: 'POST' })
       data: personData,
     });
 
-    if (phoneNumber !== undefined || occupation !== undefined || currentResidence !== undefined) {
+    const hasPrivateDetailsToUpdate = phoneNumber !== undefined || occupation !== undefined || currentResidence !== undefined;
+    if (hasPrivateDetailsToUpdate) {
       await db.personDetailsPrivate.upsert({
         where: { personId: id },
         create: {
