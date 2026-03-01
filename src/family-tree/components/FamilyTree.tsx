@@ -36,7 +36,8 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
     if (!isPressed || !containerRef.current) return;
     const dx = e.pageX - dragStart.x;
     const dy = e.pageY - dragStart.y;
-    if (!hasDraggedRef.current && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+    const hasExceededDragThreshold = Math.abs(dx) > 5 || Math.abs(dy) > 5;
+    if (!hasDraggedRef.current && hasExceededDragThreshold) {
       setIsDragging(true);
       hasDraggedRef.current = true;
     }
