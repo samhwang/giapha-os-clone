@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { createPerson, createRelationship } from '../../../test/fixtures';
@@ -41,5 +41,55 @@ describe('KinshipFinder', () => {
   it('renders correctly with empty persons', () => {
     render(<KinshipFinder persons={[]} relationships={[]} />);
     expect(screen.getByText('Chọn hai thành viên để tính quan hệ')).toBeInTheDocument();
+  });
+
+  it('shows kinship result when two persons selected', async () => {
+    const user = userEvent.setup();
+    render(<KinshipFinder persons={persons} relationships={relationships} />);
+
+    // Select person A — scope clicks to selector A container
+    const memberASection = screen.getByText(/thành viên a/i).parentElement as HTMLElement;
+    await user.click(within(memberASection).getByText('Chọn thành viên...'));
+    await user.click(within(memberASection).getByText('Nguyễn Văn Cha'));
+
+    // Select person B — scope clicks to selector B container
+    const memberBSection = screen.getByText(/thành viên b/i).parentElement as HTMLElement;
+    await user.click(within(memberBSection).getByText('Chọn thành viên...'));
+    await user.click(within(memberBSection).getByText('Nguyễn Văn Con'));
+
+    // Kinship result should be displayed (the prompt text disappears)
+    await waitFor(() => {
+      expect(screen.queryByText('Chọn hai thành viên để tính quan hệ')).not.toBeInTheDocument();
+    });
+  });
+
+  it('swap button exchanges selected persons', async () => {
+    const user = userEvent.setup();
+    render(<KinshipFinder persons={persons} relationships={relationships} />);
+
+    // Select person A
+    const memberASection = screen.getByText(/thành viên a/i).parentElement as HTMLElement;
+    await user.click(within(memberASection).getByText('Chọn thành viên...'));
+    await user.click(within(memberASection).getByText('Nguyễn Văn Cha'));
+
+    // Select person B
+    const memberBSection = screen.getByText(/thành viên b/i).parentElement as HTMLElement;
+    await user.click(within(memberBSection).getByText('Chọn thành viên...'));
+    await user.click(within(memberBSection).getByText('Nguyễn Văn Con'));
+
+    // Verify initial positions
+    await waitFor(() => {
+      expect(memberASection.textContent).toContain('Nguyễn Văn Cha');
+      expect(memberBSection.textContent).toContain('Nguyễn Văn Con');
+    });
+
+    // Click swap ("Đổi chỗ")
+    await user.click(screen.getByTitle(/đổi chỗ/i));
+
+    // Positions should be exchanged
+    await waitFor(() => {
+      expect(memberASection.textContent).toContain('Nguyễn Văn Con');
+      expect(memberBSection.textContent).toContain('Nguyễn Văn Cha');
+    });
   });
 });

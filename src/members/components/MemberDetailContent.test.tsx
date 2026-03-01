@@ -83,4 +83,11 @@ describe('MemberDetailContent', () => {
     render(<MemberDetailContent person={basePerson} privateData={null} isAdmin={false} />);
     expect(screen.getByTestId('relationship-manager')).toBeInTheDocument();
   });
+
+  it('shows "Chưa cập nhật" placeholders for null private data fields when admin', () => {
+    render(<MemberDetailContent person={basePerson} privateData={null} isAdmin={true} />);
+    const placeholders = screen.getAllByText(/chưa cập nhật/i);
+    // Phone, occupation, and residence should all show placeholder
+    expect(placeholders).toHaveLength(3);
+  });
 });

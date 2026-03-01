@@ -103,4 +103,30 @@ describe('EventsList', () => {
     // After filtering, only birthday events should show
     expect(screen.getByText('Nguyễn Văn A')).toBeInTheDocument();
   });
+
+  it('filters by death anniversary tab', () => {
+    render(<EventsList persons={persons} />);
+
+    const deathTab = screen.getByRole('button', { name: 'Ngày giỗ' });
+    fireEvent.click(deathTab);
+
+    // Only deceased person (Trần Thị B) has death anniversary
+    expect(screen.getByText('Trần Thị B')).toBeInTheDocument();
+    // Living person should not appear in death anniversary filter
+    expect(screen.queryByText('Nguyễn Văn A')).not.toBeInTheDocument();
+  });
+
+  it('switches back to all events after filtering', () => {
+    render(<EventsList persons={persons} />);
+
+    // Filter to death anniversary first
+    fireEvent.click(screen.getByRole('button', { name: 'Ngày giỗ' }));
+    expect(screen.queryByText('Nguyễn Văn A')).not.toBeInTheDocument();
+
+    // Switch back to all
+    fireEvent.click(screen.getByRole('button', { name: 'Tất cả' }));
+    expect(screen.getByText('Nguyễn Văn A')).toBeInTheDocument();
+    const bElements = screen.getAllByText('Trần Thị B');
+    expect(bElements.length).toBeGreaterThanOrEqual(1);
+  });
 });

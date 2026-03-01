@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
 import MemberDetailModal from './MemberDetailModal';
@@ -74,5 +75,34 @@ describe('MemberDetailModal', () => {
 
     render(<MemberDetailModal isAdmin={true} />);
     expect(screen.getByText(/đang tải/i)).toBeInTheDocument();
+  });
+
+  it('shows error state when getPersonById rejects', async () => {
+    mockMemberModalId = 'person-1';
+    mockGetPersonById.mockRejectedValue(new Error('Fetch failed'));
+
+    render(<MemberDetailModal isAdmin={true} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Fetch failed')).toBeInTheDocument();
+    });
+  });
+
+  it('close button calls setMemberModalId(null)', async () => {
+    mockMemberModalId = 'person-1';
+    mockGetPersonById.mockResolvedValue({
+      ...createPerson({ id: 'person-1', fullName: 'Test' }),
+      privateDetails: null,
+    });
+
+    const user = userEvent.setup();
+    render(<MemberDetailModal isAdmin={true} />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/đóng/i)).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByLabelText(/đóng/i));
+    expect(mockSetMemberModalId).toHaveBeenCalledWith(null);
   });
 });
