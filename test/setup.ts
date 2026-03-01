@@ -3,6 +3,11 @@ import '@testing-library/jest-dom/vitest';
 import { afterEach, vi } from 'vitest';
 import { createI18nInstance } from '../src/i18n';
 
+vi.mock('../src/lib/db', () => ({
+  getDbClient: vi.fn(() => ({})),
+}));
+vi.mock('../src/lib/storage', () => ({}));
+
 // Stub createServerFn so .handler(fn) returns fn directly in tests.
 // Without this, createServerFn goes through the client-side HTTP/RPC path
 // which doesn't work in vitest's jsdom environment.
