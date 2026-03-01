@@ -303,11 +303,11 @@ export default function LineageManager({ persons, relationships }: LineageManage
                       </td>
                       <td className="px-4 py-3 text-center">
                         {u.changed ? (
-                          <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700 border border-amber-200/60">
+                          <span className="inline-block px-2 py-0.5 rounded-full text-xs-plus font-bold bg-amber-100 text-amber-700 border border-amber-200/60">
                             {t('common.update')}
                           </span>
                         ) : (
-                          <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-bold bg-stone-100 text-stone-400 border border-stone-200/60">
+                          <span className="inline-block px-2 py-0.5 rounded-full text-xs-plus font-bold bg-stone-100 text-stone-400 border border-stone-200/60">
                             {t('common.unchanged')}
                           </span>
                         )}

@@ -437,7 +437,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               <Lock className="size-4" />
             </span>
             <span>{t('member.privateInfo')}</span>
-            <span className="text-[10px] ml-auto sm:ml-2 font-bold bg-amber-200/80 text-amber-800 uppercase tracking-wider px-2.5 py-1 rounded-md shadow-xs border border-amber-300/60">
+            <span className="text-2xs ml-auto sm:ml-2 font-bold bg-amber-200/80 text-amber-800 uppercase tracking-wider px-2.5 py-1 rounded-md shadow-xs border border-amber-300/60">
               {t('member.adminOnly')}
             </span>
           </h3>
@@ -456,7 +456,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                 className={`${inputClasses} disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed`}
               />
               {isDeceased && (
-                <p className="text-[11px] font-medium text-rose-500 mt-1.5 flex items-center gap-1">
+                <p className="text-xs-plus font-medium text-rose-500 mt-1.5 flex items-center gap-1">
                   <AlertCircle className="size-3" />
                   {t('member.phoneDeceasedError')}
                 </p>

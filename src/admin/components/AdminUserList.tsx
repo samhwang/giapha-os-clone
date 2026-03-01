@@ -72,7 +72,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
     }
   };
 
-  const handleCreateUser = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateUser = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsCreating(true);
     const formData = new FormData(e.currentTarget);

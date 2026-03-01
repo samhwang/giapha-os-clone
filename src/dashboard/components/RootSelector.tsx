@@ -83,7 +83,7 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
         </div>
 
         <div className="flex-1 min-w-0 text-left">
-          <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest leading-none mb-0.5">{t('nav.rootDisplay')}</p>
+          <p className="text-2xs font-bold text-stone-400 uppercase tracking-widest leading-none mb-0.5">{t('nav.rootDisplay')}</p>
           <p className="truncate text-stone-800 font-semibold select-none leading-tight">
             {currentRootPerson ? currentRootPerson.fullName : t('nav.selectPerson')}
           </p>
@@ -132,7 +132,7 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
                       >
                         <div className="relative shrink-0">
                           <div
-                            className={`size-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white overflow-hidden ring-1 ring-white shadow-xs ${getAvatarBg(person.gender)}`}
+                            className={`size-8 rounded-full flex items-center justify-center text-2xs font-bold text-white overflow-hidden ring-1 ring-white shadow-xs ${getAvatarBg(person.gender)}`}
                           >
                             {person.avatarUrl ? (
                               <img src={person.avatarUrl} alt={person.fullName} className="h-full w-full object-cover" />
@@ -154,7 +154,7 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
                         <div className="flex-1 min-w-0 text-left">
                           <p className={`truncate ${isSelected ? 'font-bold' : 'font-medium group-hover/item:text-stone-900'}`}>{person.fullName}</p>
                           {person.generation != null && (
-                            <p className="text-[10px] text-stone-400 font-medium">{t('nav.generationN', { gen: person.generation })}</p>
+                            <p className="text-2xs text-stone-400 font-medium">{t('nav.generationN', { gen: person.generation })}</p>
                           )}
                         </div>
 

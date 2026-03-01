@@ -67,13 +67,13 @@ export default function PersonCard({ person }: PersonCardProps) {
           {(person.isDeceased || person.isInLaw || person.birthOrder != null || person.generation != null) && (
             <div className="flex flex-wrap items-center gap-1.5 shrink-0 mt-2">
               {person.isDeceased && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-bold bg-stone-100 text-stone-500 uppercase tracking-widest border border-stone-200/60 shadow-xs">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-2xs sm:text-xs-plus font-bold bg-stone-100 text-stone-500 uppercase tracking-widest border border-stone-200/60 shadow-xs">
                   {t('member.filterDeceased')}
                 </span>
               )}
               {person.isInLaw && (
                 <span
-                  className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-bold uppercase tracking-widest shadow-xs border ${
+                  className={`inline-flex items-center px-2 py-0.5 rounded-md text-2xs sm:text-xs-plus font-bold uppercase tracking-widest shadow-xs border ${
                     person.gender === 'male'
                       ? 'bg-sky-50 text-sky-700 border-sky-200/60'
                       : person.gender === 'female'
@@ -85,12 +85,12 @@ export default function PersonCard({ person }: PersonCardProps) {
                 </span>
               )}
               {person.birthOrder != null && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200/60 uppercase tracking-widest shadow-xs">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-2xs sm:text-xs-plus font-bold bg-amber-50 text-amber-700 border border-amber-200/60 uppercase tracking-widest shadow-xs">
                   {person.birthOrder === 1 ? t('member.birthOrderFirst') : t('member.birthOrderN', { order: person.birthOrder })}
                 </span>
               )}
               {person.generation != null && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 uppercase tracking-widest shadow-xs">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-2xs sm:text-xs-plus font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 uppercase tracking-widest shadow-xs">
                   {t('stats.generationLabel', { gen: person.generation })}
                 </span>
               )}

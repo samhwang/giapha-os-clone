@@ -467,7 +467,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
               />
               {searchResults.length > 0 && (
                 <div className="mt-2 bg-white border border-stone-200 rounded-md shadow-lg max-h-62.5 overflow-y-auto">
-                  <div className="px-3 py-1.5 bg-stone-100 text-[10px] font-bold text-stone-500 uppercase tracking-wide border-b border-stone-200 sticky top-0 z-10">
+                  <div className="px-3 py-1.5 bg-stone-100 text-2xs font-bold text-stone-500 uppercase tracking-wide border-b border-stone-200 sticky top-0 z-10">
                     {t('relationship.searchResults')}
                   </div>
                   {searchResults.map((p) => (
@@ -490,7 +490,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                         </span>
                         <span className="font-medium text-stone-800">{p.fullName}</span>
                       </div>
-                      <span className="text-[10px] text-stone-400">{formatDisplayDate(p.birthYear, p.birthMonth, p.birthDay, t('common.unknown'))}</span>
+                      <span className="text-2xs text-stone-400">{formatDisplayDate(p.birthYear, p.birthMonth, p.birthDay, t('common.unknown'))}</span>
                     </button>
                   ))}
                 </div>

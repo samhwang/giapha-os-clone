@@ -252,7 +252,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
                   {result.pathLabels.map((pathLabel, i) => (
                     <div key={pathLabel} className="flex items-start gap-4">
                       <div className="size-6 rounded-full bg-white border border-stone-200 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
-                        <span className="text-[10px] font-bold text-stone-400">{i + 1}</span>
+                        <span className="text-2xs font-bold text-stone-400">{i + 1}</span>
                       </div>
                       <p className="text-sm text-stone-600 leading-relaxed pt-1">{pathLabel}</p>
                     </div>

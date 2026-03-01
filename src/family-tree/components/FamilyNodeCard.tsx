@@ -38,12 +38,12 @@ export default function FamilyNodeCard({
       `}
     >
       {isRingVisible && (
-        <div className="absolute top-3/12 -left-2.5 sm:-left-4 size-5 sm:size-6 rounded-full shadow-sm bg-white z-20 flex items-center justify-center text-[10px] sm:text-sm">
+        <div className="absolute top-3/12 -left-2.5 sm:-left-4 size-5 sm:size-6 rounded-full shadow-sm bg-white z-20 flex items-center justify-center text-2xs sm:text-sm">
           💍
         </div>
       )}
       {isPlusVisible && (
-        <div className="absolute top-3/12 -left-2.5 sm:-left-4 size-5 sm:size-6 rounded-full shadow-sm bg-white z-20 flex items-center justify-center text-[10px] sm:text-sm">
+        <div className="absolute top-3/12 -left-2.5 sm:-left-4 size-5 sm:size-6 rounded-full shadow-sm bg-white z-20 flex items-center justify-center text-2xs sm:text-sm">
           +
         </div>
       )}
@@ -57,7 +57,7 @@ export default function FamilyNodeCard({
       {showAvatar && (
         <div className="relative z-10 mb-1.5 sm:mb-2">
           <div
-            className={`h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center text-[10px] sm:text-xs md:text-sm text-white overflow-hidden shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105
+            className={`h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center text-2xs sm:text-xs md:text-sm text-white overflow-hidden shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105
               ${
                 person.gender === 'male'
                   ? 'bg-linear-to-br from-sky-400 to-sky-700'
@@ -79,7 +79,7 @@ export default function FamilyNodeCard({
         {/* biome-ignore lint/a11y/useKeyWithClickEvents: wrapped in button when standalone */}
         {/* biome-ignore lint/a11y/noStaticElementInteractions: parent button handles a11y */}
         <span
-          className={`text-[10px] sm:text-[11px] md:text-xs font-bold text-center leading-tight line-clamp-2 transition-colors cursor-pointer
+          className={`text-2xs sm:text-xs-plus md:text-xs font-bold text-center leading-tight line-clamp-2 transition-colors cursor-pointer
             ${onClickName ? 'text-stone-800 group-hover:text-amber-700 hover:underline' : 'text-stone-800 group-hover:text-amber-800'}`}
           title={person.fullName}
           onClick={(e) => {
