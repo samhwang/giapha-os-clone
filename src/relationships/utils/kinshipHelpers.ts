@@ -159,8 +159,9 @@ function getAncestryData(
   personsMap: Map<string, PersonNode>
 ): Map<string, { depth: number; path: PersonNode[] }> {
   const idCache = ancestryCache.get(personsMap);
-  if (idCache?.has(id)) {
-    return idCache.get(id)!;
+  const cached = idCache?.get(id);
+  if (cached) {
+    return cached;
   }
 
   const depths = new Map<string, { depth: number; path: PersonNode[] }>();
