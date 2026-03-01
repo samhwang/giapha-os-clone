@@ -173,9 +173,10 @@ Runs the seed script defined in `prisma/seed.ts` to populate sample data.
 ### In Loaders
 
 ```typescript
-import { prisma } from '@/lib/db'
+import { getDbClient } from '@/lib/db'
 
 export const loader = async () => {
+  const prisma = getDbClient()
   const persons = await prisma.person.findMany({
     include: {
       relationshipsAsA: true,
@@ -189,7 +190,10 @@ export const loader = async () => {
 ### In Actions
 
 ```typescript
+import { getDbClient } from '@/lib/db'
+
 export const action = async ({ request }: ActionArgs) => {
+  const prisma = getDbClient()
   const formData = await request.formData()
   const name = formData.get('name') as string
   
@@ -207,6 +211,10 @@ export const action = async ({ request }: ActionArgs) => {
 ### Queries
 
 ```typescript
+import { getDbClient } from '@/lib/db'
+
+const prisma = getDbClient()
+
 // Find one
 const person = await prisma.person.findUnique({
   where: { id: 'xxx' },
