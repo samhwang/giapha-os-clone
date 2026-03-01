@@ -16,8 +16,31 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'chromium',
+      name: 'setup',
+      testMatch: /auth\.setup\.ts/,
+    },
+    {
+      name: 'public',
+      testDir: './e2e/public',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'admin',
+      testDir: './e2e/admin',
+      dependencies: ['setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: '.playwright/auth/admin.json',
+      },
+    },
+    {
+      name: 'member',
+      testDir: './e2e/member',
+      dependencies: ['setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: '.playwright/auth/member.json',
+      },
     },
   ],
   webServer: {
