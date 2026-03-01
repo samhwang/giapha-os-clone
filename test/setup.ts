@@ -3,25 +3,69 @@ import '@testing-library/jest-dom/vitest';
 import { afterEach, vi } from 'vitest';
 import { createI18nInstance } from '../src/i18n';
 
-vi.mock('../src/lib/db', () => ({
-  getDbClient: vi.fn(() => ({})),
-}));
-vi.mock('../src/lib/storage', () => ({}));
+const createMockHandler = () => {
+  const obj = {
+    inputValidator: () => obj,
+    handler: vi.fn(),
+  };
+  return obj;
+};
 
-// Stub createServerFn so .handler(fn) returns fn directly in tests.
-// Without this, createServerFn goes through the client-side HTTP/RPC path
-// which doesn't work in vitest's jsdom environment.
-vi.mock('@tanstack/react-start', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@tanstack/react-start')>();
-  const mockBuilder = {
-    middleware: vi.fn(() => mockBuilder),
-    inputValidator: vi.fn(() => mockBuilder),
-    handler: vi.fn((fn) => fn),
-  };
+vi.mock('@tanstack/react-start', async () => {
   return {
-    ...original,
-    createServerFn: vi.fn(() => mockBuilder),
+    createServerFn: vi.fn(() => createMockHandler()),
+    getRequestHeaders: vi.fn(() => ({})),
+    getH3Event: vi.fn(() => null),
   };
+});
+
+const mockPrisma = {
+  $connect: vi.fn(),
+  $disconnect: vi.fn(),
+  person: {
+    create: vi.fn(),
+    findMany: vi.fn(),
+    findUnique: vi.fn(),
+    findFirst: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    count: vi.fn(),
+  },
+  relationship: {
+    create: vi.fn(),
+    findMany: vi.fn(),
+    findUnique: vi.fn(),
+    findFirst: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    count: vi.fn(),
+  },
+  user: {
+    create: vi.fn(),
+    findMany: vi.fn(),
+    findUnique: vi.fn(),
+    findFirst: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    upsert: vi.fn(),
+  },
+  personDetailsPrivate: {
+    create: vi.fn(),
+    update: vi.fn(),
+    findUnique: vi.fn(),
+  },
+};
+
+vi.mock('../src/lib/db', () => ({
+  getDbClient: vi.fn(() => mockPrisma),
+}));
+vi.mock('../src/lib/storage', () => ({
+  uploadAvatar: vi.fn(() => Promise.resolve('https://test.url/avatar.jpg')),
+  deleteAvatar: vi.fn(() => Promise.resolve()),
+}));
+
+afterEach(() => {
+  cleanup();
 });
 
 // Initialize i18next with Vietnamese for all tests so existing assertions keep passing
