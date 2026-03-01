@@ -11,6 +11,15 @@ export default defineConfig({
       {
         extends: true,
         test: {
+          name: 'unit',
+          include: ['src/**/*.test.ts'],
+          exclude: ['src/**/server/*.test.ts', 'src/routes/**'],
+          environment: 'node',
+        },
+      },
+      {
+        extends: true,
+        test: {
           name: 'ui-components',
           include: ['src/**/**.test.tsx'],
           exclude: ['src/routes'],
