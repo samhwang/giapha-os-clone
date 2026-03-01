@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeftRight, BookOpen, GitMerge, Info, Search, Sparkles, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import type { PersonNode, RelEdge } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
@@ -297,8 +297,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
                     {[1, 2, 3, 4, 5].map((step) => (
                       <li key={step} className="flex gap-2">
                         <span className="font-bold shrink-0">{step}.</span>
-                        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: translation strings are from our own JSON files */}
-                        <span dangerouslySetInnerHTML={{ __html: t(`kinship.howStep${step}`) }} />
+                        <Trans i18nKey={`kinship.howStep${step}`} components={{ strong: <strong /> }} />
                       </li>
                     ))}
                   </ol>
@@ -313,8 +312,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
                     {[1, 2, 3].map((req) => (
                       <li key={req} className="flex gap-2">
                         <span className="text-amber-400 shrink-0">•</span>
-                        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: translation strings are from our own JSON files */}
-                        <span dangerouslySetInnerHTML={{ __html: t(`kinship.dataReq${req}`) }} />
+                        <Trans i18nKey={`kinship.dataReq${req}`} components={{ strong: <strong /> }} />
                       </li>
                     ))}
                   </ul>

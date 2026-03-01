@@ -77,9 +77,15 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
           transition={{ duration: 0.2 }}
           className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 bg-stone-900/40 backdrop-blur-sm"
         >
-          {/* biome-ignore lint/a11y/useKeyWithClickEvents: click-away backdrop */}
-          {/* biome-ignore lint/a11y/noStaticElementInteractions: click-away backdrop */}
-          <div className="absolute inset-0 cursor-pointer" onClick={closeModal} />
+          <div
+            role="button"
+            tabIndex={0}
+            className="absolute inset-0 cursor-pointer"
+            onClick={closeModal}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') closeModal();
+            }}
+          />
 
           <motion.div
             initial={{ scale: 0.95, opacity: 0, y: 20 }}

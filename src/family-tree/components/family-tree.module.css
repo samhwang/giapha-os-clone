@@ -1,0 +1,78 @@
+.tree ul {
+  padding-top: 30px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding-left: 0;
+}
+
+.tree li {
+  float: left;
+  text-align: center;
+  list-style-type: none;
+  position: relative;
+  padding: 30px 5px 0 5px;
+}
+
+.tree li::before,
+.tree li::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 50%;
+  border-top: 2px solid #d6d3d1;
+  width: 50%;
+  height: 30px;
+}
+
+.tree li::after {
+  right: auto;
+  left: 50%;
+  border-left: 2px solid #d6d3d1;
+}
+
+.tree li:only-child::after {
+  display: none;
+}
+
+.tree li:only-child::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  border-left: 2px solid #d6d3d1;
+  width: 0;
+  height: 30px;
+}
+
+.tree ul:first-child > li {
+  padding-top: 0;
+}
+
+.tree ul:first-child > li::before {
+  display: none;
+}
+
+.tree li:first-child::before,
+.tree li:last-child::after {
+  border: 0 none;
+}
+
+.tree li:last-child::before {
+  border-right: 2px solid #d6d3d1;
+  border-radius: 0 12px 0 0;
+}
+
+.tree li:first-child::after {
+  border-radius: 12px 0 0 0;
+}
+
+.tree ul ul::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  border-left: 2px solid #d6d3d1;
+  width: 0;
+  height: 30px;
+}

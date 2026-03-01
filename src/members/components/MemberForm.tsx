@@ -45,7 +45,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
   const [occupation, setOccupation] = useState(initialData?.occupation || '');
   const [currentResidence, setCurrentResidence] = useState(initialData?.currentResidence || '');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);

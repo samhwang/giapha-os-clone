@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { Person, Relationship } from '../../types';
 import FamilyNodeCard from './FamilyNodeCard';
+import styles from './family-tree.module.css';
 
 interface SpouseData {
   person: Person;
@@ -15,13 +16,12 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [scrollStart, setScrollStart] = useState({ left: 0, top: 0 });
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: re-center scroll when roots change
   useEffect(() => {
     if (containerRef.current) {
       const el = containerRef.current;
       el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
     }
-  }, [roots]);
+  }, []);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsPressed(true);
@@ -125,8 +125,8 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
   if (roots.length === 0) return <div className="text-center p-10 text-stone-500">Không tìm thấy dữ liệu.</div>;
 
   return (
-    // biome-ignore lint/a11y/noStaticElementInteractions: drag-to-scroll container
-    <div
+    <section
+      aria-label="Family tree"
       ref={containerRef}
       className={`w-full overflow-auto bg-stone-50 ${isPressed ? 'cursor-grabbing' : 'cursor-grab'}`}
       onMouseDown={handleMouseDown}
@@ -136,78 +136,13 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
       onClickCapture={handleClickCapture}
       onDragStart={(e) => e.preventDefault()}
     >
-      <style
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: CSS-only tree connector styles
-        dangerouslySetInnerHTML={{
-          __html: `
-        .css-tree ul {
-          padding-top: 30px;
-          position: relative;
-          display: flex;
-          justify-content: center;
-          padding-left: 0;
-        }
-        .css-tree li {
-          float: left; text-align: center;
-          list-style-type: none;
-          position: relative;
-          padding: 30px 5px 0 5px;
-        }
-        .css-tree li::before, .css-tree li::after {
-          content: '';
-          position: absolute; top: 0; right: 50%;
-          border-top: 2px solid #d6d3d1;
-          width: 50%; height: 30px;
-        }
-        .css-tree li::after {
-          right: auto; left: 50%;
-          border-left: 2px solid #d6d3d1;
-        }
-        .css-tree li:only-child::after {
-          display: none;
-        }
-        .css-tree li:only-child::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 50%;
-          border-left: 2px solid #d6d3d1;
-          width: 0;
-          height: 30px;
-        }
-        .css-tree ul:first-child > li {
-          padding-top: 0px;
-        }
-        .css-tree ul:first-child > li::before {
-          display: none;
-        }
-        .css-tree li:first-child::before, .css-tree li:last-child::after {
-          border: 0 none;
-        }
-        .css-tree li:last-child::before {
-          border-right: 2px solid #d6d3d1;
-          border-radius: 0 12px 0 0;
-        }
-        .css-tree li:first-child::after {
-          border-radius: 12px 0 0 0;
-        }
-        .css-tree ul ul::before {
-          content: '';
-          position: absolute; top: 0; left: 50%;
-          border-left: 2px solid #d6d3d1;
-          width: 0; height: 30px;
-        }
-      `,
-        }}
-      />
-
-      <div id="export-container" className={`w-max min-w-full mx-auto p-4 css-tree transition-opacity duration-200 ${isDragging ? 'opacity-90' : ''}`}>
+      <div id="export-container" className={`w-max min-w-full mx-auto p-4 ${styles.tree} transition-opacity duration-200 ${isDragging ? 'opacity-90' : ''}`}>
         <ul>
           {roots.map((root) => (
             <React.Fragment key={root.id}>{renderTreeNode(root.id)}</React.Fragment>
           ))}
         </ul>
       </div>
-    </div>
+    </section>
   );
 }
