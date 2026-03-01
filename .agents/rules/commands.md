@@ -1,111 +1,60 @@
 # Development Workflow Commands
 
-## Infrastructure (Docker Compose)
+See [docs/en/01-getting-started.md](../docs/en/01-getting-started.md) for comprehensive setup guide.
+
+## Quick Reference
+
+### Infrastructure (Docker Compose)
 
 ```bash
-docker compose up -d          # Start PostgreSQL + Garage in background
+docker compose up -d          # Start PostgreSQL + Garage
 docker compose down           # Stop all services
-docker compose logs -f        # Follow logs from all services
-docker compose logs postgres  # Follow PostgreSQL logs
-docker compose logs garage    # Follow Garage logs
+docker compose logs -f        # Follow logs
 docker compose ps             # Check running services
 ```
 
-## Development
+### Development
 
 ```bash
-pnpm dev          # Start development server (http://localhost:3000)
+pnpm dev          # Start dev server (http://localhost:3000)
 pnpm build        # Production build
 pnpm start        # Start production server
 ```
 
-## Database (Prisma)
+### Database (Prisma)
 
 ```bash
-pnpm prisma generate          # Regenerate Prisma client after schema changes
-pnpm prisma db push           # Push schema to database (no migration history)
-pnpm prisma db seed            # Seed database with sample data
+pnpm prisma generate          # Regenerate client after schema changes
+pnpm prisma db push           # Push schema (development)
+pnpm prisma db seed           # Seed sample data
 pnpm prisma studio            # Open database GUI (http://localhost:5555)
-pnpm prisma migrate dev       # Create and apply a new migration
-pnpm prisma migrate dev --name describe_change  # Named migration
-pnpm prisma migrate reset     # Reset database and reapply all migrations + seed
+pnpm prisma migrate dev --name describe_change  # Create migration
 ```
 
-**Rule**: Always run `pnpm prisma migrate dev --name describe_change` after modifying `prisma/schema.prisma`. Never commit schema changes without a corresponding migration.
-
-## Garage (S3 Storage)
+### Testing
 
 ```bash
-./scripts/setup-garage.sh     # Create avatars bucket and generate access keys
+pnpm test                     # Watch mode
+pnpm test:run                 # Run once
+pnpm test:coverage           # With coverage
 ```
 
-## Type Checking
+### Linting
 
 ```bash
-pnpm typecheck                # Run TypeScript compiler in check mode
+pnpm lint                     # Check issues
+pnpm lint:fix                 # Auto-fix
+pnpm typecheck                # TypeScript check
 ```
 
-## Linting & Formatting (Biome)
-
-```bash
-pnpm lint                     # Check for lint issues (read-only)
-pnpm lint:fix                 # Auto-fix safe lint issues
-pnpm lint:fix:unsafe          # Auto-fix all issues (including unsafe transforms)
-pnpm ci                       # Strict CI mode (fails on any issue)
-```
-
-## Testing (Vitest)
-
-```bash
-pnpm test                     # Run tests in watch mode
-pnpm test:run                 # Run tests once (CI-friendly)
-pnpm test:coverage            # Run tests with coverage report
-```
-
-## Git Hooks (Husky)
-
-```bash
-pnpm prepare                  # Initialize Husky git hooks
-```
-
-- **Pre-commit**: Runs `lint-staged` (Biome check + format on staged files)
-- **Pre-push**: Runs `pnpm ci && pnpm test:run && pnpm typecheck`
-
-## Full Quality Check
-
-Run all checks before pushing:
+### Quality Check
 
 ```bash
 pnpm typecheck && pnpm lint && pnpm test:run && pnpm build
 ```
 
-## Troubleshooting
+### Troubleshooting
 
-### PostgreSQL connection issues
-
-```bash
-docker compose logs postgres   # Check for startup errors
-docker compose restart postgres
-```
-
-### Prisma client out of date
-
-```bash
-pnpm prisma generate          # Regenerate after schema changes
-```
-
-### Garage bucket not found
-
-```bash
-./scripts/setup-garage.sh     # Re-run bucket creation
-```
-
-### Port conflicts
-
-Default ports: 3000 (app), 5432 (PostgreSQL), 3900 (Garage S3), 3902 (Garage admin).
-Check for conflicting processes:
-
-```bash
-lsof -i :3000
-lsof -i :5432
-```
+- Port 3000: `lsof -i :3000`
+- Port 5432: `lsof -i :5432` (PostgreSQL)
+- Port 3900: `lsof -i :3900` (Garage S3)
