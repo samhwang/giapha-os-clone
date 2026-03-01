@@ -1,13 +1,20 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson, createRelationship } from '../../../test/fixtures';
 import LineageManager from './LineageManager';
 
+const mockUpdateBatch = vi.fn();
+
 vi.mock('../server/lineage', () => ({
-  updateBatch: vi.fn(() => Promise.resolve()),
+  updateBatch: (...args: unknown[]) => mockUpdateBatch(...args),
 }));
 
 describe('LineageManager', () => {
+  beforeEach(() => {
+    mockUpdateBatch.mockReset().mockResolvedValue(undefined);
+  });
+
   it('renders calculate button', () => {
     const persons = [createPerson({ fullName: 'Nguyễn Văn A', gender: 'male' })];
     render(<LineageManager persons={persons} relationships={[]} />);
@@ -15,16 +22,101 @@ describe('LineageManager', () => {
   });
 
   it('renders with persons and relationships', () => {
-    const personA = createPerson({ id: 'p1', fullName: 'Nguyễn Văn A', gender: 'male', generation: 1 });
-    const personB = createPerson({ id: 'p2', fullName: 'Nguyễn Văn B', gender: 'male', generation: 2 });
+    const pA = createPerson({ id: 'p1', fullName: 'Nguyễn Văn A', gender: 'male', generation: 1 });
+    const pB = createPerson({ id: 'p2', fullName: 'Nguyễn Văn B', gender: 'male', generation: 2 });
     const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: 'biological_child' });
 
-    render(<LineageManager persons={[personA, personB]} relationships={[rel]} />);
+    render(<LineageManager persons={[pA, pB]} relationships={[rel]} />);
     expect(screen.getByText(/tính toán/i)).toBeInTheDocument();
   });
 
   it('renders calculate button even when no persons', () => {
     render(<LineageManager persons={[]} relationships={[]} />);
     expect(screen.getByText(/tính toán/i)).toBeInTheDocument();
+  });
+
+  it('calculate shows results table with change summary', async () => {
+    const parent = createPerson({ id: 'p1', fullName: 'Nguyễn Văn Cha', gender: 'male', generation: null, birthOrder: null });
+    const child = createPerson({ id: 'p2', fullName: 'Nguyễn Văn Con', gender: 'male', generation: null, birthOrder: null });
+    const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: 'biological_child' });
+
+    const user = userEvent.setup();
+    render(<LineageManager persons={[parent, child]} relationships={[rel]} />);
+
+    await user.click(screen.getByText(/tính toán/i));
+
+    await waitFor(() => {
+      expect(screen.getByText('Nguyễn Văn Cha')).toBeInTheDocument();
+      expect(screen.getByText('Nguyễn Văn Con')).toBeInTheDocument();
+    });
+    // Change summary: "X thành viên sẽ được cập nhật / Y tổng"
+    expect(screen.getByText(/thành viên sẽ được cập nhật/i)).toBeInTheDocument();
+  });
+
+  it('apply button calls updateBatch with changed records', async () => {
+    const parent = createPerson({ id: 'p1', fullName: 'Nguyễn Văn Cha', gender: 'male', generation: null, birthOrder: null });
+    const child = createPerson({ id: 'p2', fullName: 'Nguyễn Văn Con', gender: 'male', generation: null, birthOrder: null });
+    const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: 'biological_child' });
+
+    const user = userEvent.setup();
+    render(<LineageManager persons={[parent, child]} relationships={[rel]} />);
+
+    await user.click(screen.getByText(/tính toán/i));
+
+    await waitFor(() => {
+      expect(screen.getByText(/áp dụng/i)).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText(/áp dụng/i));
+
+    await waitFor(() => {
+      expect(mockUpdateBatch).toHaveBeenCalledWith({
+        data: {
+          updates: expect.arrayContaining([expect.objectContaining({ id: 'p1', generation: 1 }), expect.objectContaining({ id: 'p2', generation: 2 })]),
+        },
+      });
+    });
+  });
+
+  it('shows success message after apply', async () => {
+    const parent = createPerson({ id: 'p1', fullName: 'Cha', gender: 'male', generation: null, birthOrder: null });
+    const child = createPerson({ id: 'p2', fullName: 'Con', gender: 'male', generation: null, birthOrder: null });
+    const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: 'biological_child' });
+
+    const user = userEvent.setup();
+    render(<LineageManager persons={[parent, child]} relationships={[rel]} />);
+
+    await user.click(screen.getByText(/tính toán/i));
+    await waitFor(() => {
+      expect(screen.getByText(/áp dụng/i)).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText(/áp dụng/i));
+
+    await waitFor(() => {
+      expect(screen.getByText(/đã áp dụng thành công/i)).toBeInTheDocument();
+    });
+  });
+
+  it('shows error when updateBatch rejects', async () => {
+    mockUpdateBatch.mockRejectedValue(new Error('Database error'));
+
+    const parent = createPerson({ id: 'p1', fullName: 'Cha', gender: 'male', generation: null, birthOrder: null });
+    const child = createPerson({ id: 'p2', fullName: 'Con', gender: 'male', generation: null, birthOrder: null });
+    const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: 'biological_child' });
+
+    const user = userEvent.setup();
+    render(<LineageManager persons={[parent, child]} relationships={[rel]} />);
+
+    await user.click(screen.getByText(/tính toán/i));
+    await waitFor(() => {
+      expect(screen.getByText(/áp dụng/i)).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText(/áp dụng/i));
+
+    await waitFor(() => {
+      expect(screen.getByText('Database error')).toBeInTheDocument();
+    });
   });
 });
