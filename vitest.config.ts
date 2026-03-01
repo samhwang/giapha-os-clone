@@ -22,7 +22,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'server',
-          include: ['src/server/functions/**.test.ts'],
+          include: ['src/**/server/**/**.test.ts'],
           environment: 'node',
           globalSetup: ['./test/globalSetup.ts'],
           setupFiles: ['./test/per-file-db.ts', './test/setup.ts'],
