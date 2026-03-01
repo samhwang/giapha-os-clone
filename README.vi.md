@@ -135,49 +135,8 @@
 
 ## Kiểm thử
 
-Dự án này sử dụng Vitest với nhiều loại kiểm thử:
+Xem [docs/vi/06-testing.md](./docs/vi/06-testing.md) để biết hướng dẫn kiểm thử chi tiết.
 
-| Loại | Mô tả | Lệnh |
-|-------|-------------|---------|
-| Unit | Hàm tiện ích, logic thuần | `pnpm run test:ui` |
-| Server | Server functions với Prisma mocked | `pnpm run test:server` |
-| Integration | Kiểm thử cấp route với jsdom | `pnpm run test:integration` |
-| Browser | Kiểm thử E2E với Chromium thực qua Playwright | `pnpm run test:browser:run` |
+## Ghi Công & Khác Biệt
 
-Kiểm thử browser chạy trên Chromium thực và kiểm thử các luồng người dùng hoàn chỉnh mà không mock các API của browser. Sử dụng file pattern `*.browser-test.tsx` cho kiểm thử browser.
-
-Kiểm thử kiểu (type tests) có thể được inline trong các file test sử dụng `expectTypeOf` từ vitest.
-
-## Ghi Công
-
-Dự án này là bản tái triển khai của [Gia Pha OS](https://github.com/homielab/giapha-os) bởi [Homielab](https://github.com/homielab). Ứng dụng gốc được xây dựng bằng Next.js và Supabase. Bản clone này thay thế các phụ thuộc đám mây bằng các giải pháp tự host, đồng thời giữ nguyên chức năng cốt lõi và giao diện.
-
-## Khác Biệt So Với Bản Gốc
-
-Dự án này đã phát triển vượt xa một bản clone trực tiếp. Mục đích ban đầu là giữ nguyên bản gốc không còn phù hợp vì codebase đã khác biệt đáng kể:
-
-### Thay Đổi Kiến Trúc
-
-| Khía cạnh | Bản gốc | Bản Clone này |
-|-----------|---------|---------------|
-| Framework | Next.js | TanStack Start |
-| Xác thực | Supabase Auth | Better Auth |
-| Cơ sở dữ liệu | Supabase (PostgreSQL) | Prisma + PostgreSQL |
-| Lưu trữ tệp | Supabase Storage | Garage (tương thích S3) |
-| Styling | CSS Modules + custom | Tailwind CSS v4 + Framer Motion |
-
-### Cải Tiến Code
-
-- **Server Functions**: Refactor với Prisma client được khởi tạo trong mỗi function thay vì singleton pattern
-- **Type Safety**: TypeScript nghiêm ngặt với Zod schema validation tại API boundaries
-- **Logic Quan Hệ**: Thêm WeakMap caching cho tính toán tổ tiên, tách các hàm transform có thể tái sử dụng
-- **Xử lý lỗi**: Tập trung error constants để hỗ trợ i18n
-- **Database**: Thêm indexes cho các cột thường được query (generation, isDeceased, birthYear, isInLaw)
-- **Testing**: Coverage toàn diện với Vitest, integration tests với testcontainers
-
-### Quy Ước
-
-- Biome cho linting/formatting (thay thế ESLint + Prettier)
-- Atomic commits với Conventional Commits
-- Workflow dựa trên agent với `.agents/` rules cho các pattern implementation nhất quán
-- Cấu trúc dự án theo module chức năng
+Xem [docs/vi/08-attribution.md](./docs/vi/08-attribution.md) để biết thông tin chi tiết về dự án gốc và cách bản clone này đã phát triển.
