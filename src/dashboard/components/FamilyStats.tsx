@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Crown, Flower2, Heart, HeartOff, Mars, Skull, Users, Venus } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Person, Relationship } from '../../types';
 
@@ -13,7 +13,7 @@ interface StatCardProps {
   label: string;
   value: number;
   total: number;
-  icon: React.ReactNode;
+  icon: ReactNode;
   color: string;
   delay?: number;
 }

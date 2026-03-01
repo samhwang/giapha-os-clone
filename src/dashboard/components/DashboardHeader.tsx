@@ -1,11 +1,12 @@
 import { Link } from '@tanstack/react-router';
+import type { ReactNode } from 'react';
 import config from '../../lib/config';
 import HeaderMenu from '../../ui/layout/HeaderMenu';
 
 interface DashboardHeaderProps {
   isAdmin: boolean;
   userEmail?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export default function DashboardHeader({ isAdmin, userEmail, children }: DashboardHeaderProps) {
