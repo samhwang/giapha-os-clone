@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle2, Download, Upload } from 'lucide-react';
-import { useRef, useState, type ChangeEvent } from 'react';
+import { type ChangeEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { exportData, importData } from '../server/data';
 

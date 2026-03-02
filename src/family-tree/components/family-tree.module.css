@@ -16,7 +16,7 @@
 
 .tree li::before,
 .tree li::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   right: 50%;
@@ -36,7 +36,7 @@
 }
 
 .tree li:only-child::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 50%;
@@ -68,7 +68,7 @@
 }
 
 .tree ul ul::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 50%;

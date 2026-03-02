@@ -1,7 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import { AlertCircle, Briefcase, Image as ImageIcon, Loader2, Lock, MapPin, Phone, Settings2, Trash2, User } from 'lucide-react';
-import { useState, type SubmitEvent } from 'react';
+import { type SubmitEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Gender, Person } from '../../types';
 import { createPerson, updatePerson, uploadPersonAvatar } from '../server/member';

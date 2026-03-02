@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState, type SubmitEvent } from 'react';
+import { type SubmitEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { UserProfile, UserRole } from '../../types';
 import { changeRole, createUser, deleteUser, toggleStatus } from '../server/user';

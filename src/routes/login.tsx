@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Info, KeyRound, Mail, Shield, UserPlus } from 'lucide-react';
-import { useState, type SubmitEvent } from 'react';
+import { type SubmitEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { authClient } from '../lib/auth-client';
 import LanguageSwitcher from '../ui/common/LanguageSwitcher';

@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
+import { Fragment, type MouseEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import type { Person, Relationship } from '../../types';
 import FamilyNodeCard from './FamilyNodeCard';
 import styles from './family-tree.module.css';

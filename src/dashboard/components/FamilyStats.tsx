@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Crown, Flower2, Heart, HeartOff, Mars, Skull, Users, Venus } from 'lucide-react';
-import { useMemo, type ReactNode } from 'react';
+import { type ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Person, Relationship } from '../../types';
 
