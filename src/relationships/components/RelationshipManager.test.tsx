@@ -5,6 +5,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
 import RelationshipManager from './RelationshipManager';
 
+vi.mock('@tanstack/react-router', () => ({
+  useNavigate: () => vi.fn(),
+}));
+
 vi.mock('../../dashboard/components/DashboardContext', () => ({
   DashboardContext: { Provider: ({ children }: { children: ReactNode }) => children },
   useDashboard: () => ({
