@@ -1,5 +1,6 @@
 import { Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { css, cx } from '../../../styled-system/css';
 import { type Language, supportedLanguages } from '../../i18n';
 
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
@@ -18,10 +19,14 @@ export default function LanguageSwitcher({ className = '' }: { className?: strin
     <button
       type="button"
       onClick={() => switchLanguage(nextLang)}
-      className={`flex items-center gap-1.5 text-sm font-medium text-stone-600 hover:text-amber-700 transition-colors ${className}`}
+      className={cx(
+        { display: 'flex', alignItems: 'center', gap: '1.5', fontSize: '14px', fontWeight: '500', color: 'stone.600', transition: 'color 0.2s' },
+        { _hover: { color: 'amber.700' } },
+        className
+      )}
       title={t(`language.${nextLang}`)}
     >
-      <Globe className="size-4" />
+      <Globe className={css({ width: '4', height: '4' })} />
       <span>{t(`language.${nextLang}`)}</span>
     </button>
   );

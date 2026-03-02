@@ -4,6 +4,8 @@ import jsPDF from 'jspdf';
 import { Download, FileImage, FileText, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
+import { button } from '../../../styled-system/recipes';
 
 export default function ExportButton() {
   const { t } = useTranslation();
@@ -74,10 +76,14 @@ export default function ExportButton() {
   };
 
   return (
-    <div className="relative" ref={menuRef}>
-      <button type="button" onClick={() => setShowMenu(!showMenu)} disabled={isExporting} className="btn">
-        {isExporting ? <Loader2 className="size-4 shrink-0 animate-spin" /> : <Download className="size-4 shrink-0" />}
-        <span className="tracking-wide min-w-max">{isExporting ? t('export.exporting') : t('export.exportFile')}</span>
+    <div className={css({ position: 'relative' })} ref={menuRef}>
+      <button type="button" onClick={() => setShowMenu(!showMenu)} disabled={isExporting} className={button({ visual: 'outline' })}>
+        {isExporting ? (
+          <Loader2 className={css({ width: '4', height: '4', flexShrink: 0, animation: 'spin 1s linear infinite' })} />
+        ) : (
+          <Download className={css({ width: '4', height: '4', flexShrink: 0 })} />
+        )}
+        <span className={css({ letterSpacing: '0.025em', minWidth: 'max-content' })}>{isExporting ? t('export.exporting') : t('export.exportFile')}</span>
       </button>
 
       <AnimatePresence>
@@ -87,22 +93,63 @@ export default function ExportButton() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute top-full right-0 sm:right-auto sm:left-0 mt-2 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-stone-200/60 py-2 z-50 overflow-hidden"
+            className={css({
+              position: 'absolute',
+              top: '100%',
+              right: 0,
+              sm: { right: 'auto', left: 0 },
+              marginTop: '2',
+              width: '48',
+              backgroundColor: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(24px)',
+              borderRadius: '2xl',
+              boxShadow: 'xl',
+              border: '1px solid rgba(28,25,23,0.06)',
+              paddingY: '2',
+              zIndex: '50',
+              overflow: 'hidden',
+            })}
           >
             <button
               type="button"
               onClick={() => handleExport('png')}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-stone-700 hover:text-amber-700 hover:bg-amber-50 transition-colors text-left"
+              className={css({
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '3',
+                paddingX: '4',
+                paddingY: '2.5',
+                fontSize: 'sm',
+                fontWeight: '500',
+                color: 'stone.700',
+                transition: 'all 0.2s',
+                textAlign: 'left',
+                _hover: { color: 'amber.700', backgroundColor: 'amber.50' },
+              })}
             >
-              <FileImage className="size-4" />
+              <FileImage className={css({ width: '4', height: '4' })} />
               {t('export.saveAsPng')}
             </button>
             <button
               type="button"
               onClick={() => handleExport('pdf')}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-stone-700 hover:text-amber-700 hover:bg-amber-50 transition-colors text-left"
+              className={css({
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '3',
+                paddingX: '4',
+                paddingY: '2.5',
+                fontSize: 'sm',
+                fontWeight: '500',
+                color: 'stone.700',
+                transition: 'all 0.2s',
+                textAlign: 'left',
+                _hover: { color: 'amber.700', backgroundColor: 'amber.50' },
+              })}
             >
-              <FileText className="size-4" />
+              <FileText className={css({ width: '4', height: '4' })} />
               {t('export.saveAsPdf')}
             </button>
           </motion.div>
