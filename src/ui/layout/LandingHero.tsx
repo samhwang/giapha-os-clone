@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { motion, type Variants } from 'framer-motion';
 import { ArrowRight, Network, ShieldCheck, Sparkles, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 
 const fadeIn: Variants = {
   hidden: { opacity: 0, y: 20 },
@@ -31,52 +32,158 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
   const { t } = useTranslation();
 
   return (
-    <motion.div className="max-w-5xl text-center space-y-12 w-full relative z-10" initial="hidden" animate="visible" variants={staggerContainer}>
-      <motion.div className="space-y-6 sm:space-y-8 flex flex-col items-center" variants={fadeIn}>
+    <motion.div
+      className={css({ maxWidth: '5xl', textAlign: 'center', width: '100%', position: 'relative', zIndex: 10 })}
+      initial="hidden"
+      animate="visible"
+      variants={staggerContainer}
+    >
+      <motion.div className={css({ gap: '12', paddingY: '6', display: 'flex', flexDirection: 'column', alignItems: 'center' })} variants={fadeIn}>
         <motion.div
           whileHover={{ scale: 1.05 }}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-amber-800 bg-white/60 backdrop-blur-md rounded-full shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-amber-200/50 relative overflow-hidden group"
+          className={css({
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '2',
+            paddingX: '4',
+            paddingY: '2',
+            fontSize: 'sm',
+            fontWeight: 'semibold',
+            color: 'amber.800',
+            backgroundColor: 'rgb(255 255 255 / 0.6)',
+            backdropFilter: 'blur(12px)',
+            borderRadius: 'full',
+            boxShadow: '0 2px 10px -3px rgb(0 0 0 / 0.1)',
+            border: '1px solid rgb(245 158 11 / 0.5)',
+            position: 'relative',
+            overflow: 'hidden',
+          })}
         >
-          <Sparkles className="size-4 text-amber-500" />
+          <Sparkles className={css({ width: '4', height: '4', color: 'amber.500' })} />
           {t('landing.tagline')}
-          <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+          <div
+            className={css({
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(to right, transparent, rgb(255 255 255 / 0.5), transparent)',
+              transform: 'translateX(-100%)',
+            })}
+          />
         </motion.div>
 
-        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5rem] font-serif font-bold text-stone-900 tracking-tight leading-[1.1] max-w-4xl">
-          <span className="block">{siteName}</span>
+        <h1
+          className={css({
+            fontSize: { base: '5xl', sm: '6xl', md: '7xl', lg: '5rem' },
+            fontFamily: 'serif',
+            fontWeight: 'bold',
+            color: 'stone.900',
+            letterSpacing: '-0.025em',
+            lineHeight: '1.1',
+            maxWidth: '4xl',
+          })}
+        >
+          <span className={css({ display: 'block' })}>{siteName}</span>
         </h1>
 
-        <p className="text-lg sm:text-xl md:text-2xl text-stone-600 max-w-2xl mx-auto leading-relaxed font-light">{t('landing.subtitle')}</p>
+        <p
+          className={css({
+            fontSize: { base: 'lg', sm: 'xl', md: '2xl' },
+            color: 'stone.600',
+            maxWidth: '2xl',
+            marginX: 'auto',
+            lineHeight: '1.625',
+            fontWeight: '300',
+          })}
+        >
+          {t('landing.subtitle')}
+        </p>
       </motion.div>
 
-      <motion.div className="pt-6 flex flex-col sm:flex-row gap-4 justify-center items-center w-full px-4 sm:px-0 relative" variants={fadeIn}>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-16 bg-amber-500/30 blur-2xl rounded-full z-0 hidden sm:block" />
+      <motion.div
+        className={css({
+          paddingTop: '6',
+          display: 'flex',
+          flexDirection: { base: 'column', sm: 'row' },
+          gap: '4',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%',
+          paddingX: { base: '4', sm: '0' },
+          position: 'relative',
+        })}
+        variants={fadeIn}
+      >
+        <div
+          className={css({
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '48',
+            height: '16',
+            backgroundColor: 'rgb(245 158 11 / 0.3)',
+            blur: '2xl',
+            borderRadius: 'full',
+            zIndex: 0,
+            display: { base: 'none', sm: 'block' },
+          })}
+        />
 
         <Link
           to="/login"
-          className="group inline-flex items-center justify-center gap-2 px-8 py-4 sm:px-10 sm:py-5 text-base sm:text-lg font-bold text-white bg-stone-900 border border-stone-800 hover:bg-stone-800 hover:border-stone-700 rounded-2xl shadow-xl shadow-stone-900/10 hover:shadow-2xl hover:shadow-stone-900/20 transition-all duration-300 hover:-translate-y-1 active:translate-y-0 w-full sm:w-auto overflow-hidden relative"
+          className={css({
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '2',
+            paddingX: { base: '8', sm: '10' },
+            paddingY: '4',
+            fontSize: { base: 'base', sm: 'lg' },
+            fontWeight: 'bold',
+            color: 'white',
+            backgroundColor: 'stone.900',
+            border: '1px solid stone.800',
+            borderRadius: '2xl',
+            boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+            transition: 'all 0.3s',
+            overflow: 'hidden',
+            position: 'relative',
+            width: { base: '100%', sm: 'auto' },
+          })}
         >
-          <span className="relative z-10 flex items-center gap-3">
+          <span className={css({ position: 'relative', zIndex: 10, display: 'flex', alignItems: 'center', gap: '3' })}>
             {t('auth.loginToView')}
-            <ArrowRight className="size-5 group-hover:translate-x-1.5 transition-transform" />
+            <ArrowRight className={css({ width: '5', height: '5', transition: 'transform 0.2s' })} />
           </span>
         </Link>
       </motion.div>
 
-      <motion.div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left border-t border-stone-200/50 relative" variants={staggerContainer}>
+      <motion.div
+        className={css({
+          marginTop: '24',
+          display: 'grid',
+          gridTemplateColumns: { base: '1', md: '3' },
+          gap: { base: '6', sm: '8' },
+          textAlign: 'left',
+          borderTop: '1px solid rgb(28 25 23 / 0.05)',
+          position: 'relative',
+        })}
+        variants={staggerContainer}
+      >
         {[
           {
-            icon: <Users className="size-6 text-amber-700" />,
+            icon: <Users className={css({ width: '6', height: '6', color: 'amber.700' })} />,
             title: t('landing.featureMembersTitle'),
             desc: t('landing.featureMembersDesc'),
           },
           {
-            icon: <Network className="size-6 text-amber-700" />,
+            icon: <Network className={css({ width: '6', height: '6', color: 'amber.700' })} />,
             title: t('landing.featureTreeTitle'),
             desc: t('landing.featureTreeDesc'),
           },
           {
-            icon: <ShieldCheck className="size-6 text-amber-700" />,
+            icon: <ShieldCheck className={css({ width: '6', height: '6', color: 'amber.700' })} />,
             title: t('landing.featureSecurityTitle'),
             desc: t('landing.featureSecurityDesc'),
           },
@@ -85,17 +192,64 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
             key={feature.title}
             variants={fadeIn}
             whileHover={{ y: -5 }}
-            className="bg-white/70 backdrop-blur-xl p-8 rounded-3xl border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:bg-white transition-all duration-500 flex flex-col items-start group relative overflow-hidden"
+            className={css({
+              backgroundColor: 'rgb(255 255 255 / 0.7)',
+              backdropFilter: 'blur(24px)',
+              padding: '8',
+              borderRadius: '3xl',
+              border: '1px solid rgb(255 255 255 / 0.8)',
+              boxShadow: '0 8px 30px rgb(0 0 0 / 0.04)',
+              transition: 'all 0.5s',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              position: 'relative',
+              overflow: 'hidden',
+            })}
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-amber-100/50 to-transparent rounded-bl-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div
+              className={css({
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                width: '32',
+                height: '32',
+                background: 'linear-gradient(to bottom right, rgb(254 243 199 / 0.5), transparent)',
+                borderBottomLeftRadius: '100px',
+                opacity: 0,
+                transition: 'opacity 0.5s',
+              })}
+            />
 
-            <div className="p-3.5 bg-white rounded-2xl mb-6 shadow-sm ring-1 ring-stone-100 group-hover:scale-110 group-hover:shadow-md transition-all duration-300 relative z-10">
+            <div
+              className={css({
+                padding: '3.5',
+                backgroundColor: 'white',
+                borderRadius: '2xl',
+                marginBottom: '6',
+                boxShadow: 'sm',
+                border: '1px solid stone.100',
+                transition: 'all 0.3s',
+                position: 'relative',
+                zIndex: 10,
+              })}
+            >
               {feature.icon}
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-stone-800 mb-3 font-serif relative z-10 group-hover:text-amber-900 transition-colors">
+            <h3
+              className={css({
+                fontSize: { base: 'xl', sm: '2xl' },
+                fontWeight: 'bold',
+                color: 'stone.800',
+                marginBottom: '3',
+                fontFamily: 'serif',
+                position: 'relative',
+                zIndex: 10,
+              })}
+            >
               {feature.title}
             </h3>
-            <p className="text-stone-600 text-base leading-relaxed relative z-10">{feature.desc}</p>
+            <p className={css({ color: 'stone.600', fontSize: 'base', lineHeight: '1.625', position: 'relative', zIndex: 10 })}>{feature.desc}</p>
           </motion.div>
         ))}
       </motion.div>

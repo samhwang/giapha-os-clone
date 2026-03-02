@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { BarChart2, CalendarClock, ChevronDown, Database, GitMerge, Info, Network, Settings, UserCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import LogoutButton from './LogoutButton';
 
@@ -30,28 +31,58 @@ export default function HeaderMenu({ isAdmin, userEmail }: HeaderMenuProps) {
   const menuItems = [
     ...(isAdmin
       ? [
-          { to: '/dashboard/users', icon: <Settings className="size-4" />, label: t('nav.userManagement') },
-          { to: '/dashboard/lineage', icon: <Network className="size-4" />, label: t('nav.lineageOrder') },
-          { to: '/dashboard/data', icon: <Database className="size-4" />, label: t('nav.backupRestore') },
+          { to: '/dashboard/users', icon: <Settings className={css({ width: '4', height: '4' })} />, label: t('nav.userManagement') },
+          { to: '/dashboard/lineage', icon: <Network className={css({ width: '4', height: '4' })} />, label: t('nav.lineageOrder') },
+          { to: '/dashboard/data', icon: <Database className={css({ width: '4', height: '4' })} />, label: t('nav.backupRestore') },
         ]
       : []),
-    { to: '/dashboard/events', icon: <CalendarClock className="size-4" />, label: t('nav.events') },
-    { to: '/dashboard/kinship', icon: <GitMerge className="size-4" />, label: t('nav.kinshipLookup') },
-    { to: '/dashboard/stats', icon: <BarChart2 className="size-4" />, label: t('nav.familyStats') },
-    { to: '/about', icon: <Info className="size-4" />, label: t('nav.aboutContact') },
+    { to: '/dashboard/events', icon: <CalendarClock className={css({ width: '4', height: '4' })} />, label: t('nav.events') },
+    { to: '/dashboard/kinship', icon: <GitMerge className={css({ width: '4', height: '4' })} />, label: t('nav.kinshipLookup') },
+    { to: '/dashboard/stats', icon: <BarChart2 className={css({ width: '4', height: '4' })} />, label: t('nav.familyStats') },
+    { to: '/about', icon: <Info className={css({ width: '4', height: '4' })} />, label: t('nav.aboutContact') },
   ];
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className={css({ position: 'relative' })} ref={menuRef}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 pl-2 pr-4 py-1.5 rounded-full hover:bg-stone-100 transition-all duration-200 border border-transparent hover:border-stone-200"
+        className={css(
+          {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '2',
+            paddingLeft: '2',
+            paddingRight: '4',
+            paddingY: '1.5',
+            borderRadius: 'full',
+            transition: 'all 0.2s',
+            border: '1px solid transparent',
+          },
+          { _hover: { backgroundColor: 'stone.100', borderColor: 'stone.200' } }
+        )}
       >
-        <div className="size-8 rounded-full bg-linear-to-br from-amber-200 to-amber-100 text-amber-800 flex items-center justify-center font-bold shadow-sm ring-1 ring-amber-300/50">
-          {userEmail ? userEmail.charAt(0).toUpperCase() : <UserCircle className="size-5" />}
+        <div
+          className={css({
+            width: '8',
+            height: '8',
+            borderRadius: 'full',
+            background: 'linear-gradient(to bottom right, #fde68a, #fcd34d)',
+            color: '#b45309',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 'bold',
+            boxShadow: 'sm',
+            ring: '1px solid rgb(217 119 6 / 0.5)',
+          })}
+        >
+          {userEmail ? userEmail.charAt(0).toUpperCase() : <UserCircle className={css({ width: '5', height: '5' })} />}
         </div>
-        <ChevronDown className={`size-4 text-stone-500 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown
+          className={css({ width: '4', height: '4', color: 'stone.500', transition: 'transform 0.3s' })}
+          style={{ transform: isOpen ? 'rotate(180deg)' : 'none' }}
+        />
       </button>
 
       <AnimatePresence>
@@ -61,26 +92,80 @@ export default function HeaderMenu({ isAdmin, userEmail }: HeaderMenuProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-stone-200/60 py-2 z-50 overflow-hidden"
+            className={css({
+              position: 'absolute',
+              right: 0,
+              marginTop: '2',
+              width: '56',
+              backgroundColor: 'white',
+              borderRadius: '2xl',
+              boxShadow: 'xl',
+              border: '1px solid rgb(28 25 23 / 0.06)',
+              paddingY: '2',
+              zIndex: '50',
+              overflow: 'hidden',
+            })}
           >
-            <div className="px-4 py-3 border-b border-stone-100 bg-stone-50/50">
-              <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-0.5">{t('nav.account')}</p>
-              <p className="text-sm font-medium text-stone-900 truncate">{userEmail}</p>
+            <div
+              className={css({
+                paddingX: '4',
+                paddingY: '3',
+                borderBottom: '1px solid stone.100',
+                backgroundColor: 'rgb(161 161 170 / 0.05)',
+              })}
+            >
+              <p
+                className={css({
+                  fontSize: 'xs',
+                  fontWeight: 'semibold',
+                  color: 'stone.400',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: '0.5',
+                })}
+              >
+                {t('nav.account')}
+              </p>
+              <p
+                className={css({
+                  fontSize: 'sm',
+                  fontWeight: 'medium',
+                  color: 'stone.900',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                })}
+              >
+                {userEmail}
+              </p>
             </div>
 
-            <div className="py-1">
+            <div className={css({ paddingY: '1' })}>
               {menuItems.map((item) => (
                 <Link
                   key={item.to}
                   to={item.to}
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-stone-700 hover:text-amber-700 hover:bg-amber-50 transition-colors"
+                  className={css(
+                    {
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '2',
+                      paddingX: '4',
+                      paddingY: '2.5',
+                      fontSize: 'sm',
+                      fontWeight: 'medium',
+                      color: 'stone.700',
+                      transition: 'colors 0.2s',
+                    },
+                    { _hover: { color: 'amber.700', backgroundColor: 'amber.50' } }
+                  )}
                 >
                   {item.icon}
                   {item.label}
                 </Link>
               ))}
-              <div className="px-4 py-2">
+              <div className={css({ paddingX: '4', paddingY: '2' })}>
                 <LanguageSwitcher />
               </div>
               <LogoutButton />

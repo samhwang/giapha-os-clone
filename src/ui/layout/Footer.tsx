@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 
 interface FooterProps {
   className?: string;
@@ -9,19 +10,54 @@ export default function Footer({ className = '', showDisclaimer = false }: Foote
   const { t } = useTranslation();
 
   return (
-    <footer className={`py-8 text-center text-sm text-stone-500 ${className} backdrop-blur-sm`}>
-      <div className="max-w-7xl mx-auto px-4">
+    <footer
+      className={css({ paddingY: '8', textAlign: 'center', fontSize: 'sm', color: 'stone.500', backdropFilter: 'blur(8px)' }, className ? { className } : {})}
+    >
+      <div className={css({ maxWidth: '7xl', marginX: 'auto', paddingX: '4' })}>
         {showDisclaimer && (
-          <p className="mb-4 text-xs tracking-wide bg-amber-50 inline-block px-3 py-1 rounded-full text-amber-800/80 border border-amber-200/50">
+          <p
+            className={css({
+              marginBottom: '4',
+              fontSize: 'xs',
+              letterSpacing: '0.025em',
+              backgroundColor: 'amber.50',
+              display: 'inline-block',
+              paddingX: '3',
+              paddingY: '1',
+              borderRadius: 'full',
+              color: 'amber.800',
+              border: '1px solid rgb(245 158 11 / 0.5)',
+            })}
+          >
             {t('footer.disclaimer')}
           </p>
         )}
-        <p className="flex items-center justify-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+        <p
+          className={css({
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '2',
+            opacity: 0.8,
+            transition: 'opacity 0.2s',
+            _hover: { opacity: 1 },
+          })}
+        >
           <a
             href="https://github.com/homielab/giapha-os"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold text-stone-600 hover:text-amber-700 transition-colors inline-flex items-center gap-1.5"
+            className={css(
+              {
+                fontWeight: 'semibold',
+                color: 'stone.600',
+                transition: 'colors 0.2s',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '1.5',
+              },
+              { _hover: { color: 'amber.700' } }
+            )}
           >
             <svg
               viewBox="0 0 24 24"
@@ -45,7 +81,17 @@ export default function Footer({ className = '', showDisclaimer = false }: Foote
             href="https://homielab.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold text-green-600 hover:text-amber-700 transition-colors inline-flex items-center gap-1.5"
+            className={css(
+              {
+                fontWeight: 'semibold',
+                color: 'green.600',
+                transition: 'colors 0.2s',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '1.5',
+              },
+              { _hover: { color: 'amber.700' } }
+            )}
           >
             HomieLab
           </a>
