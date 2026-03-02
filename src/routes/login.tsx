@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Info, KeyRound, Mail, Shield, UserPlus } from 'lucide-react';
 import { type SubmitEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../styled-system/css';
 import { authClient } from '../lib/auth-client';
 import LanguageSwitcher from '../ui/common/LanguageSwitcher';
 import Footer from '../ui/layout/Footer';
@@ -62,50 +63,198 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fafaf9] select-none selection:bg-amber-200 selection:text-amber-900 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-size-[24px_24px] pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_800px_at_50%_-30%,#fef3c7,transparent)] pointer-events-none" />
+    <div
+      className={css({
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#fafaf9',
+        userSelect: 'none',
+        position: 'relative',
+        overflow: 'hidden',
+      })}
+    >
+      <div
+        className={css({
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'linear-gradient(to right, #80808008 1px, transparent 1px), linear-gradient(to bottom, #80808008 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+          pointerEvents: 'none',
+        })}
+      />
+      <div
+        className={css({
+          position: 'absolute',
+          inset: 0,
+          background: 'radial-gradient(circle 800px at 50% -30%, #fef3c7, transparent)',
+          pointerEvents: 'none',
+        })}
+      />
 
-      <div className="absolute top-0 inset-x-0 h-screen overflow-hidden pointer-events-none flex justify-center">
-        <div className="absolute top-[-10%] right-[-5%] w-[50vw] h-[50vw] max-w-150 max-h-150 bg-amber-300/20 rounded-full blur-4xl mix-blend-multiply" />
-        <div className="absolute bottom-[0%] left-[-10%] w-[60vw] h-[60vw] max-w-200 max-h-200 bg-rose-200/20 rounded-full blur-5xl mix-blend-multiply" />
+      <div
+        className={css({
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '100vh',
+          overflow: 'hidden',
+          pointerEvents: 'none',
+          display: 'flex',
+          justifyContent: 'center',
+        })}
+      >
+        <div
+          className={css({
+            position: 'absolute',
+            top: '-10%',
+            right: '-5%',
+            width: '50vw',
+            height: '50vw',
+            maxWidth: '600px',
+            maxHeight: '600px',
+            backgroundColor: 'rgb(217 213 75 / 0.2)',
+            borderRadius: 'full',
+            filter: 'blur(100px)',
+            mixBlendMode: 'multiply',
+          })}
+        />
+        <div
+          className={css({
+            position: 'absolute',
+            bottom: '0%',
+            left: '-10%',
+            width: '60vw',
+            height: '60vw',
+            maxWidth: '800px',
+            maxHeight: '800px',
+            backgroundColor: 'rgb(244 63 94 / 0.2)',
+            borderRadius: 'full',
+            filter: 'blur(120px)',
+            mixBlendMode: 'multiply',
+          })}
+        />
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-4 py-12 relative z-10 w-full">
+      <div
+        className={css({
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingX: '4',
+          paddingY: '12',
+          position: 'relative',
+          zIndex: 10,
+          width: '100%',
+        })}
+      >
         <motion.div
-          className="max-w-md w-full bg-white/70 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80 relative overflow-hidden"
+          className={css({
+            maxWidth: '28rem',
+            width: '100%',
+            backgroundColor: 'rgb(255 255 255 / 0.7)',
+            backdropFilter: 'blur(24px)',
+            padding: '8',
+            sm: { padding: '10' },
+            borderRadius: '3xl',
+            boxShadow: '0 8px 30px rgb(0 0 0 / 0.04)',
+            border: '1px solid rgb(255 255 255 / 0.8)',
+            position: 'relative',
+            overflow: 'hidden',
+          })}
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-amber-100/50 to-transparent rounded-bl-[100px] pointer-events-none" />
+          <div
+            className={css({
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: '32',
+              height: '32',
+              background: 'linear-gradient(to bottom right, rgb(254 243 199 / 0.5), transparent)',
+              borderBottomLeftRadius: '100px',
+              pointerEvents: 'none',
+            })}
+          />
 
-          <div className="text-center mb-8 relative z-10">
+          <div className={css({ textAlign: 'center', marginBottom: '8', position: 'relative', zIndex: 10 })}>
             <Link
               to="/"
-              className="inline-flex items-center justify-center p-3.5 bg-white rounded-2xl mb-5 shadow-sm ring-1 ring-stone-100 hover:scale-105 hover:shadow-md transition-all duration-300"
+              className={css({
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '3.5',
+                backgroundColor: 'white',
+                borderRadius: '2xl',
+                marginBottom: '5',
+                boxShadow: 'sm',
+                border: '1px solid rgb(28 25 23 / 0.05)',
+                transition: 'all 0.3s',
+              })}
             >
-              <Shield className="size-8 text-amber-600" />
+              <Shield className={css({ width: '8', height: '8', color: 'amber.600' })} />
             </Link>
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-stone-900 tracking-tight">{isLogin ? t('auth.login') : t('auth.register')}</h2>
-            <p className="mt-3 text-sm text-stone-500 font-medium tracking-wide">{isLogin ? t('auth.loginSubtitle') : t('auth.registerSubtitle')}</p>
+            <h2
+              className={css({
+                fontSize: { base: '3xl', sm: '4xl' },
+                fontFamily: 'serif',
+                fontWeight: 'bold',
+                color: 'stone.900',
+                letterSpacing: '-0.025em',
+              })}
+            >
+              {isLogin ? t('auth.login') : t('auth.register')}
+            </h2>
+            <p
+              className={css({
+                marginTop: '3',
+                fontSize: 'sm',
+                color: 'stone.500',
+                fontWeight: '500',
+                letterSpacing: '0.025em',
+              })}
+            >
+              {isLogin ? t('auth.loginSubtitle') : t('auth.registerSubtitle')}
+            </p>
           </div>
 
-          <form className="space-y-5 relative z-10" onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <div className="relative">
-                <label htmlFor="email-address" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
+          <form className={css({ display: 'flex', flexDirection: 'column', gap: '5', position: 'relative', zIndex: 10 })} onSubmit={handleSubmit}>
+            <div className={css({ display: 'flex', flexDirection: 'column', gap: '4' })}>
+              <div className={css({ position: 'relative' })}>
+                <label
+                  htmlFor="email-address"
+                  className={css({ display: 'block', fontSize: '13px', fontWeight: 'semibold', color: 'stone.600', marginBottom: '1.5', marginLeft: '1' })}
+                >
                   {t('auth.emailLabel')}
                 </label>
-                <div className="relative flex items-center group">
-                  <Mail className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
+                <div className={css({ position: 'relative', display: 'flex', alignItems: 'center', _groupFocusWithin: { color: 'amber.500' } })}>
+                  <Mail className={css({ position: 'absolute', left: '3.5', width: '5', height: '5', color: 'stone.400', transition: 'colors 0.2s' })} />
                   <input
                     id="email-address"
                     name="email"
                     type="email"
                     autoComplete="email"
                     required
-                    className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
+                    className={css({
+                      backgroundColor: 'rgb(255 255 255 / 0.5)',
+                      color: 'stone.900',
+                      _placeholder: { color: 'stone.400' },
+                      display: 'block',
+                      width: '100%',
+                      borderRadius: 'xl',
+                      border: '1px solid rgb(28 25 23 / 0.1)',
+                      boxShadow: '0 2px 10px -3px rgb(0 0 0 / 0.05)',
+                      paddingLeft: '11',
+                      paddingRight: '4',
+                      paddingY: '3.5',
+                      transition: 'all 0.2s',
+                      outline: 'none',
+                    })}
                     placeholder={t('auth.emailPlaceholder')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -113,19 +262,36 @@ function LoginPage() {
                 </div>
               </div>
 
-              <div className="relative">
-                <label htmlFor="password" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
+              <div className={css({ position: 'relative' })}>
+                <label
+                  htmlFor="password"
+                  className={css({ display: 'block', fontSize: '13px', fontWeight: 'semibold', color: 'stone.600', marginBottom: '1.5', marginLeft: '1' })}
+                >
                   {t('auth.passwordLabel')}
                 </label>
-                <div className="relative flex items-center group">
-                  <KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
+                <div className={css({ position: 'relative', display: 'flex', alignItems: 'center' })}>
+                  <KeyRound className={css({ position: 'absolute', left: '3.5', width: '5', height: '5', color: 'stone.400', transition: 'colors 0.2s' })} />
                   <input
                     id="password"
                     name="password"
                     type="password"
                     autoComplete={isLogin ? 'current-password' : 'new-password'}
                     required
-                    className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
+                    className={css({
+                      backgroundColor: 'rgb(255 255 255 / 0.5)',
+                      color: 'stone.900',
+                      _placeholder: { color: 'stone.400' },
+                      display: 'block',
+                      width: '100%',
+                      borderRadius: 'xl',
+                      border: '1px solid rgb(28 25 23 / 0.1)',
+                      boxShadow: '0 2px 10px -3px rgb(0 0 0 / 0.05)',
+                      paddingLeft: '11',
+                      paddingRight: '4',
+                      paddingY: '3.5',
+                      transition: 'all 0.2s',
+                      outline: 'none',
+                    })}
                     placeholder={t('auth.passwordPlaceholder')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -137,23 +303,42 @@ function LoginPage() {
                 {!isLogin && (
                   <motion.div
                     initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                    animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                    animate={{ opacity: 1, height: 'auto', marginTop: '4' }}
                     exit={{ opacity: 0, height: 0, marginTop: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="relative overflow-hidden"
+                    className={css({ position: 'relative', overflow: 'hidden' })}
                   >
-                    <label htmlFor="confirmPassword" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
+                    <label
+                      htmlFor="confirmPassword"
+                      className={css({ display: 'block', fontSize: '13px', fontWeight: 'semibold', color: 'stone.600', marginBottom: '1.5', marginLeft: '1' })}
+                    >
                       {t('auth.confirmPasswordLabel')}
                     </label>
-                    <div className="relative flex items-center group">
-                      <KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
+                    <div className={css({ position: 'relative', display: 'flex', alignItems: 'center' })}>
+                      <KeyRound
+                        className={css({ position: 'absolute', left: '3.5', width: '5', height: '5', color: 'stone.400', transition: 'colors 0.2s' })}
+                      />
                       <input
                         id="confirmPassword"
                         name="confirmPassword"
                         type="password"
                         autoComplete="new-password"
                         required={!isLogin}
-                        className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
+                        className={css({
+                          backgroundColor: 'rgb(255 255 255 / 0.5)',
+                          color: 'stone.900',
+                          _placeholder: { color: 'stone.400' },
+                          display: 'block',
+                          width: '100%',
+                          borderRadius: 'xl',
+                          border: '1px solid rgb(28 25 23 / 0.1)',
+                          boxShadow: '0 2px 10px -3px rgb(0 0 0 / 0.05)',
+                          paddingLeft: '11',
+                          paddingRight: '4',
+                          paddingY: '3.5',
+                          transition: 'all 0.2s',
+                          outline: 'none',
+                        })}
                         placeholder={t('auth.confirmPasswordPlaceholder')}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
@@ -170,7 +355,16 @@ function LoginPage() {
                   initial={{ opacity: 0, y: -10, height: 0 }}
                   animate={{ opacity: 1, y: 0, height: 'auto' }}
                   exit={{ opacity: 0, y: -10, height: 0 }}
-                  className="text-red-700 text-sm-plus text-center bg-red-50 p-3 rounded-xl border border-red-100/50 font-medium"
+                  className={css({
+                    color: 'red.700',
+                    fontSize: '13px',
+                    textAlign: 'center',
+                    backgroundColor: 'red.50',
+                    padding: '3',
+                    borderRadius: 'xl',
+                    border: '1px solid rgb(254 202 202 / 0.5)',
+                    fontWeight: '500',
+                  })}
                 >
                   {error}
                 </motion.div>
@@ -181,26 +375,58 @@ function LoginPage() {
                   initial={{ opacity: 0, y: -10, height: 0 }}
                   animate={{ opacity: 1, y: 0, height: 'auto' }}
                   exit={{ opacity: 0, y: -10, height: 0 }}
-                  className="text-teal-700 text-sm-plus text-center bg-teal-50 p-3 rounded-xl border border-teal-100/50 font-medium"
+                  className={css({
+                    color: 'teal.700',
+                    fontSize: '13px',
+                    textAlign: 'center',
+                    backgroundColor: 'teal.50',
+                    padding: '3',
+                    borderRadius: 'xl',
+                    border: '1px solid rgb(204 251 241 / 0.5)',
+                    fontWeight: '500',
+                  })}
                 >
                   {successMessage}
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <div className="flex flex-col gap-4 pt-4">
+            <div className={css({ display: 'flex', flexDirection: 'column', gap: '4', paddingTop: '4' })}>
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center items-center gap-2 py-4 px-4 text-base-plus font-bold rounded-xl text-white bg-stone-900 hover:bg-stone-800 border border-stone-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-900 disabled:opacity-70 disabled:cursor-wait transition-all duration-300 shadow-xl shadow-stone-900/10 hover:shadow-2xl hover:shadow-stone-900/20 hover:-translate-y-0.5"
+                className={css({
+                  position: 'relative',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '2',
+                  paddingY: '4',
+                  paddingX: '4',
+                  fontSize: 'base',
+                  fontWeight: 'bold',
+                  borderRadius: 'xl',
+                  color: 'white',
+                  backgroundColor: 'stone.900',
+                  border: '1px solid stone.800',
+                  transition: 'all 0.3s',
+                  boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+                })}
               >
                 {loading ? (
-                  <span className="flex items-center gap-2.5">
-                    <svg className="animate-spin -ml-1 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" role="img" aria-label="Loading">
+                  <span className={css({ display: 'flex', alignItems: 'center', gap: '2.5' })}>
+                    <svg
+                      className={css({ marginLeft: '-1', width: '4', height: '4', animation: 'spin 1s linear infinite', color: 'white' })}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      role="img"
+                      aria-label="Loading"
+                    >
                       <title>Loading</title>
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <circle className={css({ opacity: 0.25 })} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path
-                        className="opacity-75"
+                        className={css({ opacity: 0.75 })}
                         fill="currentColor"
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       />
@@ -208,17 +434,29 @@ function LoginPage() {
                     {t('common.processing')}
                   </span>
                 ) : (
-                  <>
+                  <span className={css({ display: 'flex', alignItems: 'center' })}>
                     {isLogin ? t('auth.loginButton') : t('auth.createAccountButton')}
-                    {!isLogin && <UserPlus className="size-4 ml-1" />}
-                  </>
+                    {!isLogin && <UserPlus className={css({ width: '4', height: '4', marginLeft: '1' })} />}
+                  </span>
                 )}
               </button>
 
-              <div className="relative flex items-center py-2 opacity-60">
-                <div className="grow border-t border-stone-200" />
-                <span className="shrink-0 mx-4 text-stone-400 text-xs-plus uppercase tracking-wider font-bold">{t('common.or')}</span>
-                <div className="grow border-t border-stone-200" />
+              <div className={css({ position: 'relative', display: 'flex', alignItems: 'center', paddingY: '2', opacity: 0.6 })}>
+                <div className={css({ flexGrow: '1', borderTop: '1px solid stone.200' })} />
+                <span
+                  className={css({
+                    flexShrink: 0,
+                    marginX: '4',
+                    color: 'stone.400',
+                    fontSize: 'xs',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    fontWeight: 'bold',
+                  })}
+                >
+                  {t('common.or')}
+                </span>
+                <div className={css({ flexGrow: '1', borderTop: '1px solid stone.200' })} />
               </div>
 
               <button
@@ -228,7 +466,18 @@ function LoginPage() {
                   setError(null);
                   setSuccessMessage(null);
                 }}
-                className="w-full text-sm font-semibold text-stone-600 hover:text-stone-900 bg-white hover:bg-stone-50 border border-stone-200/80 py-3.5 rounded-xl shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] focus:outline-none transition-all duration-200"
+                className={css({
+                  width: '100%',
+                  fontSize: 'sm',
+                  fontWeight: 'semibold',
+                  color: 'stone.600',
+                  backgroundColor: 'white',
+                  border: '1px solid rgb(28 25 23 / 0.1)',
+                  paddingY: '3.5',
+                  borderRadius: 'xl',
+                  boxShadow: '0 2px 8px -3px rgb(0 0 0 / 0.05)',
+                  transition: 'all 0.2s',
+                })}
               >
                 {isLogin ? t('auth.noAccount') : t('auth.hasAccount')}
               </button>
@@ -239,24 +488,68 @@ function LoginPage() {
 
       <Link
         to="/"
-        className="absolute top-6 left-6 z-20 flex items-center gap-2 text-stone-500 hover:text-stone-900 font-semibold text-sm transition-all duration-300 group bg-white/60 px-5 py-2.5 rounded-full backdrop-blur-md shadow-sm border border-stone-200 hover:border-stone-300 hover:shadow-md"
+        className={css({
+          position: 'absolute',
+          top: '6',
+          left: '6',
+          zIndex: 20,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '2',
+          color: 'stone.500',
+          fontWeight: 'semibold',
+          fontSize: 'sm',
+          transition: 'all 0.3s',
+          backgroundColor: 'rgb(255 255 255 / 0.6)',
+          paddingX: '5',
+          paddingY: '2.5',
+          borderRadius: 'full',
+          backdropFilter: 'blur(12px)',
+          boxShadow: 'sm',
+          border: '1px solid stone.200',
+        })}
       >
-        <ArrowLeft className="size-4 group-hover:-translate-x-1 transition-transform" />
+        <ArrowLeft className={css({ width: '4', height: '4', transition: 'transform 0.2s' })} />
         {t('common.homepage')}
       </Link>
 
-      <div className="absolute top-6 right-6 z-20 flex items-center gap-3">
-        <LanguageSwitcher className="bg-white/60 px-4 py-2.5 rounded-full backdrop-blur-md shadow-sm border border-stone-200 hover:border-stone-300 hover:shadow-md" />
+      <div className={css({ position: 'absolute', top: '6', right: '6', zIndex: 20, display: 'flex', alignItems: 'center', gap: '3' })}>
+        <LanguageSwitcher
+          className={css({
+            backgroundColor: 'rgb(255 255 255 / 0.6)',
+            paddingX: '4',
+            paddingY: '2.5',
+            borderRadius: 'full',
+            backdropFilter: 'blur(12px)',
+            boxShadow: 'sm',
+            border: '1px solid stone.200',
+          })}
+        />
         <Link
           to="/about"
-          className="flex items-center gap-2 text-stone-500 hover:text-stone-900 font-semibold text-sm transition-all duration-300 group bg-white/60 px-5 py-2.5 rounded-full backdrop-blur-md shadow-sm border border-stone-200 hover:border-stone-300 hover:shadow-md"
+          className={css({
+            display: 'flex',
+            alignItems: 'center',
+            gap: '2',
+            color: 'stone.500',
+            fontWeight: 'semibold',
+            fontSize: 'sm',
+            transition: 'all 0.3s',
+            backgroundColor: 'rgb(255 255 255 / 0.6)',
+            paddingX: '5',
+            paddingY: '2.5',
+            borderRadius: 'full',
+            backdropFilter: 'blur(12px)',
+            boxShadow: 'sm',
+            border: '1px solid stone.200',
+          })}
         >
-          <Info className="size-4 group-hover:scale-110 transition-transform" />
+          <Info className={css({ width: '4', height: '4', transition: 'transform 0.2s' })} />
           {t('common.about')}
         </Link>
       </div>
 
-      <Footer className="bg-transparent relative z-10 border-none mt-auto" />
+      <Footer className={css({ backgroundColor: 'transparent', position: 'relative', zIndex: 10, border: 'none', marginTop: 'auto' })} />
     </div>
   );
 }
