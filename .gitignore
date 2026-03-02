@@ -18,3 +18,7 @@ base
 .docker/**/data
 .claude
 .playwright
+
+## Panda
+styled-system
+styled-system-studio

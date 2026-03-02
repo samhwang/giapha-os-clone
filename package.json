@@ -22,7 +22,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:coverage": "vitest run --coverage",
-    "prepare": "pnpm run githooks:init",
+    "prepare": "pnpm run panda:codegen && pnpm run githooks:init",
+    "panda:codegen": "panda codegen",
     "githooks:init": "husky",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
@@ -69,6 +70,7 @@
   "devDependencies": {
     "@better-auth/cli": "^1.4.20",
     "@biomejs/biome": "^2.4.4",
+    "@pandacss/dev": "^1.8.2",
     "@playwright/test": "^1.58.2",
     "@tanstack/devtools-vite": "^0.5.2",
     "@testcontainers/postgresql": "^11.12.0",

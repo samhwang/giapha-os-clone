@@ -19,6 +19,7 @@ docker compose ps             # Check running services
 pnpm dev          # Start dev server (http://localhost:3000)
 pnpm build        # Production build
 pnpm start        # Start production server
+pnpm panda:codegen # Generate PandaCSS styled-system
 ```
 
 ### Database (Prisma)
