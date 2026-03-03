@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
+import { css } from '../../../../styled-system/css';
 import DeleteMemberButton from '../../../members/components/DeleteMemberButton';
 import MemberDetailContent from '../../../members/components/MemberDetailContent';
 import { getPersonById } from '../../../members/server/member';
@@ -19,18 +20,50 @@ function MemberDetailPage() {
   const isAdmin = session.role === 'admin';
 
   return (
-    <div className="flex-1 w-full relative flex flex-col pb-8">
-      <div className="w-full relative z-20 py-4 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto flex items-center justify-between">
-        <Link to="/dashboard" className="group flex items-center text-stone-500 hover:text-amber-700 font-medium text-sm transition-colors">
-          <span className="mr-1 group-hover:-translate-x-1 transition-transform">←</span>
+    <div className={css({ flex: 1, width: '100%', position: 'relative', display: 'flex', flexDirection: 'column', paddingBottom: '8' })}>
+      <div
+        className={css({
+          width: '100%',
+          position: 'relative',
+          zIndex: 20,
+          paddingY: '4',
+          paddingX: { base: '4', sm: '6', lg: '8' },
+          maxWidth: '5xl',
+          marginX: 'auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        })}
+      >
+        <Link
+          to="/dashboard"
+          className={css(
+            { display: 'flex', alignItems: 'center', color: 'stone.500', fontWeight: 'medium', fontSize: 'sm', transition: 'colors 0.2s' },
+            { _hover: { color: 'amber.700' } }
+          )}
+        >
+          <span className={css({ marginRight: '1', transition: 'transform 0.2s' })}>←</span>
           Quay lại
         </Link>
         {isAdmin && (
-          <div className="flex items-center gap-2.5">
+          <div className={css({ display: 'flex', alignItems: 'center', gap: '2.5' })}>
             <Link
               to="/dashboard/members/$id/edit"
               params={{ id: person.id }}
-              className="px-4 py-2 bg-stone-100/80 text-stone-700 rounded-lg hover:bg-stone-200 hover:text-stone-900 font-medium text-sm transition-all shadow-sm"
+              className={css(
+                {
+                  paddingX: '4',
+                  paddingY: '2',
+                  backgroundColor: 'rgb(255 255 255 / 0.8)',
+                  color: 'stone.700',
+                  borderRadius: 'lg',
+                  fontWeight: 'medium',
+                  fontSize: 'sm',
+                  transition: 'all 0.2s',
+                  boxShadow: 'sm',
+                },
+                { _hover: { backgroundColor: 'stone.200', color: 'stone.900' } }
+              )}
             >
               Chỉnh sửa
             </Link>
@@ -39,8 +72,29 @@ function MemberDetailPage() {
         )}
       </div>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 relative z-10 w-full flex-1">
-        <div className="bg-white/60 backdrop-blur-md rounded-2xl shadow-sm border border-stone-200/60 overflow-hidden hover:shadow-md transition-shadow duration-300">
+      <main
+        className={css({
+          maxWidth: '5xl',
+          marginX: 'auto',
+          paddingX: { base: '4', sm: '6', lg: '8' },
+          paddingY: { base: '4', sm: '6' },
+          position: 'relative',
+          zIndex: 10,
+          width: '100%',
+          flex: 1,
+        })}
+      >
+        <div
+          className={css({
+            backgroundColor: 'rgb(255 255 255 / 0.6)',
+            backdropFilter: 'blur(12px)',
+            borderRadius: '2xl',
+            boxShadow: 'sm',
+            border: '1px solid rgb(228 228 231 / 0.6)',
+            overflow: 'hidden',
+            transition: 'shadow 0.3s',
+          })}
+        >
           <MemberDetailContent person={person as unknown as Person} privateData={privateData} isAdmin={isAdmin} />
         </div>
       </main>
