@@ -91,7 +91,7 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
           <button
             type="button"
             tabIndex={0}
-            className="absolute inset-0 cursor-pointer"
+            className={css({ position: 'absolute', inset: 0, cursor: 'pointer' })}
             onClick={closeModal}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') closeModal();
@@ -267,7 +267,7 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
                 </button>
               </div>
             ) : person ? (
-              <div className="flex-1 overflow-y-auto">
+              <div className={css({ flex: 1, overflowY: 'auto' })}>
                 <MemberDetailContent person={person} privateData={privateData} isAdmin={isAdmin} />
               </div>
             ) : null}
