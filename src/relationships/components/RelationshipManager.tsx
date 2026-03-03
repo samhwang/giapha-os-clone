@@ -818,9 +818,8 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
               <span className={css({ display: 'block', fontSize: 'xs', fontWeight: 'medium', color: 'stone.500', marginBottom: '1' })}>
                 {t('relationship.childrenList')}
               </span>
-              {/* biome-ignore lint:suspicious/noArrayIndexKey */}
               {bulkChildren.map((child, index) => (
-                <div key={index} className={css({ display: 'flex', gap: '2', alignItems: 'center' })}>
+                <div key={`${child.name}-${index}`} className={css({ display: 'flex', gap: '2', alignItems: 'center' })}>
                   <span className={css({ color: 'stone.400', fontSize: 'xs', width: '4' })}>{index + 1}.</span>
                   <input
                     type="text"
