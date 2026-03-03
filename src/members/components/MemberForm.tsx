@@ -4,6 +4,7 @@ import { AlertCircle, Briefcase, Image as ImageIcon, Loader2, Lock, MapPin, Phon
 import { type SubmitEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { css } from '../../../styled-system/css';
+import { button } from '../../../styled-system/recipes';
 import type { Gender, Person } from '../../types';
 import { createPerson, updatePerson, uploadPersonAvatar } from '../server/member';
 
@@ -146,25 +147,62 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
     show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
   };
 
-  const inputClasses =
-    'bg-white text-stone-900 placeholder-stone-500 block w-full rounded-xl border border-stone-300 shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:bg-white text-sm px-4 py-3 transition-all outline-none';
+  const inputClasses = css({
+    backgroundColor: 'white',
+    color: 'stone.900',
+    _placeholder: { color: 'stone.500' },
+    display: 'block',
+    width: '100%',
+    borderRadius: 'xl',
+    borderWidth: '1px',
+    borderColor: 'stone.300',
+    boxShadow: 'sm',
+    _focus: { borderColor: 'amber.500', boxShadow: '0 0 0 2px rgb(217 119 6 / 0.2)', backgroundColor: 'white' },
+    paddingX: '4',
+    paddingY: '3',
+    transition: 'all',
+    outline: 'none',
+    fontSize: 'sm',
+  });
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+    <form onSubmit={handleSubmit} className={css({ display: 'flex', flexDirection: 'column', gap: { base: '6', sm: '8' } })}>
       <motion.div
         variants={formSectionVariants}
         initial="hidden"
         animate="show"
-        className="bg-white/80 backdrop-blur-md p-5 sm:p-8 rounded-2xl shadow-sm border border-stone-200/80"
+        className={css({
+          backgroundColor: 'rgb(255 255 255 / 0.8)',
+          backdropFilter: 'blur(12px)',
+          padding: { base: '5', sm: '8' },
+          borderRadius: '2xl',
+          boxShadow: 'sm',
+          borderWidth: '1px',
+          borderColor: 'rgb(228 228 231 / 0.8)',
+        })}
       >
-        <h3 className="text-lg sm:text-xl font-serif font-bold text-stone-800 mb-6 border-b border-stone-100 pb-4 flex items-center gap-2">
-          <User className="size-5 text-amber-600" />
+        <h3
+          className={css({
+            fontSize: { base: 'lg', sm: 'xl' },
+            fontFamily: 'serif',
+            fontWeight: 'bold',
+            color: 'stone.800',
+            marginBottom: '6',
+            borderBottomWidth: '1px',
+            borderColor: 'stone.100',
+            paddingBottom: '4',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '2',
+          })}
+        >
+          <User className={css({ width: '5', height: '5', color: 'amber.600' })} />
           {t('member.generalInfo')}
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="md:col-span-2">
-            <label htmlFor="fullName" className="block text-sm font-semibold text-stone-700 mb-1.5">
-              {t('member.fullName')} <span className="text-red-500">*</span>
+        <div className={css({ display: 'grid', gridTemplateColumns: { base: '1', md: '2' }, gap: '6' })}>
+          <div className={css({ gridColumn: { base: '1', md: 'span 2' } })}>
+            <label htmlFor="fullName" className={css({ display: 'block', fontSize: 'sm', fontWeight: 'semibold', color: 'stone.700', marginBottom: '1.5' })}>
+              {t('member.fullName')} <span className={css({ color: 'red.500' })}>*</span>
             </label>
             <input
               id="fullName"
@@ -178,30 +216,64 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
           </div>
 
           <div>
-            <label htmlFor="gender" className="block text-sm font-semibold text-stone-700 mb-1.5">
-              {t('member.gender')} <span className="text-red-500">*</span>
+            <label htmlFor="gender" className={css({ display: 'block', fontSize: 'sm', fontWeight: 'semibold', color: 'stone.700', marginBottom: '1.5' })}>
+              {t('member.gender')} <span className={css({ color: 'red.500' })}>*</span>
             </label>
-            <div className="relative">
-              <select id="gender" value={gender} onChange={(e) => setGender(e.target.value as Gender)} className={`${inputClasses} appearance-none`}>
+            <div className={css({ position: 'relative' })}>
+              <select
+                id="gender"
+                value={gender}
+                onChange={(e) => setGender(e.target.value as Gender)}
+                className={css({}, inputClasses, { appearance: 'none' })}
+              >
                 <option value="male">{t('common.male')}</option>
                 <option value="female">{t('common.female')}</option>
                 <option value="other">{t('common.other')}</option>
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-stone-500">
-                <Settings2 className="size-4" />
+              <div
+                className={css({
+                  position: 'absolute',
+                  pointerEvents: 'none',
+                  insetY: 0,
+                  right: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  paddingRight: '4',
+                  color: 'stone.500',
+                })}
+              >
+                <Settings2 className={css({ width: '4', height: '4' })} />
               </div>
             </div>
           </div>
 
-          <div className="flex items-center sm:mt-7 mt-2">
-            <label className="flex items-center gap-3 group">
-              <div className="relative flex items-center">
-                <input type="checkbox" checked={isInLaw} onChange={(e) => setIsInLaw(e.target.checked)} className="peer sr-only" />
-                <div className="size-5 border-2 border-stone-300 rounded peer-checked:bg-amber-500 peer-checked:border-amber-500 transition-colors flex items-center justify-center">
+          <div className={css({ display: 'flex', alignItems: 'center', marginTop: { base: '2', sm: '7' } })}>
+            <label className={css({ display: 'flex', alignItems: 'center', gap: '3' })}>
+              <div className={css({ position: 'relative', display: 'flex', alignItems: 'center' })}>
+                <input
+                  type="checkbox"
+                  checked={isInLaw}
+                  onChange={(e) => setIsInLaw(e.target.checked)}
+                  className={css({ position: 'absolute', opacity: 0, width: '100%', height: '100%', cursor: 'pointer' })}
+                />
+                <div
+                  className={css({
+                    width: '5',
+                    height: '5',
+                    borderWidth: '2',
+                    borderRadius: 'sm',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'colors 0.2s',
+                    backgroundColor: isInLaw ? 'amber.500' : 'transparent',
+                    borderColor: isInLaw ? 'amber.500' : 'stone.300',
+                  })}
+                >
                   <motion.svg
                     initial={false}
                     animate={{ opacity: isInLaw ? 1 : 0, scale: isInLaw ? 1 : 0.5 }}
-                    className="size-3 text-white pointer-events-none"
+                    className={css({ width: '3', height: '3', color: 'white', pointerEvents: 'none' })}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -211,12 +283,12 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                   </motion.svg>
                 </div>
               </div>
-              <span className="text-sm font-semibold text-stone-700 group-hover:text-amber-700 transition-colors">{t('member.isInLaw')}</span>
+              <span className={css({ fontSize: 'sm', fontWeight: 'semibold', color: 'stone.700' })}>{t('member.isInLaw')}</span>
             </label>
           </div>
 
           <div>
-            <label htmlFor="birthOrder" className="block text-sm font-semibold text-stone-700 mb-1.5">
+            <label htmlFor="birthOrder" className={css({ display: 'block', fontSize: 'sm', fontWeight: 'semibold', color: 'stone.700', marginBottom: '1.5' })}>
               {t('member.birthOrder')}
             </label>
             <input
@@ -228,29 +300,64 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               onChange={(e) => setBirthOrder(e.target.value ? Number(e.target.value) : '')}
               className={inputClasses}
             />
-            <p className="mt-1.5 text-xs text-stone-400 flex items-center gap-1">
+            <p className={css({ marginTop: '1.5', fontSize: 'xs', color: 'stone.400', display: 'flex', alignItems: 'center', gap: '1' })}>
               <span>💡</span> {t('member.birthOrderHint')}
             </p>
           </div>
 
-          <div className="md:col-span-2 mt-2">
-            <label htmlFor="avatarFile" className="block text-sm font-semibold text-stone-700 mb-2.5">
+          <div className={css({ gridColumn: { base: '1', md: 'span 2' }, marginTop: '2' })}>
+            <label htmlFor="avatarFile" className={css({ display: 'block', fontSize: 'sm', fontWeight: 'semibold', color: 'stone.700', marginBottom: '2.5' })}>
               {t('member.avatar')}
             </label>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 bg-stone-50/50 p-4 rounded-xl border border-stone-100">
+            <div
+              className={css({
+                display: 'flex',
+                flexDirection: { base: 'column', sm: 'row' },
+                alignItems: { base: 'start', sm: 'center' },
+                gap: '5',
+                backgroundColor: 'rgb(255 255 255 / 0.5)',
+                padding: '4',
+                borderRadius: 'xl',
+                borderWidth: '1px',
+                borderColor: 'stone.100',
+              })}
+            >
               <div
-                className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center text-xl font-bold text-white overflow-hidden shrink-0 shadow-md border-4 border-white
-                  ${!avatarPreview ? (gender === 'male' ? 'bg-linear-to-br from-sky-400 to-sky-700' : gender === 'female' ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600') : ''}`}
+                className={css(
+                  {
+                    width: { base: '20', sm: '24' },
+                    height: { base: '20', sm: '24' },
+                    borderRadius: 'full',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 'xl',
+                    fontWeight: 'bold',
+                    color: 'white',
+                    overflow: 'hidden',
+                    flexShrink: 0,
+                    boxShadow: 'md',
+                    borderWidth: '4',
+                    borderColor: 'white',
+                  },
+                  !avatarPreview
+                    ? gender === 'male'
+                      ? { background: 'linear-gradient(to bottom right, #38bdf8, #0369a1)' }
+                      : gender === 'female'
+                        ? { background: 'linear-gradient(to bottom right, #fb7185, #be123c)' }
+                        : { background: 'linear-gradient(to bottom right, #a8a29e, #57534e)' }
+                    : {}
+                )}
               >
                 {avatarPreview ? (
-                  <img src={avatarPreview} alt="Avatar preview" className="w-full h-full object-cover" />
+                  <img src={avatarPreview} alt="Avatar preview" className={css({ width: '100%', height: '100%', objectFit: 'cover' })} />
                 ) : (
-                  <span className="opacity-90">{fullName ? fullName.charAt(0).toUpperCase() : '?'}</span>
+                  <span className={css({ opacity: 0.9 })}>{fullName ? fullName.charAt(0).toUpperCase() : '?'}</span>
                 )}
               </div>
-              <div className="flex-1 w-full">
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="relative">
+              <div className={css({ flex: 1, width: '100%' })}>
+                <div className={css({ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '3' })}>
+                  <div className={css({ position: 'relative' })}>
                     <input
                       id="avatarFile"
                       type="file"
@@ -262,13 +369,27 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                           setAvatarPreview(URL.createObjectURL(file));
                         }
                       }}
-                      className="absolute inset-0 w-full h-full opacity-0"
+                      className={css({ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' })}
                     />
                     <button
                       type="button"
-                      className="flex items-center gap-2 text-sm font-medium px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200/50 hover:bg-amber-100 hover:border-amber-300 transition-colors rounded-lg"
+                      className={css({
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '2',
+                        fontSize: 'sm',
+                        fontWeight: 'medium',
+                        paddingX: '4',
+                        paddingY: '2',
+                        backgroundColor: 'amber.50',
+                        color: 'amber.700',
+                        borderWidth: '1px',
+                        borderColor: 'rgb(245 158 11 / 0.5)',
+                        borderRadius: 'lg',
+                        transition: 'colors 0.2s',
+                      })}
                     >
-                      <ImageIcon className="size-4" />
+                      <ImageIcon className={css({ width: '4', height: '4' })} />
                       {t('member.choosePhoto')}
                     </button>
                   </div>
@@ -280,26 +401,40 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                         setAvatarFile(null);
                         setAvatarPreview(null);
                       }}
-                      className="flex items-center gap-2 text-sm text-rose-600 hover:text-rose-700 font-medium px-4 py-2 border border-rose-200 rounded-lg bg-rose-50 hover:bg-rose-100 transition-colors"
+                      className={css({
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '2',
+                        fontSize: 'sm',
+                        color: 'rose.600',
+                        fontWeight: 'medium',
+                        paddingX: '4',
+                        paddingY: '2',
+                        borderWidth: '1px',
+                        borderColor: 'rose.200',
+                        borderRadius: 'lg',
+                        backgroundColor: 'rose.50',
+                        transition: 'colors 0.2s',
+                      })}
                     >
-                      <Trash2 className="size-4" />
+                      <Trash2 className={css({ width: '4', height: '4' })} />
                       {t('member.removePhoto')}
                     </button>
                   )}
                 </div>
-                <p className="mt-2.5 text-xs text-stone-500 flex items-center gap-1.5">
-                  <AlertCircle className="w-3.5 h-3.5 text-stone-400" />
+                <p className={css({ marginTop: '2.5', fontSize: 'xs', color: 'stone.500', display: 'flex', alignItems: 'center', gap: '1.5' })}>
+                  <AlertCircle className={css({ width: '3.5', height: '3.5', color: 'stone.400' })} />
                   {t('member.photoHint')}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="md:col-span-2">
-            <label htmlFor="birthDay" className="block text-sm font-semibold text-stone-700 mb-1.5">
+          <div className={css({ gridColumn: { base: '1', md: 'span 2' } })}>
+            <label htmlFor="birthDay" className={css({ display: 'block', fontSize: 'sm', fontWeight: 'semibold', color: 'stone.700', marginBottom: '1.5' })}>
               {t('member.solarBirthDate')}
             </label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className={css({ display: 'grid', gridTemplateColumns: '3', gap: '3' })}>
               <input
                 id="birthDay"
                 type="number"
@@ -329,10 +464,20 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             </div>
           </div>
 
-          <div className="md:col-span-2 bg-stone-50/50 p-5 rounded-2xl border border-stone-200/60 shadow-xs">
-            <div className="flex flex-col gap-4">
-              <label className="flex items-center gap-3 group">
-                <div className="relative flex items-center">
+          <div
+            className={css({
+              gridColumn: { base: '1', md: 'span 2' },
+              backgroundColor: 'rgb(255 255 255 / 0.5)',
+              padding: '5',
+              borderRadius: '2xl',
+              borderWidth: '1px',
+              borderColor: 'rgb(228 228 231 / 0.6)',
+              boxShadow: 'xs',
+            })}
+          >
+            <div className={css({ display: 'flex', flexDirection: 'column', gap: '4' })}>
+              <label className={css({ display: 'flex', alignItems: 'center', gap: '3' })}>
+                <div className={css({ position: 'relative', display: 'flex', alignItems: 'center' })}>
                   <input
                     type="checkbox"
                     checked={isDeceased}
@@ -344,13 +489,26 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                         setDeathDay('');
                       }
                     }}
-                    className="peer sr-only"
+                    className={css({ position: 'absolute', opacity: 0, width: '100%', height: '100%', cursor: 'pointer' })}
                   />
-                  <div className="size-5 border-2 border-stone-300 rounded peer-checked:bg-stone-600 peer-checked:border-stone-600 transition-colors flex items-center justify-center">
+                  <div
+                    className={css({
+                      width: '5',
+                      height: '5',
+                      borderWidth: '2',
+                      borderRadius: 'sm',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'colors 0.2s',
+                      backgroundColor: isDeceased ? 'stone.600' : 'transparent',
+                      borderColor: isDeceased ? 'stone.600' : 'stone.300',
+                    })}
+                  >
                     <motion.svg
                       initial={false}
                       animate={{ opacity: isDeceased ? 1 : 0, scale: isDeceased ? 1 : 0.5 }}
-                      className="size-3 text-white pointer-events-none"
+                      className={css({ width: '3', height: '3', color: 'white', pointerEvents: 'none' })}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -360,7 +518,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                     </motion.svg>
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-stone-700 group-hover:text-stone-900 transition-colors">{t('member.isDeceased')}</span>
+                <span className={css({ fontSize: 'sm', fontWeight: 'semibold', color: 'stone.700' })}>{t('member.isDeceased')}</span>
               </label>
             </div>
 
@@ -368,14 +526,17 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               {isDeceased && (
                 <motion.div
                   initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                  animate={{ opacity: 1, height: 'auto', marginTop: 20 }}
+                  animate={{ opacity: 1, height: 'auto', marginTop: '5' }}
                   exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                  className="overflow-hidden"
+                  className={css({ overflow: 'hidden' })}
                 >
-                  <label htmlFor="deathDay" className="block text-sm font-semibold text-stone-700 mb-1.5">
+                  <label
+                    htmlFor="deathDay"
+                    className={css({ display: 'block', fontSize: 'sm', fontWeight: 'semibold', color: 'stone.700', marginBottom: '1.5' })}
+                  >
                     {t('member.deathDate')}
                   </label>
-                  <div className="grid grid-cols-3 gap-3 pt-1">
+                  <div className={css({ display: 'grid', gridTemplateColumns: '3', gap: '3', paddingTop: '1' })}>
                     <input
                       id="deathDay"
                       type="number"
@@ -408,8 +569,8 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             </AnimatePresence>
           </div>
 
-          <div className="md:col-span-2">
-            <label htmlFor="note" className="block text-sm font-semibold text-stone-700 mb-1.5">
+          <div className={css({ gridColumn: { base: '1', md: 'span 2' } })}>
+            <label htmlFor="note" className={css({ display: 'block', fontSize: 'sm', fontWeight: 'semibold', color: 'stone.700', marginBottom: '1.5' })}>
               {t('common.note')}
             </label>
             <textarea
@@ -418,7 +579,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder={t('member.notePlaceholder')}
-              className={`${inputClasses} resize-none`}
+              className={css({}, inputClasses, { resize: 'none' })}
             />
           </div>
         </div>
@@ -430,22 +591,86 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
           initial="hidden"
           animate="show"
           transition={{ delay: 0.1 }}
-          className="bg-linear-to-br from-amber-50/80 to-stone-50/80 backdrop-blur-md p-5 sm:p-8 rounded-2xl border border-amber-200/50 shadow-sm relative overflow-hidden"
+          className={css({
+            background: 'linear-gradient(to bottom right, rgb(254 243 199 / 0.8), rgb(250 250 249 / 0.8))',
+            backdropFilter: 'blur(12px)',
+            padding: { base: '5', sm: '8' },
+            borderRadius: '2xl',
+            borderWidth: '1px',
+            borderColor: 'rgb(245 158 11 / 0.5)',
+            boxShadow: 'sm',
+            position: 'relative',
+            overflow: 'hidden',
+          })}
         >
-          <Lock className="absolute -right-6 -bottom-6 w-32 h-32 text-amber-500/5 rotate-12" />
-          <h3 className="text-lg sm:text-xl font-serif font-bold text-amber-900 mb-6 border-b border-amber-200/50 pb-4 flex items-center gap-2 relative z-10">
-            <span className="p-1.5 bg-amber-100/80 text-amber-700 rounded-lg shadow-xs">
-              <Lock className="size-4" />
+          <Lock
+            className={css({
+              position: 'absolute',
+              right: '-6',
+              bottom: '-6',
+              width: '32',
+              height: '32',
+              color: 'rgb(245 158 11 / 0.1)',
+              transform: 'rotate(12deg)',
+            })}
+          />
+          <h3
+            className={css({
+              fontSize: { base: 'lg', sm: 'xl' },
+              fontFamily: 'serif',
+              fontWeight: 'bold',
+              color: 'amber.900',
+              marginBottom: '6',
+              borderBottomWidth: '1px',
+              borderColor: 'rgb(245 158 11 / 0.5)',
+              paddingBottom: '4',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '2',
+              position: 'relative',
+              zIndex: 10,
+            })}
+          >
+            <span className={css({ padding: '1.5', backgroundColor: 'rgb(254 243 199 / 0.8)', color: 'amber.700', borderRadius: 'lg', boxShadow: 'xs' })}>
+              <Lock className={css({ width: '4', height: '4' })} />
             </span>
             <span>{t('member.privateInfo')}</span>
-            <span className="text-2xs ml-auto sm:ml-2 font-bold bg-amber-200/80 text-amber-800 uppercase tracking-wider px-2.5 py-1 rounded-md shadow-xs border border-amber-300/60">
+            <span
+              className={css({
+                fontSize: '2xs',
+                marginLeft: 'auto',
+                fontWeight: 'bold',
+                backgroundColor: 'rgb(254 243 199 / 0.8)',
+                color: 'amber.800',
+                textTransform: 'uppercase',
+                letterSpacing: 'wider',
+                paddingX: '2.5',
+                paddingY: '1',
+                borderRadius: 'md',
+                boxShadow: 'xs',
+                borderWidth: '1px',
+                borderColor: 'rgb(245 158 11 / 0.6)',
+              })}
+            >
               {t('member.adminOnly')}
             </span>
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+          <div className={css({ display: 'grid', gridTemplateColumns: { base: '1', md: '2' }, gap: '6', position: 'relative', zIndex: 10 })}>
             <div>
-              <label htmlFor="phoneNumber" className="flex items-center gap-1.5 text-sm font-semibold text-amber-900/80 mb-1.5">
-                <Phone className="size-4" /> {t('member.phone')}
+              <label
+                htmlFor="phoneNumber"
+                className={css({
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1.5',
+                  fontSize: 'sm',
+                  fontWeight: 'semibold',
+                  color: 'amber.900',
+                  marginBottom: '1.5',
+                  opacity: 0.8,
+                })}
+              >
+                <Phone className={css({ width: '4', height: '4' })} /> {t('member.phone')}
               </label>
               <input
                 id="phoneNumber"
@@ -454,18 +679,40 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 disabled={isDeceased}
                 placeholder={t('member.phonePlaceholder')}
-                className={`${inputClasses} disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed`}
+                className={css({}, inputClasses, isDeceased ? { backgroundColor: 'stone.100', color: 'stone.400', cursor: 'not-allowed' } : {})}
               />
               {isDeceased && (
-                <p className="text-xs-plus font-medium text-rose-500 mt-1.5 flex items-center gap-1">
-                  <AlertCircle className="size-3" />
+                <p
+                  className={css({
+                    fontSize: 'xs',
+                    fontWeight: 'medium',
+                    color: 'rose.500',
+                    marginTop: '1.5',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1',
+                  })}
+                >
+                  <AlertCircle className={css({ width: '3', height: '3' })} />
                   {t('member.phoneDeceasedError')}
                 </p>
               )}
             </div>
             <div>
-              <label htmlFor="occupation" className="flex items-center gap-1.5 text-sm font-semibold text-amber-900/80 mb-1.5">
-                <Briefcase className="size-4" /> {t('member.occupation')}
+              <label
+                htmlFor="occupation"
+                className={css({
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1.5',
+                  fontSize: 'sm',
+                  fontWeight: 'semibold',
+                  color: 'amber.900',
+                  marginBottom: '1.5',
+                  opacity: 0.8,
+                })}
+              >
+                <Briefcase className={css({ width: '4', height: '4' })} /> {t('member.occupation')}
               </label>
               <input
                 id="occupation"
@@ -476,9 +723,21 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                 className={inputClasses}
               />
             </div>
-            <div className="md:col-span-2">
-              <label htmlFor="currentResidence" className="flex items-center gap-1.5 text-sm font-semibold text-amber-900/80 mb-1.5">
-                <MapPin className="size-4" /> {t('member.currentResidence')}
+            <div className={css({ gridColumn: { base: '1', md: 'span 2' } })}>
+              <label
+                htmlFor="currentResidence"
+                className={css({
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1.5',
+                  fontSize: 'sm',
+                  fontWeight: 'semibold',
+                  color: 'amber.900',
+                  marginBottom: '1.5',
+                  opacity: 0.8,
+                })}
+              >
+                <MapPin className={css({ width: '4', height: '4' })} /> {t('member.currentResidence')}
               </label>
               <input
                 id="currentResidence"
@@ -499,20 +758,39 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="text-rose-700 text-sm font-medium bg-rose-50 border border-rose-200 p-4 rounded-xl flex items-start gap-3 shadow-sm"
+            className={css({
+              color: 'rose.700',
+              fontSize: 'sm',
+              fontWeight: 'medium',
+              backgroundColor: 'rose.50',
+              borderWidth: '1px',
+              borderColor: 'rose.200',
+              padding: '4',
+              borderRadius: 'xl',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '3',
+              boxShadow: 'sm',
+            })}
           >
-            <AlertCircle className="size-5 shrink-0 mt-0.5" />
+            <AlertCircle className={css({ width: '5', height: '5', flexShrink: 0, marginTop: '0.5' })} />
             <p>{error}</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <motion.div variants={formSectionVariants} initial="hidden" animate="show" transition={{ delay: 0.2 }} className="flex justify-end gap-3 sm:gap-4 pt-6">
-        <button type="button" onClick={() => (onCancel ? onCancel() : navigate({ to: '/dashboard' }))} className="btn">
+      <motion.div
+        variants={formSectionVariants}
+        initial="hidden"
+        animate="show"
+        transition={{ delay: 0.2 }}
+        className={css({ display: 'flex', justifyContent: 'flex-end', gap: { base: '3', sm: '4' }, paddingTop: '6' })}
+      >
+        <button type="button" onClick={() => (onCancel ? onCancel() : navigate({ to: '/dashboard' }))} className={button({ visual: 'outline' })}>
           {t('member.cancelButton')}
         </button>
-        <button type="submit" disabled={loading} className="btn-primary">
-          {loading && <Loader2 className="size-4 animate-spin" />}
+        <button type="submit" disabled={loading} className={button({ visual: 'primary' })}>
+          {loading && <Loader2 className={css({ width: '4', height: '4', animation: 'spin 1s linear infinite' })} />}
           {loading ? t('common.saving') : isEditing ? t('member.saveChanges') : t('member.addMember')}
         </button>
       </motion.div>
