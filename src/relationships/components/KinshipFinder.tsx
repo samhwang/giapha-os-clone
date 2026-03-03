@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeftRight, BookOpen, GitMerge, Info, Search, Sparkles, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 import type { PersonNode, RelEdge } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
@@ -13,15 +14,15 @@ interface Props {
 }
 
 const getGenderStyle = (gender: string) => {
-  if (gender === 'male') return 'bg-sky-100 text-sky-600';
-  if (gender === 'female') return 'bg-rose-100 text-rose-600';
-  return 'bg-stone-100 text-stone-600';
+  if (gender === 'male') return { backgroundColor: 'sky.100', color: 'sky.600' };
+  if (gender === 'female') return { backgroundColor: 'rose.100', color: 'rose.600' };
+  return { backgroundColor: 'stone.100', color: 'stone.600' };
 };
 
 const getAvatarBg = (gender: string) => {
-  if (gender === 'male') return 'bg-linear-to-br from-sky-400 to-sky-700';
-  if (gender === 'female') return 'bg-linear-to-br from-rose-400 to-rose-700';
-  return 'bg-linear-to-br from-stone-400 to-stone-600';
+  if (gender === 'male') return { background: 'linear-gradient(to bottom right, #38bdf8, #0369a1)' };
+  if (gender === 'female') return { background: 'linear-gradient(to bottom right, #fb7185, #be123c)' };
+  return { background: 'linear-gradient(to bottom right, #a8a29e, #57534e)' };
 };
 
 function PersonSelector({
@@ -46,34 +47,95 @@ function PersonSelector({
     [persons, disabledId, search]
   );
 
+  const isSelected = !!selected;
+
   return (
-    <div className="flex-1 min-w-0 relative">
-      <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-2">{label}</p>
+    <div className={css({ flex: 1, minWidth: 0, position: 'relative' })}>
+      <p className={css({ fontSize: 'xs', fontWeight: 'semibold', color: 'stone.400', textTransform: 'uppercase', letterSpacing: 'wider', marginBottom: '2' })}>
+        {label}
+      </p>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl border text-left transition-all ${
-          selected ? 'bg-amber-50 border-amber-300 text-stone-800' : 'bg-white/80 border-stone-200 text-stone-400 hover:border-amber-200'
-        }`}
+        className={css(
+          {
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '3',
+            paddingX: '4',
+            paddingY: '3',
+            borderRadius: '2xl',
+            textAlign: 'left',
+            transition: 'all 0.2s',
+          },
+          isSelected
+            ? { backgroundColor: 'amber.50', borderWidth: '1px', borderColor: 'amber.300', color: 'stone.800' }
+            : {
+                backgroundColor: 'rgb(255 255 255 / 0.8)',
+                borderWidth: '1px',
+                borderColor: 'stone.200',
+                color: 'stone.400',
+                _hover: { borderColor: 'amber.200' },
+              }
+        )}
       >
-        <div className="relative shrink-0">
+        <div className={css({ position: 'relative', flexShrink: 0 })}>
           <div
-            className={`size-10 rounded-full flex items-center justify-center text-sm font-bold text-white overflow-hidden ring-2 ring-white shadow-sm
-            ${selected ? getAvatarBg(selected.gender) : 'bg-stone-100 text-stone-400'}`}
+            className={css(
+              {
+                width: '10',
+                height: '10',
+                borderRadius: 'full',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 'sm',
+                fontWeight: 'bold',
+                color: 'white',
+                overflow: 'hidden',
+                ringWidth: '2px',
+                ringColor: 'white',
+                boxShadow: 'sm',
+              },
+              isSelected ? getAvatarBg(selected.gender) : { backgroundColor: 'stone.100', color: 'stone.400' }
+            )}
           >
             {selected ? <DefaultAvatar gender={selected.gender} /> : '?'}
           </div>
           {selected && (
             <div
-              className={`absolute -bottom-1 -right-1 size-4 rounded-full ring-2 ring-white shadow-xs flex items-center justify-center ${getGenderStyle(selected.gender)}`}
+              className={css(
+                {
+                  position: 'absolute',
+                  bottom: '-4px',
+                  right: '-4px',
+                  width: '4',
+                  height: '4',
+                  borderRadius: 'full',
+                  ringWidth: '2px',
+                  ringColor: 'white',
+                  boxShadow: 'xs',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                },
+                getGenderStyle(selected.gender)
+              )}
             >
-              {selected.gender === 'male' ? <MaleIcon className="size-3" /> : selected.gender === 'female' ? <FemaleIcon className="size-3" /> : null}
+              {selected.gender === 'male' ? (
+                <MaleIcon className={css({ width: '3', height: '3' })} />
+              ) : selected.gender === 'female' ? (
+                <FemaleIcon className={css({ width: '3', height: '3' })} />
+              ) : null}
             </div>
           )}
         </div>
 
-        <span className="font-semibold truncate">{selected ? selected.fullName : t('kinship.selectMember')}</span>
-        {selected?.birthYear && <span className="text-xs text-stone-400 shrink-0">({selected.birthYear})</span>}
+        <span className={css({ fontWeight: 'semibold', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' })}>
+          {selected ? selected.fullName : t('kinship.selectMember')}
+        </span>
+        {selected?.birthYear && <span className={css({ fontSize: 'xs', color: 'stone.400', flexShrink: 0 })}>({selected.birthYear})</span>}
       </button>
 
       <AnimatePresence>
@@ -83,22 +145,48 @@ function PersonSelector({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 6, scale: 0.97 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full mt-2 left-0 right-0 z-50 bg-white rounded-2xl shadow-xl border border-stone-200/60 overflow-hidden"
+            className={css({
+              position: 'absolute',
+              top: '100%',
+              marginTop: '2',
+              left: 0,
+              right: 0,
+              zIndex: 50,
+              backgroundColor: 'white',
+              borderRadius: '2xl',
+              boxShadow: 'xl',
+              borderWidth: '1px',
+              borderColor: 'rgb(228 228 231 / 0.6)',
+              overflow: 'hidden',
+            })}
           >
-            <div className="p-3 border-b border-stone-100">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400" />
+            <div className={css({ padding: '3', borderBottomWidth: '1px', borderColor: 'stone.100' })}>
+              <div className={css({ position: 'relative' })}>
+                <Search
+                  className={css({ position: 'absolute', left: '3', top: '50%', transform: 'translateY(-50%)', width: '4', height: '4', color: 'stone.400' })}
+                />
                 <input
                   placeholder={t('kinship.searchName')}
-                  className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-stone-200 focus:outline-none focus:border-amber-400"
+                  className={css({
+                    width: '100%',
+                    paddingLeft: '9',
+                    paddingRight: '4',
+                    paddingY: '2',
+                    fontSize: 'sm',
+                    borderRadius: 'xl',
+                    borderWidth: '1px',
+                    borderColor: 'stone.200',
+                    outline: 'none',
+                    _focus: { borderColor: 'amber.400' },
+                  })}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
             </div>
-            <div className="max-h-52 overflow-y-auto">
+            <div className={css({ maxHeight: '52', overflowY: 'auto' })}>
               {filtered.length === 0 ? (
-                <p className="text-center py-6 text-sm text-stone-400">{t('kinship.notFound')}</p>
+                <p className={css({ textAlign: 'center', paddingY: '6', fontSize: 'sm', color: 'stone.400' })}>{t('kinship.notFound')}</p>
               ) : (
                 filtered.map((p) => (
                   <button
@@ -109,26 +197,95 @@ function PersonSelector({
                       setOpen(false);
                       setSearch('');
                     }}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50 transition-colors text-left"
+                    className={css(
+                      {
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '3',
+                        paddingX: '4',
+                        paddingY: '2.5',
+                        transition: 'colors 0.2s',
+                        textAlign: 'left',
+                      },
+                      { _hover: { backgroundColor: 'amber.50' } }
+                    )}
                   >
-                    <div className="relative shrink-0">
+                    <div className={css({ position: 'relative', flexShrink: 0 })}>
                       <div
-                        className={`size-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden ring-1 ring-white shadow-xs
-                        ${getAvatarBg(p.gender)}`}
+                        className={css(
+                          {
+                            width: '8',
+                            height: '8',
+                            borderRadius: 'full',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: 'xs',
+                            fontWeight: 'bold',
+                            color: 'white',
+                            overflow: 'hidden',
+                            ringWidth: '1px',
+                            ringColor: 'white',
+                            boxShadow: 'xs',
+                          },
+                          getAvatarBg(p.gender)
+                        )}
                       >
                         <DefaultAvatar gender={p.gender} />
                       </div>
                       <div
-                        className={`absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full ring-1 ring-white shadow-xs flex items-center justify-center ${getGenderStyle(p.gender)}`}
+                        className={css(
+                          {
+                            position: 'absolute',
+                            bottom: '-2px',
+                            right: '-2px',
+                            width: '3.5',
+                            height: '3.5',
+                            borderRadius: 'full',
+                            ringWidth: '1px',
+                            ringColor: 'white',
+                            boxShadow: 'xs',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          },
+                          getGenderStyle(p.gender)
+                        )}
                       >
-                        {p.gender === 'male' ? <MaleIcon className="size-2.5" /> : p.gender === 'female' ? <FemaleIcon className="size-2.5" /> : null}
+                        {p.gender === 'male' ? (
+                          <MaleIcon className={css({ width: '2.5', height: '2.5' })} />
+                        ) : p.gender === 'female' ? (
+                          <FemaleIcon className={css({ width: '2.5', height: '2.5' })} />
+                        ) : null}
                       </div>
                     </div>
 
-                    <span className="text-sm font-medium text-stone-700 truncate">{p.fullName}</span>
-                    {p.birthYear && <span className="text-xs text-stone-400 ml-auto shrink-0">{p.birthYear}</span>}
+                    <span
+                      className={css({
+                        fontSize: 'sm',
+                        fontWeight: 'medium',
+                        color: 'stone.700',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      })}
+                    >
+                      {p.fullName}
+                    </span>
+                    {p.birthYear && <span className={css({ fontSize: 'xs', color: 'stone.400', marginLeft: 'auto', flexShrink: 0 })}>{p.birthYear}</span>}
                     {p.generation != null && (
-                      <span className="text-xs text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md shrink-0">
+                      <span
+                        className={css({
+                          fontSize: 'xs',
+                          color: 'emerald.600',
+                          backgroundColor: 'emerald.50',
+                          paddingX: '1.5',
+                          paddingY: '0.5',
+                          borderRadius: 'md',
+                          flexShrink: 0,
+                        })}
+                      >
                         {t('kinship.generationShort', { gen: p.generation })}
                       </span>
                     )}
@@ -171,17 +328,44 @@ export default function KinshipFinder({ persons, relationships }: Props) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-6 shadow-sm">
-        <div className="flex items-end gap-3">
+    <div className={css({ display: 'flex', flexDirection: 'column', gap: '6' })}>
+      <div
+        className={css({
+          backgroundColor: 'rgb(255 255 255 / 0.8)',
+          backdropFilter: 'blur(12px)',
+          borderWidth: '1px',
+          borderColor: 'rgb(228 228 231 / 0.6)',
+          borderRadius: '2xl',
+          padding: '6',
+          boxShadow: 'sm',
+        })}
+      >
+        <div className={css({ display: 'flex', alignItems: 'flex-end', gap: '3' })}>
           <PersonSelector label={t('kinship.memberA')} selected={personA} onSelect={setPersonA} persons={persons} disabledId={personB?.id} />
           <button
             type="button"
             onClick={swap}
             title={t('kinship.swap')}
-            className="size-10 shrink-0 mb-0.5 flex items-center justify-center rounded-xl bg-stone-100 hover:bg-amber-100 hover:text-amber-600 text-stone-500 transition-all border border-stone-200"
+            className={css(
+              {
+                width: '10',
+                height: '10',
+                flexShrink: 0,
+                marginBottom: '0.5',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 'xl',
+                backgroundColor: 'stone.100',
+                color: 'stone.500',
+                transition: 'all 0.2s',
+                borderWidth: '1px',
+                borderColor: 'stone.200',
+              },
+              { _hover: { backgroundColor: 'amber.100', color: 'amber.600' } }
+            )}
           >
-            <ArrowLeftRight className="size-4" />
+            <ArrowLeftRight className={css({ width: '4', height: '4' })} />
           </button>
           <PersonSelector label={t('kinship.memberB')} selected={personB} onSelect={setPersonB} persons={persons} disabledId={personA?.id} />
         </div>
@@ -189,12 +373,18 @@ export default function KinshipFinder({ persons, relationships }: Props) {
 
       <AnimatePresence mode="wait">
         {!personA || !personB ? (
-          <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center py-16 text-stone-400">
-            <Users className="size-12 mx-auto mb-3 opacity-30" />
-            <p className="font-medium">{t('kinship.selectTwo')}</p>
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={css({ textAlign: 'center', paddingY: '16', color: 'stone.400' })}
+          >
+            <Users className={css({ width: '12', height: '12', marginX: 'auto', marginBottom: '3', opacity: 0.3 })} />
+            <p className={css({ fontWeight: 'medium' })}>{t('kinship.selectTwo')}</p>
           </motion.div>
         ) : result === null ? (
-          <motion.div key="same" className="text-center py-8 text-stone-400">
+          <motion.div key="same" className={css({ textAlign: 'center', paddingY: '8', color: 'stone.400' })}>
             {t('kinship.selectDifferent')}
           </motion.div>
         ) : (
@@ -204,36 +394,84 @@ export default function KinshipFinder({ persons, relationships }: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35 }}
-            className="space-y-4"
+            className={css({ display: 'flex', flexDirection: 'column', gap: '4' })}
           >
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 flex items-center gap-3">
-              <Sparkles className="size-5 text-amber-500 shrink-0" />
-              <p className="text-amber-800 font-semibold">{result.description}</p>
+            <div
+              className={css({
+                backgroundColor: 'amber.50',
+                borderWidth: '1px',
+                borderColor: 'amber.200',
+                borderRadius: '2xl',
+                paddingX: '5',
+                paddingY: '4',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '3',
+              })}
+            >
+              <Sparkles className={css({ width: '5', height: '5', color: 'amber.500', flexShrink: 0 })} />
+              <p className={css({ color: 'amber.800', fontWeight: 'semibold' })}>{result.description}</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className={css({ display: 'grid', gridTemplateColumns: { base: '1', sm: '2' }, gap: '4' })}>
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white/90 border border-stone-200/60 rounded-2xl p-5 shadow-sm"
+                className={css({
+                  backgroundColor: 'rgb(255 255 255 / 0.9)',
+                  borderWidth: '1px',
+                  borderColor: 'rgb(228 228 231 / 0.6)',
+                  borderRadius: '2xl',
+                  padding: '5',
+                  boxShadow: 'sm',
+                })}
               >
-                <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">
+                <p
+                  className={css({
+                    fontSize: 'xs',
+                    fontWeight: 'semibold',
+                    textTransform: 'uppercase',
+                    letterSpacing: 'wider',
+                    color: 'stone.400',
+                    marginBottom: '3',
+                  })}
+                >
                   {t('kinship.aCallsB', { personA: personA.fullName, personB: personB.fullName })}
                 </p>
-                <p className="text-4xl font-serif font-bold text-amber-600 capitalize">{result.aCallsB}</p>
+                <p className={css({ fontSize: '4xl', fontFamily: 'serif', fontWeight: 'bold', color: 'amber.600', textTransform: 'capitalize' })}>
+                  {result.aCallsB}
+                </p>
               </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.15 }}
-                className="bg-white/90 border border-stone-200/60 rounded-2xl p-5 shadow-sm"
+                className={css({
+                  backgroundColor: 'rgb(255 255 255 / 0.9)',
+                  borderWidth: '1px',
+                  borderColor: 'rgb(228 228 231 / 0.6)',
+                  borderRadius: '2xl',
+                  padding: '5',
+                  boxShadow: 'sm',
+                })}
               >
-                <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">
+                <p
+                  className={css({
+                    fontSize: 'xs',
+                    fontWeight: 'semibold',
+                    textTransform: 'uppercase',
+                    letterSpacing: 'wider',
+                    color: 'stone.400',
+                    marginBottom: '3',
+                  })}
+                >
                   {t('kinship.bCallsA', { personA: personA.fullName, personB: personB.fullName })}
                 </p>
-                <p className="text-4xl font-serif font-bold text-amber-600 capitalize">{result.bCallsA}</p>
+                <p className={css({ fontSize: '4xl', fontFamily: 'serif', fontWeight: 'bold', color: 'amber.600', textTransform: 'capitalize' })}>
+                  {result.bCallsA}
+                </p>
               </motion.div>
             </div>
 
@@ -242,19 +480,43 @@ export default function KinshipFinder({ persons, relationships }: Props) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.25 }}
-                className="bg-stone-50 border border-stone-200/60 rounded-2xl px-6 py-5"
+                className={css({
+                  backgroundColor: 'stone.50',
+                  borderWidth: '1px',
+                  borderColor: 'rgb(228 228 231 / 0.6)',
+                  borderRadius: '2xl',
+                  paddingX: '6',
+                  paddingY: '5',
+                })}
               >
-                <div className="flex items-center gap-2 mb-4">
-                  <GitMerge className="size-4 text-stone-400" />
-                  <p className="text-xs font-semibold uppercase tracking-wider text-stone-400">{t('kinship.pathAnalysis')}</p>
+                <div className={css({ display: 'flex', alignItems: 'center', gap: '2', marginBottom: '4' })}>
+                  <GitMerge className={css({ width: '4', height: '4', color: 'stone.400' })} />
+                  <p className={css({ fontSize: 'xs', fontWeight: 'semibold', textTransform: 'uppercase', letterSpacing: 'wider', color: 'stone.400' })}>
+                    {t('kinship.pathAnalysis')}
+                  </p>
                 </div>
-                <div className="space-y-4">
+                <div className={css({ display: 'flex', flexDirection: 'column', gap: '4' })}>
                   {result.pathLabels.map((pathLabel, i) => (
-                    <div key={pathLabel} className="flex items-start gap-4">
-                      <div className="size-6 rounded-full bg-white border border-stone-200 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
-                        <span className="text-2xs font-bold text-stone-400">{i + 1}</span>
+                    <div key={pathLabel} className={css({ display: 'flex', alignItems: 'flex-start', gap: '4' })}>
+                      <div
+                        className={css({
+                          width: '6',
+                          height: '6',
+                          borderRadius: 'full',
+                          backgroundColor: 'white',
+                          borderWidth: '1px',
+                          borderColor: 'stone.200',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginTop: '0.5',
+                          boxShadow: 'sm',
+                          flexShrink: 0,
+                        })}
+                      >
+                        <span className={css({ fontSize: '2xs', fontWeight: 'bold', color: 'stone.400' })}>{i + 1}</span>
                       </div>
-                      <p className="text-sm text-stone-600 leading-relaxed pt-1">{pathLabel}</p>
+                      <p className={css({ fontSize: 'sm', color: 'stone.600', lineHeight: 'relaxed', paddingTop: '1' })}>{pathLabel}</p>
                     </div>
                   ))}
                 </div>
@@ -262,19 +524,24 @@ export default function KinshipFinder({ persons, relationships }: Props) {
             )}
 
             {(result.aCallsB.includes('/') || result.aCallsB.includes('họ hàng')) && (
-              <p className="text-xs text-stone-400 italic px-1">{t('kinship.kinshipNote')}</p>
+              <p className={css({ fontSize: 'xs', color: 'stone.400', fontStyle: 'italic', paddingX: '1' })}>{t('kinship.kinshipNote')}</p>
             )}
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="border-t border-stone-200/60 pt-6 space-y-4">
+      <div
+        className={css({ borderTopWidth: '1px', borderColor: 'rgb(228 228 231 / 0.6)', paddingTop: '6', display: 'flex', flexDirection: 'column', gap: '4' })}
+      >
         <button
           type="button"
           onClick={() => setShowGuide((v) => !v)}
-          className="flex items-center gap-2 text-sm font-semibold text-stone-500 hover:text-amber-600 transition-colors"
+          className={css(
+            { display: 'flex', alignItems: 'center', gap: '2', fontSize: 'sm', fontWeight: 'semibold', color: 'stone.500', transition: 'colors 0.2s' },
+            { _hover: { color: 'amber.600' } }
+          )}
         >
-          <BookOpen className="size-4" />
+          <BookOpen className={css({ width: '4', height: '4' })} />
           {showGuide ? t('kinship.hideGuide') : t('kinship.showGuide')}
         </button>
 
@@ -285,50 +552,102 @@ export default function KinshipFinder({ persons, relationships }: Props) {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.25 }}
-              className="overflow-hidden"
+              className={css({ overflow: 'hidden' })}
             >
-              <div className="space-y-5">
-                <div className="bg-blue-50/60 border border-blue-100 rounded-2xl p-5">
-                  <p className="text-sm font-bold text-blue-700 flex items-center gap-2 mb-3">
-                    <Info className="size-4" />
+              <div className={css({ display: 'flex', flexDirection: 'column', gap: '5' })}>
+                <div
+                  className={css({
+                    backgroundColor: 'rgb(59 130 246 / 0.1)',
+                    borderWidth: '1px',
+                    borderColor: 'rgb(59 130 246 / 0.2)',
+                    borderRadius: '2xl',
+                    padding: '5',
+                  })}
+                >
+                  <p
+                    className={css({
+                      fontSize: 'sm',
+                      fontWeight: 'bold',
+                      color: 'blue.700',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '2',
+                      marginBottom: '3',
+                    })}
+                  >
+                    <Info className={css({ width: '4', height: '4' })} />
                     {t('kinship.howItWorks')}
                   </p>
-                  <ol className="space-y-2 text-sm text-blue-800">
+                  <ol className={css({ display: 'flex', flexDirection: 'column', gap: '2', fontSize: 'sm', color: 'blue.800' })}>
                     {[1, 2, 3, 4, 5].map((step) => (
-                      <li key={step} className="flex gap-2">
-                        <span className="font-bold shrink-0">{step}.</span>
+                      <li key={step} className={css({ display: 'flex', gap: '2' })}>
+                        <span className={css({ fontWeight: 'bold', flexShrink: 0 })}>{step}.</span>
                         <Trans i18nKey={`kinship.howStep${step}`} components={{ strong: <strong /> }} />
                       </li>
                     ))}
                   </ol>
                 </div>
 
-                <div className="bg-amber-50/60 border border-amber-100 rounded-2xl p-5">
-                  <p className="text-sm font-bold text-amber-700 flex items-center gap-2 mb-2">
-                    <Info className="size-4" />
+                <div
+                  className={css({
+                    backgroundColor: 'rgb(245 158 11 / 0.1)',
+                    borderWidth: '1px',
+                    borderColor: 'rgb(245 158 11 / 0.2)',
+                    borderRadius: '2xl',
+                    padding: '5',
+                  })}
+                >
+                  <p
+                    className={css({
+                      fontSize: 'sm',
+                      fontWeight: 'bold',
+                      color: 'amber.700',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '2',
+                      marginBottom: '2',
+                    })}
+                  >
+                    <Info className={css({ width: '4', height: '4' })} />
                     {t('kinship.dataRequirements')}
                   </p>
-                  <ul className="space-y-1.5 text-sm text-amber-800">
+                  <ul className={css({ display: 'flex', flexDirection: 'column', gap: '1.5', fontSize: 'sm', color: 'amber.800' })}>
                     {[1, 2, 3].map((req) => (
-                      <li key={req} className="flex gap-2">
-                        <span className="text-amber-400 shrink-0">•</span>
+                      <li key={req} className={css({ display: 'flex', gap: '2' })}>
+                        <span className={css({ color: 'amber.400', flexShrink: 0 })}>•</span>
                         <Trans i18nKey={`kinship.dataReq${req}`} components={{ strong: <strong /> }} />
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="bg-white/80 border border-stone-200/60 rounded-2xl overflow-hidden">
-                  <div className="px-5 py-3 border-b border-stone-100 bg-stone-50/50">
-                    <p className="text-sm font-bold text-stone-600">{t('kinship.referenceTable')}</p>
+                <div
+                  className={css({
+                    backgroundColor: 'rgb(255 255 255 / 0.8)',
+                    borderWidth: '1px',
+                    borderColor: 'rgb(228 228 231 / 0.6)',
+                    borderRadius: '2xl',
+                    overflow: 'hidden',
+                  })}
+                >
+                  <div
+                    className={css({
+                      paddingX: '5',
+                      paddingY: '3',
+                      borderBottomWidth: '1px',
+                      borderColor: 'stone.100',
+                      backgroundColor: 'rgb(250 250 250 / 0.5)',
+                    })}
+                  >
+                    <p className={css({ fontSize: 'sm', fontWeight: 'bold', color: 'stone.600' })}>{t('kinship.referenceTable')}</p>
                   </div>
-                  <div className="divide-y divide-stone-100">
+                  <div className={css({ borderBottomWidth: '1px', borderColor: 'stone.100' })}>
                     {KINSHIP_TERMS.map((row) => (
-                      <div key={row.relation} className="flex items-start gap-4 px-5 py-3">
-                        <span className="text-sm font-bold text-amber-700 w-48 shrink-0">{row.relation}</span>
-                        <div className="min-w-0">
-                          <p className="text-sm text-stone-600">{row.desc}</p>
-                          <p className="text-xs text-stone-400 mt-0.5">{row.example}</p>
+                      <div key={row.relation} className={css({ display: 'flex', alignItems: 'flex-start', gap: '4', paddingX: '5', paddingY: '3' })}>
+                        <span className={css({ fontSize: 'sm', fontWeight: 'bold', color: 'amber.700', width: '12', flexShrink: 0 })}>{row.relation}</span>
+                        <div className={css({ minWidth: 0 })}>
+                          <p className={css({ fontSize: 'sm', color: 'stone.600' })}>{row.desc}</p>
+                          <p className={css({ fontSize: 'xs', color: 'stone.400', marginTop: '0.5' })}>{row.example}</p>
                         </div>
                       </div>
                     ))}

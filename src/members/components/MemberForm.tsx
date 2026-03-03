@@ -3,6 +3,7 @@ import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import { AlertCircle, Briefcase, Image as ImageIcon, Loader2, Lock, MapPin, Phone, Settings2, Trash2, User } from 'lucide-react';
 import { type SubmitEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 import type { Gender, Person } from '../../types';
 import { createPerson, updatePerson, uploadPersonAvatar } from '../server/member';
 
