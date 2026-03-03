@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
+import { css } from '../../../../styled-system/css';
 import MemberForm from '../../../members/components/MemberForm';
 
 export const Route = createFileRoute('/dashboard/members/new')({
@@ -10,17 +11,54 @@ function NewMemberPage() {
   const isAdmin = session.role === 'admin';
 
   return (
-    <div className="flex-1 w-full relative flex flex-col pb-8">
-      <div className="w-full relative z-20 py-4 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto flex items-center justify-between">
-        <h1 className="text-xl sm:text-2xl font-serif font-bold text-stone-800">Thêm Thành Viên Mới</h1>
+    <div className={css({ flex: 1, width: '100%', position: 'relative', display: 'flex', flexDirection: 'column', paddingBottom: '8' })}>
+      <div
+        className={css({
+          width: '100%',
+          position: 'relative',
+          zIndex: 20,
+          paddingY: '4',
+          paddingX: { base: '4', sm: '6', lg: '8' },
+          maxWidth: '3xl',
+          marginX: 'auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        })}
+      >
+        <h1 className={css({ fontSize: { base: 'xl', sm: '2xl' }, fontFamily: 'serif', fontWeight: 'bold', color: 'stone.800' })}>Thêm Thành Viên Mới</h1>
         <Link
           to="/dashboard"
-          className="px-4 py-2 bg-stone-100/80 text-stone-700 rounded-lg hover:bg-stone-200 hover:text-stone-900 font-medium text-sm transition-all shadow-sm"
+          className={css(
+            {
+              paddingX: '4',
+              paddingY: '2',
+              backgroundColor: 'rgb(255 255 255 / 0.8)',
+              color: 'stone.700',
+              borderRadius: 'lg',
+              fontWeight: 'medium',
+              fontSize: 'sm',
+              transition: 'all 0.2s',
+              boxShadow: 'sm',
+            },
+            { _hover: { backgroundColor: 'stone.200', color: 'stone.900' } }
+          )}
         >
           Hủy
         </Link>
       </div>
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 relative z-10 w-full flex-1">
+      <main
+        className={css({
+          maxWidth: '3xl',
+          marginX: 'auto',
+          paddingX: { base: '4', sm: '6', lg: '8' },
+          paddingY: { base: '4', sm: '6' },
+          position: 'relative',
+          zIndex: 10,
+          width: '100%',
+          flex: 1,
+        })}
+      >
         <MemberForm isAdmin={isAdmin} />
       </main>
     </div>
