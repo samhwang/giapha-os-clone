@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
+import { css } from '../../../styled-system/css';
 import config from '../../lib/config';
 import HeaderMenu from '../../ui/layout/HeaderMenu';
 
@@ -11,14 +12,34 @@ interface DashboardHeaderProps {
 
 export default function DashboardHeader({ isAdmin, userEmail, children }: DashboardHeaderProps) {
   return (
-    <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-stone-200 shadow-sm transition-all duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link to="/dashboard" className="group flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-serif font-bold text-stone-800 group-hover:text-amber-700 transition-colors">{config.siteName}</h1>
+    <header
+      className={css({
+        position: 'sticky',
+        top: 0,
+        zIndex: 30,
+        backgroundColor: 'rgb(255 255 255 / 0.8)',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid stone.200',
+        boxShadow: 'sm',
+      })}
+    >
+      <div
+        className={css({
+          maxWidth: '7xl',
+          marginX: 'auto',
+          paddingX: { base: '4', sm: '6', lg: '8' },
+          height: '4rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        })}
+      >
+        <div className={css({ display: 'flex', alignItems: 'center', gap: '4' })}>
+          <Link to="/dashboard" className={css({ display: 'flex', alignItems: 'center', gap: '2' })}>
+            <h1 className={css({ fontSize: { base: 'xl', sm: '2xl' }, fontFamily: 'serif', fontWeight: 'bold', color: 'stone.800' })}>{config.siteName}</h1>
           </Link>
         </div>
-        <div className="flex items-center gap-4">
+        <div className={css({ display: 'flex', alignItems: 'center', gap: '4' })}>
           {children}
           <HeaderMenu isAdmin={isAdmin} userEmail={userEmail} />
         </div>

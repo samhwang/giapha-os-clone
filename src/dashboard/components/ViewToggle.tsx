@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { List, ListTree, Network } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 import { useDashboard } from './DashboardContext';
 
 export type ViewMode = 'list' | 'tree' | 'mindmap';
@@ -10,13 +11,29 @@ export default function ViewToggle() {
   const { t } = useTranslation();
 
   const tabs = [
-    { id: 'list' as const, label: t('nav.list'), icon: <List className="size-4" /> },
-    { id: 'tree' as const, label: t('nav.treeView'), icon: <Network className="size-4" /> },
-    { id: 'mindmap' as const, label: 'Mindmap', icon: <ListTree className="size-4" /> },
+    { id: 'list' as const, label: t('nav.list'), icon: <List className={css({ width: '4', height: '4' })} /> },
+    { id: 'tree' as const, label: t('nav.treeView'), icon: <Network className={css({ width: '4', height: '4' })} /> },
+    { id: 'mindmap' as const, label: 'Mindmap', icon: <ListTree className={css({ width: '4', height: '4' })} /> },
   ];
 
   return (
-    <div className="flex bg-stone-200/50 p-1.5 rounded-full shadow-inner w-fit mx-auto mt-4 mb-2 relative border border-stone-200/60 backdrop-blur-sm z-10">
+    <div
+      className={css({
+        display: 'flex',
+        backgroundColor: 'rgb(228 228 231 / 0.5)',
+        padding: '1.5',
+        borderRadius: 'full',
+        boxShadow: 'inset 0 2px 4px rgb(0 0 0 / 0.06)',
+        width: 'fit-content',
+        marginX: 'auto',
+        marginTop: '4',
+        marginBottom: '2',
+        position: 'relative',
+        border: '1px solid rgb(228 228 231 / 0.6)',
+        backdropFilter: 'blur(4px)',
+        zIndex: 10,
+      })}
+    >
       {tabs.map((tab) => {
         const isActive = currentView === tab.id;
         return (
@@ -24,19 +41,40 @@ export default function ViewToggle() {
             type="button"
             key={tab.id}
             onClick={() => setView(tab.id)}
-            className={`relative px-4 sm:px-6 py-1.5 sm:py-2.5 text-sm font-semibold rounded-full transition-colors duration-300 ease-in-out z-10 flex items-center gap-2 ${
-              isActive ? 'text-stone-900' : 'text-stone-500 hover:text-stone-800'
-            }`}
+            className={css(
+              {
+                position: 'relative',
+                paddingX: { base: '4', sm: '6' },
+                paddingY: { base: '1.5', sm: '2.5' },
+                fontSize: 'sm',
+                fontWeight: 'semibold',
+                borderRadius: 'full',
+                transition: 'color 300ms ease-in-out',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '2',
+                zIndex: 10,
+              },
+              isActive ? { color: 'stone.900' } : { color: 'stone.500', _hover: { color: 'stone.800' } }
+            )}
           >
             {isActive && (
               <motion.div
                 layoutId="activeTab"
-                className="absolute inset-0 bg-white rounded-full shadow-sm border border-stone-200/60 z-[-1]"
+                className={css({
+                  position: 'absolute',
+                  inset: 0,
+                  backgroundColor: 'white',
+                  borderRadius: 'full',
+                  boxShadow: 'sm',
+                  border: '1px solid rgb(228 228 231 / 0.6)',
+                  zIndex: -10,
+                })}
                 transition={{ type: 'spring', stiffness: 450, damping: 30 }}
               />
             )}
-            <span className={`transition-colors duration-300 ${isActive ? 'text-amber-700' : 'text-stone-400'}`}>{tab.icon}</span>
-            <span className="tracking-wide">{tab.label}</span>
+            <span className={css({ transition: 'color 300ms', color: isActive ? 'amber.700' : 'stone.400' })}>{tab.icon}</span>
+            <span className={css({ letterSpacing: '0.025em' })}>{tab.label}</span>
           </button>
         );
       })}
