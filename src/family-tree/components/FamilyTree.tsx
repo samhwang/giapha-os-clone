@@ -1,4 +1,5 @@
 import { Fragment, type MouseEvent, type ReactNode, useEffect, useRef, useState } from 'react';
+import { css } from '../../../styled-system/css';
 import type { Person, Relationship } from '../../types';
 import FamilyNodeCard from './FamilyNodeCard';
 import styles from './family-tree.module.css';
@@ -93,12 +94,23 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
 
     return (
       <li key={personId}>
-        <div className="node-container inline-flex flex-col items-center">
-          <div className="flex relative z-10 bg-white rounded-2xl shadow-md border border-stone-200/80 transition-opacity">
+        <div className={css({ display: 'inline-flex', flexDirection: 'column', alignItems: 'center' })}>
+          <div
+            className={css({
+              display: 'flex',
+              position: 'relative',
+              zIndex: 10,
+              backgroundColor: 'white',
+              borderRadius: '2xl',
+              boxShadow: 'md',
+              border: '1px solid rgb(228 228 231 / 0.8)',
+              transition: 'opacity 0.2s',
+            })}
+          >
             <FamilyNodeCard person={data.person} isMainNode />
             {data.spouses.length > 0 &&
               data.spouses.map((spouseData, idx) => (
-                <div key={spouseData.person.id} className="flex relative">
+                <div key={spouseData.person.id} className={css({ display: 'flex', position: 'relative' })}>
                   <FamilyNodeCard
                     isRingVisible={idx === 0}
                     isPlusVisible={idx > 0}
@@ -122,13 +134,13 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
     );
   };
 
-  if (roots.length === 0) return <div className="text-center p-10 text-stone-500">Không tìm thấy dữ liệu.</div>;
+  if (roots.length === 0) return <div className={css({ textAlign: 'center', padding: '10', color: 'stone.500' })}>Không tìm thấy dữ liệu.</div>;
 
   return (
     <section
       aria-label="Family tree"
       ref={containerRef}
-      className={`w-full overflow-auto bg-stone-50 ${isPressed ? 'cursor-grabbing' : 'cursor-grab'}`}
+      className={css({ width: '100%', overflow: 'auto', backgroundColor: 'stone.50', cursor: isPressed ? 'grabbing' : 'grab' })}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUpOrLeave}
@@ -136,7 +148,14 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
       onClickCapture={handleClickCapture}
       onDragStart={(e) => e.preventDefault()}
     >
-      <div id="export-container" className={`w-max min-w-full mx-auto p-4 ${styles.tree} transition-opacity duration-200 ${isDragging ? 'opacity-90' : ''}`}>
+      <div
+        id="export-container"
+        className={css(
+          { width: 'max-content', minWidth: '100%', marginX: 'auto', padding: '4', transition: 'opacity 0.2s' },
+          isDragging ? { opacity: 0.9 } : {},
+          styles.tree
+        )}
+      >
         <ul>
           {roots.map((root) => (
             <Fragment key={root.id}>{renderTreeNode(root.id)}</Fragment>
