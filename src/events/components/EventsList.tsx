@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Cake, CalendarDays, Clock, Flower } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
 import type { FamilyEvent } from '../../types';
 import { computeEvents } from '../utils/eventHelpers';
@@ -35,43 +36,94 @@ function EventCard({ event, index }: { event: FamilyEvent; index: number }) {
   const isSoon = event.daysUntil <= 7;
   const { setMemberModalId } = useDashboard();
 
+  const cardStyles = isToday
+    ? { backgroundColor: 'amber.50', borderColor: 'amber.300', boxShadow: 'sm' }
+    : isBirthday
+      ? { backgroundColor: 'rgb(255 255 255 / 0.8)', borderColor: 'rgb(228 228 231 / 0.6)', _hover: { borderColor: 'rgb(191 219 254 / 0.8)' } }
+      : { backgroundColor: 'rgb(255 255 255 / 0.8)', borderColor: 'rgb(228 228 231 / 0.6)', _hover: { borderColor: 'rgb(254 202 202 / 0.8)' } };
+
+  const iconStyles = isToday
+    ? { backgroundColor: 'amber.100', color: 'amber.600' }
+    : isBirthday
+      ? { backgroundColor: 'blue.50', color: 'blue.500' }
+      : { backgroundColor: 'rose.50', color: 'rose.500' };
+
+  const badgeStyles = isToday
+    ? { backgroundColor: 'amber.400', color: 'white' }
+    : isSoon
+      ? { backgroundColor: 'red.100', color: 'red.600' }
+      : { backgroundColor: 'stone.100', color: 'stone.500' };
+
   return (
     <motion.button
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: index * 0.04 }}
       onClick={() => setMemberModalId(event.personId)}
-      className={`w-full text-left flex items-center gap-4 p-4 rounded-2xl border transition-all hover:shadow-md group ${
-        isToday
-          ? 'bg-amber-50 border-amber-300 shadow-sm'
-          : isBirthday
-            ? 'bg-white/80 border-stone-200/60 hover:border-blue-200'
-            : 'bg-white/80 border-stone-200/60 hover:border-rose-200'
-      }`}
+      className={css(
+        {
+          width: '100%',
+          textAlign: 'left',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4',
+          padding: '4',
+          borderRadius: '2xl',
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          transition: 'all 0.2s',
+        },
+        cardStyles
+      )}
     >
       <div
-        className={`shrink-0 size-11 flex items-center justify-center rounded-xl ${
-          isToday ? 'bg-amber-100 text-amber-600' : isBirthday ? 'bg-blue-50 text-blue-500' : 'bg-rose-50 text-rose-500'
-        }`}
+        className={css(
+          { flexShrink: 0, width: '11', height: '11', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'xl' },
+          iconStyles
+        )}
       >
-        {isBirthday ? <Cake className="size-5" /> : <Flower className="size-5" />}
+        {isBirthday ? <Cake className={css({ width: '5', height: '5' })} /> : <Flower className={css({ width: '5', height: '5' })} />}
       </div>
 
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-stone-800 truncate group-hover:text-amber-700 transition-colors">{event.personName}</p>
-        <p className="text-sm text-stone-500 flex items-center gap-1.5 mt-0.5">
-          <CalendarDays className="size-3.5 shrink-0" />
-          {isBirthday ? t('events.birthday') : t('events.deathAnniversary')} — <span className="font-medium text-stone-600">{event.eventDateLabel}</span>
-          {event.originYear && <span className="text-stone-400">({event.originYear})</span>}
+      <div className={css({ flex: 1, minWidth: 0 })}>
+        <p
+          className={css({
+            fontWeight: 'semibold',
+            color: 'stone.800',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            transition: 'color 0.2s',
+            _hover: { color: 'amber.700' },
+          })}
+        >
+          {event.personName}
+        </p>
+        <p className={css({ fontSize: 'sm', color: 'stone.500', display: 'flex', alignItems: 'center', gap: '1.5', marginTop: '0.5' })}>
+          <CalendarDays className={css({ width: '3.5', height: '3.5', flexShrink: 0 })} />
+          {isBirthday ? t('events.birthday') : t('events.deathAnniversary')} —{' '}
+          <span className={css({ fontWeight: '500', color: 'stone.600' })}>{event.eventDateLabel}</span>
+          {event.originYear && <span className={css({ color: 'stone.400' })}>({event.originYear})</span>}
         </p>
       </div>
 
       <div
-        className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold ${
-          isToday ? 'bg-amber-400 text-white' : isSoon ? 'bg-red-100 text-red-600' : 'bg-stone-100 text-stone-500'
-        }`}
+        className={css(
+          {
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1.5',
+            paddingX: '3',
+            paddingY: '1.5',
+            borderRadius: 'xl',
+            fontSize: 'xs',
+            fontWeight: 'bold',
+          },
+          badgeStyles
+        )}
       >
-        <Clock className="size-3" />
+        <Clock className={css({ width: '3', height: '3' })} />
         {daysUntilLabel(event.daysUntil, t)}
       </div>
     </motion.button>
@@ -93,54 +145,75 @@ export default function EventsList({ persons }: EventsListProps) {
   const soonCount = allEvents.filter((e) => e.daysUntil > 0 && e.daysUntil <= 7).length;
 
   return (
-    <div className="space-y-5">
+    <div className={css({ display: 'flex', flexDirection: 'column', gap: '5' })}>
       {(todayCount > 0 || soonCount > 0) && (
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3"
+          className={css({
+            backgroundColor: 'amber.50',
+            borderWidth: '1px',
+            borderColor: 'amber.200',
+            borderRadius: '2xl',
+            padding: '4',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '3',
+          })}
         >
-          <span className="text-2xl">🎊</span>
-          <p className="text-sm font-medium text-amber-800">
-            {todayCount > 0 && <span className="font-bold">{t('events.todayCount', { count: todayCount })}</span>}
+          <span className={css({ fontSize: '2xl' })}>🎊</span>
+          <p className={css({ fontSize: 'sm', fontWeight: '500', color: 'amber.800' })}>
+            {todayCount > 0 && <span className={css({ fontWeight: 'bold' })}>{t('events.todayCount', { count: todayCount })}</span>}
             {todayCount > 0 && soonCount > 0 && ' · '}
             {soonCount > 0 && <span>{t('events.soonCount', { count: soonCount })}</span>}
           </p>
         </motion.div>
       )}
 
-      <div className="flex gap-2">
+      <div className={css({ display: 'flex', gap: '2' })}>
         {(
           [
             { key: 'all', label: t('events.allTab') },
             { key: 'birthday', label: t('events.birthdayTab') },
             { key: 'death_anniversary', label: t('events.deathAnniversaryTab') },
           ] as const
-        ).map((tab) => (
-          <button
-            type="button"
-            key={tab.key}
-            onClick={() => setFilter(tab.key)}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-              filter === tab.key
-                ? 'bg-amber-500 text-white shadow-sm'
-                : 'bg-white/80 text-stone-600 border border-stone-200/60 hover:border-amber-200 hover:text-amber-700'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-        <span className="ml-auto text-xs text-stone-400 self-center">{t('events.yearCount', { count: filtered.length })}</span>
+        ).map((tab) => {
+          const isActive = filter === tab.key;
+          return (
+            <button
+              type="button"
+              key={tab.key}
+              onClick={() => setFilter(tab.key)}
+              className={css(
+                { paddingX: '4', paddingY: '2', borderRadius: 'xl', fontSize: 'sm', fontWeight: 'semibold', transition: 'all 0.2s' },
+                isActive
+                  ? { backgroundColor: 'amber.500', color: 'white', boxShadow: 'sm' }
+                  : {
+                      backgroundColor: 'rgb(255 255 255 / 0.8)',
+                      color: 'stone.600',
+                      borderWidth: '1px',
+                      borderColor: 'rgb(228 228 231 / 0.6)',
+                      _hover: { borderColor: 'amber.200', color: 'amber.700' },
+                    }
+              )}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+        <span className={css({ marginLeft: 'auto', fontSize: 'xs', color: 'stone.400', alignSelf: 'center' })}>
+          {t('events.yearCount', { count: filtered.length })}
+        </span>
       </div>
 
       {visible.length === 0 ? (
-        <div className="text-center py-16 text-stone-400">
-          <CalendarDays className="size-10 mx-auto mb-3 opacity-40" />
-          <p className="font-medium">{t('events.emptyTitle')}</p>
-          <p className="text-sm mt-1">{t('events.emptyDesc')}</p>
+        <div className={css({ textAlign: 'center', paddingY: '16', color: 'stone.400' })}>
+          <CalendarDays className={css({ width: '10', height: '10', marginX: 'auto', marginBottom: '3', opacity: 0.4 })} />
+          <p className={css({ fontWeight: '500' })}>{t('events.emptyTitle')}</p>
+          <p className={css({ fontSize: 'sm', marginTop: '1' })}>{t('events.emptyDesc')}</p>
         </div>
       ) : (
-        <div className="space-y-2.5">
+        <div className={css({ display: 'flex', flexDirection: 'column', gap: '2.5' })}>
           {visible.map((event, i) => (
             <EventCard key={`${event.personId}-${event.type}`} event={event} index={i} />
           ))}
@@ -151,7 +224,15 @@ export default function EventsList({ persons }: EventsListProps) {
         <button
           type="button"
           onClick={() => setShowCount((n) => n + 20)}
-          className="w-full py-3 text-sm font-semibold text-stone-500 hover:text-amber-600 transition-colors"
+          className={css({
+            width: '100%',
+            paddingY: '3',
+            fontSize: 'sm',
+            fontWeight: 'semibold',
+            color: 'stone.500',
+            transition: 'color 0.2s',
+            _hover: { color: 'amber.600' },
+          })}
         >
           {t('events.showMore', { count: upcoming.length - showCount })}
         </button>
