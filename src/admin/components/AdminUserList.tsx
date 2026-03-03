@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { type SubmitEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 import type { UserProfile, UserRole } from '../../types';
 import { changeRole, createUser, deleteUser, toggleStatus } from '../server/user';
 
@@ -95,73 +96,141 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
     }
   };
 
+  const notificationStyles =
+    notification?.type === 'success'
+      ? { backgroundColor: 'rgb(236 253 245 / 0.9)', borderColor: 'rgb(34 197 94 / 0.3)', color: 'emerald.800' }
+      : notification?.type === 'error'
+        ? { backgroundColor: 'rgb(254 242 242 / 0.9)', borderColor: 'rgb(239 68 68 / 0.3)', color: 'red.800' }
+        : { backgroundColor: 'rgb(254 243 199 / 0.9)', borderColor: 'rgb(245 158 11 / 0.3)', color: 'amber.800' };
+
+  const roleBadgeStyles = (role: string) =>
+    role === 'admin'
+      ? { backgroundColor: 'rgb(254 243 199 / 0.8)', color: 'amber.800', borderColor: 'rgb(245 158 11 / 0.3)' }
+      : { backgroundColor: 'rgb(244 244 245 / 0.8)', color: 'stone.600', borderColor: 'rgb(228 228 231 / 0.5)' };
+
+  const statusBadgeStyles = (isActive: boolean) =>
+    isActive
+      ? { backgroundColor: 'rgb(236 253 245 / 0.8)', color: 'emerald.800', borderColor: 'rgb(34 197 94 / 0.3)' }
+      : { backgroundColor: 'rgb(254 242 242 / 0.8)', color: 'red.800', borderColor: 'rgb(239 68 68 / 0.3)' };
+
   return (
-    <div className="space-y-6 relative">
+    <div className={css({ display: 'flex', flexDirection: 'column', gap: '6', position: 'relative' })}>
       <AnimatePresence>
         {notification && (
           <motion.div
             initial={{ opacity: 0, y: -20, x: '-50%' }}
             animate={{ opacity: 1, y: 0, x: '-50%' }}
             exit={{ opacity: 0, y: -20, x: '-50%' }}
-            className={`fixed top-1/2 left-1/2 z-100 px-6 py-3 rounded-xl shadow-lg border backdrop-blur-md flex items-center gap-3 min-w-[320px] max-w-[90vw] ${
-              notification.type === 'success'
-                ? 'bg-emerald-50/90 border-emerald-200 text-emerald-800'
-                : notification.type === 'error'
-                  ? 'bg-red-50/90 border-red-200 text-red-800'
-                  : 'bg-amber-50/90 border-amber-200 text-amber-800'
-            }`}
+            className={css(
+              {
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                zIndex: 100,
+                paddingX: '6',
+                paddingY: '3',
+                borderRadius: 'xl',
+                boxShadow: 'lg',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '3',
+                minWidth: '20rem',
+                maxWidth: '90vw',
+              },
+              notificationStyles
+            )}
           >
-            <p className="text-sm font-medium">{notification.message}</p>
+            <p className={css({ fontSize: 'sm', fontWeight: '500' })}>{notification.message}</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="flex justify-end">
+      <div className={css({ display: 'flex', justifyContent: 'flex-end' })}>
         <button
           type="button"
           onClick={() => setIsCreateModalOpen(true)}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl transition-colors text-sm shadow-sm"
+          className={css(
+            {
+              display: 'inlineFlex',
+              alignItems: 'center',
+              gap: '2',
+              paddingX: '5',
+              paddingY: '2.5',
+              backgroundColor: 'amber.600',
+              color: 'white',
+              fontWeight: 'semibold',
+              borderRadius: 'xl',
+              transition: 'colors 0.2s',
+              fontSize: 'sm',
+              boxShadow: 'sm',
+            },
+            { _hover: { backgroundColor: 'amber.700' } }
+          )}
         >
           {t('admin.addUser')}
         </button>
       </div>
 
-      <div className="bg-white/60 backdrop-blur-xl rounded-2xl shadow-sm border border-stone-200/60 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="uppercase tracking-wider border-b border-stone-200/60 bg-stone-50/50">
+      <div
+        className={css({
+          backgroundColor: 'rgb(255 255 255 / 0.6)',
+          backdropFilter: 'blur(24px)',
+          borderRadius: '2xl',
+          boxShadow: 'sm',
+          borderWidth: '1px',
+          borderColor: 'rgb(228 228 231 / 0.6)',
+          overflow: 'hidden',
+        })}
+      >
+        <div className={css({ overflowX: 'auto' })}>
+          <table className={css({ width: '100%', textAlign: 'left', fontSize: 'sm', whiteSpace: 'nowrap' })}>
+            <thead
+              className={css({
+                textTransform: 'uppercase',
+                letterSpacing: 'widest',
+                borderBottomWidth: '1px',
+                borderColor: 'rgb(228 228 231 / 0.6)',
+                backgroundColor: 'rgb(250 250 250 / 0.5)',
+              })}
+            >
               <tr>
-                <th className="px-6 py-4 text-stone-500 font-semibold text-xs">{t('admin.emailHeader')}</th>
-                <th className="px-6 py-4 text-stone-500 font-semibold text-xs">{t('admin.roleHeader')}</th>
-                <th className="px-6 py-4 text-stone-500 font-semibold text-xs">{t('admin.statusHeader')}</th>
-                <th className="px-6 py-4 text-stone-500 font-semibold text-xs">{t('admin.createdHeader')}</th>
-                <th className="px-6 py-4 text-stone-500 font-semibold text-xs text-right">{t('admin.actionsHeader')}</th>
+                <th className={css({ paddingX: '6', paddingY: '4', color: 'stone.500', fontWeight: 'semibold', fontSize: 'xs' })}>{t('admin.emailHeader')}</th>
+                <th className={css({ paddingX: '6', paddingY: '4', color: 'stone.500', fontWeight: 'semibold', fontSize: 'xs' })}>{t('admin.roleHeader')}</th>
+                <th className={css({ paddingX: '6', paddingY: '4', color: 'stone.500', fontWeight: 'semibold', fontSize: 'xs' })}>{t('admin.statusHeader')}</th>
+                <th className={css({ paddingX: '6', paddingY: '4', color: 'stone.500', fontWeight: 'semibold', fontSize: 'xs' })}>
+                  {t('admin.createdHeader')}
+                </th>
+                <th className={css({ paddingX: '6', paddingY: '4', color: 'stone.500', fontWeight: 'semibold', fontSize: 'xs', textAlign: 'right' })}>
+                  {t('admin.actionsHeader')}
+                </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className={css({ borderBottomWidth: '1px', borderColor: 'rgb(250 250 250 / 0.6)' })}>
               {users.map((user) => (
-                <tr key={user.id} className="hover:bg-stone-50/80 transition-colors">
-                  <td className="px-6 py-4 font-medium text-stone-900">{user.email}</td>
-                  <td className="px-6 py-4">
+                <tr key={user.id} className={css({ _hover: { backgroundColor: 'rgb(250 250 250 / 0.8)' }, transition: 'colors 0.2s' })}>
+                  <td className={css({ paddingX: '6', paddingY: '4', fontWeight: 'medium', color: 'stone.900' })}>{user.email}</td>
+                  <td className={css({ paddingX: '6', paddingY: '4' })}>
                     <span
-                      className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
-                        user.role === 'admin' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-stone-100 text-stone-600 border border-stone-200'
-                      }`}
+                      className={css(
+                        { display: 'inlineFlex', alignItems: 'center', paddingX: '2', paddingY: '1', borderRadius: 'md', fontSize: 'xs', fontWeight: 'medium' },
+                        roleBadgeStyles(user.role)
+                      )}
                     >
                       {user.role}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className={css({ paddingX: '6', paddingY: '4' })}>
                     <span
-                      className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
-                        user.isActive ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200'
-                      }`}
+                      className={css(
+                        { display: 'inlineFlex', alignItems: 'center', paddingX: '2', paddingY: '1', borderRadius: 'md', fontSize: 'xs', fontWeight: 'medium' },
+                        statusBadgeStyles(user.isActive)
+                      )}
                     >
                       {user.isActive ? t('admin.active') : t('admin.pending')}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-stone-500">{new Date(user.createdAt).toLocaleDateString('vi-VN')}</td>
-                  <td className="px-6 py-4 text-right space-x-3">
+                  <td className={css({ paddingX: '6', paddingY: '4', color: 'stone.500' })}>{new Date(user.createdAt).toLocaleDateString('vi-VN')}</td>
+                  <td className={css({ paddingX: '6', paddingY: '4', textAlign: 'right', display: 'flex', gap: '3', justifyContent: 'flex-end' })}>
                     {user.id !== currentUserId ? (
                       <>
                         {user.isActive ? (
@@ -169,7 +238,12 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                             type="button"
                             disabled={loadingId === user.id}
                             onClick={() => handleStatusChange(user.id, false)}
-                            className="text-stone-600 hover:text-stone-900 font-medium disabled:opacity-50"
+                            className={css({
+                              color: 'stone.600',
+                              _hover: { color: 'stone.900' },
+                              fontWeight: 'medium',
+                              opacity: loadingId === user.id ? 0.5 : 1,
+                            })}
                           >
                             {t('admin.lock')}
                           </button>
@@ -178,7 +252,12 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                             type="button"
                             disabled={loadingId === user.id}
                             onClick={() => handleStatusChange(user.id, true)}
-                            className="text-emerald-600 hover:text-emerald-800 font-medium disabled:opacity-50"
+                            className={css({
+                              color: 'emerald.600',
+                              _hover: { color: 'emerald.800' },
+                              fontWeight: 'medium',
+                              opacity: loadingId === user.id ? 0.5 : 1,
+                            })}
                           >
                             {t('admin.approve')}
                           </button>
@@ -188,7 +267,12 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                             type="button"
                             disabled={loadingId === user.id}
                             onClick={() => handleRoleChange(user.id, 'member')}
-                            className="text-stone-600 hover:text-stone-900 font-medium disabled:opacity-50"
+                            className={css({
+                              color: 'stone.600',
+                              _hover: { color: 'stone.900' },
+                              fontWeight: 'medium',
+                              opacity: loadingId === user.id ? 0.5 : 1,
+                            })}
                           >
                             {t('admin.demote')}
                           </button>
@@ -197,7 +281,12 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                             type="button"
                             disabled={loadingId === user.id}
                             onClick={() => handleRoleChange(user.id, 'admin')}
-                            className="text-amber-600 hover:text-amber-800 font-medium disabled:opacity-50"
+                            className={css({
+                              color: 'amber.600',
+                              _hover: { color: 'amber.800' },
+                              fontWeight: 'medium',
+                              opacity: loadingId === user.id ? 0.5 : 1,
+                            })}
                           >
                             {t('admin.promote')}
                           </button>
@@ -206,20 +295,20 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                           type="button"
                           disabled={loadingId === user.id}
                           onClick={() => handleDelete(user.id)}
-                          className="text-red-600 hover:text-red-800 font-medium disabled:opacity-50"
+                          className={css({ color: 'red.600', _hover: { color: 'red.800' }, fontWeight: 'medium', opacity: loadingId === user.id ? 0.5 : 1 })}
                         >
                           {t('common.delete')}
                         </button>
                       </>
                     ) : (
-                      <span className="text-stone-400 italic text-xs">{t('admin.you')}</span>
+                      <span className={css({ color: 'stone.400', fontStyle: 'italic', fontSize: 'xs' })}>{t('admin.you')}</span>
                     )}
                   </td>
                 </tr>
               ))}
               {users.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-stone-500">
+                  <td colSpan={5} className={css({ paddingX: '6', paddingY: '8', textAlign: 'center', color: 'stone.500' })}>
                     {t('admin.noUsers')}
                   </td>
                 </tr>
@@ -229,25 +318,72 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
         </div>
       </div>
 
-      {/* Create User Modal */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-sm">
-          <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-stone-200/60 w-full max-w-md overflow-hidden">
-            <div className="px-6 py-5 border-b border-stone-100/80 flex justify-between items-center bg-stone-50/50">
-              <h3 className="text-xl font-serif font-bold text-stone-800">{t('admin.createTitle')}</h3>
+        <div
+          className={css({
+            position: 'fixed',
+            inset: 0,
+            zIndex: 60,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '4',
+            backgroundColor: 'rgb(28 25 23 / 0.4)',
+            backdropFilter: 'blur(4px)',
+          })}
+        >
+          <div
+            className={css({
+              backgroundColor: 'rgb(255 255 255 / 0.95)',
+              backdropFilter: 'blur(24px)',
+              borderRadius: '2xl',
+              boxShadow: '2xl',
+              borderWidth: '1px',
+              borderColor: 'rgb(228 228 231 / 0.6)',
+              width: '100%',
+              maxWidth: '28rem',
+              overflow: 'hidden',
+            })}
+          >
+            <div
+              className={css({
+                paddingX: '6',
+                paddingY: '5',
+                borderBottomWidth: '1px',
+                borderColor: 'rgb(250 250 250 / 0.5)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                backgroundColor: 'rgb(250 250 250 / 0.5)',
+              })}
+            >
+              <h3 className={css({ fontSize: 'xl', fontFamily: 'serif', fontWeight: 'bold', color: 'stone.800' })}>{t('admin.createTitle')}</h3>
               <button
                 type="button"
                 onClick={() => setIsCreateModalOpen(false)}
-                className="text-stone-400 hover:text-stone-600 transition-colors size-8 flex items-center justify-center hover:bg-stone-100 rounded-full"
+                className={css({
+                  color: 'stone.400',
+                  _hover: { color: 'stone.600', backgroundColor: 'stone.100' },
+                  transition: 'colors 0.2s',
+                  width: '8',
+                  height: '8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 'full',
+                })}
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleCreateUser} className="p-6">
-              <div className="space-y-4">
+            <form onSubmit={handleCreateUser} className={css({ padding: '6' })}>
+              <div className={css({ display: 'flex', flexDirection: 'column', gap: '4' })}>
                 <div>
-                  <label htmlFor="createEmail" className="block text-sm font-medium text-stone-700 mb-1">
+                  <label
+                    htmlFor="createEmail"
+                    className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'stone.700', marginBottom: '1' })}
+                  >
                     {t('admin.emailRequired')}
                   </label>
                   <input
@@ -255,12 +391,31 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                     type="email"
                     name="email"
                     required
-                    className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 placeholder-stone-400 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                    className={css(
+                      {
+                        width: '100%',
+                        paddingX: '3',
+                        paddingY: '2',
+                        backgroundColor: 'white',
+                        color: 'stone.900',
+                        _placeholder: { color: 'stone.400' },
+                        borderWidth: '1px',
+                        borderColor: 'stone.300',
+                        borderRadius: 'lg',
+                        boxShadow: 'sm',
+                        outline: 'none',
+                        transition: 'colors 0.2s',
+                      },
+                      { _focus: { borderColor: 'amber.500', boxShadow: '0 0 0 1px var(--colors-amber-500)' } }
+                    )}
                     placeholder={t('admin.emailPlaceholder')}
                   />
                 </div>
                 <div>
-                  <label htmlFor="createPassword" className="block text-sm font-medium text-stone-700 mb-1">
+                  <label
+                    htmlFor="createPassword"
+                    className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'stone.700', marginBottom: '1' })}
+                  >
                     {t('admin.passwordRequired')}
                   </label>
                   <input
@@ -269,18 +424,52 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                     name="password"
                     required
                     minLength={8}
-                    className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 placeholder-stone-400 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                    className={css(
+                      {
+                        width: '100%',
+                        paddingX: '3',
+                        paddingY: '2',
+                        backgroundColor: 'white',
+                        color: 'stone.900',
+                        _placeholder: { color: 'stone.400' },
+                        borderWidth: '1px',
+                        borderColor: 'stone.300',
+                        borderRadius: 'lg',
+                        boxShadow: 'sm',
+                        outline: 'none',
+                        transition: 'colors 0.2s',
+                      },
+                      { _focus: { borderColor: 'amber.500', boxShadow: '0 0 0 1px var(--colors-amber-500)' } }
+                    )}
                     placeholder={t('admin.passwordHint')}
                   />
                 </div>
                 <div>
-                  <label htmlFor="createRole" className="block text-sm font-medium text-stone-700 mb-1">
+                  <label
+                    htmlFor="createRole"
+                    className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'stone.700', marginBottom: '1' })}
+                  >
                     {t('common.role')}
                   </label>
                   <select
                     id="createRole"
                     name="role"
-                    className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                    className={css(
+                      {
+                        width: '100%',
+                        paddingX: '3',
+                        paddingY: '2',
+                        backgroundColor: 'white',
+                        color: 'stone.900',
+                        borderWidth: '1px',
+                        borderColor: 'stone.300',
+                        borderRadius: 'lg',
+                        boxShadow: 'sm',
+                        outline: 'none',
+                        transition: 'colors 0.2s',
+                      },
+                      { _focus: { borderColor: 'amber.500', boxShadow: '0 0 0 1px var(--colors-amber-500)' } }
+                    )}
                     defaultValue="member"
                   >
                     <option value="member">{t('admin.roleMember')}</option>
@@ -288,13 +477,31 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="createStatus" className="block text-sm font-medium text-stone-700 mb-1">
+                  <label
+                    htmlFor="createStatus"
+                    className={css({ display: 'block', fontSize: 'sm', fontWeight: 'medium', color: 'stone.700', marginBottom: '1' })}
+                  >
                     {t('common.status')}
                   </label>
                   <select
                     id="createStatus"
                     name="is_active"
-                    className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                    className={css(
+                      {
+                        width: '100%',
+                        paddingX: '3',
+                        paddingY: '2',
+                        backgroundColor: 'white',
+                        color: 'stone.900',
+                        borderWidth: '1px',
+                        borderColor: 'stone.300',
+                        borderRadius: 'lg',
+                        boxShadow: 'sm',
+                        outline: 'none',
+                        transition: 'colors 0.2s',
+                      },
+                      { _focus: { borderColor: 'amber.500', boxShadow: '0 0 0 1px var(--colors-amber-500)' } }
+                    )}
                     defaultValue="true"
                   >
                     <option value="true">{t('admin.statusActive')}</option>
@@ -302,18 +509,39 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                   </select>
                 </div>
               </div>
-              <div className="mt-8 flex justify-end gap-3 pt-2">
+              <div className={css({ marginTop: '8', display: 'flex', justifyContent: 'flex-end', gap: '3', paddingTop: '2' })}>
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors"
+                  className={css({
+                    paddingX: '4',
+                    paddingY: '2',
+                    fontSize: 'sm',
+                    fontWeight: 'medium',
+                    color: 'stone.600',
+                    _hover: { color: 'stone.900', backgroundColor: 'stone.200' },
+                    borderRadius: 'xl',
+                    transition: 'colors 0.2s',
+                  })}
                 >
                   {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className="px-4 py-2 text-sm font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-xl transition-colors shadow-sm disabled:opacity-50"
+                  className={css({
+                    paddingX: '4',
+                    paddingY: '2',
+                    fontSize: 'sm',
+                    fontWeight: 'semibold',
+                    color: 'white',
+                    backgroundColor: 'amber.600',
+                    _hover: { backgroundColor: 'amber.700' },
+                    borderRadius: 'xl',
+                    transition: 'colors 0.2s',
+                    boxShadow: 'sm',
+                    opacity: isCreating ? 0.5 : 1,
+                  })}
                 >
                   {isCreating ? t('admin.creating') : t('admin.createUser')}
                 </button>
