@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { css } from '../../styled-system/css';
 import config from '../lib/config';
 import Footer from '../ui/layout/Footer';
 import LandingHero from '../ui/layout/LandingHero';
@@ -9,19 +10,62 @@ export const Route = createFileRoute('/')({
 
 function LandingPage() {
   return (
-    <div className="min-h-screen relative">
-      {/* Decorative background */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-size-[4rem_4rem]" />
-        <div className="absolute top-0 left-0 w-150 h-150 bg-amber-200/20 rounded-full blur-[128px] -translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute top-1/3 right-0 w-125 h-125 bg-stone-200/20 rounded-full blur-[128px] translate-x-1/2" />
+    <div className={css({ minHeight: '100vh', position: 'relative' })}>
+      <div className={css({ position: 'fixed', inset: 0, zIndex: -10 })}>
+        <div
+          className={css({
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: 'linear-gradient(to right, #80808008 1px, transparent 1px), linear-gradient(to bottom, #80808008 1px, transparent 1px)',
+            backgroundSize: '4rem 4rem',
+          })}
+        />
+        <div
+          className={css({
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '600px',
+            height: '600px',
+            backgroundColor: 'rgb(253 224 71 / 0.2)',
+            borderRadius: 'full',
+            filter: 'blur(128px)',
+            transform: 'translate(-50%, -50%)',
+          })}
+        />
+        <div
+          className={css({
+            position: 'absolute',
+            top: '33.333%',
+            right: 0,
+            width: '500px',
+            height: '500px',
+            backgroundColor: 'rgb(231 229 228 / 0.2)',
+            borderRadius: 'full',
+            filter: 'blur(128px)',
+            transform: 'translate(50%, 0)',
+          })}
+        />
       </div>
 
-      <main className="flex flex-col items-center justify-center min-h-screen px-4 py-12 sm:py-20 relative z-10">
+      <main
+        className={css({
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          paddingX: '4',
+          paddingY: '12',
+          sm: { paddingY: '20' },
+          position: 'relative',
+          zIndex: 10,
+        })}
+      >
         <LandingHero siteName={config.siteName} />
       </main>
 
-      <Footer className="bg-transparent relative z-10 border-none" />
+      <Footer className={css({ backgroundColor: 'transparent', position: 'relative', zIndex: 10, border: 'none' })} />
     </div>
   );
 }
