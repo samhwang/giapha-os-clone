@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, ExternalLink, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
 import type { Person } from '../../types';
 import { getPersonById } from '../server/member';
@@ -75,7 +76,17 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 bg-stone-900/40 backdrop-blur-sm"
+          className={css({
+            position: 'fixed',
+            inset: 0,
+            zIndex: 100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: { base: '4', sm: '6' },
+            backgroundColor: 'rgb(28 25 23 / 0.4)',
+            backdropFilter: 'blur(4px)',
+          })}
         >
           <button
             type="button"
@@ -92,45 +103,165 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-            className="relative bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col border border-stone-200"
+            className={css({
+              position: 'relative',
+              backgroundColor: 'rgb(255 255 255 / 0.95)',
+              backdropFilter: 'blur(24px)',
+              borderRadius: '3xl',
+              boxShadow: '2xl',
+              width: '100%',
+              maxWidth: '56rem',
+              maxHeight: '90vh',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              borderWidth: '1px',
+              borderStyle: 'solid',
+              borderColor: 'stone.200',
+            })}
           >
             {/* Header Actions */}
-            <div className="absolute top-4 right-4 sm:top-5 sm:right-5 z-20 flex items-center gap-2">
+            <div
+              className={css({
+                position: 'absolute',
+                top: { base: '4', sm: '5' },
+                right: { base: '4', sm: '5' },
+                zIndex: 20,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '2',
+              })}
+            >
               {isAdmin && person && (
                 <Link
                   to="/dashboard/members/$id"
                   params={{ id: person.id }}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-amber-100/80 backdrop-blur-md text-amber-800 rounded-full hover:bg-amber-200 font-semibold text-sm shadow-sm border border-amber-200/50 transition-colors"
+                  className={css(
+                    {
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1.5',
+                      paddingX: '4',
+                      paddingY: '2',
+                      backgroundColor: 'rgb(254 243 199 / 0.8)',
+                      backdropFilter: 'blur(12px)',
+                      color: 'amber.800',
+                      borderRadius: 'full',
+                      fontWeight: 'semibold',
+                      fontSize: 'sm',
+                      boxShadow: 'sm',
+                      borderWidth: '1px',
+                      borderStyle: 'solid',
+                      borderColor: 'rgb(245 158 11 / 0.5)',
+                      transition: 'colors 0.2s',
+                    },
+                    { _hover: { backgroundColor: 'amber.200' } }
+                  )}
                 >
-                  <ExternalLink className="size-4" />
-                  <span className="hidden sm:inline">{t('member.viewDetail')}</span>
+                  <ExternalLink className={css({ width: '4', height: '4' })} />
+                  <span className={css({ display: { base: 'none', sm: 'inline' } })}>{t('member.viewDetail')}</span>
                 </Link>
               )}
               <button
                 type="button"
                 onClick={closeModal}
-                className="size-10 flex items-center justify-center bg-stone-100/80 backdrop-blur-md text-stone-600 rounded-full hover:bg-stone-200 hover:text-stone-900 shadow-sm border border-stone-200/50 transition-colors"
+                className={css(
+                  {
+                    width: '10',
+                    height: '10',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'rgb(228 228 231 / 0.8)',
+                    backdropFilter: 'blur(12px)',
+                    color: 'stone.600',
+                    borderRadius: 'full',
+                    transition: 'colors 0.2s',
+                    boxShadow: 'sm',
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                    borderColor: 'rgb(228 228 231 / 0.5)',
+                  },
+                  { _hover: { backgroundColor: 'stone.200', color: 'stone.900' } }
+                )}
                 aria-label={t('common.close')}
               >
-                <X className="size-5" />
+                <X className={css({ width: '5', height: '5' })} />
               </button>
             </div>
 
             {loading ? (
-              <div className="flex-1 min-h-100 flex items-center justify-center flex-col gap-4">
-                <div className="size-10 border-4 border-amber-600 border-t-transparent rounded-full animate-spin" />
-                <p className="text-stone-500 font-medium">{t('common.loading')}</p>
+              <div
+                className={css({
+                  flex: 1,
+                  minHeight: '25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'column',
+                  gap: '4',
+                })}
+              >
+                <div
+                  className={css({
+                    width: '10',
+                    height: '10',
+                    borderWidth: '4',
+                    borderColor: 'amber.600',
+                    borderTopColor: 'transparent',
+                    borderRadius: 'full',
+                    animation: 'spin 1s linear infinite',
+                  })}
+                />
+                <p className={css({ color: 'stone.500', fontWeight: 'medium' })}>{t('common.loading')}</p>
               </div>
             ) : error ? (
-              <div className="flex-1 min-h-100 flex items-center justify-center flex-col gap-4 p-8 text-center">
-                <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-2 shadow-inner">
-                  <AlertCircle className="size-8" />
+              <div
+                className={css({
+                  flex: 1,
+                  minHeight: '25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'column',
+                  gap: '4',
+                  padding: '8',
+                  textAlign: 'center',
+                })}
+              >
+                <div
+                  className={css({
+                    width: '16',
+                    height: '16',
+                    backgroundColor: 'red.50',
+                    color: 'red.500',
+                    borderRadius: 'full',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '2',
+                    boxShadow: 'inner',
+                  })}
+                >
+                  <AlertCircle className={css({ width: '8', height: '8' })} />
                 </div>
-                <p className="text-red-600 font-medium text-lg">{error}</p>
+                <p className={css({ color: 'red.600', fontWeight: 'medium', fontSize: 'lg' })}>{error}</p>
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="mt-2 px-6 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-full transition-colors"
+                  className={css(
+                    {
+                      marginTop: '2',
+                      paddingX: '6',
+                      paddingY: '2.5',
+                      backgroundColor: 'stone.100',
+                      color: 'stone.700',
+                      fontWeight: 'semibold',
+                      borderRadius: 'full',
+                      transition: 'colors 0.2s',
+                    },
+                    { _hover: { backgroundColor: 'stone.200' } }
+                  )}
                 >
                   {t('common.close')}
                 </button>
