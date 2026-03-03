@@ -1,5 +1,6 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router';
 import { I18nextProvider, useTranslation } from 'react-i18next';
+import { css } from '../../styled-system/css';
 import { createI18nInstance, type Language } from '../i18n';
 import { getLanguage } from '../i18n/getLanguage';
 import config from '../lib/config';
@@ -31,11 +32,14 @@ export const Route = createRootRoute({
 function NotFoundComponent() {
   const { t } = useTranslation();
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl font-serif font-bold text-stone-800">404</h1>
-        <p className="mt-2 text-stone-600">{t('notFound.message')}</p>
-        <Link to="/" className="mt-4 inline-block text-amber-700 hover:text-amber-800 underline">
+    <div className={css({ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center' })}>
+      <div className={css({ textAlign: 'center' })}>
+        <h1 className={css({ fontSize: '4xl', fontFamily: 'serif', fontWeight: 'bold', color: 'stone.800' })}>404</h1>
+        <p className={css({ marginTop: '2', color: 'stone.600' })}>{t('notFound.message')}</p>
+        <Link
+          to="/"
+          className={css({ marginTop: '4', display: 'inline-block', color: 'amber.700', _hover: { color: 'amber.800' }, textDecoration: 'underline' })}
+        >
           {t('notFound.goHome')}
         </Link>
       </div>
@@ -53,7 +57,7 @@ function RootComponent() {
         <head>
           <HeadContent />
         </head>
-        <body className="font-sans antialiased relative">
+        <body className={css({ fontFamily: 'sans', fontSmoothing: 'antialiased', position: 'relative' })}>
           <Outlet />
           <Scripts />
         </body>
