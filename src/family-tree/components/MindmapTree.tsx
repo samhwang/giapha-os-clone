@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, ChevronRight, Share2 } from 'lucide-react';
 import { useState } from 'react';
+import { css } from '../../../styled-system/css';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import type { Person, Relationship } from '../../types';
@@ -39,12 +40,33 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
 
     const hasChildren = data.children.length > 0;
 
+    const avatarBg =
+      data.person.gender === 'male'
+        ? { background: 'linear-gradient(to bottom right, #38bdf8, #0369a1)' }
+        : data.person.gender === 'female'
+          ? { background: 'linear-gradient(to bottom right, #fb7185, #be123c)' }
+          : { background: 'linear-gradient(to bottom right, #a8a29e, #57534e)' };
+
+    const spouseAvatarBg =
+      data.person.gender === 'male'
+        ? { background: 'linear-gradient(to bottom right, #38bdf8, #0369a1)' }
+        : data.person.gender === 'female'
+          ? { background: 'linear-gradient(to bottom right, #fb7185, #be123c)' }
+          : { background: 'linear-gradient(to bottom right, #a8a29e, #57534e)' };
+
+    const inLawBadgeStyles =
+      data.person.gender === 'male'
+        ? { backgroundColor: 'rgb(224 242 254 / 0.5)', color: 'sky.700', borderColor: 'rgb(186 230 253 / 0.6)' }
+        : data.person.gender === 'female'
+          ? { backgroundColor: 'rgb(255 241 242 / 0.5)', color: 'rose.700', borderColor: 'rgb(253 202 202 / 0.6)' }
+          : { backgroundColor: 'rgb(244 244 245 / 0.5)', color: 'stone.700', borderColor: 'rgb(228 228 231 / 0.6)' };
+
     return (
-      <div className="relative pl-6 py-1.5">
+      <div className={css({ position: 'relative', paddingLeft: '6', paddingY: '1.5' })}>
         {level > 0 && (
           <>
             <div
-              className="absolute border-l-[1.5px] border-stone-300"
+              className={css({ position: 'absolute', borderLeftWidth: '1.5px', borderColor: 'stone.300' })}
               style={{
                 left: '0',
                 top: isLast ? '-16px' : '-16px',
@@ -53,25 +75,63 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
               }}
             />
             <div
-              className="absolute border-l-[1.5px] border-b-[1.5px] border-stone-300 rounded-bl-xl"
+              className={css({
+                position: 'absolute',
+                borderLeftWidth: '1.5px',
+                borderBottomWidth: '1.5px',
+                borderColor: 'stone.300',
+                borderBottomLeftRadius: 'xl',
+              })}
               style={{ left: '0', top: '24px', width: '24px', height: '24px' }}
             />
           </>
         )}
 
-        <div className="flex items-center gap-2 group relative z-10">
-          <div className="size-5 flex items-center justify-center shrink-0 z-10 bg-transparent">
+        <div className={css({ display: 'flex', alignItems: 'center', gap: '2', position: 'relative', zIndex: 10 })}>
+          <div
+            className={css({
+              width: '5',
+              height: '5',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              zIndex: 10,
+              backgroundColor: 'transparent',
+            })}
+          >
             {hasChildren ? (
               <button
                 type="button"
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="size-5 flex items-center justify-center bg-white hover:bg-amber-50 border border-stone-200 rounded shadow-sm text-stone-500 hover:text-amber-600 focus:outline-none transition-colors"
+                className={css({
+                  width: '5',
+                  height: '5',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'white',
+                  borderWidth: '1px',
+                  borderColor: 'stone.200',
+                  borderRadius: 'sm',
+                  boxShadow: 'sm',
+                  color: 'stone.500',
+                  _hover: { backgroundColor: 'amber.50', color: 'amber.600' },
+                  outline: 'none',
+                  transition: 'colors 0.2s',
+                })}
                 aria-label={isExpanded ? 'Thu gọn' : 'Mở rộng'}
               >
-                {isExpanded ? <ChevronDown strokeWidth={2.5} className="w-3.5 h-3.5" /> : <ChevronRight strokeWidth={2.5} className="w-3.5 h-3.5" />}
+                {isExpanded ? (
+                  <ChevronDown strokeWidth={2.5} className={css({ width: '3.5', height: '3.5' })} />
+                ) : (
+                  <ChevronRight strokeWidth={2.5} className={css({ width: '3.5', height: '3.5' })} />
+                )}
               </button>
             ) : (
-              <div className="w-1.5 h-1.5 rounded-full bg-stone-300 ring-2 ring-white" />
+              <div
+                className={css({ width: '1.5', height: '1.5', borderRadius: 'full', backgroundColor: 'stone.300', boxShadow: '2px', boxShadowColor: 'white' })}
+              />
             )}
           </div>
 
@@ -79,32 +139,103 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3 }}
-            className={`group/card relative flex flex-wrap items-center gap-2 bg-white/60 backdrop-blur-md rounded-2xl border border-stone-200/60 p-2 sm:p-2.5 shadow-sm hover:border-amber-300 hover:shadow-md hover:bg-white/90 transition-all duration-300 overflow-hidden cursor-pointer
-              ${data.person.isDeceased ? 'opacity-80 grayscale-[0.3]' : ''}`}
+            className={css(
+              {
+                position: 'relative',
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                gap: '2',
+                backgroundColor: 'rgb(255 255 255 / 0.6)',
+                backdropFilter: 'blur(12px)',
+                borderRadius: '2xl',
+                borderWidth: '1px',
+                borderColor: 'rgb(228 228 231 / 0.6)',
+                padding: '2',
+                sm: { padding: '2.5' },
+                boxShadow: 'sm',
+                _hover: { borderColor: 'amber.300', boxShadow: 'md', backgroundColor: 'rgb(255 255 255 / 0.9)' },
+                transition: 'all 0.3s',
+                overflow: 'hidden',
+                cursor: 'pointer',
+              },
+              data.person.isDeceased ? { opacity: 0.8, filter: 'grayscale(0.3)' } : {}
+            )}
             onClick={() => setMemberModalId(data.person.id)}
           >
-            <div className="flex items-center gap-2.5 relative z-10 w-full">
-              <div className="flex flex-1 items-center gap-2.5 min-w-0">
+            <div className={css({ display: 'flex', alignItems: 'center', gap: '2.5', position: 'relative', zIndex: 10, width: '100%' })}>
+              <div className={css({ display: 'flex', flex: 1, alignItems: 'center', gap: '2.5', minWidth: 0 })}>
                 {showAvatar && (
-                  <div className="relative shrink-0">
+                  <div className={css({ position: 'relative', flexShrink: 0 })}>
                     <div
-                      className={`size-10 rounded-full overflow-hidden flex items-center justify-center text-white text-xs font-bold shadow-md ring-2 ring-white transition-transform duration-300 group-hover/card:scale-105
-                      ${data.person.gender === 'male' ? 'bg-linear-to-br from-sky-400 to-sky-700' : data.person.gender === 'female' ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
+                      className={css(
+                        {
+                          width: '10',
+                          height: '10',
+                          borderRadius: 'full',
+                          overflow: 'hidden',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'white',
+                          fontSize: 'xs',
+                          fontWeight: 'bold',
+                          boxShadow: 'md',
+                          ringWidth: '2px',
+                          ringColor: 'white',
+                          transition: 'transform 0.3s',
+                        },
+                        avatarBg
+                      )}
                     >
                       {data.person.avatarUrl ? (
-                        <img src={data.person.avatarUrl} alt={data.person.fullName} className="h-full w-full object-cover" />
+                        <img src={data.person.avatarUrl} alt={data.person.fullName} className={css({ height: '100%', width: '100%', objectFit: 'cover' })} />
                       ) : (
                         <DefaultAvatar gender={data.person.gender} />
                       )}
                     </div>
                   </div>
                 )}
-                <div className="flex flex-col min-w-0 flex-1">
-                  <span className="font-bold text-sm text-stone-900 group-hover/card:text-amber-700 transition-colors leading-tight truncate mb-0.5">
+                <div className={css({ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 })}>
+                  <span
+                    className={css(
+                      {
+                        fontWeight: 'bold',
+                        fontSize: 'sm',
+                        color: 'stone.900',
+                        lineHeight: 'tight',
+                        marginBottom: '0.5',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        transition: 'colors 0.2s',
+                      },
+                      { _groupHover: { color: 'amber.700' } }
+                    )}
+                  >
                     {data.person.fullName}
                   </span>
-                  <span className="text-xs-plus text-stone-500 font-medium truncate flex items-center gap-1">
-                    <svg className="size-3 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" role="img" aria-label="Ngày">
+                  <span
+                    className={css({
+                      fontSize: 'xs-plus',
+                      color: 'stone.500',
+                      fontWeight: 'medium',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1',
+                    })}
+                  >
+                    <svg
+                      className={css({ width: '3', height: '3', color: 'stone.400', flexShrink: 0 })}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      role="img"
+                      aria-label="Ngày"
+                    >
                       <title>Ngày</title>
                       <path
                         strokeLinecap="round"
@@ -113,21 +244,30 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                       />
                     </svg>
-                    <span className="truncate">
+                    <span className={css({ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' })}>
                       {formatDisplayDate(data.person.birthYear, data.person.birthMonth, data.person.birthDay)}
                       {data.person.isDeceased && ` → ${formatDisplayDate(data.person.deathYear, data.person.deathMonth, data.person.deathDay)}`}
                     </span>
                   </span>
                   {data.person.isInLaw && (
-                    <div className="flex flex-wrap items-center gap-1 mt-1.5 shrink-0">
+                    <div className={css({ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1', marginTop: '1.5', flexShrink: 0 })}>
                       <span
-                        className={`inline-flex items-center px-1.5 py-0.5 rounded text-3xs font-bold uppercase tracking-widest shadow-xs border ${
-                          data.person.gender === 'male'
-                            ? 'bg-sky-50 text-sky-700 border-sky-200/60'
-                            : data.person.gender === 'female'
-                              ? 'bg-rose-50 text-rose-700 border-rose-200/60'
-                              : 'bg-stone-50 text-stone-700 border-stone-200/60'
-                        }`}
+                        className={css(
+                          {
+                            display: 'inlineFlex',
+                            alignItems: 'center',
+                            paddingX: '1.5',
+                            paddingY: '0.5',
+                            borderRadius: 'sm',
+                            fontSize: '3xs',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            letterSpacing: 'widest',
+                            boxShadow: 'xs',
+                            borderWidth: '1px',
+                          },
+                          inLawBadgeStyles
+                        )}
                       >
                         {data.person.gender === 'male' ? 'Rể' : data.person.gender === 'female' ? 'Dâu' : 'Khách'}
                       </span>
@@ -137,7 +277,23 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
               </div>
 
               {data.spouses.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 ml-1 pl-2 relative before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-px before:h-[70%] before:bg-stone-200/80">
+                <div
+                  className={css(
+                    { display: 'flex', flexWrap: 'wrap', gap: '1.5', marginLeft: '1', paddingLeft: '2', position: 'relative' },
+                    {
+                      _before: {
+                        content: '""',
+                        position: 'absolute',
+                        left: 0,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        width: '1px',
+                        height: '70%',
+                        backgroundColor: 'rgb(228 228 231 / 0.8)',
+                      },
+                    }
+                  )}
+                >
                   {data.spouses.map((spouseData) => (
                     <button
                       type="button"
@@ -146,23 +302,72 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
                         e.stopPropagation();
                         setMemberModalId(spouseData.person.id);
                       }}
-                      className={`flex flex-col items-center gap-1 bg-stone-50/50 hover:bg-white rounded-xl p-1.5 border border-stone-200/60 hover:border-amber-300 transition-all shadow-sm hover:shadow-md group/spouse cursor-pointer
-                        ${spouseData.person.isDeceased ? 'opacity-80 grayscale-[0.3]' : ''}`}
+                      className={css(
+                        {
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '1',
+                          backgroundColor: 'rgb(255 255 255 / 0.5)',
+                          borderRadius: 'xl',
+                          padding: '1.5',
+                          borderWidth: '1px',
+                          borderColor: 'rgb(228 228 231 / 0.6)',
+                          transition: 'all 0.2s',
+                          boxShadow: 'sm',
+                          cursor: 'pointer',
+                          _hover: { backgroundColor: 'white', borderColor: 'amber.300', boxShadow: 'md' },
+                        },
+                        spouseData.person.isDeceased ? { opacity: 0.8, filter: 'grayscale(0.3)' } : {}
+                      )}
                       title={spouseData.note || (spouseData.person.gender === 'male' ? 'Chồng' : 'Vợ')}
                     >
                       {showAvatar && (
                         <div
-                          className={`size-8 rounded-full overflow-hidden flex items-center justify-center text-white text-2xs font-bold shadow-sm ring-2 ring-white transition-transform duration-300 group-hover/spouse:scale-105
-                          ${spouseData.person.gender === 'male' ? 'bg-linear-to-br from-sky-400 to-sky-700' : spouseData.person.gender === 'female' ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
+                          className={css(
+                            {
+                              width: '8',
+                              height: '8',
+                              borderRadius: 'full',
+                              overflow: 'hidden',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: 'white',
+                              fontSize: '2xs',
+                              fontWeight: 'bold',
+                              boxShadow: 'sm',
+                              ringWidth: '2px',
+                              ringColor: 'white',
+                              transition: 'transform 0.3s',
+                            },
+                            spouseAvatarBg
+                          )}
                         >
                           {spouseData.person.avatarUrl ? (
-                            <img src={spouseData.person.avatarUrl} alt={spouseData.person.fullName} className="h-full w-full object-cover" />
+                            <img
+                              src={spouseData.person.avatarUrl}
+                              alt={spouseData.person.fullName}
+                              className={css({ height: '100%', width: '100%', objectFit: 'cover' })}
+                            />
                           ) : (
                             <DefaultAvatar gender={spouseData.person.gender} />
                           )}
                         </div>
                       )}
-                      <span className="text-2xs font-bold text-stone-600 truncate max-w-12.5 text-center">{spouseData.person.fullName.split(' ').pop()}</span>
+                      <span
+                        className={css({
+                          fontSize: '2xs',
+                          fontWeight: 'bold',
+                          color: 'stone.600',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          maxWidth: '3rem',
+                          textAlign: 'center',
+                        })}
+                      >
+                        {spouseData.person.fullName.split(' ').pop()}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -178,9 +383,9 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="origin-top relative z-0 -mt-4 pt-4 overflow-hidden"
+              className={css({ transformOrigin: 'top', position: 'relative', zIndex: 0, marginTop: '-4', paddingTop: '4', overflow: 'hidden' })}
             >
-              <div className="pb-1">
+              <div className={css({ paddingBottom: '1' })}>
                 {data.children.map((child, index) => (
                   <MindmapNode key={child.id} personId={child.id} level={level + 1} isLast={index === data.children.length - 1} />
                 ))}
@@ -194,18 +399,42 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
 
   if (roots.length === 0) {
     return (
-      <div className="p-12 text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-stone-100 mb-4">
-          <Share2 className="size-8 text-stone-300" />
+      <div className={css({ padding: '12', textAlign: 'center' })}>
+        <div
+          className={css({
+            display: 'inlineFlex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '16',
+            height: '16',
+            borderRadius: 'full',
+            backgroundColor: 'stone.100',
+            marginBottom: '4',
+          })}
+        >
+          <Share2 className={css({ width: '8', height: '8', color: 'stone.300' })} />
         </div>
-        <p className="text-stone-500 font-medium tracking-wide">Gia phả trống</p>
+        <p className={css({ color: 'stone.500', fontWeight: 'medium', letterSpacing: 'wide' })}>Gia phả trống</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-full relative p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-140px)] flex justify-start lg:justify-center overflow-x-auto">
-      <div id="export-container" className="font-sans min-w-max pb-20 p-8">
+    <div
+      className={css({
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+        padding: '4',
+        sm: { padding: '6' },
+        lg: { padding: '8', justifyContent: 'center' },
+        minHeight: 'calc(100vh - 140px)',
+        display: 'flex',
+        justifyContent: 'start',
+        overflowX: 'auto',
+      })}
+    >
+      <div id="export-container" className={css({ fontFamily: 'sans', minWidth: 'max-content', paddingBottom: '20', padding: '8' })}>
         {roots.map((root, index) => (
           <MindmapNode key={root.id} personId={root.id} level={0} isLast={index === roots.length - 1} />
         ))}

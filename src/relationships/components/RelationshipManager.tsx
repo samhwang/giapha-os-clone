@@ -2,6 +2,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { Trash2 } from 'lucide-react';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 import { DashboardContext, useDashboard } from '../../dashboard/components/DashboardContext';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import { createPerson, getPersons } from '../../members/server/member';
@@ -40,7 +41,6 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
   const [relationships, setRelationships] = useState<EnrichedRelationship[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Add Relationship State
   const [isAdding, setIsAdding] = useState(false);
   const [newRelType, setNewRelType] = useState<RelationshipType>('biological_child');
   const [newRelDirection, setNewRelDirection] = useState<'parent' | 'child' | 'spouse'>('parent');
@@ -51,14 +51,12 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
   const [selectedTargetId, setSelectedTargetId] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
 
-  // Bulk Add State
   const [isAddingBulk, setIsAddingBulk] = useState(false);
   const [selectedSpouseId, setSelectedSpouseId] = useState<string>('');
   const [bulkChildren, setBulkChildren] = useState<{ name: string; gender: 'male' | 'female' | 'other'; birthYear: string; isProcessing: boolean }[]>([
     { name: '', gender: 'male', birthYear: '', isProcessing: false },
   ]);
 
-  // Quick Add Spouse State
   const [isAddingSpouse, setIsAddingSpouse] = useState(false);
   const [newSpouseName, setNewSpouseName] = useState('');
   const [newSpouseBirthYear, setNewSpouseBirthYear] = useState('');
@@ -83,9 +81,9 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
         if (r.type === 'marriage') {
           direction = 'spouse';
         } else if (isA) {
-          direction = 'child'; // I am A (Parent), B is Child
+          direction = 'child';
         } else {
-          direction = 'parent'; // I am B (Child), A is Parent
+          direction = 'parent';
         }
 
         formattedRels.push({
@@ -97,7 +95,6 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
         });
       }
 
-      // Fetch in-laws (spouses of children)
       const childrenIds = formattedRels.filter((r) => r.direction === 'child').map((r) => r.targetPerson.id);
 
       for (const childId of childrenIds) {
@@ -143,7 +140,6 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
     fetchRelationships();
   }, [fetchRelationships]);
 
-  // Search for people
   useEffect(() => {
     if (searchTerm.length < 2) {
       setSearchResults([]);
@@ -312,11 +308,11 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
 
   const groupByType = (type: string) => relationships.filter((r) => r.direction === type);
 
-  if (loading) return <div className="text-stone-500 text-sm">{t('relationship.loadingFamily')}</div>;
+  if (loading) return <div className={css({ color: 'stone.500', fontSize: 'sm' })}>{t('relationship.loadingFamily')}</div>;
 
   return (
-    <div className="space-y-6">
-      {['parent', 'spouse', 'child', 'child_in_law'].map((group) => {
+    <div className={css({ display: 'flex', flexDirection: 'column', gap: '6' })}>
+      {(['parent', 'spouse', 'child', 'child_in_law'] as const).map((group) => {
         const items = groupByType(group);
         let title = '';
         if (group === 'parent') title = t('relationship.parents');
@@ -327,88 +323,201 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
         if (items.length === 0 && !isAdmin) return null;
 
         return (
-          <div key={group} className="border-b border-stone-100 pb-4 last:border-0">
-            <h4 className="font-bold text-stone-700 mb-3 flex justify-between items-center text-sm uppercase tracking-wide">{title}</h4>
+          <div key={group} className={css({ borderBottomWidth: '1px', borderColor: 'stone.100', paddingBottom: '4' })}>
+            <h4
+              className={css({
+                fontWeight: 'bold',
+                color: 'stone.700',
+                marginBottom: '3',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontSize: 'sm',
+                textTransform: 'uppercase',
+                letterSpacing: 'wide',
+              })}
+            >
+              {title}
+            </h4>
             {items.length > 0 ? (
-              <ul className="space-y-3">
+              <ul className={css({ display: 'flex', flexDirection: 'column', gap: '3' })}>
                 {items.map((rel) => (
-                  <li key={rel.id} className="flex items-center justify-between group">
+                  <li key={rel.id} className={css({ display: 'flex', alignItems: 'center', justifyContent: 'space-between' })}>
                     <button
                       type="button"
                       onClick={() => handlePersonClick(rel.targetPerson.id)}
-                      className="flex items-center gap-3 hover:bg-stone-100 p-2.5 -mx-2.5 rounded-xl transition-all duration-200 flex-1 text-left"
+                      className={css({
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '3',
+                        padding: '2.5',
+                        marginX: '-2.5',
+                        borderRadius: 'xl',
+                        transition: 'all 0.2s',
+                        flex: 1,
+                        textAlign: 'left',
+                        _hover: { backgroundColor: 'stone.100' },
+                      })}
                     >
                       <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center text-xs text-white overflow-hidden
-                            ${rel.targetPerson.gender === 'male' ? 'bg-sky-700' : rel.targetPerson.gender === 'female' ? 'bg-rose-700' : 'bg-stone-500'}`}
+                        className={css(
+                          {
+                            width: '8',
+                            height: '8',
+                            borderRadius: 'full',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: 'xs',
+                            color: 'white',
+                            overflow: 'hidden',
+                            flexShrink: 0,
+                          },
+                          rel.targetPerson.gender === 'male'
+                            ? { backgroundColor: 'sky.700' }
+                            : rel.targetPerson.gender === 'female'
+                              ? { backgroundColor: 'rose.700' }
+                              : { backgroundColor: 'stone.500' }
+                        )}
                       >
                         {rel.targetPerson.avatarUrl ? (
-                          <img src={rel.targetPerson.avatarUrl} alt={rel.targetPerson.fullName} className="h-full w-full object-cover" />
+                          <img
+                            src={rel.targetPerson.avatarUrl}
+                            alt={rel.targetPerson.fullName}
+                            className={css({ height: '100%', width: '100%', objectFit: 'cover' })}
+                          />
                         ) : (
                           <DefaultAvatar gender={rel.targetPerson.gender} />
                         )}
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-stone-900 font-medium text-sm">{rel.targetPerson.fullName}</span>
-                        {rel.note && <span className="text-xs text-amber-600 font-medium italic mt-0.5">({rel.note})</span>}
-                        {rel.type === 'adopted_child' && <span className="text-xs text-stone-400 italic mt-0.5">({t('relationship.adopted')})</span>}
+                      <div className={css({ display: 'flex', flexDirection: 'column' })}>
+                        <span className={css({ color: 'stone.900', fontWeight: 'medium', fontSize: 'sm' })}>{rel.targetPerson.fullName}</span>
+                        {rel.note && (
+                          <span className={css({ fontSize: 'xs', color: 'amber.600', fontWeight: 'medium', fontStyle: 'italic', marginTop: '0.5' })}>
+                            ({rel.note})
+                          </span>
+                        )}
+                        {rel.type === 'adopted_child' && (
+                          <span className={css({ fontSize: 'xs', color: 'stone.400', fontStyle: 'italic', marginTop: '0.5' })}>
+                            ({t('relationship.adopted')})
+                          </span>
+                        )}
                       </div>
                     </button>
                     {isAdmin && rel.direction !== 'child_in_law' && (
                       <button
                         type="button"
                         onClick={() => handleDelete(rel.id)}
-                        className="text-stone-300 hover:text-red-500 hover:bg-red-50 p-2 sm:p-2.5 rounded-lg transition-colors flex items-center justify-center ml-2"
+                        className={css(
+                          { color: 'stone.300', _hover: { color: 'red.500', backgroundColor: 'red.50' } },
+                          { _hover: { backgroundColor: 'red.50' } },
+                          {
+                            padding: '2.5',
+                            borderRadius: 'lg',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginLeft: '2',
+                            transition: 'colors 0.2s',
+                          }
+                        )}
                         title={t('relationship.deleteRelationship')}
                         aria-label={t('relationship.deleteRelationship')}
                       >
-                        <Trash2 className="size-4" />
+                        <Trash2 className={css({ width: '4', height: '4' })} />
                       </button>
                     )}
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-xs text-stone-400 italic">{t('relationship.noInfo')}</p>
+              <p className={css({ fontSize: 'xs', color: 'stone.400', fontStyle: 'italic' })}>{t('relationship.noInfo')}</p>
             )}
           </div>
         );
       })}
 
-      {/* Add Buttons (Admin) */}
       {isAdmin && !isAdding && !isAddingBulk && !isAddingSpouse && (
-        <div className="flex flex-col sm:flex-row gap-3 mt-4">
+        <div className={css({ display: 'flex', flexDirection: { base: 'column', sm: 'row' }, gap: '3', marginTop: '4' })}>
           <button
             type="button"
             onClick={() => setIsAddingBulk(true)}
-            className="flex-1 py-3 border-2 border-dashed border-stone-200 bg-stone-50/50 hover:bg-stone-50 rounded-xl sm:rounded-2xl text-stone-500 font-medium text-sm hover:border-sky-400 hover:text-sky-700 transition-all duration-200"
+            className={css({
+              flex: 1,
+              paddingY: '3',
+              borderWidth: '2',
+              borderStyle: 'dashed',
+              borderColor: 'stone.200',
+              backgroundColor: 'rgb(255 255 255 / 0.5)',
+              borderRadius: { base: 'xl', sm: '2xl' },
+              color: 'stone.500',
+              fontWeight: 'medium',
+              fontSize: 'sm',
+              transition: 'all 0.2s',
+              _hover: { borderColor: 'sky.400', color: 'sky.700', backgroundColor: 'stone.50' },
+            })}
           >
             {t('relationship.addChild')}
           </button>
           <button
             type="button"
             onClick={() => setIsAddingSpouse(true)}
-            className="flex-1 py-3 border-2 border-dashed border-stone-200 bg-stone-50/50 hover:bg-stone-50 rounded-xl sm:rounded-2xl text-stone-500 font-medium text-sm hover:border-rose-400 hover:text-rose-700 transition-all duration-200"
+            className={css({
+              flex: 1,
+              paddingY: '3',
+              borderWidth: '2',
+              borderStyle: 'dashed',
+              borderColor: 'stone.200',
+              backgroundColor: 'rgb(255 255 255 / 0.5)',
+              borderRadius: { base: 'xl', sm: '2xl' },
+              color: 'stone.500',
+              fontWeight: 'medium',
+              fontSize: 'sm',
+              transition: 'all 0.2s',
+              _hover: { borderColor: 'rose.400', color: 'rose.700', backgroundColor: 'stone.50' },
+            })}
           >
             {t('relationship.addSpouse')}
           </button>
           <button
             type="button"
             onClick={() => setIsAdding(true)}
-            className="flex-1 py-3 border-2 border-dashed border-stone-200 bg-stone-50/50 hover:bg-stone-50 rounded-xl sm:rounded-2xl text-stone-500 font-medium text-sm hover:border-amber-400 hover:text-amber-700 transition-all duration-200"
+            className={css({
+              flex: 1,
+              paddingY: '3',
+              borderWidth: '2',
+              borderStyle: 'dashed',
+              borderColor: 'stone.200',
+              backgroundColor: 'rgb(255 255 255 / 0.5)',
+              borderRadius: { base: 'xl', sm: '2xl' },
+              color: 'stone.500',
+              fontWeight: 'medium',
+              fontSize: 'sm',
+              transition: 'all 0.2s',
+              _hover: { borderColor: 'amber.400', color: 'amber.700', backgroundColor: 'stone.50' },
+            })}
           >
             {t('relationship.addRelationship')}
           </button>
         </div>
       )}
 
-      {/* Add Relationship Form */}
       {isAdmin && isAdding && (
-        <div className="mt-4 bg-stone-50/50 p-4 sm:p-5 rounded-xl border border-stone-200 shadow-sm">
-          <h4 className="font-bold text-stone-800 mb-3 text-sm">{t('relationship.addNewRelationship')}</h4>
-          <div className="space-y-3">
+        <div
+          className={css({
+            marginTop: '4',
+            backgroundColor: 'rgb(255 255 255 / 0.5)',
+            padding: { base: '4', sm: '5' },
+            borderRadius: 'xl',
+            borderWidth: '1px',
+            borderColor: 'stone.200',
+            boxShadow: 'sm',
+          })}
+        >
+          <h4 className={css({ fontWeight: 'bold', color: 'stone.800', marginBottom: '3', fontSize: 'sm' })}>{t('relationship.addNewRelationship')}</h4>
+          <div className={css({ display: 'flex', flexDirection: 'column', gap: '3' })}>
             <div>
-              <label htmlFor="relNote" className="block text-xs font-medium text-stone-500 mb-1">
+              <label htmlFor="relNote" className={css({ display: 'block', fontSize: 'xs', fontWeight: 'medium', color: 'stone.500', marginBottom: '1' })}>
                 {t('relationship.noteLabel')}
               </label>
               <input
@@ -417,18 +526,46 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 placeholder={t('relationship.notePlaceholder')}
                 value={newRelNote}
                 onChange={(e) => setNewRelNote(e.target.value)}
-                className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 sm:p-2.5 border mb-3 transition-colors"
+                className={css({
+                  backgroundColor: 'white',
+                  color: 'stone.900',
+                  _placeholder: { color: 'stone.400' },
+                  display: 'block',
+                  width: '100%',
+                  fontSize: 'sm',
+                  borderRadius: { base: 'md', sm: 'lg' },
+                  borderWidth: '1px',
+                  borderColor: 'stone.300',
+                  boxShadow: 'sm',
+                  _focus: { borderColor: 'amber.500' },
+                  padding: { base: '2', sm: '2.5' },
+                  marginBottom: '3',
+                  transition: 'colors 0.2s',
+                })}
               />
             </div>
             <div>
-              <label htmlFor="relDirection" className="block text-xs font-medium text-stone-500 mb-1">
+              <label htmlFor="relDirection" className={css({ display: 'block', fontSize: 'xs', fontWeight: 'medium', color: 'stone.500', marginBottom: '1' })}>
                 {t('relationship.typeLabel')}
               </label>
               <select
                 id="relDirection"
                 value={newRelDirection}
                 onChange={(e) => setNewRelDirection(e.target.value as 'parent' | 'child' | 'spouse')}
-                className="bg-white text-stone-900 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 sm:p-2.5 border transition-colors"
+                className={css({
+                  backgroundColor: 'white',
+                  color: 'stone.900',
+                  display: 'block',
+                  width: '100%',
+                  fontSize: 'sm',
+                  borderRadius: { base: 'md', sm: 'lg' },
+                  borderWidth: '1px',
+                  borderColor: 'stone.300',
+                  boxShadow: 'sm',
+                  _focus: { borderColor: 'amber.500' },
+                  padding: { base: '2', sm: '2.5' },
+                  transition: 'colors 0.2s',
+                })}
               >
                 <option value="parent">{t('relationship.typeChild')}</option>
                 <option value="spouse">{t('relationship.typeSpouse')}</option>
@@ -438,14 +575,27 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
 
             {(newRelDirection === 'child' || newRelDirection === 'parent') && (
               <div>
-                <label htmlFor="relType" className="block text-xs font-medium text-stone-500 mb-1">
+                <label htmlFor="relType" className={css({ display: 'block', fontSize: 'xs', fontWeight: 'medium', color: 'stone.500', marginBottom: '1' })}>
                   {t('relationship.detailLabel')}
                 </label>
                 <select
                   id="relType"
                   value={newRelType}
                   onChange={(e) => setNewRelType(e.target.value as RelationshipType)}
-                  className="bg-white text-stone-900 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 sm:p-2.5 border transition-colors"
+                  className={css({
+                    backgroundColor: 'white',
+                    color: 'stone.900',
+                    display: 'block',
+                    width: '100%',
+                    fontSize: 'sm',
+                    borderRadius: { base: 'md', sm: 'lg' },
+                    borderWidth: '1px',
+                    borderColor: 'stone.300',
+                    boxShadow: 'sm',
+                    _focus: { borderColor: 'amber.500' },
+                    padding: { base: '2', sm: '2.5' },
+                    transition: 'colors 0.2s',
+                  })}
                 >
                   <option value="biological_child">{t('relationship.biological')}</option>
                   <option value="adopted_child">{t('relationship.adopted')}</option>
@@ -454,7 +604,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
             )}
 
             <div>
-              <label htmlFor="relSearch" className="block text-xs font-medium text-stone-500 mb-1">
+              <label htmlFor="relSearch" className={css({ display: 'block', fontSize: 'xs', fontWeight: 'medium', color: 'stone.500', marginBottom: '1' })}>
                 {t('relationship.searchPerson')}
               </label>
               <input
@@ -463,11 +613,52 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 placeholder={t('relationship.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 sm:p-2.5 border transition-colors"
+                className={css({
+                  backgroundColor: 'white',
+                  color: 'stone.900',
+                  _placeholder: { color: 'stone.400' },
+                  display: 'block',
+                  width: '100%',
+                  fontSize: 'sm',
+                  borderRadius: { base: 'md', sm: 'lg' },
+                  borderWidth: '1px',
+                  borderColor: 'stone.300',
+                  boxShadow: 'sm',
+                  _focus: { borderColor: 'amber.500' },
+                  padding: { base: '2', sm: '2.5' },
+                  transition: 'colors 0.2s',
+                })}
               />
               {searchResults.length > 0 && (
-                <div className="mt-2 bg-white border border-stone-200 rounded-md shadow-lg max-h-62.5 overflow-y-auto">
-                  <div className="px-3 py-1.5 bg-stone-100 text-2xs font-bold text-stone-500 uppercase tracking-wide border-b border-stone-200 sticky top-0 z-10">
+                <div
+                  className={css({
+                    marginTop: '2',
+                    backgroundColor: 'white',
+                    borderWidth: '1px',
+                    borderColor: 'stone.200',
+                    borderRadius: 'md',
+                    boxShadow: 'lg',
+                    maxHeight: '10rem',
+                    overflowY: 'auto',
+                  })}
+                >
+                  <div
+                    className={css({
+                      paddingX: '3',
+                      paddingY: '1.5',
+                      backgroundColor: 'stone.100',
+                      fontSize: '2xs',
+                      fontWeight: 'bold',
+                      color: 'stone.500',
+                      textTransform: 'uppercase',
+                      letterSpacing: 'wide',
+                      borderBottomWidth: '1px',
+                      borderColor: 'stone.200',
+                      position: 'sticky',
+                      top: 0,
+                      zIndex: 10,
+                    })}
+                  >
                     {t('relationship.searchResults')}
                   </div>
                   {searchResults.map((p) => (
@@ -479,31 +670,74 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                         setSearchTerm(p.fullName);
                         setSearchResults([]);
                       }}
-                      className="w-full px-3 py-2 hover:bg-amber-50 text-sm flex items-center justify-between border-b border-stone-100 last:border-0"
+                      className={css({
+                        width: '100%',
+                        paddingX: '3',
+                        paddingY: '2',
+                        fontSize: 'sm',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        borderBottomWidth: '1px',
+                        borderColor: 'stone.100',
+                        _hover: { backgroundColor: 'amber.50' },
+                      })}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className={css({ display: 'flex', alignItems: 'center', gap: '2' })}>
                         <span
-                          className={`flex items-center justify-center text-[8px] font-bold size-3 rounded-full text-white shrink-0
-                               ${p.gender === 'male' ? 'bg-sky-500' : p.gender === 'female' ? 'bg-rose-500' : 'bg-stone-400'}`}
+                          className={css(
+                            {
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '3xs',
+                              fontWeight: 'bold',
+                              width: '3',
+                              height: '3',
+                              borderRadius: 'full',
+                              color: 'white',
+                              flexShrink: 0,
+                            },
+                            p.gender === 'male'
+                              ? { backgroundColor: 'sky.500' }
+                              : p.gender === 'female'
+                                ? { backgroundColor: 'rose.500' }
+                                : { backgroundColor: 'stone.400' }
+                          )}
                         >
                           {p.gender === 'male' ? '♂' : p.gender === 'female' ? '♀' : '?'}
                         </span>
-                        <span className="font-medium text-stone-800">{p.fullName}</span>
+                        <span className={css({ fontWeight: 'medium', color: 'stone.800' })}>{p.fullName}</span>
                       </div>
-                      <span className="text-2xs text-stone-400">{formatDisplayDate(p.birthYear, p.birthMonth, p.birthDay, t('common.unknown'))}</span>
+                      <span className={css({ fontSize: '2xs', color: 'stone.400' })}>
+                        {formatDisplayDate(p.birthYear, p.birthMonth, p.birthDay, t('common.unknown'))}
+                      </span>
                     </button>
                   ))}
                 </div>
               )}
-              {selectedTargetId && <p className="text-xs text-green-600 mt-1">{t('relationship.selected', { name: searchTerm })}</p>}
+              {selectedTargetId && (
+                <p className={css({ fontSize: 'xs', color: 'green.600', marginTop: '1' })}>{t('relationship.selected', { name: searchTerm })}</p>
+              )}
             </div>
 
-            <div className="flex gap-2 pt-2">
+            <div className={css({ display: 'flex', gap: '2', paddingTop: '2' })}>
               <button
                 type="button"
                 onClick={handleAddRelationship}
                 disabled={!selectedTargetId || processing}
-                className="flex-1 bg-amber-700 text-white py-2 sm:py-2.5 rounded-md sm:rounded-lg text-sm font-medium hover:bg-amber-800 disabled:opacity-50 transition-colors"
+                className={css({
+                  flex: 1,
+                  backgroundColor: 'amber.700',
+                  color: 'white',
+                  paddingY: { base: '2', sm: '2.5' },
+                  borderRadius: { base: 'md', sm: 'lg' },
+                  fontSize: 'sm',
+                  fontWeight: 'medium',
+                  _hover: { backgroundColor: 'amber.800' },
+                  _disabled: { opacity: 0.5 },
+                  transition: 'colors 0.2s',
+                })}
               >
                 {processing ? t('common.saving') : t('common.save')}
               </button>
@@ -515,7 +749,18 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                   setSearchTerm('');
                   setNewRelNote('');
                 }}
-                className="px-4 py-2 sm:py-2.5 bg-white border border-stone-300 text-stone-700 rounded-md sm:rounded-lg text-sm hover:bg-stone-50 transition-colors"
+                className={css({
+                  paddingX: '4',
+                  paddingY: { base: '2', sm: '2.5' },
+                  backgroundColor: 'white',
+                  borderWidth: '1px',
+                  borderColor: 'stone.300',
+                  color: 'stone.700',
+                  borderRadius: { base: 'md', sm: 'lg' },
+                  fontSize: 'sm',
+                  _hover: { backgroundColor: 'stone.50' },
+                  transition: 'colors 0.2s',
+                })}
               >
                 {t('common.cancel')}
               </button>
@@ -524,20 +769,41 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
         </div>
       )}
 
-      {/* Bulk Add Children Form */}
       {isAdmin && isAddingBulk && (
-        <div className="mt-4 bg-sky-50/50 p-4 sm:p-5 rounded-xl border border-sky-200 shadow-sm">
-          <h4 className="font-bold text-sky-800 mb-3 text-sm">{t('relationship.bulkAddChildren')}</h4>
-          <div className="space-y-4">
+        <div
+          className={css({
+            marginTop: '4',
+            backgroundColor: 'rgb(224 242 254 / 0.5)',
+            padding: { base: '4', sm: '5' },
+            borderRadius: 'xl',
+            borderWidth: '1px',
+            borderColor: 'sky.200',
+            boxShadow: 'sm',
+          })}
+        >
+          <h4 className={css({ fontWeight: 'bold', color: 'sky.800', marginBottom: '3', fontSize: 'sm' })}>{t('relationship.bulkAddChildren')}</h4>
+          <div className={css({ display: 'flex', flexDirection: 'column', gap: '4' })}>
             <div>
-              <label htmlFor="bulkSpouse" className="block text-xs font-medium text-stone-500 mb-1">
+              <label htmlFor="bulkSpouse" className={css({ display: 'block', fontSize: 'xs', fontWeight: 'medium', color: 'stone.500', marginBottom: '1' })}>
                 {t('relationship.selectOtherParent')}
               </label>
               <select
                 id="bulkSpouse"
                 value={selectedSpouseId}
                 onChange={(e) => setSelectedSpouseId(e.target.value)}
-                className="flex-1 bg-white text-stone-900 text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2 sm:p-2.5 border transition-colors"
+                className={css({
+                  flex: 1,
+                  backgroundColor: 'white',
+                  color: 'stone.900',
+                  fontSize: 'sm',
+                  borderRadius: { base: 'md', sm: 'lg' },
+                  borderWidth: '1px',
+                  borderColor: 'stone.300',
+                  boxShadow: 'sm',
+                  _focus: { borderColor: 'sky.500' },
+                  padding: { base: '2', sm: '2.5' },
+                  transition: 'colors 0.2s',
+                })}
               >
                 <option value="unknown">{t('relationship.unknownParent')}</option>
                 {groupByType('spouse').map((rel) => (
@@ -548,12 +814,14 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
               </select>
             </div>
 
-            <div className="space-y-2">
-              <span className="block text-xs font-medium text-stone-500 mb-1">{t('relationship.childrenList')}</span>
+            <div className={css({ display: 'flex', flexDirection: 'column', gap: '2' })}>
+              <span className={css({ display: 'block', fontSize: 'xs', fontWeight: 'medium', color: 'stone.500', marginBottom: '1' })}>
+                {t('relationship.childrenList')}
+              </span>
+              {/* biome-ignore lint:suspicious/noArrayIndexKey */}
               {bulkChildren.map((child, index) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: dynamic form rows without stable IDs
-                <div key={index} className="flex gap-2 items-center">
-                  <span className="text-stone-400 text-xs w-4">{index + 1}.</span>
+                <div key={index} className={css({ display: 'flex', gap: '2', alignItems: 'center' })}>
+                  <span className={css({ color: 'stone.400', fontSize: 'xs', width: '4' })}>{index + 1}.</span>
                   <input
                     type="text"
                     placeholder={t('relationship.fullNamePlaceholder')}
@@ -563,7 +831,20 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                       newBulk[index].name = e.target.value;
                       setBulkChildren(newBulk);
                     }}
-                    className="flex-2 bg-white text-stone-900 placeholder-stone-400 text-sm rounded-md border-stone-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2 border"
+                    className={css({
+                      flex: 2,
+                      backgroundColor: 'white',
+                      color: 'stone.900',
+                      _placeholder: { color: 'stone.400' },
+                      fontSize: 'sm',
+                      borderRadius: 'md',
+                      borderWidth: '1px',
+                      borderColor: 'stone.300',
+                      boxShadow: 'sm',
+                      _focus: { borderColor: 'sky.500' },
+                      padding: '2',
+                      border: '1px',
+                    })}
                   />
                   <select
                     value={child.gender}
@@ -572,7 +853,19 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                       newBulk[index].gender = e.target.value as 'male' | 'female' | 'other';
                       setBulkChildren(newBulk);
                     }}
-                    className="flex-1 bg-white text-stone-900 text-sm rounded-md border-stone-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2 border"
+                    className={css({
+                      flex: 1,
+                      backgroundColor: 'white',
+                      color: 'stone.900',
+                      fontSize: 'sm',
+                      borderRadius: 'md',
+                      borderWidth: '1px',
+                      borderColor: 'stone.300',
+                      boxShadow: 'sm',
+                      _focus: { borderColor: 'sky.500' },
+                      padding: '2',
+                      border: '1px',
+                    })}
                   >
                     <option value="male">{t('common.male')}</option>
                     <option value="female">{t('common.female')}</option>
@@ -587,7 +880,21 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                       newBulk[index].birthYear = e.target.value;
                       setBulkChildren(newBulk);
                     }}
-                    className="flex-1 bg-white text-stone-900 placeholder-stone-400 text-sm rounded-md border-stone-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2 border w-24"
+                    className={css({
+                      flex: 1,
+                      backgroundColor: 'white',
+                      color: 'stone.900',
+                      _placeholder: { color: 'stone.400' },
+                      fontSize: 'sm',
+                      borderRadius: 'md',
+                      borderWidth: '1px',
+                      borderColor: 'stone.300',
+                      boxShadow: 'sm',
+                      _focus: { borderColor: 'sky.500' },
+                      padding: '2',
+                      border: '1px',
+                      width: '6rem',
+                    })}
                   />
                   <button
                     type="button"
@@ -598,7 +905,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                       }
                       setBulkChildren(newBulk);
                     }}
-                    className="text-stone-400 hover:text-red-500 p-2"
+                    className={css({ color: 'stone.400', _hover: { color: 'red.500' }, padding: '2' })}
                   >
                     ✕
                   </button>
@@ -609,18 +916,29 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 onClick={() => {
                   setBulkChildren([...bulkChildren, { name: '', gender: 'male', birthYear: '', isProcessing: false }]);
                 }}
-                className="text-sky-600 text-xs font-semibold hover:text-sky-800 mt-2 px-6"
+                className={css({ color: 'sky.600', fontSize: 'xs', fontWeight: 'semibold', _hover: { color: 'sky.800' }, marginTop: '2', paddingX: '6' })}
               >
                 {t('relationship.addRow')}
               </button>
             </div>
 
-            <div className="flex gap-2 pt-4 border-t border-stone-200">
+            <div className={css({ display: 'flex', gap: '2', paddingTop: '4', borderTopWidth: '1px', borderColor: 'stone.200' })}>
               <button
                 type="button"
                 onClick={handleBulkAdd}
                 disabled={processing || bulkChildren.every((c) => c.name.trim() === '')}
-                className="flex-1 bg-sky-600 text-white py-2 sm:py-2.5 rounded-md sm:rounded-lg text-sm font-medium hover:bg-sky-700 disabled:opacity-50 transition-colors"
+                className={css({
+                  flex: 1,
+                  backgroundColor: 'sky.600',
+                  color: 'white',
+                  paddingY: { base: '2', sm: '2.5' },
+                  borderRadius: { base: 'md', sm: 'lg' },
+                  fontSize: 'sm',
+                  fontWeight: 'medium',
+                  _hover: { backgroundColor: 'sky.700' },
+                  _disabled: { opacity: 0.5 },
+                  transition: 'colors 0.2s',
+                })}
               >
                 {processing ? t('common.saving') : t('relationship.saveAll')}
               </button>
@@ -631,7 +949,18 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                   setBulkChildren([{ name: '', gender: 'male', birthYear: '', isProcessing: false }]);
                   setSelectedSpouseId('');
                 }}
-                className="px-4 py-2 sm:py-2.5 bg-white border border-stone-300 text-stone-700 rounded-md sm:rounded-lg text-sm hover:bg-stone-50 transition-colors"
+                className={css({
+                  paddingX: '4',
+                  paddingY: { base: '2', sm: '2.5' },
+                  backgroundColor: 'white',
+                  borderWidth: '1px',
+                  borderColor: 'stone.300',
+                  color: 'stone.700',
+                  borderRadius: { base: 'md', sm: 'lg' },
+                  fontSize: 'sm',
+                  _hover: { backgroundColor: 'stone.50' },
+                  transition: 'colors 0.2s',
+                })}
               >
                 {t('common.cancel')}
               </button>
@@ -640,13 +969,22 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
         </div>
       )}
 
-      {/* Quick Add Spouse Form */}
       {isAdmin && isAddingSpouse && (
-        <div className="mt-4 bg-rose-50/50 p-4 sm:p-5 rounded-xl border border-rose-200 shadow-sm">
-          <h4 className="font-bold text-rose-800 mb-3 text-sm">{t('relationship.quickAddSpouse')}</h4>
-          <div className="space-y-3">
+        <div
+          className={css({
+            marginTop: '4',
+            backgroundColor: 'rgb(255 241 242 / 0.5)',
+            padding: { base: '4', sm: '5' },
+            borderRadius: 'xl',
+            borderWidth: '1px',
+            borderColor: 'rose.200',
+            boxShadow: 'sm',
+          })}
+        >
+          <h4 className={css({ fontWeight: 'bold', color: 'rose.800', marginBottom: '3', fontSize: 'sm' })}>{t('relationship.quickAddSpouse')}</h4>
+          <div className={css({ display: 'flex', flexDirection: 'column', gap: '3' })}>
             <div>
-              <label htmlFor="spouseName" className="block text-xs font-medium text-rose-700 mb-1">
+              <label htmlFor="spouseName" className={css({ display: 'block', fontSize: 'xs', fontWeight: 'medium', color: 'rose.700', marginBottom: '1' })}>
                 {t('relationship.fullNameRequired')}
               </label>
               <input
@@ -655,11 +993,28 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 placeholder={t('member.fullNamePlaceholder')}
                 value={newSpouseName}
                 onChange={(e) => setNewSpouseName(e.target.value)}
-                className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 p-2 sm:p-2.5 border transition-colors"
+                className={css({
+                  backgroundColor: 'white',
+                  color: 'stone.900',
+                  _placeholder: { color: 'stone.400' },
+                  display: 'block',
+                  width: '100%',
+                  fontSize: 'sm',
+                  borderRadius: { base: 'md', sm: 'lg' },
+                  borderWidth: '1px',
+                  borderColor: 'stone.300',
+                  boxShadow: 'sm',
+                  _focus: { borderColor: 'rose.500' },
+                  padding: { base: '2', sm: '2.5' },
+                  transition: 'colors 0.2s',
+                })}
               />
             </div>
             <div>
-              <label htmlFor="spouseBirthYear" className="block text-xs font-medium text-rose-700 mb-1">
+              <label
+                htmlFor="spouseBirthYear"
+                className={css({ display: 'block', fontSize: 'xs', fontWeight: 'medium', color: 'rose.700', marginBottom: '1' })}
+              >
                 {t('relationship.birthYearOptional')}
               </label>
               <input
@@ -668,11 +1023,25 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 placeholder={t('relationship.birthYearPlaceholder')}
                 value={newSpouseBirthYear}
                 onChange={(e) => setNewSpouseBirthYear(e.target.value)}
-                className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 p-2 sm:p-2.5 border transition-colors"
+                className={css({
+                  backgroundColor: 'white',
+                  color: 'stone.900',
+                  _placeholder: { color: 'stone.400' },
+                  display: 'block',
+                  width: '100%',
+                  fontSize: 'sm',
+                  borderRadius: { base: 'md', sm: 'lg' },
+                  borderWidth: '1px',
+                  borderColor: 'stone.300',
+                  boxShadow: 'sm',
+                  _focus: { borderColor: 'rose.500' },
+                  padding: { base: '2', sm: '2.5' },
+                  transition: 'colors 0.2s',
+                })}
               />
             </div>
             <div>
-              <label htmlFor="spouseRelNote" className="block text-xs font-medium text-rose-700 mb-1">
+              <label htmlFor="spouseRelNote" className={css({ display: 'block', fontSize: 'xs', fontWeight: 'medium', color: 'rose.700', marginBottom: '1' })}>
                 {t('relationship.spouseNoteLabel')}
               </label>
               <input
@@ -681,20 +1050,45 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                 placeholder={t('relationship.spouseNotePlaceholder')}
                 value={newSpouseNote}
                 onChange={(e) => setNewSpouseNote(e.target.value)}
-                className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 p-2 sm:p-2.5 border transition-colors"
+                className={css({
+                  backgroundColor: 'white',
+                  color: 'stone.900',
+                  _placeholder: { color: 'stone.400' },
+                  display: 'block',
+                  width: '100%',
+                  fontSize: 'sm',
+                  borderRadius: { base: 'md', sm: 'lg' },
+                  borderWidth: '1px',
+                  borderColor: 'stone.300',
+                  boxShadow: 'sm',
+                  _focus: { borderColor: 'rose.500' },
+                  padding: { base: '2', sm: '2.5' },
+                  transition: 'colors 0.2s',
+                })}
               />
             </div>
-            <p className="text-xs text-stone-500 italic mt-1">
+            <p className={css({ fontSize: 'xs', color: 'stone.500', fontStyle: 'italic', marginTop: '1' })}>
               {t('relationship.autoGenderNote', {
                 gender: personGender === 'male' ? t('common.female') : personGender === 'female' ? t('common.male') : t('common.female'),
               })}
             </p>
-            <div className="flex gap-2 pt-2">
+            <div className={css({ display: 'flex', gap: '2', paddingTop: '2' })}>
               <button
                 type="button"
                 onClick={handleQuickAddSpouse}
                 disabled={!newSpouseName.trim() || processing}
-                className="flex-1 bg-rose-600 text-white py-2 sm:py-2.5 rounded-md sm:rounded-lg text-sm font-medium hover:bg-rose-700 disabled:opacity-50 transition-colors"
+                className={css({
+                  flex: 1,
+                  backgroundColor: 'rose.600',
+                  color: 'white',
+                  paddingY: { base: '2', sm: '2.5' },
+                  borderRadius: { base: 'md', sm: 'lg' },
+                  fontSize: 'sm',
+                  fontWeight: 'medium',
+                  _hover: { backgroundColor: 'rose.700' },
+                  _disabled: { opacity: 0.5 },
+                  transition: 'colors 0.2s',
+                })}
               >
                 {processing ? t('common.saving') : t('common.save')}
               </button>
@@ -706,7 +1100,18 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                   setNewSpouseBirthYear('');
                   setNewSpouseNote('');
                 }}
-                className="px-4 py-2 sm:py-2.5 bg-white border border-stone-300 text-stone-700 rounded-md sm:rounded-lg text-sm hover:bg-stone-50 transition-colors"
+                className={css({
+                  paddingX: '4',
+                  paddingY: { base: '2', sm: '2.5' },
+                  backgroundColor: 'white',
+                  borderWidth: '1px',
+                  borderColor: 'stone.300',
+                  color: 'stone.700',
+                  borderRadius: { base: 'md', sm: 'lg' },
+                  fontSize: 'sm',
+                  _hover: { backgroundColor: 'stone.50' },
+                  transition: 'colors 0.2s',
+                })}
               >
                 {t('common.cancel')}
               </button>

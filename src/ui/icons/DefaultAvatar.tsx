@@ -1,11 +1,15 @@
+import { css } from '../../../styled-system/css';
+
 export default function DefaultAvatar({ gender }: { gender?: string }) {
+  const baseStyles = { width: '100%', height: '100%', padding: '1', opacity: 0.9 };
+
   if (gender === 'male') {
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"
-        className="w-full h-full p-1 opacity-90 text-sky-100"
+        className={css(baseStyles, { color: 'sky.100' })}
         role="img"
         aria-label="Male avatar"
       >
@@ -20,7 +24,7 @@ export default function DefaultAvatar({ gender }: { gender?: string }) {
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"
-        className="w-full h-full p-1 opacity-90 text-rose-100"
+        className={css(baseStyles, { color: 'rose.100' })}
         role="img"
         aria-label="Female avatar"
       >
@@ -36,7 +40,7 @@ export default function DefaultAvatar({ gender }: { gender?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="currentColor"
-      className="w-full h-full p-1 opacity-90 text-stone-200"
+      className={css(baseStyles, { color: 'stone.200' })}
       role="img"
       aria-label="Default avatar"
     >
