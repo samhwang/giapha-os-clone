@@ -2,6 +2,7 @@ import { createFileRoute, Link, Outlet, redirect } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start';
 import { getRequestHeaders } from '@tanstack/react-start/server';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 import { DashboardProvider } from '../../dashboard/components/DashboardContext';
 import DashboardHeader from '../../dashboard/components/DashboardHeader';
 import { auth } from '../../lib/auth';
@@ -36,23 +37,67 @@ function InactiveAccountPage() {
   const { t } = useTranslation();
 
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-900 flex flex-col font-sans">
-      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-stone-200 shadow-sm transition-all duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/" className="group flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-serif font-bold text-stone-800 group-hover:text-amber-700 transition-colors">{config.siteName}</h1>
+    <div className={css({ minHeight: '100vh', backgroundColor: 'stone.50', color: 'stone.900', display: 'flex', flexDirection: 'column', fontFamily: 'sans' })}>
+      <header
+        className={css({
+          position: 'sticky',
+          top: 0,
+          zIndex: 30,
+          backgroundColor: 'rgb(255 255 255 / 0.8)',
+          backdropFilter: 'blur(12px)',
+          borderBottom: '1px solid stone.200',
+          boxShadow: 'sm',
+        })}
+      >
+        <div
+          className={css({
+            maxWidth: '7xl',
+            marginX: 'auto',
+            paddingX: { base: '4', sm: '6', lg: '8' },
+            height: '4rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          })}
+        >
+          <div className={css({ display: 'flex', alignItems: 'center', gap: '4' })}>
+            <Link to="/" className={css({ display: 'flex', alignItems: 'center', gap: '2' })}>
+              <h1 className={css({ fontSize: { base: 'xl', sm: '2xl' }, fontFamily: 'serif', fontWeight: 'bold', color: 'stone.800' })}>{config.siteName}</h1>
             </Link>
           </div>
-          <div className="w-32">
+          <div className={css({ width: '8rem' })}>
             <LogoutButton />
           </div>
         </div>
       </header>
-      <main className="flex-1 flex flex-col items-center justify-center p-4">
-        <div className="max-w-md w-full text-center bg-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-sm border border-stone-200">
-          <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="size-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Account locked">
+      <main className={css({ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4' })}>
+        <div
+          className={css({
+            maxWidth: '28rem',
+            width: '100%',
+            textAlign: 'center',
+            backgroundColor: 'white',
+            padding: { base: '6', sm: '8' },
+            borderRadius: { base: 'xl', sm: '2xl' },
+            boxShadow: 'sm',
+            border: '1px solid stone.200',
+          })}
+        >
+          <div
+            className={css({
+              width: '16',
+              height: '16',
+              backgroundColor: 'amber.100',
+              color: 'amber.600',
+              borderRadius: 'full',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginX: 'auto',
+              marginBottom: '4',
+            })}
+          >
+            <svg className={css({ width: '8', height: '8' })} fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Account locked">
               <title>Account locked</title>
               <path
                 strokeLinecap="round"
@@ -62,12 +107,12 @@ function InactiveAccountPage() {
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-serif font-bold text-stone-800 mb-2">{t('auth.pendingTitle')}</h2>
-          <p className="text-stone-600">{t('auth.pendingMessage')}</p>
-          <p className="text-stone-500 text-sm mt-4 italic">{t('auth.pendingContact')}</p>
+          <h2 className={css({ fontSize: '2xl', fontFamily: 'serif', fontWeight: 'bold', color: 'stone.800', marginBottom: '2' })}>{t('auth.pendingTitle')}</h2>
+          <p className={css({ color: 'stone.600' })}>{t('auth.pendingMessage')}</p>
+          <p className={css({ color: 'stone.500', fontSize: 'sm', marginTop: '4', fontStyle: 'italic' })}>{t('auth.pendingContact')}</p>
         </div>
       </main>
-      <Footer className="mt-auto bg-white border-t border-stone-200" />
+      <Footer className={css({ marginTop: 'auto', backgroundColor: 'white', borderTop: '1px solid stone.200' })} />
     </div>
   );
 }
@@ -82,10 +127,12 @@ function DashboardLayout() {
 
   return (
     <DashboardProvider>
-      <div className="min-h-screen bg-stone-50 text-stone-900 flex flex-col font-sans">
+      <div
+        className={css({ minHeight: '100vh', backgroundColor: 'stone.50', color: 'stone.900', display: 'flex', flexDirection: 'column', fontFamily: 'sans' })}
+      >
         <DashboardHeader isAdmin={isAdmin} userEmail={session.email} />
         <Outlet />
-        <Footer className="mt-auto bg-white border-t border-stone-200" showDisclaimer />
+        <Footer className={css({ marginTop: 'auto', backgroundColor: 'white', borderTop: '1px solid stone.200' })} showDisclaimer />
       </div>
     </DashboardProvider>
   );
