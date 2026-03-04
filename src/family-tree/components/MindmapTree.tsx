@@ -1,10 +1,11 @@
 import { ChevronDown, ChevronRight, Filter, Minus, Plus, Share2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import type { Person, Relationship } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
+import { buildAdjacencyLists, getFilteredTreeData } from '../utils/treeHelpers';
 
 interface MindmapTreeProps {
   personsMap: Map<string, Person>;
@@ -36,26 +37,9 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const getTreeData = (personId: string) => {
-    let spousesList = relationships
-      .filter((r) => r.type === 'marriage' && (r.personAId === personId || r.personBId === personId))
-      .map((r) => {
-        const spouseId = r.personAId === personId ? r.personBId : r.personAId;
-        return { person: personsMap.get(spouseId) as Person, note: r.note };
-      })
-      .filter((s) => s.person);
+  const adj = useMemo(() => buildAdjacencyLists(relationships, personsMap), [relationships, personsMap]);
 
-    if (hideSpouses) spousesList = [];
-
-    const childRels = relationships.filter((r) => (r.type === 'biological_child' || r.type === 'adopted_child') && r.personAId === personId);
-
-    let childrenList = childRels.map((r) => personsMap.get(r.personBId)).filter(Boolean) as Person[];
-
-    if (hideMales) childrenList = childrenList.filter((c) => c.gender !== 'male');
-    if (hideFemales) childrenList = childrenList.filter((c) => c.gender !== 'female');
-
-    return { person: personsMap.get(personId) as Person, spouses: spousesList, children: childrenList };
-  };
+  const getTreeData = (personId: string) => getFilteredTreeData(personId, personsMap, adj, { hideSpouses, hideMales, hideFemales });
 
   function MindmapNode({ personId, level = 0, isLast = false }: { personId: string; level?: number; isLast?: boolean }) {
     const data = getTreeData(personId);

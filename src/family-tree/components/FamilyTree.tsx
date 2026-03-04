@@ -1,14 +1,10 @@
 import { Filter, Minus, Plus } from 'lucide-react';
-import { Fragment, type MouseEvent, type ReactNode, useEffect, useRef, useState } from 'react';
+import { Fragment, type MouseEvent, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Person, Relationship } from '../../types';
+import { buildAdjacencyLists, getFilteredTreeData } from '../utils/treeHelpers';
 import FamilyNodeCard from './FamilyNodeCard';
 import styles from './family-tree.module.css';
-
-interface SpouseData {
-  person: Person;
-  note?: string | null;
-}
 
 export default function FamilyTree({ personsMap, relationships, roots }: { personsMap: Map<string, Person>; relationships: Relationship[]; roots: Person[] }) {
   const { t } = useTranslation();
@@ -84,33 +80,9 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
     }
   };
 
-  const getTreeData = (personId: string) => {
-    let spousesList: SpouseData[] = relationships
-      .filter((r) => r.type === 'marriage' && (r.personAId === personId || r.personBId === personId))
-      .map((r) => {
-        const spouseId = r.personAId === personId ? r.personBId : r.personAId;
-        return { person: personsMap.get(spouseId) as Person, note: r.note };
-      })
-      .filter((s) => s.person);
+  const adj = useMemo(() => buildAdjacencyLists(relationships, personsMap), [relationships, personsMap]);
 
-    if (hideSpouses) spousesList = [];
-
-    const childRels = relationships.filter((r) => (r.type === 'biological_child' || r.type === 'adopted_child') && r.personAId === personId);
-
-    let childrenList = (childRels.map((r) => personsMap.get(r.personBId)).filter(Boolean) as Person[]).sort((a, b) => {
-      const aOrder = a.birthOrder ?? Number.POSITIVE_INFINITY;
-      const bOrder = b.birthOrder ?? Number.POSITIVE_INFINITY;
-      if (aOrder !== bOrder) return aOrder - bOrder;
-      const aYear = a.birthYear ?? Number.POSITIVE_INFINITY;
-      const bYear = b.birthYear ?? Number.POSITIVE_INFINITY;
-      return aYear - bYear;
-    });
-
-    if (hideMales) childrenList = childrenList.filter((c) => c.gender !== 'male');
-    if (hideFemales) childrenList = childrenList.filter((c) => c.gender !== 'female');
-
-    return { person: personsMap.get(personId) as Person, spouses: spousesList, children: childrenList };
-  };
+  const getTreeData = (personId: string) => getFilteredTreeData(personId, personsMap, adj, { hideSpouses, hideMales, hideFemales });
 
   const renderTreeNode = (personId: string, visited: Set<string> = new Set()): ReactNode => {
     if (visited.has(personId)) return null;
