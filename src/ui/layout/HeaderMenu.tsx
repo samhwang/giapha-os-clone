@@ -1,5 +1,4 @@
 import { Link } from '@tanstack/react-router';
-import { AnimatePresence, motion } from 'framer-motion';
 import { BarChart2, CalendarClock, ChevronDown, Database, GitMerge, Info, Network, Settings, UserCircle } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -54,40 +53,32 @@ export default function HeaderMenu({ isAdmin, userEmail }: HeaderMenuProps) {
         <ChevronDown className={`size-4 text-stone-500 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-stone-200/60 py-2 z-50 overflow-hidden"
-          >
-            <div className="px-4 py-3 border-b border-stone-100 bg-stone-50/50">
-              <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-0.5">{t('nav.account')}</p>
-              <p className="text-sm font-medium text-stone-900 truncate">{userEmail}</p>
-            </div>
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-stone-200/60 py-2 z-50 overflow-hidden animate-[scale-in_0.15s_ease-out_forwards]">
+          <div className="px-4 py-3 border-b border-stone-100 bg-stone-50/50">
+            <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-0.5">{t('nav.account')}</p>
+            <p className="text-sm font-medium text-stone-900 truncate">{userEmail}</p>
+          </div>
 
-            <div className="py-1">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-stone-700 hover:text-amber-700 hover:bg-amber-50 transition-colors"
-                >
-                  {item.icon}
-                  {item.label}
-                </Link>
-              ))}
-              <div className="px-4 py-2">
-                <LanguageSwitcher />
-              </div>
-              <LogoutButton />
+          <div className="py-1">
+            {menuItems.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-stone-700 hover:text-amber-700 hover:bg-amber-50 transition-colors"
+              >
+                {item.icon}
+                {item.label}
+              </Link>
+            ))}
+            <div className="px-4 py-2">
+              <LanguageSwitcher />
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <LogoutButton />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
