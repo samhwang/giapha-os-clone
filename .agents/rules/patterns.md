@@ -181,21 +181,27 @@ The app uses custom button classes defined in `globals.css`:
 - Breakpoints: `sm:`, `md:`, `lg:`, `xl:`
 - Common pattern: single column on mobile, multi-column on desktop
 
-## Framer Motion
+## Animations
 
-### Animation Patterns
+Use Tailwind CSS utilities and custom keyframes defined in `src/styles.css`.
+
+### Custom Keyframes
+
+Available animations: `fade-in`, `fade-in-up`, `scale-in` (defined in `src/styles.css`).
+
+### Usage Patterns
 
 ```tsx
-import { motion, AnimatePresence } from 'framer-motion';
+// Arbitrary animation with Tailwind
+<div className="animate-[fade-in-up_0.6s_ease-out_forwards]">
 
-// Fade in
-<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+// Transitions for hover/focus states
+<button className="transition-all duration-300 hover:scale-105 hover:shadow-md">
 
-// List items with stagger
-<motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ delay: index * 0.05 }}
+// Combine with delay via style attribute for stagger effects
+<div
+  className="animate-[fade-in-up_0.6s_ease-out_forwards]"
+  style={{ animationDelay: `${index * 50}ms` }}
 >
 ```
 

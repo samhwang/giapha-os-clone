@@ -94,7 +94,7 @@ export function PersonCard({ person, onSelect }: Props) {
 Biome auto-organizes imports:
 
 1. React / React DOM
-2. External packages (`@tanstack/*`, `framer-motion`, etc.)
+2. External packages (`@tanstack/*`, etc.)
 3. Internal aliases (`@/components/*`, `@/lib/*`, `@/utils/*`)
 4. Type imports (`import type { ... }`)
 5. Style imports

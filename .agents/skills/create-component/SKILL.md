@@ -24,8 +24,6 @@ When user asks to:
 Create `src/components/[ComponentName].tsx`:
 
 ```typescript
-import { motion } from 'framer-motion'
-
 interface ComponentNameProps {
   title: string
   children?: React.ReactNode
@@ -33,14 +31,10 @@ interface ComponentNameProps {
 
 export function ComponentName({ title, children }: ComponentNameProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="class-name"
-    >
+    <div className="animate-[fade-in_0.3s_ease-out_forwards]">
       <h1>{title}</h1>
       {children}
-    </motion.div>
+    </div>
   )
 }
 ```
@@ -55,15 +49,13 @@ Use Tailwind v4 classes:
 
 ### Step 4: Add Animations (optional)
 
-Use Framer Motion for transitions:
+Use Tailwind CSS animations (custom keyframes in `src/styles.css`):
 ```typescript
-import { motion } from 'framer-motion'
+// Fade in with slide up
+<div className="animate-[fade-in-up_0.3s_ease-out_forwards]">
 
-<motion.div
-  initial={{ opacity: 0, y: 10 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.2 }}
->
+// Transition on hover/focus
+<button className="transition-all duration-200 hover:scale-105">
 ```
 
 ### Step 5: Create Tests
@@ -75,7 +67,7 @@ Create co-located test: `src/components/[ComponentName].test.tsx`
 - [ ] Component follows React 19 patterns
 - [ ] Props typed with TypeScript interfaces
 - [ ] Uses Tailwind CSS for styling
-- [ ] Uses Framer Motion for animations (if needed)
+- [ ] Uses Tailwind CSS for animations (if needed)
 - [ ] Exports named component
 - [ ] Tests cover render and interactions
 - [ ] Passes `pnpm typecheck` and `pnpm lint`
