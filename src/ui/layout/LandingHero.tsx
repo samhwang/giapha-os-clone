@@ -1,27 +1,6 @@
 import { Link } from '@tanstack/react-router';
-import { motion, type Variants } from 'framer-motion';
 import { ArrowRight, Network, ShieldCheck, Sparkles, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
-const fadeIn: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
-
-const staggerContainer: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.1,
-    },
-  },
-};
 
 interface LandingHeroProps {
   siteName: string;
@@ -31,25 +10,22 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
   const { t } = useTranslation();
 
   return (
-    <motion.div className="max-w-5xl text-center space-y-12 w-full relative z-10" initial="hidden" animate="visible" variants={staggerContainer}>
-      <motion.div className="space-y-6 sm:space-y-8 flex flex-col items-center" variants={fadeIn}>
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-amber-800 bg-white/60 backdrop-blur-md rounded-full shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-amber-200/50 relative overflow-hidden group"
-        >
+    <div className="max-w-5xl text-center space-y-12 w-full relative z-10">
+      <div className="space-y-6 sm:space-y-8 flex flex-col items-center animate-[fade-in-up_0.8s_ease-out_forwards]">
+        <div className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-amber-800 bg-white/60 backdrop-blur-md rounded-full shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-amber-200/50 relative overflow-hidden group hover:scale-105 transition-transform duration-300">
           <Sparkles className="size-4 text-amber-500" />
           {t('landing.tagline')}
           <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
-        </motion.div>
+        </div>
 
         <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5rem] font-serif font-bold text-stone-900 tracking-tight leading-[1.1] max-w-4xl">
           <span className="block">{siteName}</span>
         </h1>
 
         <p className="text-lg sm:text-xl md:text-2xl text-stone-600 max-w-2xl mx-auto leading-relaxed font-light">{t('landing.subtitle')}</p>
-      </motion.div>
+      </div>
 
-      <motion.div className="pt-6 flex flex-col sm:flex-row gap-4 justify-center items-center w-full px-4 sm:px-0 relative" variants={fadeIn}>
+      <div className="pt-6 flex flex-col sm:flex-row gap-4 justify-center items-center w-full px-4 sm:px-0 relative animate-[fade-in-up_0.8s_ease-out_forwards]">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-16 bg-amber-500/30 blur-2xl rounded-full z-0 hidden sm:block" />
 
         <Link
@@ -61,9 +37,9 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
             <ArrowRight className="size-5 group-hover:translate-x-1.5 transition-transform" />
           </span>
         </Link>
-      </motion.div>
+      </div>
 
-      <motion.div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left border-t border-stone-200/50 relative" variants={staggerContainer}>
+      <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-left border-t border-stone-200/50 relative">
         {[
           {
             icon: <Users className="size-6 text-amber-700" />,
@@ -80,12 +56,11 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
             title: t('landing.featureSecurityTitle'),
             desc: t('landing.featureSecurityDesc'),
           },
-        ].map((feature) => (
-          <motion.div
+        ].map((feature, index) => (
+          <div
             key={feature.title}
-            variants={fadeIn}
-            whileHover={{ y: -5 }}
-            className="bg-white/70 backdrop-blur-xl p-8 rounded-3xl border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:bg-white transition-all duration-500 flex flex-col items-start group relative overflow-hidden"
+            className="bg-white/70 backdrop-blur-xl p-8 rounded-3xl border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:bg-white transition-all duration-500 flex flex-col items-start group relative overflow-hidden animate-[fade-in-up_0.8s_ease-out_forwards]"
+            style={{ animationDelay: `${index * 0.15 + 0.3}s`, animationFillMode: 'forwards', opacity: 0 }}
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-amber-100/50 to-transparent rounded-bl-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -96,9 +71,9 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
               {feature.title}
             </h3>
             <p className="text-stone-600 text-base leading-relaxed relative z-10">{feature.desc}</p>
-          </motion.div>
+          </div>
         ))}
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
