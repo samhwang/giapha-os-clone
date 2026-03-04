@@ -40,3 +40,96 @@ export function calculateAge(birthYear: number | null, deathYear: number | null)
 
   return { age: new Date().getFullYear() - birthYear, isDeceased: false };
 }
+
+export function getZodiacSign(day: number | null, month: number | null): string | null {
+  if (!day || !month) return null;
+  const d = day;
+  const m = month;
+
+  if ((m === 3 && d >= 21) || (m === 4 && d <= 19)) return 'Bạch Dương';
+  if ((m === 4 && d >= 20) || (m === 5 && d <= 20)) return 'Kim Ngưu';
+  if ((m === 5 && d >= 21) || (m === 6 && d <= 21)) return 'Song Tử';
+  if ((m === 6 && d >= 22) || (m === 7 && d <= 22)) return 'Cự Giải';
+  if ((m === 7 && d >= 23) || (m === 8 && d <= 22)) return 'Sư Tử';
+  if ((m === 8 && d >= 23) || (m === 9 && d <= 22)) return 'Xử Nữ';
+  if ((m === 9 && d >= 23) || (m === 10 && d <= 23)) return 'Thiên Bình';
+  if ((m === 10 && d >= 24) || (m === 11 && d <= 21)) return 'Thiên Yết';
+  if ((m === 11 && d >= 22) || (m === 12 && d <= 21)) return 'Nhân Mã';
+  if ((m === 12 && d >= 22) || (m === 1 && d <= 19)) return 'Ma Kết';
+  if ((m === 1 && d >= 20) || (m === 2 && d <= 18)) return 'Bảo Bình';
+  if ((m === 2 && d >= 19) || (m === 3 && d <= 20)) return 'Song Ngư';
+
+  return null;
+}
+
+export function getZodiacAnimal(year: number | null, month: number | null = null, day: number | null = null): string | null {
+  if (!year) return null;
+  const animals = ['Thân', 'Dậu', 'Tuất', 'Hợi', 'Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi'];
+
+  let targetYear = year;
+
+  if (month && day) {
+    try {
+      const solar = Solar.fromYmd(year, month, day);
+      targetYear = solar.getLunar().getYear();
+    } catch {
+      // fallback to solar year
+    }
+  }
+
+  return animals[targetYear % 12];
+}
+
+const THIEN_CAN: Record<string, string> = {
+  甲: 'Giáp',
+  乙: 'Ất',
+  丙: 'Bính',
+  丁: 'Đinh',
+  戊: 'Mậu',
+  己: 'Kỷ',
+  庚: 'Canh',
+  辛: 'Tân',
+  壬: 'Nhâm',
+  癸: 'Quý',
+};
+
+const DIA_CHI: Record<string, string> = {
+  子: 'Tý',
+  丑: 'Sửu',
+  寅: 'Dần',
+  卯: 'Mão',
+  辰: 'Thìn',
+  巳: 'Tỵ',
+  午: 'Ngọ',
+  未: 'Mùi',
+  申: 'Thân',
+  酉: 'Dậu',
+  戌: 'Tuất',
+  亥: 'Hợi',
+};
+
+function ganZhiToVietnamese(ganZhi: string): string {
+  if (!ganZhi || ganZhi.length < 2) return ganZhi;
+  const can = THIEN_CAN[ganZhi[0]] ?? ganZhi[0];
+  const chi = DIA_CHI[ganZhi[1]] ?? ganZhi[1];
+  return `${can} ${chi}`;
+}
+
+export function getTodayLunar() {
+  const now = new Date();
+  const solar = Solar.fromYmd(now.getFullYear(), now.getMonth() + 1, now.getDate());
+  const lunar = solar.getLunar();
+
+  return {
+    solarStr: now.toLocaleDateString('vi-VN', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    }),
+    lunarDay: lunar.getDay(),
+    lunarMonth: Math.abs(lunar.getMonth()),
+    lunarYear: ganZhiToVietnamese(lunar.getYearInGanZhi()),
+    lunarDayStr: `${lunar.getDay()} tháng ${Math.abs(lunar.getMonth())}`,
+  };
+}

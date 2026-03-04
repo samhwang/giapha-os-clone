@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { calculateAge, formatDisplayDate, getLunarDateString } from './dateHelpers';
+import { calculateAge, formatDisplayDate, getLunarDateString, getTodayLunar, getZodiacAnimal, getZodiacSign } from './dateHelpers';
 
 describe('formatDisplayDate', () => {
   describe('when all date components are provided', () => {
@@ -97,5 +97,59 @@ describe('calculateAge', () => {
     it('should return null even if death year is provided', () => {
       expect(calculateAge(null, 2020)).toBeNull();
     });
+  });
+});
+
+describe('getZodiacSign', () => {
+  it('should return correct zodiac for known dates', () => {
+    expect(getZodiacSign(25, 3)).toBe('Bạch Dương');
+    expect(getZodiacSign(15, 8)).toBe('Sư Tử');
+    expect(getZodiacSign(25, 12)).toBe('Ma Kết');
+    expect(getZodiacSign(15, 2)).toBe('Bảo Bình');
+  });
+
+  it('should return null when day or month is null', () => {
+    expect(getZodiacSign(null, 3)).toBeNull();
+    expect(getZodiacSign(15, null)).toBeNull();
+    expect(getZodiacSign(null, null)).toBeNull();
+  });
+});
+
+describe('getZodiacAnimal', () => {
+  it('should return correct animal for known years', () => {
+    // 2000 % 12 = 8 → Thìn
+    expect(getZodiacAnimal(2000)).toBe('Thìn');
+    // 1990 % 12 = 10 → Ngọ
+    expect(getZodiacAnimal(1990)).toBe('Ngọ');
+  });
+
+  it('should use lunar year when month and day are provided', () => {
+    // Jan 15 2000 solar → lunar year might still be 1999 (before Tet)
+    const result = getZodiacAnimal(2000, 1, 15);
+    expect(result).not.toBeNull();
+  });
+
+  it('should return null when year is null', () => {
+    expect(getZodiacAnimal(null)).toBeNull();
+  });
+});
+
+describe('getTodayLunar', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2025, 0, 29)); // Jan 29 2025 = Lunar New Year
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('should return solar and lunar date info', () => {
+    const result = getTodayLunar();
+    expect(result.lunarDay).toBe(1);
+    expect(result.lunarMonth).toBe(1);
+    expect(result.lunarYear).toMatch(/\S+ \S+/); // Gan-Zhi format "X Y"
+    expect(result.lunarDayStr).toContain('tháng');
+    expect(result.solarStr).toBeTruthy();
   });
 });

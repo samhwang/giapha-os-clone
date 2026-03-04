@@ -1,6 +1,6 @@
 import { Briefcase, Info, Leaf, MapPin, Phone, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { calculateAge, formatDisplayDate, getLunarDateString } from '../../events/utils/dateHelpers';
+import { calculateAge, formatDisplayDate, getLunarDateString, getZodiacAnimal, getZodiacSign } from '../../events/utils/dateHelpers';
 import RelationshipManager from '../../relationships/components/RelationshipManager';
 import type { Person } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
@@ -107,6 +107,22 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                       <span className="text-2xs border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
                       {getLunarDateString(person.birthYear, person.birthMonth, person.birthDay) || t('common.unknown')}
                     </p>
+                  )}
+                  {person.birthMonth && person.birthDay && (
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {(() => {
+                        const animal = getZodiacAnimal(person.birthYear, person.birthMonth, person.birthDay);
+                        if (!animal) return null;
+                        return <span className="text-2xs font-bold text-rose-700 bg-rose-50/80 border border-rose-200/60 rounded px-1.5 py-0.5">{animal}</span>;
+                      })()}
+                      {(() => {
+                        const sign = getZodiacSign(person.birthDay, person.birthMonth);
+                        if (!sign) return null;
+                        return (
+                          <span className="text-2xs font-bold text-indigo-700 bg-indigo-50/80 border border-indigo-200/60 rounded px-1.5 py-0.5">{sign}</span>
+                        );
+                      })()}
+                    </div>
                   )}
                 </div>
               </div>
