@@ -40,7 +40,7 @@ export default function PersonCard({ person }: PersonCardProps) {
           transition: 'all 0.3s',
         },
         { _hover: { borderColor: 'amber.300', boxShadow: 'md', backgroundColor: 'rgb(255 255 255 / 0.9)' } },
-        person.isDeceased ? css({ opacity: 0.8, filter: 'grayscale(0.3)' }) : {}
+        person.isDeceased ? { opacity: 0.8, filter: 'grayscale(0.3)' } : {}
       )}
     >
       <div className={css({ display: 'flex', alignItems: 'center', gap: '4', position: 'relative', zIndex: 10 })}>

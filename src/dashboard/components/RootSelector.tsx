@@ -78,7 +78,7 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
               }
         )}
       >
-        <div className={css({ position: 'relative', shrink: 0 })}>
+        <div className={css({ position: 'relative', flexShrink: 0 })}>
           <div
             className={css(
               {
@@ -94,10 +94,9 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
                 overflow: 'hidden',
                 ringWidth: '2px',
                 ringColor: 'white',
-                ringOffsetWidth: '0px',
                 boxShadow: 'xs',
               },
-              currentRootPerson ? getAvatarBg(currentRootPerson.gender) : css({ backgroundColor: 'stone.100', color: 'stone.400' })
+              currentRootPerson ? getAvatarBg(currentRootPerson.gender) : { backgroundColor: 'stone.100', color: 'stone.400' }
             )}
           >
             {currentRootPerson ? (
@@ -176,7 +175,7 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
           <ChevronDown
             className={css(
               { width: '4', height: '4', flexShrink: 0, transition: 'color 0.3s' },
-              isOpen ? css({ color: 'amber.600' }) : css({ color: 'stone.400', _hover: { color: 'stone.600' } })
+              isOpen ? { color: 'amber.600' } : { color: 'stone.400', _hover: { color: 'stone.600' } }
             )}
           />
         </motion.div>
@@ -275,18 +274,18 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
                             transition: 'all 0.2s',
                           },
                           isSelected
-                            ? css({
+                            ? {
                                 backgroundColor: 'amber.50',
                                 color: 'amber.900',
                                 borderWidth: '1px',
                                 borderStyle: 'solid',
                                 borderColor: 'rgb(245 158 11 / 0.5)',
                                 boxShadow: 'sm',
-                              })
-                            : css({ color: 'stone.700', _hover: { backgroundColor: 'rgb(228 228 231 / 0.8)' }, borderWidth: '0px' })
+                              }
+                            : { color: 'stone.700', _hover: { backgroundColor: 'rgb(228 228 231 / 0.8)' }, borderWidth: '0px' }
                         )}
                       >
-                        <div className={css({ position: 'relative', shrink: 0 })}>
+                        <div className={css({ position: 'relative', flexShrink: 0 })}>
                           <div
                             className={css(
                               {
@@ -344,7 +343,7 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
                           <p
                             className={css(
                               { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
-                              isSelected ? css({ fontWeight: 'bold' }) : css({ fontWeight: 'medium', _hover: { color: 'stone.900' } })
+                              isSelected ? { fontWeight: 'bold' } : { fontWeight: 'medium', _hover: { color: 'stone.900' } }
                             )}
                           >
                             {person.fullName}
@@ -356,7 +355,7 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
                           )}
                         </div>
 
-                        {isSelected && <Check className={css({ width: '4', height: '4', color: 'amber.600', shrink: 0 })} />}
+                        {isSelected && <Check className={css({ width: '4', height: '4', color: 'amber.600', flexShrink: 0 })} />}
                       </button>
                     );
                   })}

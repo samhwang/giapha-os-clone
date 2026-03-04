@@ -20,8 +20,8 @@ export default function LanguageSwitcher({ className = '' }: { className?: strin
       type="button"
       onClick={() => switchLanguage(nextLang)}
       className={cx(
-        { display: 'flex', alignItems: 'center', gap: '1.5', fontSize: '14px', fontWeight: '500', color: 'stone.600', transition: 'color 0.2s' },
-        { _hover: { color: 'amber.700' } },
+        css({ display: 'flex', alignItems: 'center', gap: '1.5', fontSize: '14px', fontWeight: '500', color: 'stone.600', transition: 'color 0.2s' }),
+        css({ _hover: { color: 'amber.700' } }),
         className
       )}
       title={t(`language.${nextLang}`)}

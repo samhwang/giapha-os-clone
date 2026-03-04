@@ -2,7 +2,6 @@ import { Fragment, type MouseEvent, type ReactNode, useEffect, useRef, useState 
 import { css } from '../../../styled-system/css';
 import type { Person, Relationship } from '../../types';
 import FamilyNodeCard from './FamilyNodeCard';
-import styles from './family-tree.module.css';
 
 interface SpouseData {
   person: Person;
@@ -152,8 +151,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
         id="export-container"
         className={css(
           { width: 'max-content', minWidth: '100%', marginX: 'auto', padding: '4', transition: 'opacity 0.2s' },
-          isDragging ? { opacity: 0.9 } : {},
-          styles.tree
+          isDragging ? { opacity: 0.9 } : {}
         )}
       >
         <ul>

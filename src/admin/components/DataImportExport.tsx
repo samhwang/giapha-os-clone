@@ -158,7 +158,7 @@ export default function DataImportExport() {
                 fontWeight: 'semibold',
                 borderRadius: 'xl',
                 transition: 'colors 0.2s',
-                disabled: { opacity: 0.5 },
+                _disabled: { opacity: 0.5 },
                 fontSize: 'sm',
                 boxShadow: 'sm',
               },
@@ -230,7 +230,7 @@ export default function DataImportExport() {
                 fontWeight: 'semibold',
                 borderRadius: 'xl',
                 transition: 'colors 0.2s',
-                disabled: { opacity: 0.5 },
+                _disabled: { opacity: 0.5 },
                 fontSize: 'sm',
               },
               { _hover: { backgroundColor: 'stone.200' } }

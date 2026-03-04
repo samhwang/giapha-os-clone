@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { css } from '../../../styled-system/css';
+import { css, cx } from '../../../styled-system/css';
 
 interface FooterProps {
   className?: string;
@@ -10,9 +10,7 @@ export default function Footer({ className = '', showDisclaimer = false }: Foote
   const { t } = useTranslation();
 
   return (
-    <footer
-      className={css({ paddingY: '8', textAlign: 'center', fontSize: 'sm', color: 'stone.500', backdropFilter: 'blur(8px)' }, className ? { className } : {})}
-    >
+    <footer className={cx(css({ paddingY: '8', textAlign: 'center', fontSize: 'sm', color: 'stone.500', backdropFilter: 'blur(8px)' }), className)}>
       <div className={css({ maxWidth: '7xl', marginX: 'auto', paddingX: '4' })}>
         {showDisclaimer && (
           <p

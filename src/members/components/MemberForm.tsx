@@ -3,7 +3,7 @@ import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import { AlertCircle, Briefcase, Image as ImageIcon, Loader2, Lock, MapPin, Phone, Settings2, Trash2, User } from 'lucide-react';
 import { type SubmitEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { css } from '../../../styled-system/css';
+import { css, cx } from '../../../styled-system/css';
 import { button } from '../../../styled-system/recipes';
 import type { Gender, Person } from '../../types';
 import { createPerson, updatePerson, uploadPersonAvatar } from '../server/member';
@@ -224,7 +224,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                 id="gender"
                 value={gender}
                 onChange={(e) => setGender(e.target.value as Gender)}
-                className={css({}, inputClasses, { appearance: 'none' })}
+                className={cx(inputClasses, css({ appearance: 'none' }))}
               >
                 <option value="male">{t('common.male')}</option>
                 <option value="female">{t('common.female')}</option>
@@ -579,7 +579,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder={t('member.notePlaceholder')}
-              className={css({}, inputClasses, { resize: 'none' })}
+              className={cx(inputClasses, css({ resize: 'none' }))}
             />
           </div>
         </div>
@@ -679,7 +679,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 disabled={isDeceased}
                 placeholder={t('member.phonePlaceholder')}
-                className={css({}, inputClasses, isDeceased ? { backgroundColor: 'stone.100', color: 'stone.400', cursor: 'not-allowed' } : {})}
+                className={cx(inputClasses, isDeceased ? css({ backgroundColor: 'stone.100', color: 'stone.400', cursor: 'not-allowed' }) : '')}
               />
               {isDeceased && (
                 <p
