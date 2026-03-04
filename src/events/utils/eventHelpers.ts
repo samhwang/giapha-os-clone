@@ -1,5 +1,5 @@
 import { Lunar, Solar } from 'lunar-javascript';
-import type { EventType, FamilyEvent } from '../../types';
+import type { CustomEventRecord, EventType, FamilyEvent } from '../../types';
 
 /**
  * Finds the next solar Date on which a given lunar (month, day) falls,
@@ -39,6 +39,7 @@ export function computeEvents(
     deathDay: number | null;
     isDeceased: boolean;
   }[],
+  customEvents: CustomEventRecord[] = [],
   lunarSuffix = 'ÂL'
 ): FamilyEvent[] {
   const today = new Date();
@@ -92,6 +93,29 @@ export function computeEvents(
         // Skip if lunar conversion fails
       }
     }
+  }
+
+  // Custom events (solar)
+  for (const ce of customEvents) {
+    if (!ce.eventDate) continue;
+    const [y, m, d] = ce.eventDate.split('-').map(Number);
+    if (!y || !m || !d) continue;
+
+    const next = new Date(y, m - 1, d);
+    const daysUntil = Math.round((next.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    events.push({
+      personId: ce.id,
+      personName: ce.name,
+      type: 'custom_event' as EventType,
+      nextOccurrence: next,
+      daysUntil,
+      eventDateLabel: `${d.toString().padStart(2, '0')}/${m.toString().padStart(2, '0')}/${y}`,
+      originYear: y,
+      isDeceased: false,
+      location: ce.location,
+      content: ce.content,
+    });
   }
 
   events.sort((a, b) => a.daysUntil - b.daysUntil);
