@@ -159,15 +159,15 @@ export const Route = createFileRoute('/dashboard')({
 });
 ```
 
-## Tailwind CSS v4
+## PandaCSS
 
-### Custom Button Styles
+### Recipes
 
-The app uses custom button classes defined in `globals.css`:
+The app uses PandaCSS recipes defined in `panda.config.ts`:
 
-- `.btn` — Base button (white with stone border)
-- `.btn-primary` — Amber gradient button
-- `.btn-secondary` — Stone gradient button
+- `button` — Button variants (primary, secondary, ghost)
+- `input` — Input field styling
+- `card` — Card container styling
 
 ### Gender-based Colors
 

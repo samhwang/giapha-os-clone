@@ -13,7 +13,7 @@ TL;DR: TanStack Start + React 19 + TanStack Router for full-stack, Prisma + Post
 | ORM | Prisma | 6.x |
 | Auth | Better Auth | latest |
 | Storage | Garage (S3-compatible) | latest |
-| Styling | Tailwind CSS | 4.x |
+| Styling | PandaCSS | latest |
 | Animation | Framer Motion | latest |
 | i18n | react-i18next | latest |
 | Testing | Vitest | 4.x |

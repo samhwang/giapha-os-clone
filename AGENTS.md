@@ -18,7 +18,7 @@ The project focuses on:
 ## Role & Technical Context
 
 - **Domain**: Vietnamese genealogy/family tree management
-- **Tech Stack**: TanStack Start, React 19, TypeScript, Prisma, PostgreSQL, Better Auth, Garage (S3), Tailwind CSS v4, Framer Motion
+- **Tech Stack**: TanStack Start, React 19, TypeScript, Prisma, PostgreSQL, Better Auth, Garage (S3), PandaCSS, Framer Motion
 - **Architecture**: Full-stack app with server functions, file-based routing, Docker Compose infrastructure
 - **Deployment**: Self-hosted via Docker Compose
 - **Package Manager**: pnpm
@@ -88,7 +88,7 @@ Load these rules when working on relevant domains:
 
 - **[commands.md](.agents/rules/commands.md)** - Development workflow commands (Docker, pnpm, Prisma, Biome, Vitest)
 - **[code-style.md](.agents/rules/code-style.md)** - Code formatting, TypeScript conventions, naming, file organization
-- **[patterns.md](.agents/rules/patterns.md)** - TanStack Start/Router, Prisma, Better Auth, Tailwind, S3 patterns
+- **[patterns.md](.agents/rules/patterns.md)** - TanStack Start/Router, Prisma, Better Auth, PandaCSS, S3 patterns
 - **[testing.md](.agents/rules/testing.md)** - Vitest, React Testing Library, TDD/BDD, coverage targets
 - **[deployment.md](.agents/rules/deployment.md)** - Docker Compose, PostgreSQL, Garage, environment setup
 - **[communication.md](.agents/rules/communication.md)** - Conventional Commits, documentation style, writing conventions
@@ -114,7 +114,7 @@ Add skills under `.agents/skills/[skill-name]/SKILL.md` as needed.
 - **Prisma** + PostgreSQL (database)
 - **Better Auth** (authentication)
 - **Garage** (S3-compatible file storage)
-- **Tailwind CSS v4** + Framer Motion (styling/animation)
+- **PandaCSS** + Framer Motion (styling/animation)
 - **Biome** (linting + formatting)
 - **Vitest** + React Testing Library (testing)
 

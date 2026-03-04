@@ -45,13 +45,19 @@ export function ComponentName({ title, children }: ComponentNameProps) {
 }
 ```
 
-### Step 3: Add Tailwind Styling
+### Step 3: Add PandaCSS Styling
 
-Use Tailwind v4 classes:
-- Layout: `flex`, `grid`, `p-4`, `m-2`
-- Typography: `text-lg`, `font-bold`, `text-gray-700`
-- Colors: `bg-white`, `border`, `shadow-sm`
-- Responsive: `md:flex`, `lg:grid-cols-3`
+Use PandaCSS `css` function or recipe:
+- Layout: `display: 'flex'`, `gap: '4'`, `padding: '4'`
+- Typography: `fontSize: 'lg'`, `fontWeight: 'bold'`, `color: 'stone.700'`
+- Colors: `backgroundColor: 'white'`, `borderWidth: '1px'`, `boxShadow: 'sm'`
+- Responsive: `sm: { flexDirection: 'row' }`, `lg: { gridTemplateColumns: 'repeat(3, 1fr)' }`
+
+Import from `styled-system`:
+```typescript
+import { css } from '../../../styled-system/css'
+import { button, input } from '../../../styled-system/recipes'
+```
 
 ### Step 4: Add Animations (optional)
 
@@ -74,7 +80,7 @@ Create co-located test: `src/components/[ComponentName].test.tsx`
 
 - [ ] Component follows React 19 patterns
 - [ ] Props typed with TypeScript interfaces
-- [ ] Uses Tailwind CSS for styling
+- [ ] Uses PandaCSS for styling
 - [ ] Uses Framer Motion for animations (if needed)
 - [ ] Exports named component
 - [ ] Tests cover render and interactions
