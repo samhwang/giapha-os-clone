@@ -52,6 +52,14 @@ export default function DashboardMemberList({ initialPersons }: { initialPersons
         return a.fullName.localeCompare(b.fullName, 'vi');
       case 'name_desc':
         return b.fullName.localeCompare(a.fullName, 'vi');
+      case 'updated_desc':
+        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+      case 'updated_asc':
+        return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
+      case 'generation_asc':
+        return (a.generation ?? 9999) - (b.generation ?? 9999);
+      case 'generation_desc':
+        return (b.generation ?? 0) - (a.generation ?? 0);
       default:
         return 0;
     }
@@ -107,6 +115,10 @@ export default function DashboardMemberList({ initialPersons }: { initialPersons
                   <option value="birth_desc">{t('member.sortBirthDesc')}</option>
                   <option value="name_asc">{t('member.sortNameAsc')}</option>
                   <option value="name_desc">{t('member.sortNameDesc')}</option>
+                  <option value="updated_desc">{t('member.sortUpdatedDesc')}</option>
+                  <option value="updated_asc">{t('member.sortUpdatedAsc')}</option>
+                  <option value="generation_asc">{t('member.sortGenerationAsc')}</option>
+                  <option value="generation_desc">{t('member.sortGenerationDesc')}</option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                   <svg className="size-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label={t('member.openMenu')}>
