@@ -1,6 +1,7 @@
 import { motion, type Variants } from 'framer-motion';
 import { Briefcase, Info, Leaf, MapPin, Phone, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 import { calculateAge, formatDisplayDate, getLunarDateString } from '../../events/utils/dateHelpers';
 import RelationshipManager from '../../relationships/components/RelationshipManager';
 import type { Person } from '../../types';
@@ -28,91 +29,307 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
   };
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="show" className="bg-stone-50/50">
+    <motion.div variants={containerVariants} initial="hidden" animate="show" className={css({ backgroundColor: 'rgb(254 250 244 / 0.5)' })}>
       {/* Header / Cover */}
-      <div className="h-28 sm:h-36 bg-linear-to-r from-stone-200 via-stone-100 to-stone-200 relative shrink-0">
+      <div
+        className={css({
+          height: '28',
+          position: 'relative',
+          flexShrink: 0,
+          background: 'linear-gradient(to right, rgb(214 211 209), rgb(231 229 228), rgb(214 211 209))',
+          sm: { height: '36' },
+        })}
+      >
         <div
-          className={`absolute right-0 -top-20 w-64 h-64 rounded-full blur-4xl opacity-40 ${person.gender === 'male' ? 'bg-sky-300' : person.gender === 'female' ? 'bg-rose-300' : 'bg-stone-300'}`}
+          className={css(
+            { position: 'absolute', right: '0', top: '-80', width: '64', height: '64', borderRadius: 'full', filter: 'blur(40px)', opacity: '0.4' },
+            person.gender === 'male'
+              ? { backgroundColor: 'rgb(125 211 252)' }
+              : person.gender === 'female'
+                ? { backgroundColor: 'rgb(251 207 232)' }
+                : { backgroundColor: 'rgb(212 212 212)' }
+          )}
         />
-        <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full blur-4xl opacity-20 bg-amber-200" />
+        <div
+          className={css({
+            position: 'absolute',
+            left: '-80',
+            bottom: '-80',
+            width: '64',
+            height: '64',
+            borderRadius: 'full',
+            filter: 'blur(40px)',
+            opacity: 0.2,
+            backgroundColor: 'rgb(251 191 36)',
+          })}
+        />
 
-        <motion.div variants={itemVariants} className="absolute -bottom-12 sm:-bottom-16 left-6 sm:left-8 z-10">
+        <motion.div variants={itemVariants} className={css({ position: 'absolute', bottom: '-12', left: '6', zIndex: '10', sm: { bottom: '-16', left: '8' } })}>
           <div
-            className={`h-24 w-24 sm:h-32 sm:w-32 rounded-full border-4 sm:border-4 border-white flex items-center justify-center text-3xl sm:text-4xl font-bold text-white overflow-hidden shadow-xl shrink-0
-             ${person.gender === 'male' ? 'bg-linear-to-br from-sky-400 to-sky-700' : person.gender === 'female' ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
+            className={css(
+              {
+                height: '24',
+                width: '24',
+                borderRadius: 'full',
+                borderWidth: '4',
+                borderStyle: 'solid',
+                borderColor: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '3xl',
+                fontWeight: 'bold',
+                color: 'white',
+                overflow: 'hidden',
+                boxShadow: 'xl',
+                flexShrink: 0,
+                sm: { height: '32', width: '32', borderWidth: '4', fontSize: '4xl' },
+              },
+              person.gender === 'male'
+                ? { background: 'linear-gradient(to bottom right, rgb(56 189 248), rgb(29 78 216))' }
+                : person.gender === 'female'
+                  ? { background: 'linear-gradient(to bottom right, rgb(244 114 182), rgb(190 24 93))' }
+                  : { background: 'linear-gradient(to bottom right, rgb(161 161 170), rgb(82 82 91))' }
+            )}
           >
             {person.avatarUrl ? (
-              <img src={person.avatarUrl} alt={person.fullName} className="h-full w-full object-cover" />
+              <img src={person.avatarUrl} alt={person.fullName} className={css({ height: '100%', width: '100%', objectFit: 'cover' })} />
             ) : (
               <DefaultAvatar gender={person.gender} />
             )}
           </div>
           <div
-            className={`absolute bottom-1 right-1 sm:bottom-2 sm:right-2 size-6 sm:size-8 rounded-full ring-2 sm:ring-4 ring-white shadow-md flex items-center justify-center ${
-              person.gender === 'male' ? 'bg-sky-100 text-sky-600' : person.gender === 'female' ? 'bg-rose-100 text-rose-600' : 'bg-stone-100 text-stone-600'
-            }`}
+            className={css(
+              {
+                position: 'absolute',
+                bottom: '1',
+                right: '1',
+                width: '6',
+                height: '6',
+                borderRadius: 'full',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: 'md',
+                sm: { bottom: '2', right: '2', width: '8', height: '8' },
+              },
+              person.gender === 'male'
+                ? { backgroundColor: 'rgb(224 242 254)', color: 'rgb(2 132 199)', ringWidth: '2', ringColor: 'white' }
+                : person.gender === 'female'
+                  ? { backgroundColor: 'rgb(255 241 242)', color: 'rgb(225 29 72)', ringWidth: '2', ringColor: 'white' }
+                  : { backgroundColor: 'rgb(244 244 245)', color: 'rgb(82 82 91)', ringWidth: '2', ringColor: 'white' }
+            )}
           >
             {person.gender === 'male' ? (
-              <MaleIcon className="size-4 sm:size-5" />
+              <MaleIcon className={css({ width: '4', height: '4', sm: { width: '5', height: '5' } })} />
             ) : person.gender === 'female' ? (
-              <FemaleIcon className="size-4 sm:size-5" />
+              <FemaleIcon className={css({ width: '4', height: '4', sm: { width: '5', height: '5' } })} />
             ) : null}
           </div>
         </motion.div>
       </div>
 
-      <div className="pt-16 sm:pt-20 px-6 sm:px-8 pb-8 relative z-10">
-        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+      <div
+        className={css({ paddingTop: '16', paddingX: '6', paddingBottom: '8', position: 'relative', zIndex: '10', sm: { paddingTop: '20', paddingX: '8' } })}
+      >
+        <motion.div
+          variants={itemVariants}
+          className={css({
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'start',
+            gap: '4',
+            sm: { flexDirection: 'row', alignItems: 'center' },
+          })}
+        >
           <div>
-            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 flex items-center gap-2 sm:gap-3 flex-wrap">
+            <h1
+              className={css({
+                fontSize: '2xl',
+                fontFamily: 'serif',
+                fontWeight: 'bold',
+                color: 'stone.900',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '2',
+                flexWrap: 'wrap',
+                sm: { fontSize: '3xl', gap: '3' },
+              })}
+            >
               {person.fullName}
               {isDeceased && (
-                <span className="text-2xs sm:text-xs font-sans font-bold text-stone-500 border border-stone-200/80 bg-stone-100/50 rounded-md px-2 py-0.5 whitespace-nowrap uppercase tracking-wider shadow-xs">
+                <span
+                  className={css({
+                    fontSize: '2xs',
+                    fontFamily: 'sans',
+                    fontWeight: 'bold',
+                    color: 'stone.500',
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                    borderColor: 'rgb(228 228 231 / 0.8)',
+                    backgroundColor: 'rgb(161 161 169 / 0.5)',
+                    borderRadius: 'md',
+                    paddingX: '2',
+                    paddingY: '0.5',
+                    whiteSpace: 'nowrap',
+                    textTransform: 'uppercase',
+                    letterSpacing: 'wider',
+                    boxShadow: 'xs',
+                    sm: { fontSize: 'xs' },
+                  })}
+                >
                   {t('member.filterDeceased')}
                 </span>
               )}
               {person.isInLaw && (
                 <span
-                  className={`text-2xs sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border uppercase tracking-wider ${
+                  className={css(
+                    {
+                      fontSize: '2xs',
+                      fontFamily: 'sans',
+                      fontWeight: 'bold',
+                      borderRadius: 'md',
+                      paddingX: '2',
+                      paddingY: '0.5',
+                      whiteSpace: 'nowrap',
+                      boxShadow: 'xs',
+                      borderWidth: '1px',
+                      borderStyle: 'solid',
+                      textTransform: 'uppercase',
+                      letterSpacing: 'wider',
+                      sm: { fontSize: 'xs' },
+                    },
                     person.gender === 'female'
-                      ? 'text-rose-700 bg-rose-50/50 border-rose-200/60'
+                      ? { color: 'rose.700', backgroundColor: 'rgb(255 241 242 / 0.5)', borderColor: 'rgb(244 63 94 / 0.6)' }
                       : person.gender === 'male'
-                        ? 'text-sky-700 bg-sky-50/50 border-sky-200/60'
-                        : 'text-stone-700 bg-stone-50/50 border-stone-200/60'
-                  }`}
+                        ? { color: 'sky.700', backgroundColor: 'rgb(224 242 254 / 0.5)', borderColor: 'rgb(14 165 233 / 0.6)' }
+                        : { color: 'stone.700', backgroundColor: 'rgb(254 244 243 / 0.5)', borderColor: 'rgb(228 228 231 / 0.6)' }
+                  )}
                 >
                   {person.gender === 'female' ? t('member.filterInLawFemale') : person.gender === 'male' ? t('member.filterInLawMale') : t('member.inLawOther')}
                 </span>
               )}
               {person.birthOrder != null && (
-                <span className="text-2xs sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border text-amber-700 bg-amber-50/60 border-amber-200/60 uppercase tracking-wider">
+                <span
+                  className={css({
+                    fontSize: '2xs',
+                    fontFamily: 'sans',
+                    fontWeight: 'bold',
+                    borderRadius: 'md',
+                    paddingX: '2',
+                    paddingY: '0.5',
+                    whiteSpace: 'nowrap',
+                    boxShadow: 'xs',
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                    textTransform: 'uppercase',
+                    letterSpacing: 'wider',
+                    color: 'amber.700',
+                    backgroundColor: 'rgb(254 243 199 / 0.6)',
+                    borderColor: 'rgb(251 191 36 / 0.6)',
+                    sm: { fontSize: 'xs' },
+                  })}
+                >
                   {person.birthOrder === 1 ? t('member.birthOrderFirst') : t('member.birthOrderN', { order: person.birthOrder })}
                 </span>
               )}
               {person.generation != null && (
-                <span className="text-2xs sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border text-emerald-700 bg-emerald-50/60 border-emerald-200/60 uppercase tracking-wider">
+                <span
+                  className={css({
+                    fontSize: '2xs',
+                    fontFamily: 'sans',
+                    fontWeight: 'bold',
+                    borderRadius: 'md',
+                    paddingX: '2',
+                    paddingY: '0.5',
+                    whiteSpace: 'nowrap',
+                    boxShadow: 'xs',
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                    textTransform: 'uppercase',
+                    letterSpacing: 'wider',
+                    color: 'emerald.700',
+                    backgroundColor: 'rgb(209 250 229 / 0.6)',
+                    borderColor: 'rgb(16 185 129 / 0.6)',
+                    sm: { fontSize: 'xs' },
+                  })}
+                >
                   {t('stats.generationLabel', { gen: person.generation })}
                 </span>
               )}
             </h1>
 
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+            <div
+              className={css({
+                marginTop: '6',
+                display: 'grid',
+                gridTemplateColumns: '1fr',
+                gap: '3',
+                sm: { gridTemplateColumns: 'repeat(2, 1fr)', gap: '4' },
+                md: { gridTemplateColumns: 'repeat(3, 1fr)' },
+              })}
+            >
               {/* Birth Card */}
               <motion.div
                 variants={itemVariants}
-                className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-stone-200/60 shadow-sm transition-all hover:shadow-md hover:border-amber-200/60"
+                className={css({
+                  backgroundColor: 'rgb(255 255 255 / 0.8)',
+                  backdropFilter: 'blur(8px)',
+                  borderRadius: '2xl',
+                  padding: '4',
+                  borderWidth: '1px',
+                  borderStyle: 'solid',
+                  borderColor: 'rgb(214 211 209 / 0.6)',
+                  boxShadow: 'sm',
+                  transition: 'all 0.2s',
+                  _hover: { shadow: 'md', borderColor: 'rgb(252 211 77 / 0.6)' },
+                })}
               >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
-                  <h3 className="text-xs-plus font-bold text-stone-400 uppercase tracking-widest">{t('member.birth')}</h3>
+                <div className={css({ display: 'flex', alignItems: 'center', gap: '2', marginBottom: '2' })}>
+                  <span
+                    className={css({
+                      width: '2',
+                      height: '2',
+                      borderRadius: 'full',
+                      backgroundColor: 'emerald.400',
+                      boxShadow: '0 0 8px rgba(52,211,153,0.5)',
+                    })}
+                  />
+                  <h3 className={css({ fontSize: 'xs', fontWeight: 'bold', color: 'stone.400', textTransform: 'uppercase', letterSpacing: 'widest' })}>
+                    {t('member.birth')}
+                  </h3>
                 </div>
-                <div className="space-y-1.5 pl-4 border-l-2 border-stone-100">
-                  <p className="text-stone-800 font-semibold text-sm sm:text-base">
+                <div
+                  className={css({
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1.5',
+                    paddingLeft: '4',
+                    borderLeftWidth: '2px',
+                    borderLeftStyle: 'solid',
+                    borderLeftColor: 'stone.100',
+                  })}
+                >
+                  <p className={css({ color: 'stone.800', fontWeight: 'semibold', fontSize: 'sm', sm: { fontSize: 'base' } })}>
                     {formatDisplayDate(person.birthYear, person.birthMonth, person.birthDay, t('common.unknown'))}
                   </p>
                   {(person.birthYear || person.birthMonth || person.birthDay) && (
-                    <p className="text-sm font-medium text-stone-500 flex items-center gap-1.5">
-                      <span className="text-2xs border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
+                    <p className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'stone.500', display: 'flex', alignItems: 'center', gap: '1.5' })}>
+                      <span
+                        className={css({
+                          fontSize: '2xs',
+                          borderWidth: '1px',
+                          borderStyle: 'solid',
+                          borderColor: 'rgb(214 211 209 / 0.6)',
+                          backgroundColor: 'rgb(254 244 243 / 0.8)',
+                          borderRadius: 'px',
+                          paddingX: '1.5',
+                          paddingY: '0.5',
+                        })}
+                      >
+                        {t('member.lunarCalendar')}
+                      </span>
                       {getLunarDateString(person.birthYear, person.birthMonth, person.birthDay) || t('common.unknown')}
                     </p>
                   )}
@@ -123,19 +340,63 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
               {isDeceased && (
                 <motion.div
                   variants={itemVariants}
-                  className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-stone-200/60 shadow-sm transition-all hover:shadow-md hover:border-amber-200/60"
+                  className={css({
+                    backgroundColor: 'rgb(255 255 255 / 0.8)',
+                    backdropFilter: 'blur(8px)',
+                    borderRadius: '2xl',
+                    padding: '4',
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                    borderColor: 'rgb(214 211 209 / 0.6)',
+                    boxShadow: 'sm',
+                    transition: 'all 0.2s',
+                    _hover: { shadow: 'md', borderColor: 'rgb(252 211 77 / 0.6)' },
+                  })}
                 >
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="size-2 rounded-full bg-stone-400 shadow-[0_0_8px_rgba(156,163,175,0.5)]" />
-                    <h3 className="text-xs-plus font-bold text-stone-400 uppercase tracking-widest">{t('member.death')}</h3>
+                  <div className={css({ display: 'flex', alignItems: 'center', gap: '2', marginBottom: '2' })}>
+                    <span
+                      className={css({
+                        width: '2',
+                        height: '2',
+                        borderRadius: 'full',
+                        backgroundColor: 'stone.400',
+                        boxShadow: '0 0 8px rgba(156,163,175,0.5)',
+                      })}
+                    />
+                    <h3 className={css({ fontSize: 'xs', fontWeight: 'bold', color: 'stone.400', textTransform: 'uppercase', letterSpacing: 'widest' })}>
+                      {t('member.death')}
+                    </h3>
                   </div>
-                  <div className="space-y-1.5 pl-4 border-l-2 border-stone-100">
-                    <p className="text-stone-800 font-semibold text-sm sm:text-base">
+                  <div
+                    className={css({
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '1.5',
+                      paddingLeft: '4',
+                      borderLeftWidth: '2px',
+                      borderLeftStyle: 'solid',
+                      borderLeftColor: 'stone.100',
+                    })}
+                  >
+                    <p className={css({ color: 'stone.800', fontWeight: 'semibold', fontSize: 'sm', sm: { fontSize: 'base' } })}>
                       {formatDisplayDate(person.deathYear, person.deathMonth, person.deathDay, t('common.unknown'))}
                     </p>
                     {(person.deathYear || person.deathMonth || person.deathDay) && (
-                      <p className="text-xs font-medium text-stone-500 flex items-center gap-1.5">
-                        <span className="text-2xs border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
+                      <p className={css({ fontSize: 'xs', fontWeight: 'medium', color: 'stone.500', display: 'flex', alignItems: 'center', gap: '1.5' })}>
+                        <span
+                          className={css({
+                            fontSize: '2xs',
+                            borderWidth: '1px',
+                            borderStyle: 'solid',
+                            borderColor: 'rgb(214 211 209 / 0.6)',
+                            backgroundColor: 'rgb(254 244 243 / 0.8)',
+                            borderRadius: 'px',
+                            paddingX: '1.5',
+                            paddingY: '0.5',
+                          })}
+                        >
+                          {t('member.lunarCalendar')}
+                        </span>
                         {getLunarDateString(person.deathYear, person.deathMonth, person.deathDay) || t('common.unknown')}
                       </p>
                     )}
@@ -150,21 +411,81 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                 return (
                   <motion.div
                     variants={itemVariants}
-                    className="bg-linear-to-br from-amber-50 to-orange-50/40 rounded-2xl p-4 border border-amber-200/50 shadow-sm transition-all hover:shadow-md flex flex-col justify-center relative overflow-hidden"
+                    className={css({
+                      background: 'linear-gradient(to bottom right, rgb(254 243 199), rgb(255 237 213 / 0.4))',
+                      borderRadius: '2xl',
+                      padding: '4',
+                      borderWidth: '1px',
+                      borderStyle: 'solid',
+                      borderColor: 'rgb(252 211 77 / 0.5)',
+                      boxShadow: 'sm',
+                      transition: 'all 0.2s',
+                      _hover: { shadow: 'md' },
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      position: 'relative',
+                      overflow: 'hidden',
+                    })}
                   >
-                    <Leaf className="absolute -bottom-4 -right-4 w-20 h-20 text-amber-500/10 rotate-12" />
-                    <div className="flex items-center gap-2 mb-1.5 relative z-10">
+                    <Leaf
+                      className={css({
+                        position: 'absolute',
+                        bottom: '-16',
+                        right: '-16',
+                        width: '20',
+                        height: '20',
+                        color: 'rgb(245 158 11 / 0.1)',
+                        transform: 'rotate(12deg)',
+                      })}
+                    />
+                    <div className={css({ display: 'flex', alignItems: 'center', gap: '2', marginBottom: '1.5', position: 'relative', zIndex: '10' })}>
                       <span
-                        className={`size-2 rounded-full ${ageData.isDeceased ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]' : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]'}`}
+                        className={css(
+                          { width: '2', height: '2', borderRadius: 'full' },
+                          ageData.isDeceased
+                            ? { backgroundColor: 'amber.400', boxShadow: '0 0 8px rgba(251,191,36,0.6)' }
+                            : { backgroundColor: 'emerald.400', boxShadow: '0 0 8px rgba(52,211,153,0.6)' }
+                        )}
                       />
-                      <p className="text-xs-plus font-bold text-amber-800/60 uppercase tracking-widest">
+                      <p
+                        className={css({
+                          fontSize: 'xs',
+                          fontWeight: 'bold',
+                          color: 'rgb(120 53 15 / 0.6)',
+                          textTransform: 'uppercase',
+                          letterSpacing: 'widest',
+                        })}
+                      >
                         {ageData.isDeceased ? (ageData.age >= 60 ? t('member.longevity') : t('member.lifespan')) : t('member.age')}
                       </p>
                     </div>
-                    <div className="pl-4 relative z-10">
-                      <p className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-linear-to-br from-amber-700 to-amber-900 tracking-tight">
+                    <div className={css({ paddingLeft: '4', position: 'relative', zIndex: '10' })}>
+                      <p
+                        className={css({
+                          fontSize: '3xl',
+                          fontWeight: 'black',
+                          color: 'transparent',
+                          background: 'linear-gradient(to bottom right, rgb(180 83 9), rgb(120 53 15))',
+                          backgroundClip: 'text',
+                          letterSpacing: 'tight',
+                          sm: { fontSize: '4xl' },
+                        })}
+                      >
                         {ageData.age}
-                        <span className="text-xs sm:text-sm font-bold text-amber-700/60 ml-1.5 uppercase tracking-wider">{t('member.ageSuffix')}</span>
+                        <span
+                          className={css({
+                            fontSize: 'xs',
+                            fontWeight: 'bold',
+                            color: 'rgb(180 83 9 / 0.6)',
+                            marginLeft: '1.5',
+                            textTransform: 'uppercase',
+                            letterSpacing: 'wider',
+                            sm: { fontSize: 'sm' },
+                          })}
+                        >
+                          {t('member.ageSuffix')}
+                        </span>
                       </p>
                     </div>
                   </motion.div>
@@ -174,72 +495,256 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
           </div>
         </motion.div>
 
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div
+          className={css({
+            marginTop: '8',
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gap: '6',
+            lg: { gridTemplateColumns: 'repeat(3, 1fr)' },
+            sm: { gap: '8' },
+          })}
+        >
           {/* Main Info */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className={css({ lg: { gridColumn: 'span 2' }, display: 'flex', flexDirection: 'column', gap: '8' })}>
             <motion.section variants={itemVariants}>
-              <h2 className="text-base sm:text-lg font-bold text-stone-800 mb-4 flex items-center gap-2">
-                <Info className="size-5 text-amber-600" />
+              <h2
+                className={css({
+                  fontSize: 'base',
+                  fontWeight: 'bold',
+                  color: 'stone.800',
+                  marginBottom: '4',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '2',
+                  sm: { fontSize: 'lg' },
+                })}
+              >
+                <Info className={css({ width: '5', height: '5', color: 'amber.600' })} />
                 {t('common.note')}
               </h2>
-              <div className="bg-white/80 backdrop-blur-sm p-5 sm:p-6 rounded-2xl border border-stone-200/60 shadow-sm">
-                <p className="text-stone-600 whitespace-pre-wrap text-sm sm:text-base leading-relaxed">
-                  {person.note || <span className="text-stone-400 italic">{t('member.noNote')}</span>}
+              <div
+                className={css({
+                  backgroundColor: 'rgb(255 255 255 / 0.8)',
+                  backdropFilter: 'blur(8px)',
+                  padding: '5',
+                  borderRadius: '2xl',
+                  borderWidth: '1px',
+                  borderStyle: 'solid',
+                  borderColor: 'rgb(214 211 209 / 0.6)',
+                  boxShadow: 'sm',
+                  sm: { padding: '6' },
+                })}
+              >
+                <p className={css({ color: 'stone.600', whiteSpace: 'pre-wrap', fontSize: 'sm', lineHeight: 'relaxed', sm: { fontSize: 'base' } })}>
+                  {person.note || <span className={css({ color: 'stone.400', fontStyle: 'italic' })}>{t('member.noNote')}</span>}
                 </p>
               </div>
             </motion.section>
 
             <motion.section variants={itemVariants}>
-              <h2 className="text-base sm:text-lg font-bold text-stone-800 mb-4 flex items-center gap-2">
-                <Users className="size-5 text-amber-600" />
+              <h2
+                className={css({
+                  fontSize: 'base',
+                  fontWeight: 'bold',
+                  color: 'stone.800',
+                  marginBottom: '4',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '2',
+                  sm: { fontSize: 'lg' },
+                })}
+              >
+                <Users className={css({ width: '5', height: '5', color: 'amber.600' })} />
                 {t('member.family')}
               </h2>
-              <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-6 rounded-2xl border border-stone-200/60 shadow-sm relative z-0">
+              <div
+                className={css({
+                  backgroundColor: 'rgb(255 255 255 / 0.8)',
+                  backdropFilter: 'blur(8px)',
+                  padding: '4',
+                  borderRadius: '2xl',
+                  borderWidth: '1px',
+                  borderStyle: 'solid',
+                  borderColor: 'rgb(214 211 209 / 0.6)',
+                  boxShadow: 'sm',
+                  position: 'relative',
+                  zIndex: '0',
+                  sm: { padding: '6' },
+                })}
+              >
                 <RelationshipManager personId={person.id} isAdmin={isAdmin} personGender={person.gender} />
               </div>
             </motion.section>
           </div>
 
           {/* Sidebar / Private Info */}
-          <div className="space-y-6">
+          <div className={css({ display: 'flex', flexDirection: 'column', gap: '6' })}>
             <motion.div variants={itemVariants}>
               {isAdmin ? (
-                <div className="bg-stone-50 p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-sm">
-                  <h3 className="font-bold text-stone-900 mb-4 flex items-center gap-2 text-sm sm:text-base border-b border-stone-200/60 pb-3">
-                    <span className="bg-amber-100/80 text-amber-700 p-1.5 rounded-lg border border-amber-200/50">🔒</span>
+                <div
+                  className={css({
+                    backgroundColor: 'stone.50',
+                    padding: '5',
+                    borderRadius: '2xl',
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                    borderColor: 'rgb(228 228 231 / 0.8)',
+                    boxShadow: 'sm',
+                    sm: { padding: '6' },
+                  })}
+                >
+                  <h3
+                    className={css({
+                      fontWeight: 'bold',
+                      color: 'stone.900',
+                      marginBottom: '4',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '2',
+                      fontSize: 'sm',
+                      borderBottomWidth: '1px',
+                      borderBottomStyle: 'solid',
+                      borderBottomColor: 'rgb(228 228 231 / 0.6)',
+                      paddingBottom: '3',
+                      sm: { fontSize: 'base' },
+                    })}
+                  >
+                    <span
+                      className={css({
+                        backgroundColor: 'rgb(254 243 199 / 0.8)',
+                        color: 'amber.700',
+                        padding: '1.5',
+                        borderRadius: 'lg',
+                        borderWidth: '1px',
+                        borderStyle: 'solid',
+                        borderColor: 'rgb(252 211 77 / 0.5)',
+                      })}
+                    >
+                      🔒
+                    </span>
                     {t('member.contactInfo')}
                   </h3>
-                  <dl className="space-y-4 text-sm sm:text-base">
+                  <dl className={css({ display: 'flex', flexDirection: 'column', gap: '4', fontSize: 'sm', sm: { fontSize: 'base' } })}>
                     <div>
-                      <dt className="text-xs-plus font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                        <Phone className="w-3.5 h-3.5" /> {t('member.phone')}
+                      <dt
+                        className={css({
+                          fontSize: 'xs',
+                          fontWeight: 'bold',
+                          color: 'stone.500',
+                          textTransform: 'uppercase',
+                          letterSpacing: 'wider',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '1.5',
+                          marginBottom: '1',
+                        })}
+                      >
+                        <Phone className={css({ width: '3.5', height: '3.5' })} /> {t('member.phone')}
                       </dt>
-                      <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-stone-200/60 shadow-xs">
-                        {privateData?.phoneNumber || <span className="text-stone-400 font-normal">{t('member.notUpdated')}</span>}
+                      <dd
+                        className={css({
+                          color: 'stone.900',
+                          fontWeight: 'medium',
+                          backgroundColor: 'white',
+                          paddingX: '3',
+                          paddingY: '2',
+                          borderRadius: 'lg',
+                          borderWidth: '1px',
+                          borderStyle: 'solid',
+                          borderColor: 'rgb(214 211 209 / 0.6)',
+                          boxShadow: 'xs',
+                        })}
+                      >
+                        {privateData?.phoneNumber || <span className={css({ color: 'stone.400', fontWeight: 'normal' })}>{t('member.notUpdated')}</span>}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs-plus font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                        <Briefcase className="w-3.5 h-3.5" /> {t('member.occupation')}
+                      <dt
+                        className={css({
+                          fontSize: 'xs',
+                          fontWeight: 'bold',
+                          color: 'stone.500',
+                          textTransform: 'uppercase',
+                          letterSpacing: 'wider',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '1.5',
+                          marginBottom: '1',
+                        })}
+                      >
+                        <Briefcase className={css({ width: '3.5', height: '3.5' })} /> {t('member.occupation')}
                       </dt>
-                      <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-stone-200/60 shadow-xs">
-                        {privateData?.occupation || <span className="text-stone-400 font-normal">{t('member.notUpdated')}</span>}
+                      <dd
+                        className={css({
+                          color: 'stone.900',
+                          fontWeight: 'medium',
+                          backgroundColor: 'white',
+                          paddingX: '3',
+                          paddingY: '2',
+                          borderRadius: 'lg',
+                          borderWidth: '1px',
+                          borderStyle: 'solid',
+                          borderColor: 'rgb(214 211 209 / 0.6)',
+                          boxShadow: 'xs',
+                        })}
+                      >
+                        {privateData?.occupation || <span className={css({ color: 'stone.400', fontWeight: 'normal' })}>{t('member.notUpdated')}</span>}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs-plus font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                        <MapPin className="w-3.5 h-3.5" /> {t('member.currentResidence')}
+                      <dt
+                        className={css({
+                          fontSize: 'xs',
+                          fontWeight: 'bold',
+                          color: 'stone.500',
+                          textTransform: 'uppercase',
+                          letterSpacing: 'wider',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '1.5',
+                          marginBottom: '1',
+                        })}
+                      >
+                        <MapPin className={css({ width: '3.5', height: '3.5' })} /> {t('member.currentResidence')}
                       </dt>
-                      <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-stone-200/60 shadow-xs">
-                        {privateData?.currentResidence || <span className="text-stone-400 font-normal">{t('member.notUpdated')}</span>}
+                      <dd
+                        className={css({
+                          color: 'stone.900',
+                          fontWeight: 'medium',
+                          backgroundColor: 'white',
+                          paddingX: '3',
+                          paddingY: '2',
+                          borderRadius: 'lg',
+                          borderWidth: '1px',
+                          borderStyle: 'solid',
+                          borderColor: 'rgb(214 211 209 / 0.6)',
+                          boxShadow: 'xs',
+                        })}
+                      >
+                        {privateData?.currentResidence || <span className={css({ color: 'stone.400', fontWeight: 'normal' })}>{t('member.notUpdated')}</span>}
                       </dd>
                     </div>
                   </dl>
                 </div>
               ) : (
-                <div className="bg-stone-50/50 p-5 rounded-2xl border border-stone-200 border-dashed flex flex-col items-center justify-center text-center gap-2">
-                  <span className="text-2xl opacity-50">🔒</span>
-                  <p className="text-sm font-medium text-stone-500">{t('member.contactAdminOnly')}</p>
+                <div
+                  className={css({
+                    backgroundColor: 'rgb(254 244 243 / 0.5)',
+                    padding: '5',
+                    borderRadius: '2xl',
+                    borderWidth: '1px',
+                    borderStyle: 'dashed',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    gap: '2',
+                  })}
+                >
+                  <span className={css({ fontSize: '2xl', opacity: 0.5 })}>🔒</span>
+                  <p className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'stone.500' })}>{t('member.contactAdminOnly')}</p>
                 </div>
               )}
             </motion.div>
