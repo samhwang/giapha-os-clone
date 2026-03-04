@@ -92,7 +92,11 @@ function resolveBloodTerms(
     const isPaternalSide = branchA.gender === 'male';
 
     if (isPaternalSide) {
-      termForB = genderB === 'female' ? 'Cô' : seniority === 'senior' ? 'Chú' : 'Bác';
+      if (genderB === 'female') {
+        termForB = seniority === 'junior' ? 'Bác' : 'Cô';
+      } else {
+        termForB = seniority === 'junior' ? 'Bác' : 'Chú';
+      }
     } else {
       termForB = genderB === 'female' ? 'Dì' : 'Cậu';
     }
@@ -124,7 +128,11 @@ function resolveBloodTerms(
     if (genDiff > 0) {
       let termForB = 'Họ hàng';
       if (genDiff === 1 && branchA.gender === 'male') {
-        termForB = genderB === 'female' ? 'Cô họ' : seniority === 'senior' ? 'Chú họ' : 'Bác họ';
+        if (genderB === 'female') {
+          termForB = seniority === 'junior' ? 'Bác họ' : 'Cô họ';
+        } else {
+          termForB = seniority === 'junior' ? 'Bác họ' : 'Chú họ';
+        }
       } else if (genDiff === 1) {
         termForB = genderB === 'female' ? 'Dì họ' : 'Cậu họ';
       } else {
