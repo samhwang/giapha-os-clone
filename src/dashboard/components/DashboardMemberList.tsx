@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { ArrowUpDown, Filter, Plus, Search } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 import PersonCard from '../../members/components/PersonCard';
 import type { Person } from '../../types';
 
@@ -59,24 +60,113 @@ export default function DashboardMemberList({ initialPersons }: { initialPersons
 
   return (
     <>
-      <div className="mb-8 relative">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/60 backdrop-blur-xl p-4 sm:p-5 rounded-2xl shadow-sm border border-stone-200/60 transition-all duration-300 relative z-10 w-full">
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto flex-1">
-            <div className="relative flex-1 max-w-sm group">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
+      <div className={css({ marginBottom: '8', position: 'relative' })}>
+        <div
+          className={css({
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'start',
+            gap: '4',
+            backgroundColor: 'rgb(255 255 255 / 0.6)',
+            backdropFilter: 'blur(24px)',
+            padding: '4',
+            borderRadius: '2xl',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: 'rgb(228 228 231 / 0.6)',
+            boxShadow: 'sm',
+            transition: 'all 0.3s',
+            position: 'relative',
+            zIndex: '10',
+            width: '100%',
+            sm: { flexDirection: 'row', alignItems: 'center', padding: '5' },
+          })}
+        >
+          <div className={css({ display: 'flex', flexDirection: 'column', gap: '4', width: '100%', sm: { flexDirection: 'row' }, flex: '1' })}>
+            <div className={css({ position: 'relative', flex: '1', maxWidth: 'sm' })}>
+              <Search
+                className={css({
+                  position: 'absolute',
+                  left: '3.5',
+                  top: '1/2',
+                  transform: 'translateY(-50%)',
+                  width: '4',
+                  height: '4',
+                  color: 'stone.400',
+                  transition: 'colors 0.2s',
+                  _groupFocusWithin: { color: 'amber.500' },
+                })}
+              />
               <input
                 type="text"
                 placeholder={t('member.searchPlaceholder')}
-                className="bg-white/90 text-stone-900 w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200/80 shadow-sm placeholder-stone-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                className={css({
+                  backgroundColor: 'rgb(255 255 255 / 0.9)',
+                  color: 'stone.900',
+                  width: '100%',
+                  paddingLeft: '10',
+                  paddingRight: '4',
+                  paddingY: '2.5',
+                  borderRadius: 'xl',
+                  borderWidth: '1px',
+                  borderStyle: 'solid',
+                  borderColor: 'rgb(228 228 231 / 0.8)',
+                  boxShadow: 'sm',
+                  outline: 'none',
+                  transition: 'all 0.2s',
+                  '&::placeholder': { color: 'stone.400' },
+                  _focus: { borderColor: 'amber.400', boxShadow: '0 0 0 2px rgb(245 158 11 / 0.2)' },
+                })}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto items-center">
-              <div className="relative w-full sm:w-auto">
-                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none" />
+            <div
+              className={css({
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2',
+                width: '100%',
+                alignItems: 'center',
+                sm: { flexDirection: 'row', gap: '3', width: 'auto' },
+              })}
+            >
+              <div className={css({ position: 'relative', width: '100%', sm: { width: 'auto' } })}>
+                <Filter
+                  className={css({
+                    position: 'absolute',
+                    left: '3',
+                    top: '1/2',
+                    transform: 'translateY(-50%)',
+                    width: '4',
+                    height: '4',
+                    color: 'stone.400',
+                    pointerEvents: 'none',
+                  })}
+                />
                 <select
-                  className="appearance-none bg-white/90 text-stone-700 w-full sm:w-40 pl-9 pr-8 py-2.5 rounded-xl border border-stone-200/80 shadow-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 hover:border-amber-300 font-medium text-sm transition-all focus:bg-white"
+                  className={css({
+                    appearance: 'none',
+                    backgroundColor: 'rgb(255 255 255 / 0.9)',
+                    color: 'stone.700',
+                    width: '100%',
+                    paddingLeft: '9',
+                    paddingRight: '8',
+                    paddingY: '2.5',
+                    borderRadius: 'xl',
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                    borderColor: 'rgb(228 228 231 / 0.8)',
+                    boxShadow: 'sm',
+                    fontWeight: 'medium',
+                    fontSize: 'sm',
+                    transition: 'all 0.2s',
+                    cursor: 'pointer',
+                    sm: { width: '40' },
+                    _focus: { borderColor: 'amber.400', boxShadow: '0 0 0 2px rgb(245 158 11 / 0.2)', backgroundColor: 'white' },
+                    _hover: { borderColor: 'amber.300' },
+                  })}
                   value={filterOption}
                   onChange={(e) => setFilterOption(e.target.value)}
                 >
@@ -88,18 +178,66 @@ export default function DashboardMemberList({ initialPersons }: { initialPersons
                   <option value="deceased">{t('member.filterDeceased')}</option>
                   <option value="first_child">{t('member.filterFirstborn')}</option>
                 </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="size-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label={t('member.openMenu')}>
+                <div
+                  className={css({
+                    position: 'absolute',
+                    insetY: '0',
+                    right: '0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingX: '2',
+                    pointerEvents: 'none',
+                  })}
+                >
+                  <svg
+                    className={css({ width: '4', height: '4', color: 'stone.400' })}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    role="img"
+                    aria-label={t('member.openMenu')}
+                  >
                     <title>{t('member.openMenu')}</title>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </div>
               </div>
 
-              <div className="relative w-full sm:w-auto">
-                <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none" />
+              <div className={css({ position: 'relative', width: '100%', sm: { width: 'auto' } })}>
+                <ArrowUpDown
+                  className={css({
+                    position: 'absolute',
+                    left: '3',
+                    top: '1/2',
+                    transform: 'translateY(-50%)',
+                    width: '4',
+                    height: '4',
+                    color: 'stone.400',
+                    pointerEvents: 'none',
+                  })}
+                />
                 <select
-                  className="appearance-none bg-white/90 text-stone-700 w-full sm:w-52 pl-9 pr-8 py-2.5 rounded-xl border border-stone-200/80 shadow-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 hover:border-amber-300 font-medium text-sm transition-all focus:bg-white"
+                  className={css({
+                    appearance: 'none',
+                    backgroundColor: 'rgb(255 255 255 / 0.9)',
+                    color: 'stone.700',
+                    width: '100%',
+                    paddingLeft: '9',
+                    paddingRight: '8',
+                    paddingY: '2.5',
+                    borderRadius: 'xl',
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                    borderColor: 'rgb(228 228 231 / 0.8)',
+                    boxShadow: 'sm',
+                    fontWeight: 'medium',
+                    fontSize: 'sm',
+                    transition: 'all 0.2s',
+                    cursor: 'pointer',
+                    sm: { width: '52' },
+                    _focus: { borderColor: 'amber.400', boxShadow: '0 0 0 2px rgb(245 158 11 / 0.2)', backgroundColor: 'white' },
+                    _hover: { borderColor: 'amber.300' },
+                  })}
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
                 >
@@ -108,8 +246,25 @@ export default function DashboardMemberList({ initialPersons }: { initialPersons
                   <option value="name_asc">{t('member.sortNameAsc')}</option>
                   <option value="name_desc">{t('member.sortNameDesc')}</option>
                 </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="size-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label={t('member.openMenu')}>
+                <div
+                  className={css({
+                    position: 'absolute',
+                    insetY: '0',
+                    right: '0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingX: '2',
+                    pointerEvents: 'none',
+                  })}
+                >
+                  <svg
+                    className={css({ width: '4', height: '4', color: 'stone.400' })}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    role="img"
+                    aria-label={t('member.openMenu')}
+                  >
                     <title>{t('member.openMenu')}</title>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                   </svg>
@@ -117,21 +272,47 @@ export default function DashboardMemberList({ initialPersons }: { initialPersons
               </div>
             </div>
           </div>
-          <Link to="/dashboard/members/new" className="btn-primary">
-            <Plus className="size-4" strokeWidth={2.5} />
+          <Link
+            to="/dashboard/members/new"
+            className={css({
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '2',
+              paddingX: '4',
+              paddingY: '2',
+              fontWeight: 'semibold',
+              fontSize: 'sm',
+              borderRadius: 'lg',
+              transition: 'colors 0.2s',
+              backgroundColor: 'amber.600',
+              color: 'white',
+              _hover: { backgroundColor: 'amber.700' },
+            })}
+          >
+            <Plus className={css({ width: '4', height: '4' })} strokeWidth={2.5} />
             {t('member.addMember')}
           </Link>
         </div>
       </div>
 
       {sortedPersons.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          className={css({
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gap: '6',
+            sm: { gridTemplateColumns: 'repeat(2, 1fr)' },
+            lg: { gridTemplateColumns: 'repeat(3, 1fr)' },
+          })}
+        >
           {sortedPersons.map((person) => (
             <PersonCard key={person.id} person={person} />
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 text-stone-400 italic">{initialPersons.length > 0 ? t('member.noResults') : t('member.emptyState')}</div>
+        <div className={css({ textAlign: 'center', paddingY: '12', color: 'stone.400', fontStyle: 'italic' })}>
+          {initialPersons.length > 0 ? t('member.noResults') : t('member.emptyState')}
+        </div>
       )}
     </>
   );

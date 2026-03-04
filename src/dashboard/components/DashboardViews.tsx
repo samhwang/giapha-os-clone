@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { css } from '../../../styled-system/css';
 import FamilyTree from '../../family-tree/components/FamilyTree';
 import MindmapTree from '../../family-tree/components/MindmapTree';
 import type { Person, Relationship } from '../../types';
@@ -45,11 +46,29 @@ export default function DashboardViews({ persons, relationships }: DashboardView
   const activeRootId = rootId || defaultRootId;
 
   return (
-    <main className="flex-1 overflow-auto bg-stone-50/50 flex flex-col">
+    <main className={css({ flex: '1', overflow: 'auto', backgroundColor: 'rgb(254 250 244 / 0.5)', display: 'flex', flexDirection: 'column' })}>
       {currentView !== 'list' && persons.length > 0 && activeRootId && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 w-full flex flex-wrap items-center justify-center gap-4 relative z-20">
+        <div
+          className={css({
+            maxWidth: '7xl',
+            marginX: 'auto',
+            paddingX: '4',
+            paddingTop: '6',
+            paddingBottom: '2',
+            width: '100%',
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '4',
+            position: 'relative',
+            zIndex: '20',
+            sm: { paddingX: '6' },
+            lg: { paddingX: '8' },
+          })}
+        >
           <RootSelector persons={persons} currentRootId={activeRootId} />
-          <div className="flex items-center gap-2">
+          <div className={css({ display: 'flex', alignItems: 'center', gap: '2' })}>
             <AvatarToggle />
             <ExportButton />
           </div>
@@ -57,12 +76,24 @@ export default function DashboardViews({ persons, relationships }: DashboardView
       )}
 
       {currentView === 'list' && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full relative z-10">
+        <div
+          className={css({
+            maxWidth: '7xl',
+            marginX: 'auto',
+            paddingX: '4',
+            paddingY: '8',
+            width: '100%',
+            position: 'relative',
+            zIndex: '10',
+            sm: { paddingX: '6' },
+            lg: { paddingX: '8' },
+          })}
+        >
           <DashboardMemberList initialPersons={persons} />
         </div>
       )}
 
-      <div className="flex-1 w-full relative z-10">
+      <div className={css({ flex: '1', width: '100%', position: 'relative', zIndex: '10' })}>
         {currentView === 'tree' && <FamilyTree personsMap={personsMap} relationships={relationships} roots={roots} />}
         {currentView === 'mindmap' && <MindmapTree personsMap={personsMap} relationships={relationships} roots={roots} />}
       </div>
