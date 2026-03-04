@@ -1,5 +1,6 @@
-import { ChevronDown, ChevronRight, Share2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, Minus, Plus, Share2 } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import type { Person, Relationship } from '../../types';
@@ -12,7 +13,13 @@ interface MindmapTreeProps {
 }
 
 export default function MindmapTree({ personsMap, relationships, roots }: MindmapTreeProps) {
+  const { t } = useTranslation();
   const { showAvatar, setMemberModalId } = useDashboard();
+  const [scale, setScale] = useState(1);
+
+  const handleZoomIn = () => setScale((s) => Math.min(s + 0.1, 2));
+  const handleZoomOut = () => setScale((s) => Math.max(s - 0.1, 0.3));
+  const handleResetZoom = () => setScale(1);
 
   const getTreeData = (personId: string) => {
     const spousesList = relationships
@@ -193,11 +200,47 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
   }
 
   return (
-    <div className="w-full h-full relative p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-140px)] flex justify-start lg:justify-center overflow-x-auto">
-      <div id="export-container" className="font-sans min-w-max pb-20 p-8">
-        {roots.map((root, index) => (
-          <MindmapNode key={root.id} personId={root.id} level={0} isLast={index === roots.length - 1} />
-        ))}
+    <div className="relative w-full">
+      {/* Zoom controls */}
+      <div className="absolute top-3 right-3 z-20 flex items-center bg-white/80 backdrop-blur-md shadow-sm border border-stone-200/60 rounded-full overflow-hidden h-10">
+        <button
+          type="button"
+          onClick={handleZoomOut}
+          className="px-3 h-full hover:bg-stone-100/50 text-stone-600 transition-colors disabled:opacity-50"
+          title={t('tree.zoomOut')}
+          disabled={scale <= 0.3}
+        >
+          <Minus className="size-4" />
+        </button>
+        <button
+          type="button"
+          onClick={handleResetZoom}
+          className="px-2 h-full hover:bg-stone-100/50 text-stone-600 transition-colors text-xs font-medium min-w-[50px] text-center border-x border-stone-200/50"
+          title={t('tree.zoomReset')}
+        >
+          {Math.round(scale * 100)}%
+        </button>
+        <button
+          type="button"
+          onClick={handleZoomIn}
+          className="px-3 h-full hover:bg-stone-100/50 text-stone-600 transition-colors disabled:opacity-50"
+          title={t('tree.zoomIn')}
+          disabled={scale >= 2}
+        >
+          <Plus className="size-4" />
+        </button>
+      </div>
+
+      <div className="w-full h-full p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-140px)] flex justify-start lg:justify-center overflow-x-auto">
+        <div
+          id="export-container"
+          className="font-sans min-w-max pb-20 p-8 transition-all duration-200"
+          style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}
+        >
+          {roots.map((root, index) => (
+            <MindmapNode key={root.id} personId={root.id} level={0} isLast={index === roots.length - 1} />
+          ))}
+        </div>
       </div>
     </div>
   );

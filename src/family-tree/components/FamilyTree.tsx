@@ -1,4 +1,6 @@
+import { Minus, Plus } from 'lucide-react';
 import { Fragment, type MouseEvent, type ReactNode, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Person, Relationship } from '../../types';
 import FamilyNodeCard from './FamilyNodeCard';
 import styles from './family-tree.module.css';
@@ -9,12 +11,18 @@ interface SpouseData {
 }
 
 export default function FamilyTree({ personsMap, relationships, roots }: { personsMap: Map<string, Person>; relationships: Relationship[]; roots: Person[] }) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPressed, setIsPressed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const hasDraggedRef = useRef(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [scrollStart, setScrollStart] = useState({ left: 0, top: 0 });
+  const [scale, setScale] = useState(1);
+
+  const handleZoomIn = () => setScale((s) => Math.min(s + 0.1, 2));
+  const handleZoomOut = () => setScale((s) => Math.max(s - 0.1, 0.3));
+  const handleResetZoom = () => setScale(1);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -125,23 +133,59 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
   if (roots.length === 0) return <div className="text-center p-10 text-stone-500">Không tìm thấy dữ liệu.</div>;
 
   return (
-    <section
-      aria-label="Family tree"
-      ref={containerRef}
-      className={`w-full overflow-auto bg-stone-50 ${isPressed ? 'cursor-grabbing' : 'cursor-grab'}`}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUpOrLeave}
-      onMouseLeave={handleMouseUpOrLeave}
-      onClickCapture={handleClickCapture}
-      onDragStart={(e) => e.preventDefault()}
-    >
-      <div id="export-container" className={`w-max min-w-full mx-auto p-4 ${styles.tree} transition-opacity duration-200 ${isDragging ? 'opacity-90' : ''}`}>
-        <ul>
-          {roots.map((root) => (
-            <Fragment key={root.id}>{renderTreeNode(root.id)}</Fragment>
-          ))}
-        </ul>
+    <section aria-label="Family tree" className="relative w-full">
+      {/* Zoom controls */}
+      <div className="absolute top-3 right-3 z-20 flex items-center bg-white/80 backdrop-blur-md shadow-sm border border-stone-200/60 rounded-full overflow-hidden h-10">
+        <button
+          type="button"
+          onClick={handleZoomOut}
+          className="px-3 h-full hover:bg-stone-100/50 text-stone-600 transition-colors disabled:opacity-50"
+          title={t('tree.zoomOut')}
+          disabled={scale <= 0.3}
+        >
+          <Minus className="size-4" />
+        </button>
+        <button
+          type="button"
+          onClick={handleResetZoom}
+          className="px-2 h-full hover:bg-stone-100/50 text-stone-600 transition-colors text-xs font-medium min-w-[50px] text-center border-x border-stone-200/50"
+          title={t('tree.zoomReset')}
+        >
+          {Math.round(scale * 100)}%
+        </button>
+        <button
+          type="button"
+          onClick={handleZoomIn}
+          className="px-3 h-full hover:bg-stone-100/50 text-stone-600 transition-colors disabled:opacity-50"
+          title={t('tree.zoomIn')}
+          disabled={scale >= 2}
+        >
+          <Plus className="size-4" />
+        </button>
+      </div>
+
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: drag-to-pan container */}
+      <div
+        ref={containerRef}
+        className={`w-full overflow-auto bg-stone-50 ${isPressed ? 'cursor-grabbing' : 'cursor-grab'}`}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUpOrLeave}
+        onMouseLeave={handleMouseUpOrLeave}
+        onClickCapture={handleClickCapture}
+        onDragStart={(e) => e.preventDefault()}
+      >
+        <div
+          id="export-container"
+          className={`w-max min-w-full mx-auto p-4 ${styles.tree} transition-all duration-200 ${isDragging ? 'opacity-90' : ''}`}
+          style={{ transform: `scale(${scale})`, transformOrigin: 'top center' }}
+        >
+          <ul>
+            {roots.map((root) => (
+              <Fragment key={root.id}>{renderTreeNode(root.id)}</Fragment>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );

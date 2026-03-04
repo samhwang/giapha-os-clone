@@ -102,6 +102,11 @@
     "tryDifferentSearch": "Thử tìm với tên khác",
     "generationN": "Đời thứ {{gen}}"
   },
+  "tree": {
+    "zoomIn": "Phóng to",
+    "zoomOut": "Thu nhỏ",
+    "zoomReset": "Đặt lại"
+  },
   "member": {
     "addMember": "Thêm thành viên",
     "generalInfo": "Thông tin chung",

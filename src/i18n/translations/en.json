@@ -102,6 +102,11 @@
     "tryDifferentSearch": "Try a different name",
     "generationN": "Generation {{gen}}"
   },
+  "tree": {
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "zoomReset": "Reset"
+  },
   "member": {
     "addMember": "Add Member",
     "generalInfo": "General Information",
