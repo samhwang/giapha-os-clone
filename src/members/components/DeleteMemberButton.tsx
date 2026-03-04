@@ -1,6 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 import { deleteMember } from '../server/member';
 
 interface DeleteMemberButtonProps {
@@ -33,7 +34,10 @@ export default function DeleteMemberButton({ memberId }: DeleteMemberButtonProps
       type="button"
       onClick={handleDelete}
       disabled={isDeleting}
-      className="px-4 py-2 bg-red-100 text-red-800 rounded-md hover:bg-red-200 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      className={css(
+        { paddingX: '4', paddingY: '2', fontWeight: 'medium', fontSize: 'sm', borderRadius: 'md', transition: 'colors 0.2s' },
+        { backgroundColor: 'red.100', color: 'red.800', _hover: { backgroundColor: 'red.200' }, _disabled: { opacity: 0.5, cursor: 'not-allowed' } }
+      )}
     >
       {isDeleting ? t('common.deleting') : t('member.deleteButton')}
     </button>
