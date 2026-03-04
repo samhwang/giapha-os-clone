@@ -1,4 +1,3 @@
-import { AnimatePresence, motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle2, Download, Upload } from 'lucide-react';
 import { type ChangeEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -145,73 +144,60 @@ export default function DataImportExport() {
       </div>
 
       {/* Confirmation Modal */}
-      <AnimatePresence>
-        {showConfirm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm cursor-pointer"
-              onClick={() => setShowConfirm(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="bg-white rounded-2xl shadow-xl border border-stone-200/60 p-6 w-full max-w-md relative z-10"
-            >
-              <div className="flex items-start gap-4 mb-5">
-                <div className="p-3 bg-rose-100/50 rounded-full text-rose-600 shrink-0 mt-1">
-                  <AlertTriangle className="size-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-stone-800">{t('data.confirmTitle')}</h3>
-                  <p className="text-sm text-stone-600 mt-2 leading-relaxed">
-                    {t('data.confirmMessage')} <span className="font-mono text-xs bg-stone-100 px-1 rounded">{selectedFile?.name}</span>.
-                  </p>
-                  <p className="text-sm text-rose-600 font-semibold mt-2">{t('data.confirmWarning')}</p>
-                </div>
+      {showConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <button
+            type="button"
+            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm cursor-pointer animate-[fade-in_0.2s_ease-out_forwards]"
+            onClick={() => setShowConfirm(false)}
+            aria-label="Close modal"
+          />
+          <div className="bg-white rounded-2xl shadow-xl border border-stone-200/60 p-6 w-full max-w-md relative z-10 animate-[scale-in_0.2s_ease-out_forwards]">
+            <div className="flex items-start gap-4 mb-5">
+              <div className="p-3 bg-rose-100/50 rounded-full text-rose-600 shrink-0 mt-1">
+                <AlertTriangle className="size-6" />
               </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setShowConfirm(false)}
-                  disabled={isImporting}
-                  className="px-4 py-2 text-sm font-medium text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors"
-                >
-                  {t('data.confirmCancel')}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleConfirmImport}
-                  disabled={isImporting}
-                  className="px-4 py-2 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors shadow-sm disabled:opacity-50"
-                >
-                  {isImporting ? t('data.confirmRestoring') : t('data.confirmProceed')}
-                </button>
+              <div>
+                <h3 className="text-lg font-bold text-stone-800">{t('data.confirmTitle')}</h3>
+                <p className="text-sm text-stone-600 mt-2 leading-relaxed">
+                  {t('data.confirmMessage')} <span className="font-mono text-xs bg-stone-100 px-1 rounded">{selectedFile?.name}</span>.
+                </p>
+                <p className="text-sm text-rose-600 font-semibold mt-2">{t('data.confirmWarning')}</p>
               </div>
-            </motion.div>
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                type="button"
+                onClick={() => setShowConfirm(false)}
+                disabled={isImporting}
+                className="px-4 py-2 text-sm font-medium text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors"
+              >
+                {t('data.confirmCancel')}
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmImport}
+                disabled={isImporting}
+                className="px-4 py-2 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors shadow-sm disabled:opacity-50"
+              >
+                {isImporting ? t('data.confirmRestoring') : t('data.confirmProceed')}
+              </button>
+            </div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
 
       {/* Status messages */}
-      <AnimatePresence>
-        {importStatus && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className={`p-4 rounded-xl flex items-center gap-3 border ${
-              importStatus.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-800'
-            }`}
-          >
-            {importStatus.type === 'success' ? <CheckCircle2 className="size-5 shrink-0" /> : <AlertTriangle className="size-5 shrink-0" />}
-            <p className="text-sm font-medium">{importStatus.message}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {importStatus && (
+        <div
+          className={`p-4 rounded-xl flex items-center gap-3 border animate-[fade-in-up_0.3s_ease-out_forwards] ${
+            importStatus.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-800'
+          }`}
+        >
+          {importStatus.type === 'success' ? <CheckCircle2 className="size-5 shrink-0" /> : <AlertTriangle className="size-5 shrink-0" />}
+          <p className="text-sm font-medium">{importStatus.message}</p>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,3 @@
-import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, RefreshCw, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -229,33 +228,19 @@ export default function LineageManager({ persons, relationships }: LineageManage
         )}
       </div>
 
-      <AnimatePresence>
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="flex items-start gap-3 bg-red-50 text-red-700 border border-red-200 rounded-xl p-4 text-sm font-medium"
-          >
-            <AlertCircle className="size-5 shrink-0 mt-0.5" />
-            {error}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {error && (
+        <div className="flex items-start gap-3 bg-red-50 text-red-700 border border-red-200 rounded-xl p-4 text-sm font-medium animate-[fade-in-up_0.3s_ease-out_forwards]">
+          <AlertCircle className="size-5 shrink-0 mt-0.5" />
+          {error}
+        </div>
+      )}
 
-      <AnimatePresence>
-        {applied && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="flex items-center gap-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl p-4 text-sm font-semibold"
-          >
-            <CheckCircle2 className="size-5 shrink-0" />
-            {t('lineage.applySuccess', { count: changedCount })}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {applied && (
+        <div className="flex items-center gap-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl p-4 text-sm font-semibold animate-[fade-in-up_0.3s_ease-out_forwards]">
+          <CheckCircle2 className="size-5 shrink-0" />
+          {t('lineage.applySuccess', { count: changedCount })}
+        </div>
+      )}
 
       {updates && (
         <div>

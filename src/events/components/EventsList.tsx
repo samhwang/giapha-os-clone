@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Cake, CalendarDays, Clock, Flower } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,18 +35,17 @@ function EventCard({ event, index }: { event: FamilyEvent; index: number }) {
   const { setMemberModalId } = useDashboard();
 
   return (
-    <motion.button
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: index * 0.04 }}
+    <button
+      type="button"
       onClick={() => setMemberModalId(event.personId)}
-      className={`w-full text-left flex items-center gap-4 p-4 rounded-2xl border transition-all hover:shadow-md group ${
+      className={`w-full text-left flex items-center gap-4 p-4 rounded-2xl border transition-all hover:shadow-md group animate-[fade-in-up_0.35s_ease-out_forwards] ${
         isToday
           ? 'bg-amber-50 border-amber-300 shadow-sm'
           : isBirthday
             ? 'bg-white/80 border-stone-200/60 hover:border-blue-200'
             : 'bg-white/80 border-stone-200/60 hover:border-rose-200'
       }`}
+      style={{ animationDelay: `${index * 0.04}s`, animationFillMode: 'backwards' }}
     >
       <div
         className={`shrink-0 size-11 flex items-center justify-center rounded-xl ${
@@ -74,7 +72,7 @@ function EventCard({ event, index }: { event: FamilyEvent; index: number }) {
         <Clock className="size-3" />
         {daysUntilLabel(event.daysUntil, t)}
       </div>
-    </motion.button>
+    </button>
   );
 }
 
@@ -95,18 +93,14 @@ export default function EventsList({ persons }: EventsListProps) {
   return (
     <div className="space-y-5">
       {(todayCount > 0 || soonCount > 0) && (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3"
-        >
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3 animate-[fade-in-up_0.3s_ease-out_forwards]">
           <span className="text-2xl">🎊</span>
           <p className="text-sm font-medium text-amber-800">
             {todayCount > 0 && <span className="font-bold">{t('events.todayCount', { count: todayCount })}</span>}
             {todayCount > 0 && soonCount > 0 && ' · '}
             {soonCount > 0 && <span>{t('events.soonCount', { count: soonCount })}</span>}
           </p>
-        </motion.div>
+        </div>
       )}
 
       <div className="flex gap-2">
@@ -134,7 +128,7 @@ export default function EventsList({ persons }: EventsListProps) {
       </div>
 
       {visible.length === 0 ? (
-        <div className="text-center py-16 text-stone-400">
+        <div className="text-center py-16 text-stone-400 animate-[fade-in_0.3s_ease-out_forwards]">
           <CalendarDays className="size-10 mx-auto mb-3 opacity-40" />
           <p className="font-medium">{t('events.emptyTitle')}</p>
           <p className="text-sm mt-1">{t('events.emptyDesc')}</p>

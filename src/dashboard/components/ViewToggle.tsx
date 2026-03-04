@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { List, ListTree, Network } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDashboard } from './DashboardContext';
@@ -17,7 +16,7 @@ export default function ViewToggle() {
 
   return (
     <div className="flex bg-stone-200/50 p-1.5 rounded-full shadow-inner w-fit mx-auto mt-4 mb-2 relative border border-stone-200/60 backdrop-blur-sm z-10">
-      {tabs.map((tab) => {
+      {tabs.map((tab, _index) => {
         const isActive = currentView === tab.id;
         return (
           <button
@@ -29,11 +28,7 @@ export default function ViewToggle() {
             }`}
           >
             {isActive && (
-              <motion.div
-                layoutId="activeTab"
-                className="absolute inset-0 bg-white rounded-full shadow-sm border border-stone-200/60 z-[-1]"
-                transition={{ type: 'spring', stiffness: 450, damping: 30 }}
-              />
+              <div className="absolute inset-0 bg-white rounded-full shadow-sm border border-stone-200/60 z-[-1] animate-[scale-in_0.3s_ease-out_forwards]" />
             )}
             <span className={`transition-colors duration-300 ${isActive ? 'text-amber-700' : 'text-stone-400'}`}>{tab.icon}</span>
             <span className="tracking-wide">{tab.label}</span>

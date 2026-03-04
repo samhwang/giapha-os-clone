@@ -1,4 +1,3 @@
-import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, ChevronRight, Share2 } from 'lucide-react';
 import { useState } from 'react';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
@@ -75,11 +74,9 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
             )}
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
-            className={`group/card relative flex flex-wrap items-center gap-2 bg-white/60 backdrop-blur-md rounded-2xl border border-stone-200/60 p-2 sm:p-2.5 shadow-sm hover:border-amber-300 hover:shadow-md hover:bg-white/90 transition-all duration-300 overflow-hidden cursor-pointer
+          <button
+            type="button"
+            className={`group/card relative flex flex-wrap items-center gap-2 bg-white/60 backdrop-blur-md rounded-2xl border border-stone-200/60 p-2 sm:p-2.5 shadow-sm hover:border-amber-300 hover:shadow-md hover:bg-white/90 transition-all duration-300 overflow-hidden cursor-pointer animate-[fade-in_0.3s_ease-out_forwards]
               ${data.person.isDeceased ? 'opacity-80 grayscale-[0.3]' : ''}`}
             onClick={() => setMemberModalId(data.person.id)}
           >
@@ -168,26 +165,18 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
                 </div>
               )}
             </div>
-          </motion.div>
-        </div>
+          </button>
 
-        <AnimatePresence initial={false}>
           {hasChildren && isExpanded && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="origin-top relative z-0 -mt-4 pt-4 overflow-hidden"
-            >
+            <div className="origin-top relative z-0 -mt-4 pt-4 overflow-hidden animate-[fade-in_0.3s_ease-out_forwards]">
               <div className="pb-1">
                 {data.children.map((child, index) => (
                   <MindmapNode key={child.id} personId={child.id} level={level + 1} isLast={index === data.children.length - 1} />
                 ))}
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
     );
   }

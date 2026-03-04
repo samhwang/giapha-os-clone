@@ -1,4 +1,3 @@
-import { motion, type Variants } from 'framer-motion';
 import { Briefcase, Info, Leaf, MapPin, Phone, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { calculateAge, formatDisplayDate, getLunarDateString } from '../../events/utils/dateHelpers';
@@ -17,26 +16,15 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
   const { t } = useTranslation();
   const isDeceased = person.isDeceased;
 
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.1 } },
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 15 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
-  };
-
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="show" className="bg-stone-50/50">
-      {/* Header / Cover */}
+    <div className="bg-stone-50/50">
       <div className="h-28 sm:h-36 bg-linear-to-r from-stone-200 via-stone-100 to-stone-200 relative shrink-0">
         <div
           className={`absolute right-0 -top-20 w-64 h-64 rounded-full blur-4xl opacity-40 ${person.gender === 'male' ? 'bg-sky-300' : person.gender === 'female' ? 'bg-rose-300' : 'bg-stone-300'}`}
         />
         <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full blur-4xl opacity-20 bg-amber-200" />
 
-        <motion.div variants={itemVariants} className="absolute -bottom-12 sm:-bottom-16 left-6 sm:left-8 z-10">
+        <div className="absolute -bottom-12 sm:-bottom-16 left-6 sm:left-8 z-10">
           <div
             className={`h-24 w-24 sm:h-32 sm:w-32 rounded-full border-4 sm:border-4 border-white flex items-center justify-center text-3xl sm:text-4xl font-bold text-white overflow-hidden shadow-xl shrink-0
              ${person.gender === 'male' ? 'bg-linear-to-br from-sky-400 to-sky-700' : person.gender === 'female' ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
@@ -58,11 +46,11 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
               <FemaleIcon className="size-4 sm:size-5" />
             ) : null}
           </div>
-        </motion.div>
+        </div>
       </div>
 
       <div className="pt-16 sm:pt-20 px-6 sm:px-8 pb-8 relative z-10">
-        <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
           <div>
             <h1 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 flex items-center gap-2 sm:gap-3 flex-wrap">
               {person.fullName}
@@ -97,10 +85,9 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
             </h1>
 
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-              {/* Birth Card */}
-              <motion.div
-                variants={itemVariants}
-                className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-stone-200/60 shadow-sm transition-all hover:shadow-md hover:border-amber-200/60"
+              <div
+                className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-stone-200/60 shadow-sm transition-all hover:shadow-md hover:border-amber-200/60 animate-[fade-in-up_0.4s_ease-out_forwards]"
+                style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
@@ -117,13 +104,12 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                     </p>
                   )}
                 </div>
-              </motion.div>
+              </div>
 
-              {/* Death Card */}
               {isDeceased && (
-                <motion.div
-                  variants={itemVariants}
-                  className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-stone-200/60 shadow-sm transition-all hover:shadow-md hover:border-amber-200/60"
+                <div
+                  className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-stone-200/60 shadow-sm transition-all hover:shadow-md hover:border-amber-200/60 animate-[fade-in-up_0.4s_ease-out_forwards]"
+                  style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span className="size-2 rounded-full bg-stone-400 shadow-[0_0_8px_rgba(156,163,175,0.5)]" />
@@ -140,17 +126,16 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                       </p>
                     )}
                   </div>
-                </motion.div>
+                </div>
               )}
 
-              {/* Age Card */}
               {(() => {
                 const ageData = calculateAge(person.birthYear, person.deathYear);
                 if (!ageData) return null;
                 return (
-                  <motion.div
-                    variants={itemVariants}
-                    className="bg-linear-to-br from-amber-50 to-orange-50/40 rounded-2xl p-4 border border-amber-200/50 shadow-sm transition-all hover:shadow-md flex flex-col justify-center relative overflow-hidden"
+                  <div
+                    className="bg-linear-to-br from-amber-50 to-orange-50/40 rounded-2xl p-4 border border-amber-200/50 shadow-sm transition-all hover:shadow-md flex flex-col justify-center relative overflow-hidden animate-[fade-in-up_0.4s_ease-out_forwards]"
+                    style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}
                   >
                     <Leaf className="absolute -bottom-4 -right-4 w-20 h-20 text-amber-500/10 rotate-12" />
                     <div className="flex items-center gap-2 mb-1.5 relative z-10">
@@ -167,17 +152,16 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                         <span className="text-xs sm:text-sm font-bold text-amber-700/60 ml-1.5 uppercase tracking-wider">{t('member.ageSuffix')}</span>
                       </p>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })()}
             </div>
           </div>
-        </motion.div>
+        </div>
 
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-          {/* Main Info */}
           <div className="lg:col-span-2 space-y-8">
-            <motion.section variants={itemVariants}>
+            <section>
               <h2 className="text-base sm:text-lg font-bold text-stone-800 mb-4 flex items-center gap-2">
                 <Info className="size-5 text-amber-600" />
                 {t('common.note')}
@@ -187,9 +171,9 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                   {person.note || <span className="text-stone-400 italic">{t('member.noNote')}</span>}
                 </p>
               </div>
-            </motion.section>
+            </section>
 
-            <motion.section variants={itemVariants}>
+            <section>
               <h2 className="text-base sm:text-lg font-bold text-stone-800 mb-4 flex items-center gap-2">
                 <Users className="size-5 text-amber-600" />
                 {t('member.family')}
@@ -197,12 +181,11 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
               <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-6 rounded-2xl border border-stone-200/60 shadow-sm relative z-0">
                 <RelationshipManager personId={person.id} isAdmin={isAdmin} personGender={person.gender} />
               </div>
-            </motion.section>
+            </section>
           </div>
 
-          {/* Sidebar / Private Info */}
           <div className="space-y-6">
-            <motion.div variants={itemVariants}>
+            <div className="animate-[fade-in-up_0.4s_ease-out_forwards]" style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}>
               {isAdmin ? (
                 <div className="bg-stone-50 p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-sm">
                   <h3 className="font-bold text-stone-900 mb-4 flex items-center gap-2 text-sm sm:text-base border-b border-stone-200/60 pb-3">
@@ -242,10 +225,10 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                   <p className="text-sm font-medium text-stone-500">{t('member.contactAdminOnly')}</p>
                 </div>
               )}
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -1,5 +1,4 @@
 import { Link } from '@tanstack/react-router';
-import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, ExternalLink, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -68,15 +67,9 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
   }, [isOpen]);
 
   return (
-    <AnimatePresence>
+    <>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 bg-stone-900/40 backdrop-blur-sm"
-        >
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 bg-stone-900/40 backdrop-blur-sm animate-[fade-in_0.2s_ease-out_forwards]">
           <button
             type="button"
             tabIndex={0}
@@ -87,14 +80,7 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
             }}
           />
 
-          <motion.div
-            initial={{ scale: 0.95, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-            className="relative bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col border border-stone-200"
-          >
-            {/* Header Actions */}
+          <div className="relative bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col border border-stone-200 animate-[scale-in_0.2s_ease-out_forwards]">
             <div className="absolute top-4 right-4 sm:top-5 sm:right-5 z-20 flex items-center gap-2">
               {isAdmin && person && (
                 <Link
@@ -140,9 +126,9 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
                 <MemberDetailContent person={person} privateData={privateData} isAdmin={isAdmin} />
               </div>
             ) : null}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 }

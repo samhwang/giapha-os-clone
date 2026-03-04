@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { Crown, Flower2, Heart, HeartOff, Mars, Skull, Users, Venus } from 'lucide-react';
 import { type ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,11 +21,9 @@ function StatCard({ label, value, total, icon, color, delay = 0 }: StatCardProps
   const pct = total > 0 ? Math.round((value / total) * 100) : 0;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay }}
-      className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all group relative overflow-hidden"
+    <div
+      className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all group relative overflow-hidden animate-[fade-in-up_0.4s_ease-out_forwards]"
+      style={{ animationDelay: `${delay}s`, animationFillMode: 'backwards' }}
     >
       <div className={`absolute -top-6 -right-6 size-24 rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-opacity ${color}`} />
       <div className="flex items-start justify-between mb-3 relative z-10">
@@ -36,14 +33,9 @@ function StatCard({ label, value, total, icon, color, delay = 0 }: StatCardProps
       <p className="text-3xl font-bold text-stone-800 relative z-10">{value}</p>
       <p className="text-sm font-medium text-stone-500 mt-0.5 relative z-10">{label}</p>
       <div className="mt-3 h-1.5 bg-stone-100 rounded-full overflow-hidden relative z-10">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.7, delay: delay + 0.2, ease: 'easeOut' }}
-          className={`h-full rounded-full ${color}`}
-        />
+        <div className={`h-full rounded-full ${color} transition-all duration-700 ease-out`} style={{ width: `${pct}%`, transitionDelay: `${delay + 0.2}s` }} />
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -54,12 +46,7 @@ function GenerationRow({ gen, count, max, delay }: { gen: number; count: number;
     <div className="flex items-center gap-3">
       <span className="text-xs font-bold text-stone-500 w-14 shrink-0">{t('stats.generationLabel', { gen })}</span>
       <div className="flex-1 h-2 bg-stone-100 rounded-full overflow-hidden">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.6, delay, ease: 'easeOut' }}
-          className="h-full bg-amber-400 rounded-full"
-        />
+        <div className="h-full bg-amber-400 rounded-full transition-all duration-600 ease-out" style={{ width: `${pct}%`, transitionDelay: `${delay}s` }} />
       </div>
       <span className="text-sm font-bold text-stone-700 w-8 text-right shrink-0">{count}</span>
     </div>
@@ -121,11 +108,9 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
       </div>
 
       {stats.generationBreakdown.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.5 }}
-          className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-6 shadow-sm"
+        <div
+          className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-6 shadow-sm animate-[fade-in-up_0.4s_ease-out_forwards]"
+          style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}
         >
           <h2 className="text-base font-bold text-stone-700 mb-5 flex items-center gap-2">
             <Crown className="size-4 text-amber-500" />
@@ -137,14 +122,12 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
             ))}
           </div>
           <p className="text-xs text-stone-400 mt-4 italic">{t('stats.generationNote')}</p>
-        </motion.div>
+        </div>
       )}
 
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.65 }}
-        className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-6 shadow-sm"
+      <div
+        className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-6 shadow-sm animate-[fade-in-up_0.4s_ease-out_forwards]"
+        style={{ animationDelay: '0.65s', animationFillMode: 'backwards' }}
       >
         <h2 className="text-base font-bold text-stone-700 mb-5 flex items-center gap-2">
           <Users className="size-4 text-stone-500" />
@@ -153,18 +136,14 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
         <div className="flex h-5 rounded-full overflow-hidden gap-px">
           {stats.total > 0 && (
             <>
-              <motion.div
-                initial={{ flex: 0 }}
-                animate={{ flex: stats.male }}
-                transition={{ duration: 0.7, delay: 0.7 }}
-                className="bg-blue-400 flex items-center justify-center"
+              <div
+                className="bg-blue-400 flex items-center justify-center transition-all duration-700 ease-out"
+                style={{ flex: stats.male, transitionDelay: '0.7s' }}
                 title={`${t('common.male')}: ${stats.male}`}
               />
-              <motion.div
-                initial={{ flex: 0 }}
-                animate={{ flex: stats.female }}
-                transition={{ duration: 0.7, delay: 0.7 }}
-                className="bg-pink-400 flex items-center justify-center"
+              <div
+                className="bg-pink-400 flex items-center justify-center transition-all duration-700 ease-out"
+                style={{ flex: stats.female, transitionDelay: '0.7s' }}
                 title={`${t('common.female')}: ${stats.female}`}
               />
             </>
@@ -180,7 +159,7 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
             {t('stats.femaleCount', { count: stats.female, percentage: stats.total > 0 ? Math.round((stats.female / stats.total) * 100) : 0 })}
           </span>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

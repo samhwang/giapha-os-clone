@@ -1,4 +1,3 @@
-import { AnimatePresence, motion } from 'framer-motion';
 import { type SubmitEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { UserProfile, UserRole } from '../../types';
@@ -97,24 +96,19 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
 
   return (
     <div className="space-y-6 relative">
-      <AnimatePresence>
-        {notification && (
-          <motion.div
-            initial={{ opacity: 0, y: -20, x: '-50%' }}
-            animate={{ opacity: 1, y: 0, x: '-50%' }}
-            exit={{ opacity: 0, y: -20, x: '-50%' }}
-            className={`fixed top-1/2 left-1/2 z-100 px-6 py-3 rounded-xl shadow-lg border backdrop-blur-md flex items-center gap-3 min-w-[320px] max-w-[90vw] ${
-              notification.type === 'success'
-                ? 'bg-emerald-50/90 border-emerald-200 text-emerald-800'
-                : notification.type === 'error'
-                  ? 'bg-red-50/90 border-red-200 text-red-800'
-                  : 'bg-amber-50/90 border-amber-200 text-amber-800'
-            }`}
-          >
-            <p className="text-sm font-medium">{notification.message}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {notification && (
+        <div
+          className={`fixed top-1/2 left-1/2 z-100 px-6 py-3 rounded-xl shadow-lg border backdrop-blur-md flex items-center gap-3 min-w-[320px] max-w-[90vw] animate-[fade-in-up_0.3s_ease-out_forwards] ${
+            notification.type === 'success'
+              ? 'bg-emerald-50/90 border-emerald-200 text-emerald-800'
+              : notification.type === 'error'
+                ? 'bg-red-50/90 border-red-200 text-red-800'
+                : 'bg-amber-50/90 border-amber-200 text-amber-800'
+          }`}
+        >
+          <p className="text-sm font-medium">{notification.message}</p>
+        </div>
+      )}
 
       <div className="flex justify-end">
         <button
