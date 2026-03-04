@@ -36,6 +36,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
   const [isDeceased, setIsDeceased] = useState<boolean>(initialData?.isDeceased || false);
   const [isInLaw, setIsInLaw] = useState<boolean>(initialData?.isInLaw || false);
   const [birthOrder, setBirthOrder] = useState<number | ''>(initialData?.birthOrder || '');
+  const [generation, setGeneration] = useState<number | ''>(initialData?.generation || '');
   const [avatarUrl, setAvatarUrl] = useState(initialData?.avatarUrl || '');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(initialData?.avatarUrl || null);
@@ -95,6 +96,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
         isDeceased,
         isInLaw,
         birthOrder: birthOrder === '' ? null : Number(birthOrder),
+        generation: generation === '' ? null : Number(generation),
         otherNames: otherNames || null,
         avatarUrl: finalAvatarUrl || null,
         note: note || null,
@@ -230,6 +232,24 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             />
             <p className="mt-1.5 text-xs text-stone-400 flex items-center gap-1">
               <span>💡</span> {t('member.birthOrderHint')}
+            </p>
+          </div>
+
+          <div>
+            <label htmlFor="generation" className="block text-sm font-semibold text-stone-700 mb-1.5">
+              {t('member.generation')}
+            </label>
+            <input
+              id="generation"
+              type="number"
+              min="1"
+              placeholder={t('member.generationPlaceholder')}
+              value={generation}
+              onChange={(e) => setGeneration(e.target.value ? Number(e.target.value) : '')}
+              className={inputClasses}
+            />
+            <p className="mt-1.5 text-xs text-stone-400 flex items-center gap-1">
+              <span>💡</span> {t('member.generationHint')}
             </p>
           </div>
 
