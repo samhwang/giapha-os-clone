@@ -156,3 +156,16 @@ model Relationship {
   @@unique([personAId, personBId, type])
   @@map("relationships")
 }
+
+model CustomEvent {
+  id        String   @id @default(uuid())
+  name      String
+  eventDate String   @map("event_date")
+  location  String?
+  content   String?
+  createdBy String?  @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("custom_events")
+}
