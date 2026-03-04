@@ -2,6 +2,10 @@ import { AlertTriangle, CheckCircle2, Download, Upload } from 'lucide-react';
 import { type ChangeEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { exportData, importData } from '../server/data';
+import { exportToCsvZip, parseCsvZip } from '../utils/csv';
+import { exportToGedcom, parseGedcom } from '../utils/gedcom';
+
+type ExportFormat = 'json' | 'gedcom' | 'csv';
 
 export default function DataImportExport() {
   const { t } = useTranslation();
@@ -10,22 +14,37 @@ export default function DataImportExport() {
   const [importStatus, setImportStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [exportFormat, setExportFormat] = useState<ExportFormat>('json');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const downloadBlob = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const handleExport = async () => {
     try {
       setIsExporting(true);
       const data = await exportData();
+      const dateSuffix = new Date().toISOString().split('T')[0];
 
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `giapha-export-${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      if (exportFormat === 'json') {
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        downloadBlob(blob, `giapha-export-${dateSuffix}.json`);
+      } else if (exportFormat === 'gedcom') {
+        const gedcomStr = exportToGedcom({ persons: data.persons, relationships: data.relationships });
+        const blob = new Blob([gedcomStr], { type: 'text/plain' });
+        downloadBlob(blob, `giapha-export-${dateSuffix}.ged`);
+      } else if (exportFormat === 'csv') {
+        const zipBlob = await exportToCsvZip({ persons: data.persons, relationships: data.relationships });
+        downloadBlob(zipBlob, `giapha-export-${dateSuffix}.zip`);
+      }
     } catch (error: unknown) {
       alert(error instanceof Error ? error.message : t('data.downloadError'));
     } finally {
@@ -37,9 +56,10 @@ export default function DataImportExport() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const isInvalidJsonFile = file.type !== 'application/json' && !file.name.endsWith('.json');
-    if (isInvalidJsonFile) {
-      setImportStatus({ type: 'error', message: t('data.invalidJson') });
+    const name = file.name.toLowerCase();
+    const isValid = name.endsWith('.json') || name.endsWith('.ged') || name.endsWith('.zip');
+    if (!isValid) {
+      setImportStatus({ type: 'error', message: t('data.invalidFileType') });
       return;
     }
     setSelectedFile(file);
@@ -54,17 +74,33 @@ export default function DataImportExport() {
       setIsImporting(true);
       setImportStatus(null);
 
-      const fileText = await selectedFile.text();
-      const payload = JSON.parse(fileText);
+      const name = selectedFile.name.toLowerCase();
+      let persons: unknown[];
+      let relationships: unknown[];
 
-      if (!payload.persons || !payload.relationships) {
-        throw new Error(t('data.invalidStructure'));
+      if (name.endsWith('.ged')) {
+        const text = await selectedFile.text();
+        const parsed = parseGedcom(text);
+        persons = parsed.persons;
+        relationships = parsed.relationships;
+      } else if (name.endsWith('.zip')) {
+        const parsed = await parseCsvZip(selectedFile);
+        persons = parsed.persons;
+        relationships = parsed.relationships;
+      } else {
+        const fileText = await selectedFile.text();
+        const payload = JSON.parse(fileText);
+        if (!payload.persons || !payload.relationships) {
+          throw new Error(t('data.invalidStructure'));
+        }
+        persons = payload.persons;
+        relationships = payload.relationships;
       }
 
       const result = await importData({
         data: {
-          persons: payload.persons,
-          relationships: payload.relationships,
+          persons: persons as Parameters<typeof importData>[0]['data']['persons'],
+          relationships: relationships as Parameters<typeof importData>[0]['data']['relationships'],
         },
       });
 
@@ -106,6 +142,20 @@ export default function DataImportExport() {
               <p className="text-sm text-stone-500 mt-1">{t('data.backupDesc')}</p>
             </div>
           </div>
+          <div className="flex gap-2 mb-3">
+            {(['json', 'gedcom', 'csv'] as const).map((fmt) => (
+              <button
+                type="button"
+                key={fmt}
+                onClick={() => setExportFormat(fmt)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                  exportFormat === fmt ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`}
+              >
+                {fmt === 'json' ? 'JSON' : fmt === 'gedcom' ? 'GEDCOM' : 'CSV (ZIP)'}
+              </button>
+            ))}
+          </div>
           <button
             type="button"
             onClick={handleExport}
@@ -131,14 +181,15 @@ export default function DataImportExport() {
               </p>
             </div>
           </div>
-          <input type="file" accept=".json" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
+          <p className="text-xs text-stone-400 mb-3">{t('data.supportedFormats')}</p>
+          <input type="file" accept=".json,.ged,.zip" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={isImporting}
             className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
           >
-            {isImporting ? t('data.restoring') : t('data.selectJsonFile')}
+            {isImporting ? t('data.restoring') : t('data.selectFile')}
           </button>
         </div>
       </div>
