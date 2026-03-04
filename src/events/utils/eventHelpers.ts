@@ -63,6 +63,9 @@ export function computeEvents(
         daysUntil,
         eventDateLabel: `${p.birthDay.toString().padStart(2, '0')}/${p.birthMonth.toString().padStart(2, '0')}`,
         originYear: p.birthYear,
+        originMonth: p.birthMonth,
+        originDay: p.birthDay,
+        isDeceased: p.isDeceased,
       });
     }
 

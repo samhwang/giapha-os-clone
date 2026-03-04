@@ -253,7 +253,8 @@
     "yearCount": "{{count}} sự kiện trong năm",
     "emptyTitle": "Không có sự kiện nào",
     "emptyDesc": "Hãy bổ sung ngày sinh hoặc ngày mất cho thành viên",
-    "showMore": "Xem thêm {{count}} sự kiện…"
+    "showMore": "Xem thêm {{count}} sự kiện…",
+    "showDeceasedBirthdays": "Hiển thị sinh nhật của người đã mất"
   },
   "customEvent": {
     "createTitle": "Thêm Sự Kiện Tuỳ Chỉnh",

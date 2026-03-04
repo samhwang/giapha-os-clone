@@ -253,7 +253,8 @@
     "yearCount": "{{count}} events this year",
     "emptyTitle": "No events",
     "emptyDesc": "Add birth or death dates for family members",
-    "showMore": "Show {{count}} more events…"
+    "showMore": "Show {{count}} more events…",
+    "showDeceasedBirthdays": "Show birthdays of deceased members"
   },
   "customEvent": {
     "createTitle": "Add Custom Event",

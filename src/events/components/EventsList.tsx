@@ -1,9 +1,9 @@
-import { Cake, CalendarDays, Clock, Flower, MapPin, Plus, Star } from 'lucide-react';
+import { AlignLeft, Cake, CalendarDays, Clock, Flower, MapPin, Plus, Star } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
 import type { CustomEventRecord, EventType, FamilyEvent } from '../../types';
-import { getTodayLunar } from '../utils/dateHelpers';
+import { getTodayLunar, getZodiacSign } from '../utils/dateHelpers';
 import { computeEvents } from '../utils/eventHelpers';
 import CustomEventModal from './CustomEventModal';
 
@@ -76,19 +76,34 @@ function EventCard({ event, index, onCustomEventClick }: { event: FamilyEvent; i
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-stone-800 truncate group-hover:text-amber-700 transition-colors">{event.personName}</p>
-        <p className="text-sm text-stone-500 flex items-center gap-1.5 mt-0.5">
-          <CalendarDays className="size-3.5 shrink-0" />
-          {isCustom ? t('events.customEvent') : isBirthday ? t('events.birthday') : t('events.deathAnniversary')} —{' '}
-          <span className="font-medium text-stone-600">{event.eventDateLabel}</span>
-          {event.originYear && !isCustom && <span className="text-stone-400">({event.originYear})</span>}
-        </p>
-        {isCustom && event.location && (
-          <p className="text-xs text-stone-400 flex items-center gap-1 mt-0.5">
-            <MapPin className="size-3 shrink-0" />
-            {event.location}
+        <div className="flex items-center gap-2">
+          <p className="font-semibold text-stone-800 truncate group-hover:text-amber-700 transition-colors">{event.personName}</p>
+          {isBirthday && event.originDay && event.originMonth && getZodiacSign(event.originDay, event.originMonth) && (
+            <span className="shrink-0 text-[10px] font-sans font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/60 rounded-md px-1.5 py-0.5 whitespace-nowrap shadow-xs tracking-wider">
+              {getZodiacSign(event.originDay, event.originMonth)}
+            </span>
+          )}
+        </div>
+        <div className="flex flex-col gap-1 mt-0.5">
+          <p className="text-sm text-stone-500 flex items-center gap-1.5 leading-tight">
+            <CalendarDays className="size-3.5 shrink-0" />
+            {isCustom ? t('events.customEvent') : isBirthday ? t('events.birthday') : t('events.deathAnniversary')} —{' '}
+            <span className="font-medium text-stone-600">{event.eventDateLabel}</span>
+            {event.originYear && !isCustom && <span className="text-stone-400">({event.originYear})</span>}
           </p>
-        )}
+          {event.location && (
+            <p className="text-sm text-stone-500 flex items-center gap-1.5 leading-tight">
+              <MapPin className="size-3.5 shrink-0" />
+              <span className="truncate">{event.location}</span>
+            </p>
+          )}
+          {event.content && (
+            <p className="text-sm text-stone-500 flex items-start gap-1.5 leading-tight mt-0.5">
+              <AlignLeft className="size-3.5 shrink-0 mt-0.5" />
+              <span className="line-clamp-2">{event.content}</span>
+            </p>
+          )}
+        </div>
       </div>
 
       <div
@@ -107,11 +122,21 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
   const { t } = useTranslation();
   const [filter, setFilter] = useState<'all' | EventType>('all');
   const [showCount, setShowCount] = useState(20);
+  const [showDeceasedBirthdays, setShowDeceasedBirthdays] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<CustomEventRecord | null>(null);
 
   const allEvents = useMemo(() => computeEvents(persons, customEvents, t('common.lunarSuffix')), [persons, customEvents, t]);
-  const filtered = useMemo(() => (filter === 'all' ? allEvents : allEvents.filter((e) => e.type === filter)), [allEvents, filter]);
+  const filtered = useMemo(() => {
+    let result = allEvents;
+    if (filter !== 'all') {
+      result = result.filter((e) => e.type === filter);
+    }
+    if (!showDeceasedBirthdays) {
+      result = result.filter((e) => !(e.type === 'birthday' && e.isDeceased));
+    }
+    return result;
+  }, [allEvents, filter, showDeceasedBirthdays]);
 
   const upcoming = filtered.filter((e) => e.daysUntil <= 365);
   const visible = upcoming.slice(0, showCount);
@@ -194,6 +219,19 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
           </button>
         )}
         <span className={`${isAdmin ? '' : 'ml-auto'} text-xs text-stone-400 self-center`}>{t('events.yearCount', { count: filtered.length })}</span>
+      </div>
+
+      {/* Deceased birthday toggle */}
+      <div className="flex px-1">
+        <label className="flex items-center gap-2.5 text-sm font-medium text-stone-600 cursor-pointer hover:text-stone-900 transition-colors select-none">
+          <input
+            type="checkbox"
+            checked={showDeceasedBirthdays}
+            onChange={(e) => setShowDeceasedBirthdays(e.target.checked)}
+            className="rounded-md border-stone-300 text-amber-500 focus:ring-amber-500 size-4 transition-all"
+          />
+          {t('events.showDeceasedBirthdays')}
+        </label>
       </div>
 
       {visible.length === 0 ? (
