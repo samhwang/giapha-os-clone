@@ -1,5 +1,4 @@
 import { useNavigate } from '@tanstack/react-router';
-import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import { AlertCircle, Briefcase, Image as ImageIcon, Loader2, Lock, MapPin, Phone, Settings2, Trash2, User } from 'lucide-react';
 import { type SubmitEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -140,22 +139,12 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
     }
   };
 
-  const formSectionVariants: Variants = {
-    hidden: { opacity: 0, y: 10 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
-  };
-
   const inputClasses =
     'bg-white text-stone-900 placeholder-stone-500 block w-full rounded-xl border border-stone-300 shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:bg-white text-sm px-4 py-3 transition-all outline-none';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-      <motion.div
-        variants={formSectionVariants}
-        initial="hidden"
-        animate="show"
-        className="bg-white/80 backdrop-blur-md p-5 sm:p-8 rounded-2xl shadow-sm border border-stone-200/80"
-      >
+      <div className="bg-white/80 backdrop-blur-md p-5 sm:p-8 rounded-2xl shadow-sm border border-stone-200/80 animate-[fade-in-up_0.3s_ease-out_forwards]">
         <h3 className="text-lg sm:text-xl font-serif font-bold text-stone-800 mb-6 border-b border-stone-100 pb-4 flex items-center gap-2">
           <User className="size-5 text-amber-600" />
           {t('member.generalInfo')}
@@ -196,18 +185,14 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             <label className="flex items-center gap-3 group">
               <div className="relative flex items-center">
                 <input type="checkbox" checked={isInLaw} onChange={(e) => setIsInLaw(e.target.checked)} className="peer sr-only" />
-                <div className="size-5 border-2 border-stone-300 rounded peer-checked:bg-amber-500 peer-checked:border-amber-500 transition-colors flex items-center justify-center">
-                  <motion.svg
-                    initial={false}
-                    animate={{ opacity: isInLaw ? 1 : 0, scale: isInLaw ? 1 : 0.5 }}
-                    className="size-3 text-white pointer-events-none"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={4}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </motion.svg>
+                <div
+                  className={`size-5 border-2 border-stone-300 rounded transition-colors flex items-center justify-center ${isInLaw ? 'bg-amber-500 border-amber-500' : ''}`}
+                >
+                  {isInLaw && (
+                    <svg className="size-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4} aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
                 </div>
               </div>
               <span className="text-sm font-semibold text-stone-700 group-hover:text-amber-700 transition-colors">{t('member.isInLaw')}</span>
@@ -345,66 +330,55 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                     }}
                     className="peer sr-only"
                   />
-                  <div className="size-5 border-2 border-stone-300 rounded peer-checked:bg-stone-600 peer-checked:border-stone-600 transition-colors flex items-center justify-center">
-                    <motion.svg
-                      initial={false}
-                      animate={{ opacity: isDeceased ? 1 : 0, scale: isDeceased ? 1 : 0.5 }}
-                      className="size-3 text-white pointer-events-none"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={4}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </motion.svg>
+                  <div
+                    className={`size-5 border-2 border-stone-300 rounded transition-colors flex items-center justify-center ${isDeceased ? 'bg-stone-600 border-stone-600' : ''}`}
+                  >
+                    {isDeceased && (
+                      <svg className="size-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4} aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
                   </div>
                 </div>
                 <span className="text-sm font-semibold text-stone-700 group-hover:text-stone-900 transition-colors">{t('member.isDeceased')}</span>
               </label>
             </div>
 
-            <AnimatePresence>
-              {isDeceased && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                  animate={{ opacity: 1, height: 'auto', marginTop: 20 }}
-                  exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                  className="overflow-hidden"
-                >
-                  <label htmlFor="deathDay" className="block text-sm font-semibold text-stone-700 mb-1.5">
-                    {t('member.deathDate')}
-                  </label>
-                  <div className="grid grid-cols-3 gap-3 pt-1">
-                    <input
-                      id="deathDay"
-                      type="number"
-                      placeholder={t('common.day')}
-                      min="1"
-                      max="31"
-                      value={deathDay}
-                      onChange={(e) => setDeathDay(e.target.value ? Number(e.target.value) : '')}
-                      className={inputClasses}
-                    />
-                    <input
-                      type="number"
-                      placeholder={t('common.month')}
-                      min="1"
-                      max="12"
-                      value={deathMonth}
-                      onChange={(e) => setDeathMonth(e.target.value ? Number(e.target.value) : '')}
-                      className={inputClasses}
-                    />
-                    <input
-                      type="number"
-                      placeholder={t('common.year')}
-                      value={deathYear}
-                      onChange={(e) => setDeathYear(e.target.value ? Number(e.target.value) : '')}
-                      className={inputClasses}
-                    />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {isDeceased && (
+              <div className="overflow-hidden animate-[fade-in_0.3s_ease-out_forwards]">
+                <label htmlFor="deathDay" className="block text-sm font-semibold text-stone-700 mb-1.5 mt-5">
+                  {t('member.deathDate')}
+                </label>
+                <div className="grid grid-cols-3 gap-3 pt-1">
+                  <input
+                    id="deathDay"
+                    type="number"
+                    placeholder={t('common.day')}
+                    min="1"
+                    max="31"
+                    value={deathDay}
+                    onChange={(e) => setDeathDay(e.target.value ? Number(e.target.value) : '')}
+                    className={inputClasses}
+                  />
+                  <input
+                    type="number"
+                    placeholder={t('common.month')}
+                    min="1"
+                    max="12"
+                    value={deathMonth}
+                    onChange={(e) => setDeathMonth(e.target.value ? Number(e.target.value) : '')}
+                    className={inputClasses}
+                  />
+                  <input
+                    type="number"
+                    placeholder={t('common.year')}
+                    value={deathYear}
+                    onChange={(e) => setDeathYear(e.target.value ? Number(e.target.value) : '')}
+                    className={inputClasses}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="md:col-span-2">
@@ -421,15 +395,12 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             />
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {isAdmin && (
-        <motion.div
-          variants={formSectionVariants}
-          initial="hidden"
-          animate="show"
-          transition={{ delay: 0.1 }}
-          className="bg-linear-to-br from-amber-50/80 to-stone-50/80 backdrop-blur-md p-5 sm:p-8 rounded-2xl border border-amber-200/50 shadow-sm relative overflow-hidden"
+        <div
+          className="bg-linear-to-br from-amber-50/80 to-stone-50/80 backdrop-blur-md p-5 sm:p-8 rounded-2xl border border-amber-200/50 shadow-sm relative overflow-hidden animate-[fade-in-up_0.3s_ease-out_forwards]"
+          style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}
         >
           <Lock className="absolute -right-6 -bottom-6 w-32 h-32 text-amber-500/5 rotate-12" />
           <h3 className="text-lg sm:text-xl font-serif font-bold text-amber-900 mb-6 border-b border-amber-200/50 pb-4 flex items-center gap-2 relative z-10">
@@ -489,24 +460,20 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               />
             </div>
           </div>
-        </motion.div>
+        </div>
       )}
 
-      <AnimatePresence>
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="text-rose-700 text-sm font-medium bg-rose-50 border border-rose-200 p-4 rounded-xl flex items-start gap-3 shadow-sm"
-          >
-            <AlertCircle className="size-5 shrink-0 mt-0.5" />
-            <p>{error}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {error && (
+        <div className="text-rose-700 text-sm font-medium bg-rose-50 border border-rose-200 p-4 rounded-xl flex items-start gap-3 shadow-sm animate-[fade-in-up_0.3s_ease-out_forwards]">
+          <AlertCircle className="size-5 shrink-0 mt-0.5" />
+          <p>{error}</p>
+        </div>
+      )}
 
-      <motion.div variants={formSectionVariants} initial="hidden" animate="show" transition={{ delay: 0.2 }} className="flex justify-end gap-3 sm:gap-4 pt-6">
+      <div
+        className="flex justify-end gap-3 sm:gap-4 pt-6 animate-[fade-in-up_0.3s_ease-out_forwards]"
+        style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}
+      >
         <button type="button" onClick={() => (onCancel ? onCancel() : navigate({ to: '/dashboard' }))} className="btn">
           {t('member.cancelButton')}
         </button>
@@ -514,7 +481,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
           {loading && <Loader2 className="size-4 animate-spin" />}
           {loading ? t('common.saving') : isEditing ? t('member.saveChanges') : t('member.addMember')}
         </button>
-      </motion.div>
+      </div>
     </form>
   );
 }
