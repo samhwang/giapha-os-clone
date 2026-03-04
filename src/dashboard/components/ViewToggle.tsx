@@ -27,9 +27,7 @@ export default function ViewToggle() {
               isActive ? 'text-stone-900' : 'text-stone-500 hover:text-stone-800'
             }`}
           >
-            {isActive && (
-              <div className="absolute inset-0 bg-white rounded-full shadow-sm border border-stone-200/60 z-[-1] animate-[scale-in_0.3s_ease-out_forwards]" />
-            )}
+            {isActive && <div className="absolute inset-0 bg-white rounded-full shadow-sm border border-stone-200/60 z-[-1] animate-scale-in" />}
             <span className={`transition-colors duration-300 ${isActive ? 'text-amber-700' : 'text-stone-400'}`}>{tab.icon}</span>
             <span className="tracking-wide">{tab.label}</span>
           </button>
