@@ -1,5 +1,4 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Info, KeyRound, Mail, Shield, UserPlus } from 'lucide-react';
 import { type SubmitEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -72,12 +71,7 @@ function LoginPage() {
       </div>
 
       <div className="flex-1 flex items-center justify-center px-4 py-12 relative z-10 w-full">
-        <motion.div
-          className="max-w-md w-full bg-white/70 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80 relative overflow-hidden"
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-        >
+        <div className="max-w-md w-full bg-white/70 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80 relative overflow-hidden animate-[fade-in-up_0.5s_ease-out_forwards]">
           <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-amber-100/50 to-transparent rounded-bl-[100px] pointer-events-none" />
 
           <div className="text-center mb-8 relative z-10">
@@ -133,60 +127,40 @@ function LoginPage() {
                 </div>
               </div>
 
-              <AnimatePresence>
-                {!isLogin && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                    animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
-                    exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="relative overflow-hidden"
-                  >
-                    <label htmlFor="confirmPassword" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
-                      {t('auth.confirmPasswordLabel')}
-                    </label>
-                    <div className="relative flex items-center group">
-                      <KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
-                      <input
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        type="password"
-                        autoComplete="new-password"
-                        required={!isLogin}
-                        className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
-                        placeholder={t('auth.confirmPasswordPlaceholder')}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {!isLogin && (
+                <div className="relative overflow-hidden animate-[fade-in_0.3s_ease-out_forwards]">
+                  <label htmlFor="confirmPassword" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
+                    {t('auth.confirmPasswordLabel')}
+                  </label>
+                  <div className="relative flex items-center group">
+                    <KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
+                    <input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      autoComplete="new-password"
+                      required={!isLogin}
+                      className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
+                      placeholder={t('auth.confirmPasswordPlaceholder')}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
-            <AnimatePresence>
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10, height: 0 }}
-                  animate={{ opacity: 1, y: 0, height: 'auto' }}
-                  exit={{ opacity: 0, y: -10, height: 0 }}
-                  className="text-red-700 text-sm-plus text-center bg-red-50 p-3 rounded-xl border border-red-100/50 font-medium"
-                >
-                  {error}
-                </motion.div>
-              )}
+            {error && (
+              <div className="text-red-700 text-sm-plus text-center bg-red-50 p-3 rounded-xl border border-red-100/50 font-medium animate-[fade-in-up_0.3s_ease-out_forwards]">
+                {error}
+              </div>
+            )}
 
-              {successMessage && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10, height: 0 }}
-                  animate={{ opacity: 1, y: 0, height: 'auto' }}
-                  exit={{ opacity: 0, y: -10, height: 0 }}
-                  className="text-teal-700 text-sm-plus text-center bg-teal-50 p-3 rounded-xl border border-teal-100/50 font-medium"
-                >
-                  {successMessage}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {successMessage && (
+              <div className="text-teal-700 text-sm-plus text-center bg-teal-50 p-3 rounded-xl border border-teal-100/50 font-medium animate-[fade-in-up_0.3s_ease-out_forwards]">
+                {successMessage}
+              </div>
+            )}
 
             <div className="flex flex-col gap-4 pt-4">
               <button
@@ -234,7 +208,7 @@ function LoginPage() {
               </button>
             </div>
           </form>
-        </motion.div>
+        </div>
       </div>
 
       <Link

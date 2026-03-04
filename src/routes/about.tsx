@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { motion } from 'framer-motion';
 import { ArrowLeft, Info, Mail, ShieldAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Footer from '../ui/layout/Footer';
@@ -24,13 +23,8 @@ function AboutPage() {
       </Link>
 
       <main className="flex-1 flex items-center justify-center px-4 py-20 relative z-10">
-        <motion.div
-          className="max-w-2xl w-full space-y-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-        >
-          <div className="bg-white/70 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80">
+        <div className="max-w-2xl w-full space-y-8">
+          <div className="bg-white/70 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80 animate-[fade-in-up_0.6s_ease-out_forwards]">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-3 bg-white rounded-2xl shadow-sm ring-1 ring-stone-100">
                 <Info className="size-6 text-amber-600" />
@@ -40,7 +34,10 @@ function AboutPage() {
             <p className="text-stone-600 leading-relaxed">{t('aboutPage.description')}</p>
           </div>
 
-          <div className="bg-white/70 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80">
+          <div
+            className="bg-white/70 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80 animate-[fade-in-up_0.6s_ease-out_forwards]"
+            style={{ animationDelay: '0.15s', animationFillMode: 'backwards' }}
+          >
             <div className="flex items-center gap-3 mb-6">
               <div className="p-3 bg-white rounded-2xl shadow-sm ring-1 ring-stone-100">
                 <ShieldAlert className="size-6 text-amber-600" />
@@ -50,7 +47,10 @@ function AboutPage() {
             <p className="text-stone-600 leading-relaxed">{t('aboutPage.securityDesc')}</p>
           </div>
 
-          <div className="bg-white/70 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80">
+          <div
+            className="bg-white/70 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80 animate-[fade-in-up_0.6s_ease-out_forwards]"
+            style={{ animationDelay: '0.3s', animationFillMode: 'backwards' }}
+          >
             <div className="flex items-center gap-3 mb-6">
               <div className="p-3 bg-white rounded-2xl shadow-sm ring-1 ring-stone-100">
                 <Mail className="size-6 text-amber-600" />
@@ -70,7 +70,7 @@ function AboutPage() {
               .
             </p>
           </div>
-        </motion.div>
+        </div>
       </main>
 
       <Footer className="bg-transparent relative z-10 border-none" />

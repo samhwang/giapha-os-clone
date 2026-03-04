@@ -1,4 +1,3 @@
-import { AnimatePresence, motion } from 'framer-motion';
 import { toJpeg, toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 import { Download, FileImage, FileText, Loader2 } from 'lucide-react';
@@ -80,34 +79,26 @@ export default function ExportButton() {
         <span className="tracking-wide min-w-max">{isExporting ? t('export.exporting') : t('export.exportFile')}</span>
       </button>
 
-      <AnimatePresence>
-        {showMenu && !isExporting && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute top-full right-0 sm:right-auto sm:left-0 mt-2 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-stone-200/60 py-2 z-50 overflow-hidden"
+      {showMenu && !isExporting && (
+        <div className="absolute top-full right-0 sm:right-auto sm:left-0 mt-2 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-stone-200/60 py-2 z-50 overflow-hidden animate-[scale-in_0.15s_ease-out_forwards]">
+          <button
+            type="button"
+            onClick={() => handleExport('png')}
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-stone-700 hover:text-amber-700 hover:bg-amber-50 transition-colors text-left"
           >
-            <button
-              type="button"
-              onClick={() => handleExport('png')}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-stone-700 hover:text-amber-700 hover:bg-amber-50 transition-colors text-left"
-            >
-              <FileImage className="size-4" />
-              {t('export.saveAsPng')}
-            </button>
-            <button
-              type="button"
-              onClick={() => handleExport('pdf')}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-stone-700 hover:text-amber-700 hover:bg-amber-50 transition-colors text-left"
-            >
-              <FileText className="size-4" />
-              {t('export.saveAsPdf')}
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <FileImage className="size-4" />
+            {t('export.saveAsPng')}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleExport('pdf')}
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-stone-700 hover:text-amber-700 hover:bg-amber-50 transition-colors text-left"
+          >
+            <FileText className="size-4" />
+            {t('export.saveAsPdf')}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
