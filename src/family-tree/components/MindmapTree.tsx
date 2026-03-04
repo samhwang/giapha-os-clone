@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, Filter, Minus, Plus, Share2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronsDownUp, ChevronsUpDown, Filter, Minus, Plus, Share2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
@@ -22,10 +22,20 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
   const [hideMales, setHideMales] = useState(false);
   const [hideFemales, setHideFemales] = useState(false);
   const filtersRef = useRef<HTMLDivElement>(null);
+  const [defaultExpanded, setDefaultExpanded] = useState<boolean | null>(null);
+  const [treeKey, setTreeKey] = useState(0);
 
   const handleZoomIn = () => setScale((s) => Math.min(s + 0.1, 2));
   const handleZoomOut = () => setScale((s) => Math.max(s - 0.1, 0.3));
   const handleResetZoom = () => setScale(1);
+  const handleExpandAll = () => {
+    setDefaultExpanded(true);
+    setTreeKey((k) => k + 1);
+  };
+  const handleCollapseAll = () => {
+    setDefaultExpanded(false);
+    setTreeKey((k) => k + 1);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: globalThis.MouseEvent) => {
@@ -43,7 +53,7 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
 
   function MindmapNode({ personId, level = 0, isLast = false }: { personId: string; level?: number; isLast?: boolean }) {
     const data = getTreeData(personId);
-    const [isExpanded, setIsExpanded] = useState(level < 2);
+    const [isExpanded, setIsExpanded] = useState(defaultExpanded !== null ? defaultExpanded : level < 2);
 
     if (!data.person) return null;
 
@@ -207,6 +217,28 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
     <div className="relative w-full">
       {/* Toolbar: filters + zoom */}
       <div className="absolute top-3 right-3 z-20 flex items-center gap-2">
+        {/* Expand/Collapse all */}
+        <div className="flex items-center bg-white/80 backdrop-blur-md shadow-sm border border-stone-200/60 rounded-full overflow-hidden h-10">
+          <button
+            type="button"
+            onClick={handleExpandAll}
+            className="px-3 h-full hover:bg-stone-100/50 text-stone-600 transition-colors flex items-center gap-1.5"
+            title={t('tree.expandAll')}
+          >
+            <ChevronsUpDown className="size-4" />
+            <span className="hidden sm:inline text-xs font-medium">{t('tree.expandAll')}</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleCollapseAll}
+            className="px-3 h-full hover:bg-stone-100/50 text-stone-600 transition-colors border-l border-stone-200/50 flex items-center gap-1.5"
+            title={t('tree.collapseAll')}
+          >
+            <ChevronsDownUp className="size-4" />
+            <span className="hidden sm:inline text-xs font-medium">{t('tree.collapseAll')}</span>
+          </button>
+        </div>
+
         {/* Filter dropdown */}
         <div className="relative" ref={filtersRef}>
           <button
@@ -293,7 +325,7 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
           style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}
         >
           {roots.map((root, index) => (
-            <MindmapNode key={root.id} personId={root.id} level={0} isLast={index === roots.length - 1} />
+            <MindmapNode key={`${root.id}-${treeKey}`} personId={root.id} level={0} isLast={index === roots.length - 1} />
           ))}
         </div>
       </div>

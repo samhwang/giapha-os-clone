@@ -109,7 +109,9 @@
     "filter": "Filters",
     "hideSpouses": "Hide spouses",
     "hideMales": "Hide males",
-    "hideFemales": "Hide females"
+    "hideFemales": "Hide females",
+    "expandAll": "Expand all",
+    "collapseAll": "Collapse all"
   },
   "member": {
     "addMember": "Add Member",

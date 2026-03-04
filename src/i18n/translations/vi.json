@@ -109,7 +109,9 @@
     "filter": "Lọc hiển thị",
     "hideSpouses": "Ẩn dâu/rể",
     "hideMales": "Ẩn nam",
-    "hideFemales": "Ẩn nữ"
+    "hideFemales": "Ẩn nữ",
+    "expandAll": "Mở rộng tất cả",
+    "collapseAll": "Thu gọn tất cả"
   },
   "member": {
     "addMember": "Thêm thành viên",
