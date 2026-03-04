@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, RefreshCw, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { css } from '../../../styled-system/css';
 import type { Person, Relationship } from '../../types';
 import { updateBatch } from '../server/lineage';
 
@@ -204,15 +205,28 @@ export default function LineageManager({ persons, relationships }: LineageManage
   const displayedRows = showAll ? (updates ?? []) : (updates ?? []).slice(0, 20);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-3">
+    <div className={css({ display: 'flex', flexDirection: 'column', gap: '6' })}>
+      <div className={css({ display: 'flex', flexDirection: 'column', gap: '3', sm: { flexDirection: 'row' } })}>
         <button
           type="button"
           onClick={handleCompute}
           disabled={computing || applying}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
+          className={css(
+            {
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '2',
+              paddingX: '5',
+              paddingY: '2.5',
+              fontWeight: 'semibold',
+              borderRadius: 'xl',
+              transition: 'colors 0.2s',
+              fontSize: 'sm',
+            },
+            { backgroundColor: 'stone.100', color: 'stone.700', _hover: { backgroundColor: 'stone.200' }, _disabled: { opacity: 0.5 } }
+          )}
         >
-          {computing ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
+          {computing ? <Loader2 className={css({ width: '4', height: '4' })} /> : <Sparkles className={css({ width: '4', height: '4' })} />}
           {computing ? t('lineage.calculating') : t('lineage.calculate')}
         </button>
 
@@ -221,9 +235,27 @@ export default function LineageManager({ persons, relationships }: LineageManage
             type="button"
             onClick={handleApply}
             disabled={applying}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm shadow-sm"
+            className={css(
+              {
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '2',
+                paddingX: '5',
+                paddingY: '2.5',
+                fontWeight: 'semibold',
+                borderRadius: 'xl',
+                transition: 'colors 0.2s',
+                fontSize: 'sm',
+                boxShadow: 'sm',
+              },
+              { backgroundColor: 'amber.600', color: 'white', _hover: { backgroundColor: 'amber.700' }, _disabled: { opacity: 0.5 } }
+            )}
           >
-            {applying ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
+            {applying ? (
+              <Loader2 className={css({ width: '4', height: '4', animation: 'spin 1s linear infinite' })} />
+            ) : (
+              <RefreshCw className={css({ width: '4', height: '4' })} />
+            )}
             {applying ? t('lineage.updating') : t('lineage.applyChanges', { count: changedCount })}
           </button>
         )}
@@ -235,9 +267,12 @@ export default function LineageManager({ persons, relationships }: LineageManage
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="flex items-start gap-3 bg-red-50 text-red-700 border border-red-200 rounded-xl p-4 text-sm font-medium"
+            className={css(
+              { display: 'flex', alignItems: 'start', gap: '3', padding: '4', borderRadius: 'xl', fontSize: 'sm', fontWeight: 'medium' },
+              { backgroundColor: 'red.50', color: 'red.700', borderWidth: '1px', borderStyle: 'solid', borderColor: 'red.200' }
+            )}
           >
-            <AlertCircle className="size-5 shrink-0 mt-0.5" />
+            <AlertCircle className={css({ width: '5', height: '5', flexShrink: 0, marginTop: '0.5' })} />
             {error}
           </motion.div>
         )}
@@ -249,9 +284,12 @@ export default function LineageManager({ persons, relationships }: LineageManage
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="flex items-center gap-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl p-4 text-sm font-semibold"
+            className={css(
+              { display: 'flex', alignItems: 'center', gap: '3', padding: '4', borderRadius: 'xl', fontSize: 'sm', fontWeight: 'semibold' },
+              { backgroundColor: 'emerald.50', color: 'emerald.700', borderWidth: '1px', borderStyle: 'solid', borderColor: 'emerald.200' }
+            )}
           >
-            <CheckCircle2 className="size-5 shrink-0" />
+            <CheckCircle2 className={css({ width: '5', height: '5', flexShrink: 0 })} />
             {t('lineage.applySuccess', { count: changedCount })}
           </motion.div>
         )}
@@ -259,55 +297,115 @@ export default function LineageManager({ persons, relationships }: LineageManage
 
       {updates && (
         <div>
-          <div className="mb-3 flex items-center justify-between">
-            <p className="text-sm text-stone-500 font-medium">{t('lineage.changesSummary', { changed: changedCount, total: updates.length })}</p>
+          <div className={css({ marginBottom: '3', display: 'flex', alignItems: 'center', justifyContent: 'space-between' })}>
+            <p className={css({ fontSize: 'sm', color: 'stone.500', fontWeight: 'medium' })}>
+              {t('lineage.changesSummary', { changed: changedCount, total: updates.length })}
+            </p>
           </div>
 
-          <div className="rounded-2xl border border-stone-200/80 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+          <div
+            className={css({
+              borderRadius: '2xl',
+              borderWidth: '1px',
+              borderStyle: 'solid',
+              borderColor: 'rgb(228 228 231 / 0.8)',
+              overflow: 'hidden',
+              boxShadow: 'sm',
+            })}
+          >
+            <div className={css({ overflowX: 'auto' })}>
+              <table className={css({ width: '100%', fontSize: 'sm' })}>
                 <thead>
-                  <tr className="bg-stone-50 border-b border-stone-200/80">
-                    <th className="text-left px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.nameHeader')}</th>
-                    <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.generationHeader')}</th>
-                    <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.birthOrderHeader')}</th>
-                    <th className="text-center px-4 py-3 font-semibold text-stone-600">{t('lineage.statusHeader')}</th>
+                  <tr
+                    className={css({
+                      backgroundColor: 'stone.50',
+                      borderBottomWidth: '1px',
+                      borderBottomStyle: 'solid',
+                      borderBottomColor: 'rgb(228 228 231 / 0.8)',
+                    })}
+                  >
+                    <th className={css({ textAlign: 'left', paddingX: '4', paddingY: '3', fontWeight: 'semibold', color: 'stone.600', whiteSpace: 'nowrap' })}>
+                      {t('lineage.nameHeader')}
+                    </th>
+                    <th
+                      className={css({ textAlign: 'center', paddingX: '4', paddingY: '3', fontWeight: 'semibold', color: 'stone.600', whiteSpace: 'nowrap' })}
+                    >
+                      {t('lineage.generationHeader')}
+                    </th>
+                    <th
+                      className={css({ textAlign: 'center', paddingX: '4', paddingY: '3', fontWeight: 'semibold', color: 'stone.600', whiteSpace: 'nowrap' })}
+                    >
+                      {t('lineage.birthOrderHeader')}
+                    </th>
+                    <th className={css({ textAlign: 'center', paddingX: '4', paddingY: '3', fontWeight: 'semibold', color: 'stone.600' })}>
+                      {t('lineage.statusHeader')}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {displayedRows.map((u, i) => (
                     <tr
                       key={u.id}
-                      className={`border-b border-stone-100 last:border-0 transition-colors ${
-                        u.changed ? 'bg-amber-50/40' : ''
-                      } ${i % 2 === 0 && !u.changed ? 'bg-white' : !u.changed ? 'bg-stone-50/30' : ''}`}
+                      className={css(
+                        { borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: 'stone.100', transition: 'colors 0.2s' },
+                        u.changed ? { backgroundColor: 'rgb(254 243 199 / 0.4)' } : {},
+                        i % 2 === 0 && !u.changed ? { backgroundColor: 'white' } : !u.changed ? { backgroundColor: 'rgb(228 228 231 / 0.3)' } : {}
+                      )}
                     >
-                      <td className="px-4 py-3 font-medium text-stone-800">{u.fullName}</td>
-                      <td className="px-4 py-3 text-center">
-                        <span className="text-stone-400">{u.oldGeneration ?? '—'}</span>
+                      <td className={css({ paddingX: '4', paddingY: '3', fontWeight: 'medium', color: 'stone.800' })}>{u.fullName}</td>
+                      <td className={css({ paddingX: '4', paddingY: '3', textAlign: 'center' })}>
+                        <span className={css({ color: 'stone.400' })}>{u.oldGeneration ?? '—'}</span>
                         {u.oldGeneration !== u.newGeneration && (
                           <>
-                            <span className="mx-2 text-stone-300">→</span>
-                            <span className="font-bold text-amber-700">{u.newGeneration ?? '—'}</span>
+                            <span className={css({ marginX: '2', color: 'stone.300' })}>→</span>
+                            <span className={css({ fontWeight: 'bold', color: 'amber.700' })}>{u.newGeneration ?? '—'}</span>
                           </>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-center">
-                        <span className="text-stone-400">{u.oldBirthOrder ?? '—'}</span>
+                      <td className={css({ paddingX: '4', paddingY: '3', textAlign: 'center' })}>
+                        <span className={css({ color: 'stone.400' })}>{u.oldBirthOrder ?? '—'}</span>
                         {u.oldBirthOrder !== u.newBirthOrder && (
                           <>
-                            <span className="mx-2 text-stone-300">→</span>
-                            <span className="font-bold text-amber-700">{u.newBirthOrder ?? '—'}</span>
+                            <span className={css({ marginX: '2', color: 'stone.300' })}>→</span>
+                            <span className={css({ fontWeight: 'bold', color: 'amber.700' })}>{u.newBirthOrder ?? '—'}</span>
                           </>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className={css({ paddingX: '4', paddingY: '3', textAlign: 'center' })}>
                         {u.changed ? (
-                          <span className="inline-block px-2 py-0.5 rounded-full text-xs-plus font-bold bg-amber-100 text-amber-700 border border-amber-200/60">
+                          <span
+                            className={css({
+                              display: 'inline-block',
+                              paddingX: '2',
+                              paddingY: '0.5',
+                              borderRadius: 'full',
+                              fontSize: 'xs',
+                              fontWeight: 'bold',
+                              backgroundColor: 'amber.100',
+                              color: 'amber.700',
+                              borderWidth: '1px',
+                              borderStyle: 'solid',
+                              borderColor: 'rgb(251 191 36 / 0.6)',
+                            })}
+                          >
                             {t('common.update')}
                           </span>
                         ) : (
-                          <span className="inline-block px-2 py-0.5 rounded-full text-xs-plus font-bold bg-stone-100 text-stone-400 border border-stone-200/60">
+                          <span
+                            className={css({
+                              display: 'inline-block',
+                              paddingX: '2',
+                              paddingY: '0.5',
+                              borderRadius: 'full',
+                              fontSize: 'xs',
+                              fontWeight: 'bold',
+                              backgroundColor: 'stone.100',
+                              color: 'stone.400',
+                              borderWidth: '1px',
+                              borderStyle: 'solid',
+                              borderColor: 'rgb(228 228 231 / 0.6)',
+                            })}
+                          >
                             {t('common.unchanged')}
                           </span>
                         )}
@@ -323,15 +421,27 @@ export default function LineageManager({ persons, relationships }: LineageManage
             <button
               type="button"
               onClick={() => setShowAll(!showAll)}
-              className="mt-3 flex items-center gap-1.5 text-sm font-medium text-stone-500 hover:text-amber-700 transition-colors mx-auto"
+              className={css(
+                {
+                  marginTop: '3',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1.5',
+                  fontSize: 'sm',
+                  fontWeight: 'medium',
+                  marginX: 'auto',
+                  transition: 'colors 0.2s',
+                },
+                { color: 'stone.500', _hover: { color: 'amber.700' } }
+              )}
             >
               {showAll ? (
                 <>
-                  <ChevronUp className="size-4" /> {t('lineage.collapse')}
+                  <ChevronUp className={css({ width: '4', height: '4' })} /> {t('lineage.collapse')}
                 </>
               ) : (
                 <>
-                  <ChevronDown className="size-4" /> {t('lineage.showAll', { count: updates.length })}
+                  <ChevronDown className={css({ width: '4', height: '4' })} /> {t('lineage.showAll', { count: updates.length })}
                 </>
               )}
             </button>
