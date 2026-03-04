@@ -18,7 +18,8 @@
       "!**/coverage",
       "!**/generated",
       "!**/.content-collections",
-      "!**/.claude"
+      "!**/.claude",
+      "!base"
     ]
   },
   "linter": {
