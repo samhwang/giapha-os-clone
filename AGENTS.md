@@ -18,7 +18,7 @@ The project focuses on:
 ## Role & Technical Context
 
 - **Domain**: Vietnamese genealogy/family tree management
-- **Tech Stack**: TanStack Start, React 19, TypeScript, Prisma, PostgreSQL, Better Auth, Garage (S3), Tailwind CSS v4, Framer Motion
+- **Tech Stack**: TanStack Start, React 19, TypeScript, Prisma, PostgreSQL, Better Auth, Garage (S3), Tailwind CSS v4
 - **Architecture**: Full-stack app with server functions, file-based routing, Docker Compose infrastructure
 - **Deployment**: Self-hosted via Docker Compose
 - **Package Manager**: pnpm
@@ -114,7 +114,7 @@ Add skills under `.agents/skills/[skill-name]/SKILL.md` as needed.
 - **Prisma** + PostgreSQL (database)
 - **Better Auth** (authentication)
 - **Garage** (S3-compatible file storage)
-- **Tailwind CSS v4** + Framer Motion (styling/animation)
+- **Tailwind CSS v4** (styling/animation)
 - **Biome** (linting + formatting)
 - **Vitest** + React Testing Library (testing)
 

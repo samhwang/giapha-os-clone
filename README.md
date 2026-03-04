@@ -10,7 +10,7 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 - **Authentication**: [Better Auth](https://www.better-auth.com/)
 - **Database**: [Prisma](https://www.prisma.io/) + PostgreSQL
 - **File Storage**: [Garage](https://garagehq.deuxfleurs.fr/) (S3-compatible)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) + [Framer Motion](https://www.framer.com/motion/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Linting/Formatting**: [Biome](https://biomejs.dev/)
 - **Testing**: [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) + [Vitest Browser Mode](https://vitest.dev/guide/browser/)
 - **Infrastructure**: Docker Compose
