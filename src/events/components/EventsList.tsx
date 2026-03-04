@@ -1,9 +1,11 @@
-import { Cake, CalendarDays, Clock, Flower } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { Cake, CalendarDays, Clock, Flower, MapPin, Plus, Star } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
-import type { FamilyEvent } from '../../types';
+import type { CustomEventRecord, EventType, FamilyEvent } from '../../types';
+import { getTodayLunar } from '../utils/dateHelpers';
 import { computeEvents } from '../utils/eventHelpers';
+import CustomEventModal from './CustomEventModal';
 
 interface EventsListProps {
   persons: {
@@ -17,6 +19,9 @@ interface EventsListProps {
     deathDay: number | null;
     isDeceased: boolean;
   }[];
+  customEvents?: CustomEventRecord[];
+  isAdmin?: boolean;
+  onCustomEventChange?: () => void;
 }
 
 function daysUntilLabel(days: number, t: (key: string, opts?: Record<string, unknown>) => string): string {
@@ -27,41 +32,63 @@ function daysUntilLabel(days: number, t: (key: string, opts?: Record<string, unk
   return t('common.monthsFromNow', { months: Math.ceil(days / 30) });
 }
 
-function EventCard({ event, index }: { event: FamilyEvent; index: number }) {
+function EventCard({ event, index, onCustomEventClick }: { event: FamilyEvent; index: number; onCustomEventClick?: (event: FamilyEvent) => void }) {
   const { t } = useTranslation();
   const isBirthday = event.type === 'birthday';
+  const isCustom = event.type === 'custom_event';
   const isToday = event.daysUntil === 0;
   const isSoon = event.daysUntil <= 7;
   const { setMemberModalId } = useDashboard();
 
+  const handleClick = () => {
+    if (isCustom && onCustomEventClick) {
+      onCustomEventClick(event);
+    } else if (event.personId) {
+      setMemberModalId(event.personId);
+    }
+  };
+
+  const iconBg = isToday
+    ? 'bg-amber-100 text-amber-600'
+    : isCustom
+      ? 'bg-purple-50 text-purple-500'
+      : isBirthday
+        ? 'bg-blue-50 text-blue-500'
+        : 'bg-rose-50 text-rose-500';
+
+  const borderClass = isToday
+    ? 'bg-amber-50 border-amber-300 shadow-sm'
+    : isCustom
+      ? 'bg-white/80 border-stone-200/60 hover:border-purple-200'
+      : isBirthday
+        ? 'bg-white/80 border-stone-200/60 hover:border-blue-200'
+        : 'bg-white/80 border-stone-200/60 hover:border-rose-200';
+
   return (
     <button
       type="button"
-      onClick={() => setMemberModalId(event.personId)}
-      className={`w-full text-left flex items-center gap-4 p-4 rounded-2xl border transition-all hover:shadow-md group animate-[fade-in-up_0.35s_ease-out_forwards] ${
-        isToday
-          ? 'bg-amber-50 border-amber-300 shadow-sm'
-          : isBirthday
-            ? 'bg-white/80 border-stone-200/60 hover:border-blue-200'
-            : 'bg-white/80 border-stone-200/60 hover:border-rose-200'
-      }`}
+      onClick={handleClick}
+      className={`w-full text-left flex items-center gap-4 p-4 rounded-2xl border transition-all hover:shadow-md group animate-[fade-in-up_0.35s_ease-out_forwards] ${borderClass}`}
       style={{ animationDelay: `${index * 0.04}s`, animationFillMode: 'backwards' }}
     >
-      <div
-        className={`shrink-0 size-11 flex items-center justify-center rounded-xl ${
-          isToday ? 'bg-amber-100 text-amber-600' : isBirthday ? 'bg-blue-50 text-blue-500' : 'bg-rose-50 text-rose-500'
-        }`}
-      >
-        {isBirthday ? <Cake className="size-5" /> : <Flower className="size-5" />}
+      <div className={`shrink-0 size-11 flex items-center justify-center rounded-xl ${iconBg}`}>
+        {isCustom ? <Star className="size-5" /> : isBirthday ? <Cake className="size-5" /> : <Flower className="size-5" />}
       </div>
 
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-stone-800 truncate group-hover:text-amber-700 transition-colors">{event.personName}</p>
         <p className="text-sm text-stone-500 flex items-center gap-1.5 mt-0.5">
           <CalendarDays className="size-3.5 shrink-0" />
-          {isBirthday ? t('events.birthday') : t('events.deathAnniversary')} — <span className="font-medium text-stone-600">{event.eventDateLabel}</span>
-          {event.originYear && <span className="text-stone-400">({event.originYear})</span>}
+          {isCustom ? t('events.customEvent') : isBirthday ? t('events.birthday') : t('events.deathAnniversary')} —{' '}
+          <span className="font-medium text-stone-600">{event.eventDateLabel}</span>
+          {event.originYear && !isCustom && <span className="text-stone-400">({event.originYear})</span>}
         </p>
+        {isCustom && event.location && (
+          <p className="text-xs text-stone-400 flex items-center gap-1 mt-0.5">
+            <MapPin className="size-3 shrink-0" />
+            {event.location}
+          </p>
+        )}
       </div>
 
       <div
@@ -76,12 +103,14 @@ function EventCard({ event, index }: { event: FamilyEvent; index: number }) {
   );
 }
 
-export default function EventsList({ persons }: EventsListProps) {
+export default function EventsList({ persons, customEvents = [], isAdmin = false, onCustomEventChange }: EventsListProps) {
   const { t } = useTranslation();
-  const [filter, setFilter] = useState<'all' | 'birthday' | 'death_anniversary'>('all');
+  const [filter, setFilter] = useState<'all' | EventType>('all');
   const [showCount, setShowCount] = useState(20);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<CustomEventRecord | null>(null);
 
-  const allEvents = useMemo(() => computeEvents(persons, t('common.lunarSuffix')), [persons, t]);
+  const allEvents = useMemo(() => computeEvents(persons, customEvents, t('common.lunarSuffix')), [persons, customEvents, t]);
   const filtered = useMemo(() => (filter === 'all' ? allEvents : allEvents.filter((e) => e.type === filter)), [allEvents, filter]);
 
   const upcoming = filtered.filter((e) => e.daysUntil <= 365);
@@ -90,27 +119,54 @@ export default function EventsList({ persons }: EventsListProps) {
   const todayCount = allEvents.filter((e) => e.daysUntil === 0).length;
   const soonCount = allEvents.filter((e) => e.daysUntil > 0 && e.daysUntil <= 7).length;
 
+  const lunarToday = useMemo(() => getTodayLunar(), []);
+
+  const handleCustomEventClick = useCallback(
+    (event: FamilyEvent) => {
+      if (!isAdmin) return;
+      const found = customEvents.find((ce) => ce.id === event.personId);
+      if (found) {
+        setEditingEvent(found);
+        setModalOpen(true);
+      }
+    },
+    [isAdmin, customEvents]
+  );
+
+  const handleModalSuccess = () => {
+    onCustomEventChange?.();
+  };
+
+  const tabs = [
+    { key: 'all' as const, label: t('events.allTab') },
+    { key: 'birthday' as const, label: t('events.birthdayTab') },
+    { key: 'death_anniversary' as const, label: t('events.deathAnniversaryTab') },
+    { key: 'custom_event' as const, label: t('events.customEventTab') },
+  ];
+
   return (
     <div className="space-y-5">
-      {(todayCount > 0 || soonCount > 0) && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3 animate-[fade-in-up_0.3s_ease-out_forwards]">
-          <span className="text-2xl">🎊</span>
-          <p className="text-sm font-medium text-amber-800">
-            {todayCount > 0 && <span className="font-bold">{t('events.todayCount', { count: todayCount })}</span>}
-            {todayCount > 0 && soonCount > 0 && ' · '}
-            {soonCount > 0 && <span>{t('events.soonCount', { count: soonCount })}</span>}
-          </p>
-        </div>
-      )}
+      {/* Summary banner with lunar date */}
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50/40 border border-amber-200/60 rounded-2xl p-4 sm:p-5 animate-[fade-in-up_0.3s_ease-out_forwards]">
+        <p className="text-sm font-medium text-amber-900">{lunarToday.solarStr}</p>
+        <p className="text-xs text-amber-700/70 mt-0.5">
+          {t('events.lunarDate')}: {lunarToday.lunarDayStr}, {lunarToday.lunarYear}
+        </p>
+        {(todayCount > 0 || soonCount > 0) && (
+          <div className="flex items-center gap-2 mt-2 pt-2 border-t border-amber-200/40">
+            <span className="text-lg">🎊</span>
+            <p className="text-sm font-medium text-amber-800">
+              {todayCount > 0 && <span className="font-bold">{t('events.todayCount', { count: todayCount })}</span>}
+              {todayCount > 0 && soonCount > 0 && ' · '}
+              {soonCount > 0 && <span>{t('events.soonCount', { count: soonCount })}</span>}
+            </p>
+          </div>
+        )}
+      </div>
 
-      <div className="flex gap-2">
-        {(
-          [
-            { key: 'all', label: t('events.allTab') },
-            { key: 'birthday', label: t('events.birthdayTab') },
-            { key: 'death_anniversary', label: t('events.deathAnniversaryTab') },
-          ] as const
-        ).map((tab) => (
+      {/* Filter tabs + add button */}
+      <div className="flex gap-2 flex-wrap">
+        {tabs.map((tab) => (
           <button
             type="button"
             key={tab.key}
@@ -124,7 +180,20 @@ export default function EventsList({ persons }: EventsListProps) {
             {tab.label}
           </button>
         ))}
-        <span className="ml-auto text-xs text-stone-400 self-center">{t('events.yearCount', { count: filtered.length })}</span>
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={() => {
+              setEditingEvent(null);
+              setModalOpen(true);
+            }}
+            className="ml-auto flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-purple-700 bg-purple-50 border border-purple-200/60 hover:bg-purple-100 transition-colors"
+          >
+            <Plus className="size-4" />
+            {t('events.addCustomEvent')}
+          </button>
+        )}
+        <span className={`${isAdmin ? '' : 'ml-auto'} text-xs text-stone-400 self-center`}>{t('events.yearCount', { count: filtered.length })}</span>
       </div>
 
       {visible.length === 0 ? (
@@ -136,7 +205,7 @@ export default function EventsList({ persons }: EventsListProps) {
       ) : (
         <div className="space-y-2.5">
           {visible.map((event, i) => (
-            <EventCard key={`${event.personId}-${event.type}`} event={event} index={i} />
+            <EventCard key={`${event.personId}-${event.type}`} event={event} index={i} onCustomEventClick={isAdmin ? handleCustomEventClick : undefined} />
           ))}
         </div>
       )}
@@ -150,6 +219,16 @@ export default function EventsList({ persons }: EventsListProps) {
           {t('events.showMore', { count: upcoming.length - showCount })}
         </button>
       )}
+
+      <CustomEventModal
+        isOpen={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setEditingEvent(null);
+        }}
+        onSuccess={handleModalSuccess}
+        eventToEdit={editingEvent}
+      />
     </div>
   );
 }
