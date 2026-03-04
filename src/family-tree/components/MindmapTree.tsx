@@ -1,5 +1,5 @@
-import { ChevronDown, ChevronRight, Minus, Plus, Share2 } from 'lucide-react';
-import { useState } from 'react';
+import { ChevronDown, ChevronRight, Filter, Minus, Plus, Share2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
@@ -16,13 +16,28 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
   const { t } = useTranslation();
   const { showAvatar, setMemberModalId } = useDashboard();
   const [scale, setScale] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
+  const [hideSpouses, setHideSpouses] = useState(false);
+  const [hideMales, setHideMales] = useState(false);
+  const [hideFemales, setHideFemales] = useState(false);
+  const filtersRef = useRef<HTMLDivElement>(null);
 
   const handleZoomIn = () => setScale((s) => Math.min(s + 0.1, 2));
   const handleZoomOut = () => setScale((s) => Math.max(s - 0.1, 0.3));
   const handleResetZoom = () => setScale(1);
 
+  useEffect(() => {
+    const handleClickOutside = (event: globalThis.MouseEvent) => {
+      if (filtersRef.current && !filtersRef.current.contains(event.target as Node)) {
+        setShowFilters(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const getTreeData = (personId: string) => {
-    const spousesList = relationships
+    let spousesList = relationships
       .filter((r) => r.type === 'marriage' && (r.personAId === personId || r.personBId === personId))
       .map((r) => {
         const spouseId = r.personAId === personId ? r.personBId : r.personAId;
@@ -30,9 +45,14 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
       })
       .filter((s) => s.person);
 
+    if (hideSpouses) spousesList = [];
+
     const childRels = relationships.filter((r) => (r.type === 'biological_child' || r.type === 'adopted_child') && r.personAId === personId);
 
-    const childrenList = childRels.map((r) => personsMap.get(r.personBId)).filter(Boolean) as Person[];
+    let childrenList = childRels.map((r) => personsMap.get(r.personBId)).filter(Boolean) as Person[];
+
+    if (hideMales) childrenList = childrenList.filter((c) => c.gender !== 'male');
+    if (hideFemales) childrenList = childrenList.filter((c) => c.gender !== 'female');
 
     return { person: personsMap.get(personId) as Person, spouses: spousesList, children: childrenList };
   };
@@ -201,34 +221,85 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
 
   return (
     <div className="relative w-full">
-      {/* Zoom controls */}
-      <div className="absolute top-3 right-3 z-20 flex items-center bg-white/80 backdrop-blur-md shadow-sm border border-stone-200/60 rounded-full overflow-hidden h-10">
-        <button
-          type="button"
-          onClick={handleZoomOut}
-          className="px-3 h-full hover:bg-stone-100/50 text-stone-600 transition-colors disabled:opacity-50"
-          title={t('tree.zoomOut')}
-          disabled={scale <= 0.3}
-        >
-          <Minus className="size-4" />
-        </button>
-        <button
-          type="button"
-          onClick={handleResetZoom}
-          className="px-2 h-full hover:bg-stone-100/50 text-stone-600 transition-colors text-xs font-medium min-w-[50px] text-center border-x border-stone-200/50"
-          title={t('tree.zoomReset')}
-        >
-          {Math.round(scale * 100)}%
-        </button>
-        <button
-          type="button"
-          onClick={handleZoomIn}
-          className="px-3 h-full hover:bg-stone-100/50 text-stone-600 transition-colors disabled:opacity-50"
-          title={t('tree.zoomIn')}
-          disabled={scale >= 2}
-        >
-          <Plus className="size-4" />
-        </button>
+      {/* Toolbar: filters + zoom */}
+      <div className="absolute top-3 right-3 z-20 flex items-center gap-2">
+        {/* Filter dropdown */}
+        <div className="relative" ref={filtersRef}>
+          <button
+            type="button"
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center gap-2 px-4 h-10 rounded-full font-semibold text-sm shadow-sm border transition-all ${
+              showFilters
+                ? 'bg-amber-100/90 text-amber-800 border-amber-200'
+                : 'bg-white/80 text-stone-600 border-stone-200/60 hover:bg-white hover:text-stone-900 hover:shadow-md backdrop-blur-md'
+            }`}
+          >
+            <Filter className="size-4" />
+            <span className="hidden sm:inline">{t('tree.filter')}</span>
+          </button>
+
+          {showFilters && (
+            <div className="absolute top-full right-0 mt-2 w-48 bg-white/95 backdrop-blur-xl shadow-xl border border-stone-200/60 rounded-2xl p-4 flex flex-col gap-3 z-50 animate-[fade-in_0.15s_ease-out_forwards]">
+              <label className="flex items-center gap-2.5 text-sm font-medium text-stone-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={hideSpouses}
+                  onChange={(e) => setHideSpouses(e.target.checked)}
+                  className="rounded text-amber-600 focus:ring-amber-500 cursor-pointer size-4"
+                />
+                {t('tree.hideSpouses')}
+              </label>
+              <label className="flex items-center gap-2.5 text-sm font-medium text-stone-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={hideMales}
+                  onChange={(e) => setHideMales(e.target.checked)}
+                  className="rounded text-amber-600 focus:ring-amber-500 cursor-pointer size-4"
+                />
+                {t('tree.hideMales')}
+              </label>
+              <label className="flex items-center gap-2.5 text-sm font-medium text-stone-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={hideFemales}
+                  onChange={(e) => setHideFemales(e.target.checked)}
+                  className="rounded text-amber-600 focus:ring-amber-500 cursor-pointer size-4"
+                />
+                {t('tree.hideFemales')}
+              </label>
+            </div>
+          )}
+        </div>
+
+        {/* Zoom controls */}
+        <div className="flex items-center bg-white/80 backdrop-blur-md shadow-sm border border-stone-200/60 rounded-full overflow-hidden h-10">
+          <button
+            type="button"
+            onClick={handleZoomOut}
+            className="px-3 h-full hover:bg-stone-100/50 text-stone-600 transition-colors disabled:opacity-50"
+            title={t('tree.zoomOut')}
+            disabled={scale <= 0.3}
+          >
+            <Minus className="size-4" />
+          </button>
+          <button
+            type="button"
+            onClick={handleResetZoom}
+            className="px-2 h-full hover:bg-stone-100/50 text-stone-600 transition-colors text-xs font-medium min-w-[50px] text-center border-x border-stone-200/50"
+            title={t('tree.zoomReset')}
+          >
+            {Math.round(scale * 100)}%
+          </button>
+          <button
+            type="button"
+            onClick={handleZoomIn}
+            className="px-3 h-full hover:bg-stone-100/50 text-stone-600 transition-colors disabled:opacity-50"
+            title={t('tree.zoomIn')}
+            disabled={scale >= 2}
+          >
+            <Plus className="size-4" />
+          </button>
+        </div>
       </div>
 
       <div className="w-full h-full p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-140px)] flex justify-start lg:justify-center overflow-x-auto">

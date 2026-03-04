@@ -105,7 +105,11 @@
   "tree": {
     "zoomIn": "Phóng to",
     "zoomOut": "Thu nhỏ",
-    "zoomReset": "Đặt lại"
+    "zoomReset": "Đặt lại",
+    "filter": "Lọc hiển thị",
+    "hideSpouses": "Ẩn dâu/rể",
+    "hideMales": "Ẩn nam",
+    "hideFemales": "Ẩn nữ"
   },
   "member": {
     "addMember": "Thêm thành viên",
