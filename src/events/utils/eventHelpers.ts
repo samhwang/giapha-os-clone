@@ -1,4 +1,4 @@
-import { getLunarDate, getSolarDate } from '@dqcai/vn-lunar';
+import { Lunar, Solar } from 'lunar-javascript';
 import type { EventType, FamilyEvent } from '../../types';
 
 /**
@@ -6,13 +6,14 @@ import type { EventType, FamilyEvent } from '../../types';
  * starting from `fromDate`.
  */
 function nextSolarForLunar(lunarMonth: number, lunarDay: number, fromDate: Date): Date | null {
-  const todayLunar = getLunarDate(fromDate.getDate(), fromDate.getMonth() + 1, fromDate.getFullYear());
-  const currentLunarYear = todayLunar.year;
+  const todaySolar = Solar.fromYmd(fromDate.getFullYear(), fromDate.getMonth() + 1, fromDate.getDate());
+  const currentLunarYear = todaySolar.getLunar().getYear();
 
   for (let offset = 0; offset <= 2; offset++) {
     try {
-      const s = getSolarDate(lunarDay, lunarMonth, currentLunarYear + offset);
-      const candidate = new Date(s.year, s.month - 1, s.day);
+      const l = Lunar.fromYmd(currentLunarYear + offset, lunarMonth, lunarDay);
+      const s = l.getSolar();
+      const candidate = new Date(s.getYear(), s.getMonth() - 1, s.getDay());
       if (candidate >= fromDate) return candidate;
     } catch {
       // lunar date may not exist in this year (e.g., leap month); try next
@@ -68,9 +69,10 @@ export function computeEvents(
     if (p.isDeceased && p.deathMonth && p.deathDay) {
       try {
         const deathYear = p.deathYear ?? new Date().getFullYear();
-        const lunar = getLunarDate(p.deathDay, p.deathMonth, deathYear);
-        const lMonth = lunar.month;
-        const lDay = lunar.day;
+        const solar = Solar.fromYmd(deathYear, p.deathMonth, p.deathDay);
+        const lunar = solar.getLunar();
+        const lMonth = Math.abs(lunar.getMonth());
+        const lDay = lunar.getDay();
 
         const next = nextSolarForLunar(lMonth, lDay, today);
         if (!next) continue;

@@ -42,7 +42,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1000.0",
     "@dotenvx/dotenvx": "^1.52.0",
-    "@dqcai/vn-lunar": "^1.0.1",
     "@fontsource-variable/inter": "^5.2.8",
     "@fontsource-variable/playfair-display": "^5.2.8",
     "@prisma/adapter-pg": "^7.4.2",
@@ -58,6 +57,7 @@
     "i18next": "^25.8.13",
     "jspdf": "^4.2.0",
     "lucide-react": "^0.575.0",
+    "lunar-javascript": "^1.7.7",
     "prisma": "^7.4.2",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
