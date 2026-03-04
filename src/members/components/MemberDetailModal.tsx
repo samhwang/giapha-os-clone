@@ -1,11 +1,12 @@
 import { Link } from '@tanstack/react-router';
-import { AlertCircle, ExternalLink, X } from 'lucide-react';
+import { AlertCircle, ArrowLeft, ExternalLink, Pencil, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
 import type { Person } from '../../types';
 import { getPersonById } from '../server/member';
 import MemberDetailContent from './MemberDetailContent';
+import MemberForm from './MemberForm';
 
 export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
   const { t } = useTranslation();
@@ -15,8 +16,13 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
   const [error, setError] = useState<string | null>(null);
   const [person, setPerson] = useState<Person | null>(null);
   const [privateData, setPrivateData] = useState<{ phoneNumber?: string | null; occupation?: string | null; currentResidence?: string | null } | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const closeModal = () => {
+    if (isEditing) {
+      setIsEditing(false);
+      return;
+    }
     setMemberModalId(null);
   };
 
@@ -51,6 +57,7 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
         setPerson(null);
         setPrivateData(null);
         setError(null);
+        setIsEditing(false);
       }, 300);
     }
   }, [memberId, fetchData]);
@@ -70,31 +77,53 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
     <>
       {isOpen && (
         <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 bg-stone-900/40 backdrop-blur-sm animate-[fade-in_0.2s_ease-out_forwards]">
-          <button
-            type="button"
-            tabIndex={0}
-            className="absolute inset-0 cursor-pointer"
-            onClick={closeModal}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') closeModal();
-            }}
-          />
+          {!isEditing && (
+            <button
+              type="button"
+              tabIndex={0}
+              className="absolute inset-0 cursor-pointer"
+              onClick={() => setMemberModalId(null)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') setMemberModalId(null);
+              }}
+            />
+          )}
 
           <div className="relative bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col border border-stone-200 animate-[scale-in_0.2s_ease-out_forwards]">
             <div className="absolute top-4 right-4 sm:top-5 sm:right-5 z-20 flex items-center gap-2">
-              {isAdmin && person && (
-                <Link
-                  to="/dashboard/members/$id"
-                  params={{ id: person.id }}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-amber-100/80 backdrop-blur-md text-amber-800 rounded-full hover:bg-amber-200 font-semibold text-sm shadow-sm border border-amber-200/50 transition-colors"
+              {isAdmin && person && !isEditing && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-amber-100/80 backdrop-blur-md text-amber-800 rounded-full hover:bg-amber-200 font-semibold text-sm shadow-sm border border-amber-200/50 transition-colors"
+                  >
+                    <Pencil className="size-4" />
+                    <span className="hidden sm:inline">{t('common.edit')}</span>
+                  </button>
+                  <Link
+                    to="/dashboard/members/$id"
+                    params={{ id: person.id }}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-stone-100/80 backdrop-blur-md text-stone-700 rounded-full hover:bg-stone-200 font-semibold text-sm shadow-sm border border-stone-200/50 transition-colors"
+                  >
+                    <ExternalLink className="size-4" />
+                    <span className="hidden sm:inline">{t('member.viewDetail')}</span>
+                  </Link>
+                </>
+              )}
+              {isEditing && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-stone-100/80 backdrop-blur-md text-stone-700 rounded-full hover:bg-stone-200 font-semibold text-sm shadow-sm border border-stone-200/50 transition-colors"
                 >
-                  <ExternalLink className="size-4" />
-                  <span className="hidden sm:inline">{t('member.viewDetail')}</span>
-                </Link>
+                  <ArrowLeft className="size-4" />
+                  <span className="hidden sm:inline">{t('common.back')}</span>
+                </button>
               )}
               <button
                 type="button"
-                onClick={closeModal}
+                onClick={isEditing ? () => setIsEditing(false) : () => setMemberModalId(null)}
                 className="size-10 flex items-center justify-center bg-stone-100/80 backdrop-blur-md text-stone-600 rounded-full hover:bg-stone-200 hover:text-stone-900 shadow-sm border border-stone-200/50 transition-colors"
                 aria-label={t('common.close')}
               >
@@ -123,7 +152,22 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
               </div>
             ) : person ? (
               <div className="flex-1 overflow-y-auto">
-                <MemberDetailContent person={person} privateData={privateData} isAdmin={isAdmin} />
+                {isEditing ? (
+                  <div className="p-4 sm:p-6">
+                    <MemberForm
+                      initialData={{ ...person, ...privateData }}
+                      isEditing
+                      isAdmin={isAdmin}
+                      onSuccess={(personId) => {
+                        setIsEditing(false);
+                        fetchData(personId);
+                      }}
+                      onCancel={() => setIsEditing(false)}
+                    />
+                  </div>
+                ) : (
+                  <MemberDetailContent person={person} privateData={privateData} isAdmin={isAdmin} />
+                )}
               </div>
             ) : null}
           </div>
