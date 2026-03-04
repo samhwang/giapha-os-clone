@@ -1,4 +1,5 @@
-import { Briefcase, Info, Leaf, MapPin, Phone, Users } from 'lucide-react';
+import { Briefcase, ChevronDown, Info, Leaf, MapPin, Phone, Users } from 'lucide-react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { calculateAge, formatDisplayDate, getLunarDateString, getZodiacAnimal, getZodiacSign } from '../../events/utils/dateHelpers';
 import RelationshipManager from '../../relationships/components/RelationshipManager';
@@ -15,6 +16,9 @@ interface MemberDetailContentProps {
 export default function MemberDetailContent({ person, privateData, isAdmin }: MemberDetailContentProps) {
   const { t } = useTranslation();
   const isDeceased = person.isDeceased;
+  const [isNoteExpanded, setIsNoteExpanded] = useState(false);
+  const NOTE_TRUNCATE_LENGTH = 300;
+  const isNoteLong = !!person.note && person.note.length > NOTE_TRUNCATE_LENGTH;
 
   return (
     <div className="bg-stone-50/50">
@@ -188,9 +192,30 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                 {t('common.note')}
               </h2>
               <div className="bg-white/80 backdrop-blur-sm p-5 sm:p-6 rounded-2xl border border-stone-200/60 shadow-sm">
-                <p className="text-stone-600 whitespace-pre-wrap text-sm sm:text-base leading-relaxed">
-                  {person.note || <span className="text-stone-400 italic">{t('member.noNote')}</span>}
-                </p>
+                {person.note ? (
+                  <div className="relative">
+                    <p
+                      className={`text-stone-600 whitespace-pre-wrap text-sm sm:text-base leading-relaxed transition-all duration-300 ${isNoteLong && !isNoteExpanded ? 'max-h-28 overflow-hidden' : ''}`}
+                    >
+                      {person.note}
+                    </p>
+                    {isNoteLong && !isNoteExpanded && (
+                      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white/90 to-transparent pointer-events-none" />
+                    )}
+                    {isNoteLong && (
+                      <button
+                        type="button"
+                        onClick={() => setIsNoteExpanded(!isNoteExpanded)}
+                        className="relative z-10 mt-2 text-sm font-medium text-amber-700 hover:text-amber-800 flex items-center gap-1 transition-colors"
+                      >
+                        {isNoteExpanded ? t('member.noteCollapse') : t('member.noteExpand')}
+                        <ChevronDown className={`size-4 transition-transform duration-200 ${isNoteExpanded ? 'rotate-180' : ''}`} />
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-stone-400 italic text-sm sm:text-base">{t('member.noNote')}</p>
+                )}
               </div>
             </section>
 

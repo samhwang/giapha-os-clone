@@ -169,6 +169,8 @@
     "ageSuffix": "years old",
     "family": "Family",
     "noNote": "No notes yet.",
+    "noteExpand": "Show more",
+    "noteCollapse": "Show less",
     "contactInfo": "Contact Information",
     "notUpdated": "Not updated",
     "contactAdminOnly": "Contact information is only visible to administrators.",

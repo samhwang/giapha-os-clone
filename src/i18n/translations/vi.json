@@ -169,6 +169,8 @@
     "ageSuffix": "tuổi",
     "family": "Gia đình",
     "noNote": "Chưa có ghi chú.",
+    "noteExpand": "Xem thêm",
+    "noteCollapse": "Thu gọn",
     "contactInfo": "Thông tin liên hệ",
     "notUpdated": "Chưa cập nhật",
     "contactAdminOnly": "Thông tin liên hệ chỉ hiển thị với Quản trị viên.",
