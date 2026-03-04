@@ -114,6 +114,7 @@ model Person {
   isInLaw        Boolean               @default(false) @map("is_in_law")
   birthOrder     Int?                  @map("birth_order")
   generation     Int?
+  otherNames     String?               @map("other_names")
   avatarUrl      String?               @map("avatar_url")
   note           String?
   createdAt      DateTime              @default(now()) @map("created_at")

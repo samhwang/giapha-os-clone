@@ -39,6 +39,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
   const [avatarUrl, setAvatarUrl] = useState(initialData?.avatarUrl || '');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(initialData?.avatarUrl || null);
+  const [otherNames, setOtherNames] = useState(initialData?.otherNames || '');
   const [note, setNote] = useState(initialData?.note || '');
   const [phoneNumber, setPhoneNumber] = useState(initialData?.phoneNumber || '');
   const [occupation, setOccupation] = useState(initialData?.occupation || '');
@@ -94,6 +95,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
         isDeceased,
         isInLaw,
         birthOrder: birthOrder === '' ? null : Number(birthOrder),
+        otherNames: otherNames || null,
         avatarUrl: finalAvatarUrl || null,
         note: note || null,
         phoneNumber: isAdmin ? phoneNumber || null : undefined,
@@ -162,6 +164,20 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               onChange={(e) => setFullName(e.target.value)}
               className={inputClasses}
               placeholder={t('member.fullNamePlaceholder')}
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label htmlFor="otherNames" className="block text-sm font-semibold text-stone-700 mb-1.5">
+              {t('member.otherNames')}
+            </label>
+            <input
+              id="otherNames"
+              type="text"
+              value={otherNames}
+              onChange={(e) => setOtherNames(e.target.value)}
+              className={inputClasses}
+              placeholder={t('member.otherNamesPlaceholder')}
             />
           </div>
 

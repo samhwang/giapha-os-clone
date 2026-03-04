@@ -29,6 +29,7 @@ const importPersonSchema = z.object({
   isInLaw: z.boolean().optional().default(false),
   birthOrder: z.number().int().nullish(),
   generation: z.number().int().nullish(),
+  otherNames: z.string().nullish(),
   avatarUrl: z.string().nullish(),
   note: z.string().nullish(),
 });
@@ -93,6 +94,7 @@ export const importData = createServerFn({ method: 'POST' })
             isInLaw: p.isInLaw,
             birthOrder: p.birthOrder ?? null,
             generation: p.generation ?? null,
+            otherNames: p.otherNames ?? null,
             avatarUrl: p.avatarUrl ?? null,
             note: p.note ?? null,
           })),

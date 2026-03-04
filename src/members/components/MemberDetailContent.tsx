@@ -83,6 +83,11 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                 </span>
               )}
             </h1>
+            {person.otherNames && (
+              <p className="mt-1.5 text-sm sm:text-base text-stone-600 font-medium italic">
+                {t('member.otherNamesLabel')} <span className="font-semibold not-italic text-stone-700">{person.otherNames}</span>
+              </p>
+            )}
 
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
               <div

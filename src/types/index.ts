@@ -24,6 +24,7 @@ export interface Person {
   isInLaw: boolean;
   birthOrder: number | null;
   generation: number | null;
+  otherNames: string | null;
   avatarUrl: string | null;
   note: string | null;
   createdAt: Date;
