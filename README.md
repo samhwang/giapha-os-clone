@@ -129,6 +129,7 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 │   └── utils/            # Pure utility functions
 ├── docker-compose.yml    # PostgreSQL + Garage
 └── biome.json            # Linter/formatter config
+```
 
 ## Testing
 
