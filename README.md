@@ -34,7 +34,7 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 - [Docker](https://www.docker.com/) + Docker Compose
 - [jq](https://jqlang.github.io/jq/) (used by `setup-garage.sh`)
 
-## Quick Start
+## Quick Start (Development)
 
 1. **Start infrastructure**
 
@@ -81,6 +81,10 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
    ```
 
    Open [http://localhost:3000](http://localhost:3000). The first user to sign up automatically becomes admin.
+
+## Production Deployment
+
+For self-hosted production deployment, see the [Deployment Guide](./docs/07-deployment.md).
 
 ## Available Scripts
 

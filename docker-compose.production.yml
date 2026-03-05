@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: giapha
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: giapha
+    volumes:
+      # Option 1: Named volume (default, portable)
+      - postgres_data:/var/lib/postgresql/data
+
+      # Option 2: Bind mount (uncomment and customize path)
+      # - "./data/postgres:/var/lib/postgresql/data"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U giapha -d giapha"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - giapha-network
+
+  garage:
+    image: dxflrs/garage:v1.1.0
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      # Option 1: Named volume (default, portable)
+      - garage_data:/var/lib/garage
+
+      # Option 2: Bind mount (uncomment and customize path)
+      # - "./data/garage:/var/lib/garage"
+    ports:
+      - "3900:3900"
+      - "3902:3902"
+      - "3903:3903"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3902/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - giapha-network
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://giapha:${DB_PASSWORD}@postgres:5432/giapha
+    depends_on:
+      postgres:
+        condition: service_healthy
+      garage:
+        condition: service_healthy
+    networks:
+      - giapha-network
+
+volumes:
+  postgres_data:
+  garage_data:
+
+networks:
+  giapha-network:
+    driver: bridge
