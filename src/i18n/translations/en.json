@@ -182,6 +182,7 @@
     "birth": "Birth",
     "death": "Death",
     "lunarCalendar": "Lunar",
+    "zodiacPrefix": "Year of",
     "longevity": "Longevity",
     "lifespan": "Lifespan",
     "age": "Age",

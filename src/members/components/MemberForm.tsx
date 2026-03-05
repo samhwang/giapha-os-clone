@@ -510,7 +510,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
         className="flex justify-end gap-3 sm:gap-4 pt-6 animate-[fade-in-up_0.3s_ease-out_forwards]"
         style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}
       >
-        <button type="button" onClick={() => (onCancel ? onCancel() : navigate({ to: '/dashboard' }))} className="btn">
+        <button type="button" onClick={() => (onCancel ? onCancel() : window.history.back())} className="btn">
           {t('member.cancelButton')}
         </button>
         <button type="submit" disabled={loading} className="btn-primary">
