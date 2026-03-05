@@ -115,15 +115,22 @@ mkdir -p data/postgres data/garage
 
 ### Automated Setup
 
-Run the production setup script:
+Set production environment variables in `.env`, then run the setup script:
 
 ```bash
-./scripts/setup-garage-prod.sh
+# In .env, set:
+GARAGE_ADMIN_TOKEN=your-garage-admin-token-here
+GARAGE_LAYOUT_CAPACITY=107374182400  # 100GB
+GARAGE_LAYOUT_TAG=prod
+GARAGE_KEY_NAME=giapha-prod
+
+# Run setup
+./scripts/setup-garage.sh
 ```
 
 This will:
 1. Wait for Garage to be ready
-2. Configure node layout
+2. Configure node layout with specified capacity
 3. Create the bucket
 4. Generate S3 access keys
 5. Output the values to add to `.env`
