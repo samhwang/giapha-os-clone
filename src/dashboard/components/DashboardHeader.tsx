@@ -15,6 +15,7 @@ export default function DashboardHeader({ isAdmin, userEmail, children }: Dashbo
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link to="/dashboard" className="group flex items-center gap-2">
+            <img src="/icon.png" alt="" width={32} height={32} className="rounded-lg" />
             <h1 className="text-xl sm:text-2xl font-serif font-bold text-stone-800 group-hover:text-amber-700 transition-colors">{config.siteName}</h1>
           </Link>
         </div>
