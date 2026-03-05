@@ -16,18 +16,15 @@ vi.mock('../server/member', () => ({
 
 describe('DeleteMemberButton', () => {
   let confirmSpy: ReturnType<typeof vi.spyOn>;
-  let alertSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     mockDeleteMember.mockReset().mockResolvedValue(undefined);
     mockNavigate.mockReset();
     confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
-    alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
   });
 
   afterEach(() => {
     confirmSpy.mockRestore();
-    alertSpy.mockRestore();
   });
 
   it('renders delete button', () => {
@@ -61,7 +58,7 @@ describe('DeleteMemberButton', () => {
     await waitFor(() => {
       expect(mockDeleteMember).toHaveBeenCalledWith({ data: { id: 'test-id' } });
     });
-    expect(mockNavigate).toHaveBeenCalledWith({ to: '/dashboard' });
+    expect(mockNavigate).toHaveBeenCalledWith({ to: '/dashboard/members' });
   });
 
   it('shows loading text during deletion', async () => {
@@ -77,7 +74,7 @@ describe('DeleteMemberButton', () => {
     });
   });
 
-  it('shows alert on error', async () => {
+  it('shows inline error on failure', async () => {
     confirmSpy.mockReturnValue(true);
     mockDeleteMember.mockRejectedValue(new Error('Delete failed'));
     const user = userEvent.setup();
@@ -86,7 +83,7 @@ describe('DeleteMemberButton', () => {
     await user.click(screen.getByRole('button', { name: /xoá hồ sơ/i }));
 
     await waitFor(() => {
-      expect(alertSpy).toHaveBeenCalledWith('Delete failed');
+      expect(screen.getByText('Delete failed')).toBeInTheDocument();
     });
   });
 });

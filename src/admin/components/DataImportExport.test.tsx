@@ -39,9 +39,9 @@ describe('DataImportExport', () => {
     expect(screen.getByText(/tải xuống bản sao lưu/i)).toBeInTheDocument();
   });
 
-  it('renders select JSON file button', () => {
+  it('renders select file button', () => {
     render(<DataImportExport />);
-    expect(screen.getByText(/chọn file json/i)).toBeInTheDocument();
+    expect(screen.getByText(/chọn file/i)).toBeInTheDocument();
   });
 
   it('shows restore warning text', () => {

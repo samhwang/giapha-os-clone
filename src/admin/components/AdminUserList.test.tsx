@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createUser } from '../../../test/fixtures';
@@ -46,9 +46,12 @@ describe('AdminUserList', () => {
     expect(screen.getByText(/bạn/i)).toBeInTheDocument();
   });
 
-  it('shows action buttons for non-current users', () => {
+  it('shows action controls for non-current users', () => {
     render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />);
-    expect(screen.getByText(/lên admin/i)).toBeInTheDocument();
+    // Role select dropdown should be present for non-current user
+    const selects = screen.getAllByRole('combobox');
+    expect(selects.length).toBeGreaterThan(0);
+    // Lock and delete buttons should be present
     expect(screen.getByText(/khoá/i)).toBeInTheDocument();
     expect(screen.getByText(/xóa/i)).toBeInTheDocument();
   });
@@ -58,10 +61,13 @@ describe('AdminUserList', () => {
     expect(screen.getByRole('button', { name: /^duyệt$/i })).toBeInTheDocument();
   });
 
-  it('shows demote button for admin users (not self)', () => {
+  it('shows role select with correct value for admin users', () => {
     const otherAdmin = createUser({ id: 'admin-2', email: 'admin2@test.com', role: 'admin', isActive: true });
     render(<AdminUserList initialUsers={[adminUser, otherAdmin]} currentUserId="admin-1" />);
-    expect(screen.getByText(/hạ quyền/i)).toBeInTheDocument();
+    const selects = screen.getAllByRole('combobox');
+    // The role select for the other admin should have 'admin' selected
+    const roleSelect = selects.find((s) => (s as HTMLSelectElement).value === 'admin');
+    expect(roleSelect).toBeDefined();
   });
 
   it('shows add user button', () => {
@@ -82,11 +88,15 @@ describe('AdminUserList', () => {
     expect(screen.getByText(/không tìm thấy người dùng/i)).toBeInTheDocument();
   });
 
-  it('promotes member to admin', async () => {
-    const user = userEvent.setup();
+  it('changes role via select dropdown', async () => {
     render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />);
 
-    await user.click(screen.getByText(/lên admin/i));
+    const selects = screen.getAllByRole('combobox');
+    // Find the role select for the member user (value should be 'member')
+    const roleSelect = selects.find((s) => (s as HTMLSelectElement).value === 'member');
+    expect(roleSelect).toBeDefined();
+
+    fireEvent.change(roleSelect!, { target: { value: 'admin' } });
 
     await waitFor(() => {
       expect(mockChangeRole).toHaveBeenCalledWith({ data: { userId: 'member-1', newRole: 'admin' } });
@@ -158,10 +168,11 @@ describe('AdminUserList', () => {
 
   it('shows error notification on failure', async () => {
     mockChangeRole.mockRejectedValue(new Error('Role change failed'));
-    const user = userEvent.setup();
     render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />);
 
-    await user.click(screen.getByText(/lên admin/i));
+    const selects = screen.getAllByRole('combobox');
+    const roleSelect = selects.find((s) => (s as HTMLSelectElement).value === 'member');
+    fireEvent.change(roleSelect!, { target: { value: 'admin' } });
 
     await waitFor(() => {
       expect(screen.getByText('Role change failed')).toBeInTheDocument();

@@ -13,6 +13,8 @@ vi.mock('./DashboardContext', () => ({
   useDashboard: () => ({
     memberModalId: null,
     setMemberModalId: vi.fn(),
+    showCreateModal: false,
+    setShowCreateModal: vi.fn(),
     showAvatar: true,
     setShowAvatar: vi.fn(),
     view: 'list' as const,
@@ -64,8 +66,8 @@ describe('DashboardMemberList', () => {
     expect(screen.getByText(/không tìm thấy thành viên/i)).toBeInTheDocument();
   });
 
-  it('renders add member link', () => {
+  it('renders add member button', () => {
     render(<DashboardMemberList initialPersons={[]} />);
-    expect(screen.getByRole('link', { name: /thêm thành viên/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /thêm thành viên/i })).toBeInTheDocument();
   });
 });

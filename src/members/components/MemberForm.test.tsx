@@ -86,12 +86,14 @@ describe('MemberForm', () => {
     expect(onCancel).toHaveBeenCalled();
   });
 
-  it('navigates to dashboard when cancel without onCancel', async () => {
+  it('calls history.back when cancel without onCancel', async () => {
+    const backSpy = vi.spyOn(window.history, 'back').mockImplementation(() => {});
     const user = userEvent.setup();
     render(<MemberForm />);
 
     await user.click(screen.getByRole('button', { name: /Hủy bỏ/ }));
-    expect(mockNavigate).toHaveBeenCalledWith({ to: '/dashboard' });
+    expect(backSpy).toHaveBeenCalled();
+    backSpy.mockRestore();
   });
 
   it('submits create form and calls createPerson', async () => {
