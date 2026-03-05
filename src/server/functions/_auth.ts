@@ -9,6 +9,15 @@ export async function requireAuth() {
   return session.user;
 }
 
+export async function requireEditor() {
+  const headers = getRequestHeaders();
+  const session = await auth.api.getSession({ headers });
+  if (!session) throw new Error('error.auth.loginRequired');
+  if (!session.user.isActive) throw new Error('error.auth.inactive');
+  if (session.user.role !== 'admin' && session.user.role !== 'editor') throw new Error('error.auth.editorOnly');
+  return session.user;
+}
+
 export async function requireAdmin() {
   const headers = getRequestHeaders();
   const session = await auth.api.getSession({ headers });

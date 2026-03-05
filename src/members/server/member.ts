@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { getDbClient } from '../../lib/db';
 import { ERRORS } from '../../lib/errors';
 import { deleteAvatar, uploadAvatar } from '../../lib/storage';
-import { requireAdmin, requireAuth } from '../../server/functions/_auth';
+import { requireEditor } from '../../server/functions/_auth';
 
 const genderEnum = z.enum(['male', 'female', 'other']);
 
@@ -63,7 +63,7 @@ const uploadAvatarSchema = z.object({
 export const createPerson = createServerFn({ method: 'POST' })
   .inputValidator(createPersonSchema)
   .handler(async ({ data }) => {
-    await requireAuth();
+    await requireEditor();
     const db = getDbClient();
 
     const { phoneNumber, occupation, currentResidence, ...personData } = data;
@@ -89,7 +89,7 @@ export const createPerson = createServerFn({ method: 'POST' })
 export const updatePerson = createServerFn({ method: 'POST' })
   .inputValidator(updatePersonSchema)
   .handler(async ({ data }) => {
-    await requireAuth();
+    await requireEditor();
     const db = getDbClient();
 
     const { id, phoneNumber, occupation, currentResidence, ...personData } = data;
@@ -126,7 +126,7 @@ export const updatePerson = createServerFn({ method: 'POST' })
 export const deleteMember = createServerFn({ method: 'POST' })
   .inputValidator(idSchema)
   .handler(async ({ data }) => {
-    await requireAdmin();
+    await requireEditor();
     const db = getDbClient();
 
     const person = await db.person.findUnique({ where: { id: data.id } });
@@ -151,7 +151,7 @@ export const deleteMember = createServerFn({ method: 'POST' })
 export const uploadPersonAvatar = createServerFn({ method: 'POST' })
   .inputValidator(uploadAvatarSchema)
   .handler(async ({ data }) => {
-    await requireAuth();
+    await requireEditor();
     const db = getDbClient();
 
     const existing = await db.person.findUnique({ where: { id: data.personId } });
