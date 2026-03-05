@@ -20,7 +20,7 @@ RUN pnpm prisma generate
 COPY . .
 
 ENV NODE_ENV=production
-RUN pnpm build
+RUN pnpm run build
 RUN pnpm install --production ${PNPM_ARGS}
 
 ####################
@@ -36,10 +36,10 @@ RUN set -xe && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /usr/share/man/* /usr/share/doc/*
 
-COPY --chown=node:node --from=build /app/.output .output
+COPY --chown=node:node --from=build /app/dist dist
 COPY --chown=node:node --from=build /app/node_modules node_modules
 
 USER node
 ENV NODE_ENV=production
 EXPOSE 3000
-CMD ["node", ".output/server/index.mjs"]
+CMD ["node", "dist/server/index.js"]

@@ -13,7 +13,7 @@
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "node .output/server/index.mjs",
+    "start": "node dist/server/index.js",
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --project ui-components",
