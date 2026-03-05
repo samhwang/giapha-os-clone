@@ -63,7 +63,7 @@ describe('RelationshipManager', () => {
   });
 
   it('renders relationship section titles', async () => {
-    render(<RelationshipManager personId="p1" isAdmin={true} personGender="male" />);
+    render(<RelationshipManager personId="p1" personGender="male" />);
 
     await waitFor(() => {
       expect(screen.getByText(/bố \/ mẹ/i)).toBeInTheDocument();
@@ -73,7 +73,7 @@ describe('RelationshipManager', () => {
   });
 
   it('shows add buttons for admin', async () => {
-    render(<RelationshipManager personId="p1" isAdmin={true} personGender="male" />);
+    render(<RelationshipManager personId="p1" personGender="male" />);
 
     await waitFor(() => {
       expect(screen.getByText(/thêm con/i)).toBeInTheDocument();
@@ -83,7 +83,7 @@ describe('RelationshipManager', () => {
   });
 
   it('hides add buttons for non-admin', async () => {
-    render(<RelationshipManager personId="p1" isAdmin={false} personGender="male" />);
+    render(<RelationshipManager personId="p1" personGender="male" />);
 
     await waitFor(() => {
       expect(screen.queryByText(/thêm con/i)).not.toBeInTheDocument();
@@ -95,7 +95,7 @@ describe('RelationshipManager', () => {
     mockGetRelationshipsForPerson.mockResolvedValue([{ id: 'r1', type: 'marriage', personAId: 'p1', personBId: 'p2', note: null }]);
     mockGetPersons.mockResolvedValue([personA, personB]);
 
-    render(<RelationshipManager personId="p1" isAdmin={true} personGender="male" />);
+    render(<RelationshipManager personId="p1" personGender="male" />);
 
     await waitFor(() => {
       expect(screen.getByText('Trần Thị B')).toBeInTheDocument();
@@ -106,12 +106,12 @@ describe('RelationshipManager', () => {
     mockGetRelationshipsForPerson.mockReturnValue(new Promise(() => {}));
     mockGetPersons.mockReturnValue(new Promise(() => {}));
 
-    render(<RelationshipManager personId="p1" isAdmin={true} personGender="male" />);
+    render(<RelationshipManager personId="p1" personGender="male" />);
     expect(screen.getByText(/đang tải/i)).toBeInTheDocument();
   });
 
   it('shows empty state for sections with no relationships when admin', async () => {
-    render(<RelationshipManager personId="p1" isAdmin={true} personGender="male" />);
+    render(<RelationshipManager personId="p1" personGender="male" />);
 
     await waitFor(() => {
       const emptyTexts = screen.getAllByText(/chưa có thông tin/i);
@@ -121,7 +121,7 @@ describe('RelationshipManager', () => {
 
   it('clicking add relationship opens form', async () => {
     const user = userEvent.setup();
-    render(<RelationshipManager personId="p1" isAdmin={true} personGender="male" />);
+    render(<RelationshipManager personId="p1" personGender="male" />);
 
     await waitFor(() => {
       expect(screen.getByText(/thêm mối quan hệ/i)).toBeInTheDocument();
@@ -139,7 +139,7 @@ describe('RelationshipManager', () => {
     mockGetPersons.mockResolvedValue([personA, personB]);
 
     const user = userEvent.setup();
-    render(<RelationshipManager personId="p1" isAdmin={true} personGender="male" />);
+    render(<RelationshipManager personId="p1" personGender="male" />);
 
     await waitFor(() => {
       expect(screen.getByText('Trần Thị B')).toBeInTheDocument();
@@ -157,7 +157,7 @@ describe('RelationshipManager', () => {
     mockGetPersons.mockResolvedValue([personA, personB]);
 
     const user = userEvent.setup();
-    render(<RelationshipManager personId="p1" isAdmin={true} personGender="male" />);
+    render(<RelationshipManager personId="p1" personGender="male" />);
 
     await waitFor(() => {
       expect(screen.getByText('Trần Thị B')).toBeInTheDocument();
@@ -169,7 +169,7 @@ describe('RelationshipManager', () => {
 
   it('quick add spouse creates person and relationship', async () => {
     const user = userEvent.setup();
-    render(<RelationshipManager personId="p1" isAdmin={true} personGender="male" />);
+    render(<RelationshipManager personId="p1" personGender="male" />);
 
     await waitFor(() => {
       expect(screen.getByText(/thêm vợ\/chồng/i)).toBeInTheDocument();
@@ -199,7 +199,7 @@ describe('RelationshipManager', () => {
     mockCreatePerson.mockRejectedValue(new Error('Network error'));
 
     const user = userEvent.setup();
-    render(<RelationshipManager personId="p1" isAdmin={true} personGender="male" />);
+    render(<RelationshipManager personId="p1" personGender="male" />);
 
     await waitFor(() => {
       expect(screen.getByText(/thêm vợ\/chồng/i)).toBeInTheDocument();

@@ -8,6 +8,7 @@ export default function ExportButton() {
   const { t } = useTranslation();
   const [isExporting, setIsExporting] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -66,7 +67,7 @@ export default function ExportButton() {
       }
     } catch (error) {
       console.error('Export error:', error);
-      alert(t('export.exportError'));
+      setExportError(t('export.exportError'));
     } finally {
       setIsExporting(false);
     }
@@ -78,6 +79,15 @@ export default function ExportButton() {
         {isExporting ? <Loader2 className="size-4 shrink-0 animate-spin" /> : <Download className="size-4 shrink-0" />}
         <span className="tracking-wide min-w-max">{isExporting ? t('export.exporting') : t('export.exportFile')}</span>
       </button>
+
+      {exportError && (
+        <div className="absolute top-full right-0 mt-2 w-56 bg-red-50 border border-red-200 text-red-700 text-xs font-medium rounded-lg p-3 shadow-lg z-50 flex items-center justify-between gap-2">
+          <p>{exportError}</p>
+          <button type="button" onClick={() => setExportError(null)} className="text-red-500 hover:text-red-700 font-bold shrink-0">
+            ×
+          </button>
+        </div>
+      )}
 
       {showMenu && !isExporting && (
         <div className="absolute top-full right-0 sm:right-auto sm:left-0 mt-2 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-stone-200/60 py-2 z-50 overflow-hidden animate-[scale-in_0.15s_ease-out_forwards]">

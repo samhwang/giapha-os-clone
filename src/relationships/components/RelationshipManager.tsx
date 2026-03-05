@@ -11,7 +11,6 @@ import { createRelationship, deleteRelationship, getRelationshipsForPerson } fro
 
 interface RelationshipManagerProps {
   personId: string;
-  isAdmin: boolean;
   canEdit?: boolean;
   personGender: string;
 }
@@ -24,7 +23,7 @@ interface EnrichedRelationship {
   note: string | null;
 }
 
-export default function RelationshipManager({ personId, isAdmin, canEdit = false, personGender }: RelationshipManagerProps) {
+export default function RelationshipManager({ personId, canEdit = false, personGender }: RelationshipManagerProps) {
   const { t } = useTranslation();
   const dashboardContext = useContext(DashboardContext);
   const { setMemberModalId } = useDashboard();
@@ -51,6 +50,7 @@ export default function RelationshipManager({ personId, isAdmin, canEdit = false
   const [allPersons, setAllPersons] = useState<Person[]>([]);
   const [selectedTargetId, setSelectedTargetId] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   // Bulk Add State
   const [isAddingBulk, setIsAddingBulk] = useState(false);
@@ -193,7 +193,7 @@ export default function RelationshipManager({ personId, isAdmin, canEdit = false
       fetchRelationships();
     } catch (err) {
       const e = err as Error;
-      alert(`${t('error.generic')} ${e.message}`);
+      setActionError(`${t('error.generic')} ${e.message}`);
     } finally {
       setProcessing(false);
     }
@@ -202,7 +202,7 @@ export default function RelationshipManager({ personId, isAdmin, canEdit = false
   const handleBulkAdd = async () => {
     const validChildren = bulkChildren.filter((c) => c.name.trim() !== '');
     if (validChildren.length === 0) {
-      alert(t('relationship.bulkMinOneChild'));
+      setActionError(t('relationship.bulkMinOneChild'));
       return;
     }
 
@@ -248,12 +248,12 @@ export default function RelationshipManager({ personId, isAdmin, canEdit = false
         setSelectedSpouseId('');
         fetchRelationships();
       } else {
-        alert(t('relationship.bulkPartialError', { count: successCount, total: validChildren.length }));
+        setActionError(t('relationship.bulkPartialError', { count: successCount, total: validChildren.length }));
         fetchRelationships();
       }
     } catch (err) {
       const e = err as Error;
-      alert(`${t('error.generic')} ${e.message}`);
+      setActionError(`${t('error.generic')} ${e.message}`);
     } finally {
       setProcessing(false);
     }
@@ -261,7 +261,7 @@ export default function RelationshipManager({ personId, isAdmin, canEdit = false
 
   const handleQuickAddSpouse = async () => {
     if (!newSpouseName.trim()) {
-      alert(t('relationship.spouseNameRequired'));
+      setActionError(t('relationship.spouseNameRequired'));
       return;
     }
 
@@ -294,7 +294,7 @@ export default function RelationshipManager({ personId, isAdmin, canEdit = false
       fetchRelationships();
     } catch (err) {
       const e = err as Error;
-      alert(`${t('error.generic')} ${e.message}`);
+      setActionError(`${t('error.generic')} ${e.message}`);
     } finally {
       setProcessing(false);
     }
@@ -307,7 +307,7 @@ export default function RelationshipManager({ personId, isAdmin, canEdit = false
       fetchRelationships();
     } catch (err) {
       const e = err as Error;
-      alert(`${t('error.generic')} ${e.message}`);
+      setActionError(`${t('error.generic')} ${e.message}`);
     }
   };
 
@@ -317,6 +317,14 @@ export default function RelationshipManager({ personId, isAdmin, canEdit = false
 
   return (
     <div className="space-y-6">
+      {actionError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-sm font-medium rounded-xl p-3 flex items-center justify-between gap-2">
+          <p>{actionError}</p>
+          <button type="button" onClick={() => setActionError(null)} className="text-red-500 hover:text-red-700 font-bold shrink-0">
+            ×
+          </button>
+        </div>
+      )}
       {['parent', 'spouse', 'child', 'child_in_law'].map((group) => {
         const items = groupByType(group);
         let title = '';

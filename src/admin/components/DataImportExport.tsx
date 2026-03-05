@@ -46,7 +46,7 @@ export default function DataImportExport() {
         downloadBlob(zipBlob, `giapha-export-${dateSuffix}.zip`);
       }
     } catch (error: unknown) {
-      alert(error instanceof Error ? error.message : t('data.downloadError'));
+      setImportStatus({ type: 'error', message: error instanceof Error ? error.message : t('data.downloadError') });
     } finally {
       setIsExporting(false);
     }
