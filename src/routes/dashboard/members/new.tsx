@@ -14,7 +14,7 @@ function NewMemberPage() {
       <div className="w-full relative z-20 py-4 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto flex items-center justify-between">
         <h1 className="text-xl sm:text-2xl font-serif font-bold text-stone-800">Thêm Thành Viên Mới</h1>
         <Link
-          to="/dashboard"
+          to="/dashboard/members"
           className="px-4 py-2 bg-stone-100/80 text-stone-700 rounded-lg hover:bg-stone-200 hover:text-stone-900 font-medium text-sm transition-all shadow-sm"
         >
           Hủy

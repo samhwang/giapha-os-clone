@@ -423,6 +423,27 @@
     "kinshipTitle": "Tra Cứu Quan Hệ",
     "kinshipDesc": "Tìm mối quan hệ huyết thống giữa hai thành viên trong gia phả"
   },
+  "launchpad": {
+    "lunarCalendar": "Âm lịch",
+    "year": "Năm",
+    "upcomingEvents": "Sự kiện 30 ngày tới ({{count}})",
+    "moreEvents": "sự kiện khác đang chờ...",
+    "noUpcomingEvents": "Không có sự kiện nào trong 30 ngày tới.",
+    "viewYearEvents": "Xem sự kiện trong năm",
+    "familyTree": "Cây gia phả",
+    "familyTreeDesc": "Xem và tương tác với sơ đồ dòng họ",
+    "kinshipLookup": "Tra cứu danh xưng",
+    "kinshipLookupDesc": "Hệ thống gọi tên họ hàng chuẩn xác",
+    "familyStats": "Thống kê gia phả",
+    "familyStatsDesc": "Tổng quan dữ liệu và biểu đồ phân tích",
+    "adminSection": "Quản trị viên",
+    "userManagement": "Quản lý Người dùng",
+    "userManagementDesc": "Phê duyệt tài khoản và phân quyền",
+    "lineageOrder": "Thứ tự gia phả",
+    "lineageOrderDesc": "Sắp xếp và xem cấu trúc hệ thống",
+    "backupRestore": "Sao lưu & Phục hồi",
+    "backupRestoreDesc": "Xuất/Nhập dữ liệu toàn hệ thống"
+  },
   "notFound": {
     "title": "Không tìm thấy trang",
     "message": "Trang bạn đang tìm không tồn tại.",

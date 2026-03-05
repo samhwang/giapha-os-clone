@@ -21,7 +21,7 @@ function MemberDetailPage() {
   return (
     <div className="flex-1 w-full relative flex flex-col pb-8">
       <div className="w-full relative z-20 py-4 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto flex items-center justify-between">
-        <Link to="/dashboard" className="group flex items-center text-stone-500 hover:text-amber-700 font-medium text-sm transition-colors">
+        <Link to="/dashboard/members" className="group flex items-center text-stone-500 hover:text-amber-700 font-medium text-sm transition-colors">
           <span className="mr-1 group-hover:-translate-x-1 transition-transform">←</span>
           Quay lại
         </Link>

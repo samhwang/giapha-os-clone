@@ -423,6 +423,27 @@
     "kinshipTitle": "Kinship Lookup",
     "kinshipDesc": "Find the kinship relationship between two members in the family tree"
   },
+  "launchpad": {
+    "lunarCalendar": "Lunar",
+    "year": "Year",
+    "upcomingEvents": "Events in next 30 days ({{count}})",
+    "moreEvents": "more events waiting...",
+    "noUpcomingEvents": "No events in the next 30 days.",
+    "viewYearEvents": "View events this year",
+    "familyTree": "Family Tree",
+    "familyTreeDesc": "View and interact with the family tree diagram",
+    "kinshipLookup": "Kinship Lookup",
+    "kinshipLookupDesc": "Accurate family relationship naming system",
+    "familyStats": "Family Statistics",
+    "familyStatsDesc": "Overview of data and analysis charts",
+    "adminSection": "Administrator",
+    "userManagement": "User Management",
+    "userManagementDesc": "Approve accounts and manage permissions",
+    "lineageOrder": "Lineage Order",
+    "lineageOrderDesc": "Organize and view system structure",
+    "backupRestore": "Backup & Restore",
+    "backupRestoreDesc": "Export/Import full system data"
+  },
   "notFound": {
     "title": "Page Not Found",
     "message": "The page you are looking for does not exist.",
