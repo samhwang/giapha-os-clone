@@ -45,6 +45,7 @@ services:
 
   app:
     build: .
+    image: ghcr.io/samhwang/giapha-os-clone:latest
     restart: unless-stopped
     ports:
       - "3000:3000"

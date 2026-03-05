@@ -453,3 +453,52 @@ docker compose -f docker-compose.production.yml down -v
 # Start fresh
 docker compose -f docker-compose.production.yml up -d
 ```
+
+## Using Pre-built Docker Image
+
+Instead of building locally, you can use the pre-built image from GitHub Container Registry.
+
+### Pull the Image
+
+```bash
+# Latest tag
+docker pull ghcr.io/<owner>/giapha-os-clone:latest
+
+# Or with specific SHA
+docker pull ghcr.io/<owner>/giapha-os-clone:abc1234
+```
+
+### Run with Docker Compose
+
+The docker-compose files already reference the GHCR image. Use `--pull` to always pull the latest:
+
+```bash
+# Production
+docker compose -f docker-compose.production.yml pull app
+docker compose -f docker-compose.production.yml up -d
+
+# Development
+docker compose pull app
+docker compose up -d
+```
+
+### Build Locally Instead
+
+If you prefer to build locally instead of using the pre-built image:
+
+```bash
+docker compose build app
+docker compose up -d
+```
+
+To switch between image and build, edit the docker-compose file:
+
+```yaml
+services:
+  app:
+    # Use pre-built image (default)
+    image: ghcr.io/<owner>/giapha-os-clone:latest
+
+    # OR build locally (comment out image:)
+    # build: .
+```
