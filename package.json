@@ -99,5 +99,18 @@
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.0.18",
     "vitest-browser-react": "^2.0.5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "better-sqlite3",
+      "core-js",
+      "cpu-features",
+      "esbuild",
+      "prisma",
+      "protobufjs",
+      "ssh2"
+    ]
   }
 }

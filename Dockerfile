@@ -5,7 +5,7 @@ FROM node:22.20 AS build
 WORKDIR /app
 
 # Install global node modules: pnpm
-RUN npm install -g pnpm@10.4
+RUN npm install -g pnpm@10.18
 ENV PNPM_ARGS="--frozen-lockfile --ignore-scripts"
 
 # Install Node modules
