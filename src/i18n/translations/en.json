@@ -350,6 +350,7 @@
     "passwordRequired": "Password *",
     "passwordHint": "At least 8 characters",
     "roleMember": "Member",
+    "roleEditor": "Editor",
     "roleAdmin": "Admin",
     "statusActive": "Active",
     "statusPending": "Pending",
@@ -432,7 +433,8 @@
     "auth": {
       "loginRequired": "Please log in.",
       "inactive": "Account has been locked or is not yet activated.",
-      "adminOnly": "Access denied."
+      "adminOnly": "Access denied.",
+      "editorOnly": "Editor permission required."
     },
     "member": {
       "nameRequired": "Name is required.",
@@ -454,6 +456,11 @@
     "data": {
       "emptyBackup": "Backup file is empty — no members to restore."
     }
+  },
+  "role": {
+    "admin": "Admin",
+    "editor": "Editor",
+    "member": "Member"
   },
   "language": {
     "vi": "Tiếng Việt",

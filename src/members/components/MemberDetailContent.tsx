@@ -11,9 +11,10 @@ interface MemberDetailContentProps {
   person: Person;
   privateData: { phoneNumber?: string | null; occupation?: string | null; currentResidence?: string | null } | null;
   isAdmin: boolean;
+  canEdit?: boolean;
 }
 
-export default function MemberDetailContent({ person, privateData, isAdmin }: MemberDetailContentProps) {
+export default function MemberDetailContent({ person, privateData, isAdmin, canEdit = false }: MemberDetailContentProps) {
   const { t } = useTranslation();
   const isDeceased = person.isDeceased;
   const [isNoteExpanded, setIsNoteExpanded] = useState(false);
@@ -225,7 +226,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin }: Me
                 {t('member.family')}
               </h2>
               <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-6 rounded-2xl border border-stone-200/60 shadow-sm relative z-0">
-                <RelationshipManager personId={person.id} isAdmin={isAdmin} personGender={person.gender} />
+                <RelationshipManager personId={person.id} isAdmin={isAdmin} canEdit={canEdit} personGender={person.gender} />
               </div>
             </section>
           </div>

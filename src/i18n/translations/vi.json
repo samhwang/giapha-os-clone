@@ -350,6 +350,7 @@
     "passwordRequired": "Mật khẩu *",
     "passwordHint": "Ít nhất 8 ký tự",
     "roleMember": "Thành viên (Member)",
+    "roleEditor": "Biên tập viên (Editor)",
     "roleAdmin": "Quản trị viên (Admin)",
     "statusActive": "Đã duyệt (Active)",
     "statusPending": "Chờ duyệt (Pending)",
@@ -432,7 +433,8 @@
     "auth": {
       "loginRequired": "Vui lòng đăng nhập.",
       "inactive": "Tài khoản đã bị khoá hoặc chưa kích hoạt.",
-      "adminOnly": "Từ chối truy cập."
+      "adminOnly": "Từ chối truy cập.",
+      "editorOnly": "Cần quyền biên tập để thực hiện."
     },
     "member": {
       "nameRequired": "Tên là bắt buộc.",
@@ -454,6 +456,11 @@
     "data": {
       "emptyBackup": "File backup trống — không có thành viên nào để phục hồi."
     }
+  },
+  "role": {
+    "admin": "Admin",
+    "editor": "Editor",
+    "member": "Member"
   },
   "language": {
     "vi": "Tiếng Việt",

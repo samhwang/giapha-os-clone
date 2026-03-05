@@ -8,7 +8,7 @@ import { getPersonById } from '../server/member';
 import MemberDetailContent from './MemberDetailContent';
 import MemberForm from './MemberForm';
 
-export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
+export default function MemberDetailModal({ isAdmin, canEdit = false }: { isAdmin: boolean; canEdit?: boolean }) {
   const { t } = useTranslation();
   const { memberModalId: memberId, setMemberModalId } = useDashboard();
   const [isOpen, setIsOpen] = useState(false);
@@ -91,25 +91,25 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
 
           <div className="relative bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col border border-stone-200 animate-[scale-in_0.2s_ease-out_forwards]">
             <div className="absolute top-4 right-4 sm:top-5 sm:right-5 z-20 flex items-center gap-2">
+              {canEdit && person && !isEditing && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-amber-100/80 backdrop-blur-md text-amber-800 rounded-full hover:bg-amber-200 font-semibold text-sm shadow-sm border border-amber-200/50 transition-colors"
+                >
+                  <Pencil className="size-4" />
+                  <span className="hidden sm:inline">{t('common.edit')}</span>
+                </button>
+              )}
               {isAdmin && person && !isEditing && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => setIsEditing(true)}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-amber-100/80 backdrop-blur-md text-amber-800 rounded-full hover:bg-amber-200 font-semibold text-sm shadow-sm border border-amber-200/50 transition-colors"
-                  >
-                    <Pencil className="size-4" />
-                    <span className="hidden sm:inline">{t('common.edit')}</span>
-                  </button>
-                  <Link
-                    to="/dashboard/members/$id"
-                    params={{ id: person.id }}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-stone-100/80 backdrop-blur-md text-stone-700 rounded-full hover:bg-stone-200 font-semibold text-sm shadow-sm border border-stone-200/50 transition-colors"
-                  >
-                    <ExternalLink className="size-4" />
-                    <span className="hidden sm:inline">{t('member.viewDetail')}</span>
-                  </Link>
-                </>
+                <Link
+                  to="/dashboard/members/$id"
+                  params={{ id: person.id }}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-stone-100/80 backdrop-blur-md text-stone-700 rounded-full hover:bg-stone-200 font-semibold text-sm shadow-sm border border-stone-200/50 transition-colors"
+                >
+                  <ExternalLink className="size-4" />
+                  <span className="hidden sm:inline">{t('member.viewDetail')}</span>
+                </Link>
               )}
               {isEditing && (
                 <button
@@ -166,7 +166,7 @@ export default function MemberDetailModal({ isAdmin }: { isAdmin: boolean }) {
                     />
                   </div>
                 ) : (
-                  <MemberDetailContent person={person} privateData={privateData} isAdmin={isAdmin} />
+                  <MemberDetailContent person={person} privateData={privateData} isAdmin={isAdmin} canEdit={canEdit} />
                 )}
               </div>
             ) : null}

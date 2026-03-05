@@ -12,6 +12,7 @@ import { createRelationship, deleteRelationship, getRelationshipsForPerson } fro
 interface RelationshipManagerProps {
   personId: string;
   isAdmin: boolean;
+  canEdit?: boolean;
   personGender: string;
 }
 
@@ -23,7 +24,7 @@ interface EnrichedRelationship {
   note: string | null;
 }
 
-export default function RelationshipManager({ personId, isAdmin, personGender }: RelationshipManagerProps) {
+export default function RelationshipManager({ personId, isAdmin, canEdit = false, personGender }: RelationshipManagerProps) {
   const { t } = useTranslation();
   const dashboardContext = useContext(DashboardContext);
   const { setMemberModalId } = useDashboard();
@@ -324,7 +325,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
         if (group === 'child') title = t('relationship.children');
         if (group === 'child_in_law') title = t('relationship.inLawChildren');
 
-        if (items.length === 0 && !isAdmin) return null;
+        if (items.length === 0 && !canEdit) return null;
 
         return (
           <div key={group} className="border-b border-stone-100 pb-4 last:border-0">
@@ -354,7 +355,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
                         {rel.type === 'adopted_child' && <span className="text-xs text-stone-400 italic mt-0.5">({t('relationship.adopted')})</span>}
                       </div>
                     </button>
-                    {isAdmin && rel.direction !== 'child_in_law' && (
+                    {canEdit && rel.direction !== 'child_in_law' && (
                       <button
                         type="button"
                         onClick={() => handleDelete(rel.id)}
@@ -375,8 +376,8 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
         );
       })}
 
-      {/* Add Buttons (Admin) */}
-      {isAdmin && !isAdding && !isAddingBulk && !isAddingSpouse && (
+      {/* Add Buttons (Editor+) */}
+      {canEdit && !isAdding && !isAddingBulk && !isAddingSpouse && (
         <div className="flex flex-col sm:flex-row gap-3 mt-4">
           <button
             type="button"
@@ -403,7 +404,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
       )}
 
       {/* Add Relationship Form */}
-      {isAdmin && isAdding && (
+      {canEdit && isAdding && (
         <div className="mt-4 bg-stone-50/50 p-4 sm:p-5 rounded-xl border border-stone-200 shadow-sm">
           <h4 className="font-bold text-stone-800 mb-3 text-sm">{t('relationship.addNewRelationship')}</h4>
           <div className="space-y-3">
@@ -525,7 +526,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
       )}
 
       {/* Bulk Add Children Form */}
-      {isAdmin && isAddingBulk && (
+      {canEdit && isAddingBulk && (
         <div className="mt-4 bg-sky-50/50 p-4 sm:p-5 rounded-xl border border-sky-200 shadow-sm">
           <h4 className="font-bold text-sky-800 mb-3 text-sm">{t('relationship.bulkAddChildren')}</h4>
           <div className="space-y-4">
@@ -641,7 +642,7 @@ export default function RelationshipManager({ personId, isAdmin, personGender }:
       )}
 
       {/* Quick Add Spouse Form */}
-      {isAdmin && isAddingSpouse && (
+      {canEdit && isAddingSpouse && (
         <div className="mt-4 bg-rose-50/50 p-4 sm:p-5 rounded-xl border border-rose-200 shadow-sm">
           <h4 className="font-bold text-rose-800 mb-3 text-sm">{t('relationship.quickAddSpouse')}</h4>
           <div className="space-y-3">

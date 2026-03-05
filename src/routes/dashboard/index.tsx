@@ -17,12 +17,13 @@ function DashboardPage() {
   const { persons, relationships } = Route.useLoaderData();
   const { session } = Route.useRouteContext();
   const isAdmin = session.role === 'admin';
+  const canEdit = session.role === 'admin' || session.role === 'editor';
 
   return (
     <>
       <ViewToggle />
       <DashboardViews persons={persons} relationships={relationships} />
-      <MemberDetailModal isAdmin={isAdmin} />
+      <MemberDetailModal isAdmin={isAdmin} canEdit={canEdit} />
     </>
   );
 }

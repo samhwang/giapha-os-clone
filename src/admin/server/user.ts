@@ -8,7 +8,7 @@ const prisma = getDbClient();
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
-const roleEnum = z.enum(['admin', 'member']);
+const roleEnum = z.enum(['admin', 'editor', 'member']);
 
 const changeRoleSchema = z.object({
   userId: z.uuid(),

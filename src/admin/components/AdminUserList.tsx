@@ -139,10 +139,14 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                   <td className="px-6 py-4">
                     <span
                       className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
-                        user.role === 'admin' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-stone-100 text-stone-600 border border-stone-200'
+                        user.role === 'admin'
+                          ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                          : user.role === 'editor'
+                            ? 'bg-sky-100 text-sky-800 border border-sky-200'
+                            : 'bg-stone-100 text-stone-600 border border-stone-200'
                       }`}
                     >
-                      {user.role}
+                      {t(`role.${user.role}`)}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -177,25 +181,16 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                             {t('admin.approve')}
                           </button>
                         )}
-                        {user.role === 'admin' ? (
-                          <button
-                            type="button"
-                            disabled={loadingId === user.id}
-                            onClick={() => handleRoleChange(user.id, 'member')}
-                            className="text-stone-600 hover:text-stone-900 font-medium disabled:opacity-50"
-                          >
-                            {t('admin.demote')}
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            disabled={loadingId === user.id}
-                            onClick={() => handleRoleChange(user.id, 'admin')}
-                            className="text-amber-600 hover:text-amber-800 font-medium disabled:opacity-50"
-                          >
-                            {t('admin.promote')}
-                          </button>
-                        )}
+                        <select
+                          value={user.role}
+                          onChange={(e) => handleRoleChange(user.id, e.target.value as UserRole)}
+                          disabled={loadingId === user.id}
+                          className="text-sm font-medium bg-transparent border border-stone-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-amber-500 disabled:opacity-50"
+                        >
+                          <option value="member">{t('role.member')}</option>
+                          <option value="editor">{t('role.editor')}</option>
+                          <option value="admin">{t('role.admin')}</option>
+                        </select>
                         <button
                           type="button"
                           disabled={loadingId === user.id}
@@ -278,6 +273,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                     defaultValue="member"
                   >
                     <option value="member">{t('admin.roleMember')}</option>
+                    <option value="editor">{t('admin.roleEditor')}</option>
                     <option value="admin">{t('admin.roleAdmin')}</option>
                   </select>
                 </div>
