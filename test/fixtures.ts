@@ -18,6 +18,7 @@ interface MockPerson {
   isInLaw: boolean;
   generation: number | null;
   birthOrder: number | null;
+  otherNames: string | null;
   avatarUrl: string | null;
   note: string | null;
   createdAt: Date;
@@ -65,6 +66,7 @@ export function createPerson(overrides: Partial<MockPerson> = {}): MockPerson {
     isInLaw: false,
     generation: 1,
     birthOrder: null,
+    otherNames: null,
     avatarUrl: null,
     note: null,
     createdAt: now,
