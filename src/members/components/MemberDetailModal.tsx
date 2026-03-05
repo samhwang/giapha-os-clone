@@ -10,17 +10,23 @@ import MemberForm from './MemberForm';
 
 export default function MemberDetailModal({ isAdmin, canEdit = false }: { isAdmin: boolean; canEdit?: boolean }) {
   const { t } = useTranslation();
-  const { memberModalId: memberId, setMemberModalId } = useDashboard();
+  const { memberModalId: memberId, setMemberModalId, showCreateModal, setShowCreateModal } = useDashboard();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [person, setPerson] = useState<Person | null>(null);
   const [privateData, setPrivateData] = useState<{ phoneNumber?: string | null; occupation?: string | null; currentResidence?: string | null } | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const closeModal = () => {
     if (isEditing) {
       setIsEditing(false);
+      return;
+    }
+    if (isCreating) {
+      setIsCreating(false);
+      setShowCreateModal(false);
       return;
     }
     setMemberModalId(null);
@@ -50,7 +56,15 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: { isAdmi
   useEffect(() => {
     if (memberId) {
       setIsOpen(true);
+      setIsCreating(false);
       fetchData(memberId);
+    } else if (showCreateModal) {
+      setIsOpen(true);
+      setIsCreating(true);
+      setPerson(null);
+      setPrivateData(null);
+      setError(null);
+      setIsEditing(false);
     } else {
       setIsOpen(false);
       setTimeout(() => {
@@ -58,9 +72,10 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: { isAdmi
         setPrivateData(null);
         setError(null);
         setIsEditing(false);
+        setIsCreating(false);
       }, 300);
     }
-  }, [memberId, fetchData]);
+  }, [memberId, showCreateModal, fetchData]);
 
   useEffect(() => {
     if (isOpen) {
@@ -77,14 +92,20 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: { isAdmi
     <>
       {isOpen && (
         <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 bg-stone-900/40 backdrop-blur-sm animate-[fade-in_0.2s_ease-out_forwards]">
-          {!isEditing && (
+          {!isEditing && !isCreating && (
             <button
               type="button"
               tabIndex={0}
               className="absolute inset-0 cursor-pointer"
-              onClick={() => setMemberModalId(null)}
+              onClick={() => {
+                setMemberModalId(null);
+                setShowCreateModal(false);
+              }}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') setMemberModalId(null);
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setMemberModalId(null);
+                  setShowCreateModal(false);
+                }
               }}
             />
           )}
@@ -123,7 +144,16 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: { isAdmi
               )}
               <button
                 type="button"
-                onClick={isEditing ? () => setIsEditing(false) : () => setMemberModalId(null)}
+                onClick={
+                  isEditing
+                    ? () => setIsEditing(false)
+                    : isCreating
+                      ? () => {
+                          setIsCreating(false);
+                          setShowCreateModal(false);
+                        }
+                      : () => setMemberModalId(null)
+                }
                 className="size-10 flex items-center justify-center bg-stone-100/80 backdrop-blur-md text-stone-600 rounded-full hover:bg-stone-200 hover:text-stone-900 shadow-sm border border-stone-200/50 transition-colors"
                 aria-label={t('common.close')}
               >
@@ -131,7 +161,23 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: { isAdmi
               </button>
             </div>
 
-            {loading ? (
+            {isCreating ? (
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+                <h2 className="text-xl font-serif font-bold text-stone-800 mb-6">{t('member.addMember')}</h2>
+                <MemberForm
+                  isAdmin={isAdmin}
+                  onSuccess={(personId) => {
+                    setIsCreating(false);
+                    setShowCreateModal(false);
+                    setMemberModalId(personId);
+                  }}
+                  onCancel={() => {
+                    setIsCreating(false);
+                    setShowCreateModal(false);
+                  }}
+                />
+              </div>
+            ) : loading ? (
               <div className="flex-1 min-h-100 flex items-center justify-center flex-col gap-4">
                 <div className="size-10 border-4 border-amber-600 border-t-transparent rounded-full animate-spin" />
                 <p className="text-stone-500 font-medium">{t('common.loading')}</p>

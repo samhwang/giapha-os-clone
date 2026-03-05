@@ -1,12 +1,13 @@
-import { Link } from '@tanstack/react-router';
 import { ArrowUpDown, Filter, Plus, Search } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PersonCard from '../../members/components/PersonCard';
 import type { Person } from '../../types';
+import { useDashboard } from './DashboardContext';
 
 export default function DashboardMemberList({ initialPersons }: { initialPersons: Person[] }) {
   const { t } = useTranslation();
+  const { setShowCreateModal } = useDashboard();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState('birth_asc');
   const [filterOption, setFilterOption] = useState('all');
@@ -129,10 +130,10 @@ export default function DashboardMemberList({ initialPersons }: { initialPersons
               </div>
             </div>
           </div>
-          <Link to="/dashboard/members/new" className="btn-primary">
+          <button type="button" onClick={() => setShowCreateModal(true)} className="btn-primary">
             <Plus className="size-4" strokeWidth={2.5} />
             {t('member.addMember')}
-          </Link>
+          </button>
         </div>
       </div>
 
