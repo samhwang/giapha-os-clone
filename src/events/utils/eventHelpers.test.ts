@@ -177,6 +177,53 @@ describe('computeEvents', () => {
     });
   });
 
+  describe('custom events', () => {
+    it('should include custom events in results', () => {
+      const customEvents = [
+        { id: 'ce-1', name: 'Giỗ Ông', eventDate: '2025-03-15', location: 'Hà Nội', content: null, createdBy: null },
+        { id: 'ce-2', name: 'Lễ Tảo Mộ', eventDate: '2025-06-01', location: null, content: null, createdBy: null },
+      ];
+
+      const events = computeEvents([], customEvents);
+      const custom = events.filter((e) => e.type === 'custom_event');
+
+      expect(custom).toHaveLength(2);
+      expect(custom[0].personName).toBe('Giỗ Ông');
+      expect(custom[0].location).toBe('Hà Nội');
+    });
+
+    it('should skip custom events with null eventDate', () => {
+      const customEvents = [{ id: 'ce-1', name: 'No Date', eventDate: null as unknown as string, location: null, content: null, createdBy: null }];
+
+      const events = computeEvents([], customEvents);
+      expect(events.filter((e) => e.type === 'custom_event')).toHaveLength(0);
+    });
+  });
+
+  describe('deceased birthday inclusion', () => {
+    it('should include birthday for deceased person', () => {
+      const persons = [
+        {
+          id: 'p1',
+          fullName: 'Deceased With Birthday',
+          birthYear: 1920,
+          birthMonth: 6,
+          birthDay: 15,
+          deathYear: 2000,
+          deathMonth: 3,
+          deathDay: 10,
+          isDeceased: true,
+        },
+      ];
+
+      const events = computeEvents(persons);
+      const birthdays = events.filter((e) => e.type === 'birthday');
+
+      expect(birthdays).toHaveLength(1);
+      expect(birthdays[0].isDeceased).toBe(true);
+    });
+  });
+
   describe('with multiple persons', () => {
     it('should generate both birthday and anniversary events', () => {
       const persons = [
