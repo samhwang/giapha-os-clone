@@ -46,20 +46,17 @@ function adminHeaders(): Record<string, string> {
 }
 
 async function setupGarage(adminUrl: string): Promise<{ accessKey: string; secretKey: string }> {
-  // Get node ID
   const statusRes = await fetch(`${adminUrl}/v1/status`, { headers: adminHeaders() });
   const status = (await statusRes.json()) as { node: string };
   const nodeId = status.node;
   console.log(`Garage node ID: ${nodeId}`);
 
-  // Configure node layout
   await fetch(`${adminUrl}/v1/layout`, {
     method: 'POST',
     headers: adminHeaders(),
     body: JSON.stringify([{ id: nodeId, zone: 'dc1', capacity: 1073741824, tags: ['test'] }]),
   });
 
-  // Apply layout
   const layoutRes = await fetch(`${adminUrl}/v1/layout`, { headers: adminHeaders() });
   const layout = (await layoutRes.json()) as { version: number };
   const applyRes = await fetch(`${adminUrl}/v1/layout/apply`, {
@@ -72,7 +69,6 @@ async function setupGarage(adminUrl: string): Promise<{ accessKey: string; secre
   }
   console.log('Garage layout applied');
 
-  // Wait for layout to propagate before creating bucket
   console.log('Waiting for Garage layout to propagate...');
   let bucket: { id: string } | undefined;
   for (let attempt = 0; attempt < 30; attempt++) {
@@ -94,14 +90,12 @@ async function setupGarage(adminUrl: string): Promise<{ accessKey: string; secre
   if (!bucket) throw new Error('Failed to create Garage bucket after retries');
   console.log(`Garage bucket created: ${bucket.id}`);
 
-  // Enable public reads
   await fetch(`${adminUrl}/v1/bucket?id=${bucket.id}`, {
     method: 'PUT',
     headers: adminHeaders(),
     body: JSON.stringify({ websiteAccess: { enabled: true, indexDocument: 'index.html' } }),
   });
 
-  // Create API key
   const keyRes = await fetch(`${adminUrl}/v1/key`, {
     method: 'POST',
     headers: adminHeaders(),
@@ -112,7 +106,6 @@ async function setupGarage(adminUrl: string): Promise<{ accessKey: string; secre
   }
   const key = (await keyRes.json()) as { accessKeyId: string; secretAccessKey: string };
 
-  // Grant key access to bucket
   const allowRes = await fetch(`${adminUrl}/v1/bucket/allow`, {
     method: 'POST',
     headers: adminHeaders(),
@@ -130,8 +123,7 @@ async function setupGarage(adminUrl: string): Promise<{ accessKey: string; secre
   return { accessKey: key.accessKeyId, secretKey: key.secretAccessKey };
 }
 
-async function localSetup() {
-  // Start PostgreSQL
+export async function setup() {
   console.log('Starting PostgreSQL container...');
   const db: StartedPostgreSqlContainer = await new PostgreSqlContainer('postgres:17-alpine').start();
   const databaseUrl = db.getConnectionUri();
@@ -139,7 +131,6 @@ async function localSetup() {
 
   pushSchema(databaseUrl);
 
-  // Start Garage
   console.log('Starting Garage container...');
   const garage: StartedTestContainer = await new GenericContainer('dxflrs/garage:v1.1.0')
     .withExposedPorts(3900, 3903)
@@ -153,7 +144,7 @@ async function localSetup() {
 
   const { accessKey, secretKey } = await setupGarage(adminUrl);
 
-  // Set env vars for test modules
+  process.env.DATABASE_URL = databaseUrl;
   process.env.S3_ENDPOINT = s3Url;
   process.env.S3_ACCESS_KEY = accessKey;
   process.env.S3_SECRET_KEY = secretKey;
@@ -167,22 +158,4 @@ async function localSetup() {
     await db.stop();
     console.log('Containers stopped');
   };
-}
-
-async function ciSetup() {
-  console.log('CI mode: using service containers');
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) throw new Error('DATABASE_URL must be set in CI');
-  console.log(`Database at ${databaseUrl}`);
-
-  pushSchema(databaseUrl);
-
-  return async function teardown() {
-    console.log('CI teardown complete');
-  };
-}
-
-export async function setup() {
-  const isInCI = !!process.env.CI;
-  return isInCI ? ciSetup() : localSetup();
 }
