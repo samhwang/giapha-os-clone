@@ -13,6 +13,10 @@ export default defineConfig({
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    locale: 'vi-VN',
+    extraHTTPHeaders: {
+      'Accept-Language': 'vi-VN,vi;q=0.9',
+    },
   },
   projects: [
     {
