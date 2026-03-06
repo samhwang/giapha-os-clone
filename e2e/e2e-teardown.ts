@@ -1,10 +1,11 @@
 import '@dotenvx/dotenvx/config';
 import { existsSync, readFileSync, unlinkSync } from 'node:fs';
+import { test as teardown } from '@playwright/test';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../src/generated/prisma/client';
 import { SEED_DATA_PATH, type SeedData } from './e2e-seed';
 
-export default async function e2eTeardown() {
+teardown('cleanup e2e users', async () => {
   if (!existsSync(SEED_DATA_PATH)) {
     console.log('E2E teardown: no seed data file found, skipping');
     return;
@@ -26,4 +27,4 @@ export default async function e2eTeardown() {
   } finally {
     await prisma.$disconnect();
   }
-}
+});

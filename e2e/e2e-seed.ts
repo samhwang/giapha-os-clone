@@ -1,5 +1,6 @@
 import '@dotenvx/dotenvx/config';
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { test as setup } from '@playwright/test';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { hashPassword } from 'better-auth/crypto';
 import { PrismaClient } from '../src/generated/prisma/client';
@@ -37,7 +38,7 @@ async function seedUser(prisma: PrismaClient, email: string, password: string, r
   return user;
 }
 
-export default async function e2eSeed() {
+setup('seed e2e users', async () => {
   const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
   const prisma = new PrismaClient({ adapter });
 
@@ -54,4 +55,4 @@ export default async function e2eSeed() {
   } finally {
     await prisma.$disconnect();
   }
-}
+});

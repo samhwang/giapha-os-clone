@@ -18,12 +18,20 @@ export default defineConfig({
       'Accept-Language': 'vi-VN,vi;q=0.9',
     },
   },
-  globalSetup: './e2e/e2e-seed.ts',
-  globalTeardown: './e2e/e2e-teardown.ts',
   projects: [
+    {
+      name: 'seed',
+      testMatch: /e2e-seed\.ts$/,
+      teardown: 'cleanup',
+    },
+    {
+      name: 'cleanup',
+      testMatch: /e2e-teardown\.ts/,
+    },
     {
       name: 'setup',
       testMatch: /auth\.setup\.ts/,
+      dependencies: ['seed'],
       fullyParallel: false,
     },
     {
