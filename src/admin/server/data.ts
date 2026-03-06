@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { getDbClient } from '../../lib/db';
 import { requireAdmin } from '../../server/functions/_auth';
-import type { Person, Relationship } from '../../types';
+import { GenderSchema, type Person, type Relationship, RelationshipTypeSchema } from '../../types';
 
 interface BackupPayload {
   version: number;
@@ -18,7 +18,7 @@ const prisma = getDbClient();
 const importPersonSchema = z.object({
   id: z.uuid(),
   fullName: z.string().min(1),
-  gender: z.enum(['male', 'female', 'other']),
+  gender: GenderSchema,
   birthYear: z.number().int().nullish(),
   birthMonth: z.number().int().min(1).max(12).nullish(),
   birthDay: z.number().int().min(1).max(31).nullish(),
@@ -35,7 +35,7 @@ const importPersonSchema = z.object({
 });
 
 const importRelationshipSchema = z.object({
-  type: z.enum(['marriage', 'biological_child', 'adopted_child']),
+  type: RelationshipTypeSchema,
   personAId: z.uuid(),
   personBId: z.uuid(),
   note: z.string().nullish(),

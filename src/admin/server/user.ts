@@ -3,12 +3,13 @@ import { z } from 'zod';
 import { auth } from '../../lib/auth';
 import { getDbClient } from '../../lib/db';
 import { requireAdmin } from '../../server/functions/_auth';
+import { UserRoleSchema } from '../../types';
 
 const prisma = getDbClient();
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
-const roleEnum = z.enum(['admin', 'editor', 'member']);
+const roleEnum = UserRoleSchema;
 
 const changeRoleSchema = z.object({
   userId: z.uuid(),

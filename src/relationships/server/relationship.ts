@@ -3,8 +3,9 @@ import { z } from 'zod';
 import { getDbClient } from '../../lib/db';
 import { ERRORS } from '../../lib/errors';
 import { requireEditor } from '../../server/functions/_auth';
+import { RelationshipTypeSchema } from '../../types';
 
-const relationshipTypeEnum = z.enum(['marriage', 'biological_child', 'adopted_child']);
+const relationshipTypeEnum = RelationshipTypeSchema;
 
 const createRelationshipSchema = z.object({
   type: relationshipTypeEnum,
