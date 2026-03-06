@@ -4,10 +4,11 @@ import { test as setup } from '@playwright/test';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { hashPassword } from 'better-auth/crypto';
 import { PrismaClient } from '../src/generated/prisma/client';
+import { UserRole } from '../src/types';
 import { SEED_DATA_PATH, type SeedData } from './e2e-seed-data';
 import { TEST_ADMIN, TEST_MEMBER } from './fixtures';
 
-async function seedUser(prisma: PrismaClient, email: string, password: string, role: 'admin' | 'member') {
+async function seedUser(prisma: PrismaClient, email: string, password: string, role: UserRole) {
   const hashed = await hashPassword(password);
 
   const user = await prisma.user.upsert({
@@ -37,8 +38,8 @@ setup('seed e2e users', async () => {
   const prisma = new PrismaClient({ adapter });
 
   try {
-    const admin = await seedUser(prisma, TEST_ADMIN.email, TEST_ADMIN.password, 'admin');
-    const member = await seedUser(prisma, TEST_MEMBER.email, TEST_MEMBER.password, 'member');
+    const admin = await seedUser(prisma, TEST_ADMIN.email, TEST_ADMIN.password, UserRole.enum.admin);
+    const member = await seedUser(prisma, TEST_MEMBER.email, TEST_MEMBER.password, UserRole.enum.member);
 
     // Write seeded user IDs so teardown can clean them up
     const seedData: SeedData = { userIds: [admin.id, member.id] };

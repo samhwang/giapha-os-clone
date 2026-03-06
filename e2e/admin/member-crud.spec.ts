@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { Gender } from '../../src/types';
 
 const TEST_MEMBER_NAME = `E2E Nguyễn Văn Test ${Date.now()}`;
 
@@ -13,7 +14,7 @@ test.describe('Member CRUD', () => {
 
     // Fill the form
     await page.locator('#fullName').fill(TEST_MEMBER_NAME);
-    await page.locator('#gender').selectOption('male');
+    await page.locator('#gender').selectOption(Gender.enum.male);
 
     // Set birth year
     const yearInput = page.locator('input[placeholder="Năm"]').first();
@@ -32,7 +33,7 @@ test.describe('Member CRUD', () => {
     await page.goto('/dashboard/members/new');
     const memberName = `E2E Detail ${Date.now()}`;
     await page.locator('#fullName').fill(memberName);
-    await page.locator('#gender').selectOption('female');
+    await page.locator('#gender').selectOption(Gender.enum.female);
     await page.getByRole('button', { name: /thêm thành viên/i }).click();
     await expect(page).toHaveURL(/\/dashboard\/members\//, { timeout: 15000 });
 
@@ -46,7 +47,7 @@ test.describe('Member CRUD', () => {
     await page.goto('/dashboard/members/new');
     const originalName = `E2E Edit ${Date.now()}`;
     await page.locator('#fullName').fill(originalName);
-    await page.locator('#gender').selectOption('male');
+    await page.locator('#gender').selectOption(Gender.enum.male);
     await page.getByRole('button', { name: /thêm thành viên/i }).click();
     await expect(page).toHaveURL(/\/dashboard\/members\//, { timeout: 15000 });
 
@@ -69,7 +70,7 @@ test.describe('Member CRUD', () => {
     await page.goto('/dashboard/members/new');
     const deletableName = `E2E Delete ${Date.now()}`;
     await page.locator('#fullName').fill(deletableName);
-    await page.locator('#gender').selectOption('male');
+    await page.locator('#gender').selectOption(Gender.enum.male);
     await page.getByRole('button', { name: /thêm thành viên/i }).click();
     await expect(page).toHaveURL(/\/dashboard\/members\//, { timeout: 15000 });
 
