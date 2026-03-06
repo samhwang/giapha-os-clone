@@ -36,6 +36,8 @@ jobs:
           - 3902:3902
           - 3903:3903
         options: --health-cmd "curl -f http://localhost:3902/health" --health-interval 10s --health-timeout 5s --health-retries 5
+        volumes:
+          - ${{ github.workspace }}/.docker/garage/garage.toml:/etc/garage.toml
     strategy:
       matrix:
         test: ["test:server", "test:integration", "test:e2e"]
