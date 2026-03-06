@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import FamilyTree from '../../family-tree/components/FamilyTree';
 import MindmapTree from '../../family-tree/components/MindmapTree';
-import type { Person, Relationship } from '../../types';
+import { type Person, type Relationship, RelationshipType } from '../../types';
 import ExportButton from '../../ui/common/ExportButton';
 import AvatarToggle from './AvatarToggle';
 import { useDashboard } from './DashboardContext';
@@ -20,7 +20,9 @@ export default function DashboardViews({ persons, relationships }: DashboardView
     const pMap = new Map<string, Person>();
     for (const p of persons) pMap.set(p.id, p);
 
-    const childIds = new Set(relationships.filter((r) => r.type === 'biological_child' || r.type === 'adopted_child').map((r) => r.personBId));
+    const childIds = new Set(
+      relationships.filter((r) => r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child).map((r) => r.personBId)
+    );
 
     let finalRootId = rootId;
 

@@ -1,4 +1,4 @@
-import { Gender, type Person, type Relationship } from '../../types';
+import { Gender, type Person, type Relationship, RelationshipType } from '../../types';
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
@@ -84,8 +84,8 @@ export function exportToGedcom(data: { persons: Person[]; relationships: Relatio
 
   // Export Families
   let familyCounter = 1;
-  const marriages = data.relationships.filter((r) => r.type === 'marriage');
-  const childrenRels = data.relationships.filter((r) => r.type === 'biological_child' || r.type === 'adopted_child');
+  const marriages = data.relationships.filter((r) => r.type === RelationshipType.enum.marriage);
+  const childrenRels = data.relationships.filter((r) => r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child);
 
   const families: { id: string; husb?: string; wife?: string; children: string[] }[] = [];
 
@@ -262,13 +262,13 @@ export function parseGedcom(gedcom: string): {
     }
 
     if (husb && wife) {
-      relationships.push({ type: 'marriage', personAId: husb, personBId: wife });
+      relationships.push({ type: RelationshipType.enum.marriage, personAId: husb, personBId: wife });
     }
 
     const parentA = husb || wife;
     if (parentA) {
       for (const childId of children) {
-        relationships.push({ type: 'biological_child', personAId: parentA, personBId: childId });
+        relationships.push({ type: RelationshipType.enum.biological_child, personAId: parentA, personBId: childId });
       }
     }
   }

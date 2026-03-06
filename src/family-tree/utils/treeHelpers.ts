@@ -1,4 +1,4 @@
-import { Gender, type Person, type Relationship } from '../../types';
+import { Gender, type Person, type Relationship, RelationshipType } from '../../types';
 
 export interface SpouseData {
   person: Person;
@@ -25,7 +25,7 @@ export function buildAdjacencyLists(relationships: Relationship[], personsMap: M
   const children = new Map<string, Person[]>();
 
   for (const r of relationships) {
-    if (r.type === 'marriage') {
+    if (r.type === RelationshipType.enum.marriage) {
       if (!spouses.has(r.personAId)) spouses.set(r.personAId, []);
       if (!spouses.has(r.personBId)) spouses.set(r.personBId, []);
 
@@ -34,7 +34,7 @@ export function buildAdjacencyLists(relationships: Relationship[], personsMap: M
 
       const pA = personsMap.get(r.personAId);
       if (pA) spouses.get(r.personBId)?.push({ person: pA, note: r.note });
-    } else if (r.type === 'biological_child' || r.type === 'adopted_child') {
+    } else if (r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child) {
       if (!children.has(r.personAId)) children.set(r.personAId, []);
       const child = personsMap.get(r.personBId);
       if (child) children.get(r.personAId)?.push(child);

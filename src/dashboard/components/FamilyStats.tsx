@@ -1,7 +1,7 @@
 import { Crown, Flower2, Heart, HeartOff, Mars, Skull, Users, Venus } from 'lucide-react';
 import { type ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Gender, type Person, type Relationship } from '../../types';
+import { Gender, type Person, type Relationship, RelationshipType } from '../../types';
 
 interface FamilyStatsProps {
   persons: Person[];
@@ -66,7 +66,7 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
 
     const marriedIds = new Set<string>();
     for (const r of relationships) {
-      if (r.type === 'marriage') {
+      if (r.type === RelationshipType.enum.marriage) {
         marriedIds.add(r.personAId);
         marriedIds.add(r.personBId);
       }

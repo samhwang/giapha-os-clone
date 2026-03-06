@@ -1,7 +1,7 @@
 import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, RefreshCw, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Person, Relationship } from '../../types';
+import { type Person, type Relationship, RelationshipType } from '../../types';
 import { updateBatch } from '../server/lineage';
 
 interface LineageManagerProps {
@@ -24,7 +24,7 @@ function computeGenerations(persons: Person[], relationships: Relationship[]): M
   const parentChildren = new Map<string, string[]>();
 
   for (const r of relationships) {
-    if (r.type === 'biological_child' || r.type === 'adopted_child') {
+    if (r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child) {
       const parents = childParents.get(r.personBId) ?? [];
       parents.push(r.personAId);
       childParents.set(r.personBId, parents);
@@ -37,7 +37,7 @@ function computeGenerations(persons: Person[], relationships: Relationship[]): M
 
   const spouseMap = new Map<string, string[]>();
   for (const r of relationships) {
-    if (r.type === 'marriage') {
+    if (r.type === RelationshipType.enum.marriage) {
       const aSpouses = spouseMap.get(r.personAId) ?? [];
       aSpouses.push(r.personBId);
       spouseMap.set(r.personAId, aSpouses);
@@ -112,7 +112,7 @@ function computeBirthOrders(persons: Person[], relationships: Relationship[]): M
   const parentChildren = new Map<string, Set<string>>();
 
   for (const r of relationships) {
-    if (r.type === 'biological_child' || r.type === 'adopted_child') {
+    if (r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child) {
       if (!parentChildren.has(r.personAId)) parentChildren.set(r.personAId, new Set());
       parentChildren.get(r.personAId)?.add(r.personBId);
     }

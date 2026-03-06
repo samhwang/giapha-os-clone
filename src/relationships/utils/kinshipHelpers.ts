@@ -1,4 +1,4 @@
-import type { KinshipResult, PersonNode, RelEdge } from '../../types';
+import { type KinshipResult, type PersonNode, RelationshipType, type RelEdge } from '../../types';
 
 const DEPTH_SIBLING = 1;
 const DEPTH_GREAT_AUNT = 3;
@@ -243,11 +243,11 @@ export function computeKinship(personA: PersonNode, personB: PersonNode, persons
   const spouseMap = new Map<string, string[]>();
 
   for (const r of relationships) {
-    if (r.type === 'biological_child' || r.type === 'adopted_child') {
+    if (r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child) {
       const p = parentMap.get(r.personBId) ?? [];
       p.push(r.personAId);
       parentMap.set(r.personBId, p);
-    } else if (r.type === 'marriage') {
+    } else if (r.type === RelationshipType.enum.marriage) {
       const sA = spouseMap.get(r.personAId) ?? [];
       sA.push(r.personBId);
       spouseMap.set(r.personAId, sA);
