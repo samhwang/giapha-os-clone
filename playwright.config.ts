@@ -18,10 +18,12 @@ export default defineConfig({
       'Accept-Language': 'vi-VN,vi;q=0.9',
     },
   },
+  globalSetup: './e2e/e2e-seed.ts',
   projects: [
     {
       name: 'setup',
       testMatch: /auth\.setup\.ts/,
+      fullyParallel: false,
     },
     {
       name: 'public',
