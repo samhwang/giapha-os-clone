@@ -14,7 +14,7 @@ test.describe('About Page', () => {
   test('should show contact section with GitHub link', async ({ page }) => {
     await page.goto('/about');
     await expect(page.getByText(/liên hệ/i)).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('a[href*="github.com"]')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'GitHub', exact: true })).toBeVisible();
   });
 
   test('should have back link to homepage', async ({ page }) => {
