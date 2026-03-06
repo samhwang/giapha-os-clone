@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
-import type { Person } from '../../types';
+import { Gender, type Person } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 
@@ -14,8 +14,8 @@ export default function PersonCard({ person }: PersonCardProps) {
   const { setMemberModalId } = useDashboard();
 
   const getGenderStyle = (gender: string) => {
-    if (gender === 'male') return 'bg-sky-100 text-sky-600';
-    if (gender === 'female') return 'bg-rose-100 text-rose-600';
+    if (gender === Gender.enum.male) return 'bg-sky-100 text-sky-600';
+    if (gender === Gender.enum.female) return 'bg-rose-100 text-rose-600';
     return 'bg-stone-100 text-stone-600';
   };
 
@@ -30,7 +30,7 @@ export default function PersonCard({ person }: PersonCardProps) {
         <div className="relative">
           <div
             className={`h-14 w-14 sm:h-16 sm:w-16 rounded-full flex items-center justify-center text-xl font-bold text-white overflow-hidden shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105
-            ${person.gender === 'male' ? 'bg-linear-to-br from-sky-400 to-sky-700' : person.gender === 'female' ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
+            ${person.gender === Gender.enum.male ? 'bg-linear-to-br from-sky-400 to-sky-700' : person.gender === Gender.enum.female ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
           >
             {person.avatarUrl ? (
               <img src={person.avatarUrl} alt={person.fullName} className="h-full w-full object-cover" />
@@ -41,7 +41,11 @@ export default function PersonCard({ person }: PersonCardProps) {
           <div
             className={`absolute bottom-0 right-0 size-5 rounded-full ring-2 ring-white shadow-sm flex items-center justify-center ${getGenderStyle(person.gender)}`}
           >
-            {person.gender === 'male' ? <MaleIcon className="size-5" /> : person.gender === 'female' ? <FemaleIcon className="size-5" /> : null}
+            {person.gender === Gender.enum.male ? (
+              <MaleIcon className="size-5" />
+            ) : person.gender === Gender.enum.female ? (
+              <FemaleIcon className="size-5" />
+            ) : null}
           </div>
         </div>
 
@@ -74,14 +78,18 @@ export default function PersonCard({ person }: PersonCardProps) {
               {person.isInLaw && (
                 <span
                   className={`inline-flex items-center px-2 py-0.5 rounded-md text-2xs sm:text-xs-plus font-bold uppercase tracking-widest shadow-xs border ${
-                    person.gender === 'male'
+                    person.gender === Gender.enum.male
                       ? 'bg-sky-50 text-sky-700 border-sky-200/60'
-                      : person.gender === 'female'
+                      : person.gender === Gender.enum.female
                         ? 'bg-rose-50 text-rose-700 border-rose-200/60'
                         : 'bg-stone-50 text-stone-700 border-stone-200/60'
                   }`}
                 >
-                  {person.gender === 'male' ? t('member.filterInLawMale') : person.gender === 'female' ? t('member.filterInLawFemale') : t('member.inLawOther')}
+                  {person.gender === Gender.enum.male
+                    ? t('member.filterInLawMale')
+                    : person.gender === Gender.enum.female
+                      ? t('member.filterInLawFemale')
+                      : t('member.inLawOther')}
                 </span>
               )}
               {person.birthOrder != null && (

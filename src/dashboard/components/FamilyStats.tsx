@@ -1,7 +1,7 @@
 import { Crown, Flower2, Heart, HeartOff, Mars, Skull, Users, Venus } from 'lucide-react';
 import { type ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Person, Relationship } from '../../types';
+import { Gender, type Person, type Relationship } from '../../types';
 
 interface FamilyStatsProps {
   persons: Person[];
@@ -57,10 +57,10 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
   const { t } = useTranslation();
   const stats = useMemo(() => {
     const total = persons.length;
-    const male = persons.filter((p) => p.gender === 'male').length;
-    const female = persons.filter((p) => p.gender === 'female').length;
-    const daughtersInLaw = persons.filter((p) => p.isInLaw && p.gender === 'female').length;
-    const sonsInLaw = persons.filter((p) => p.isInLaw && p.gender === 'male').length;
+    const male = persons.filter((p) => p.gender === Gender.enum.male).length;
+    const female = persons.filter((p) => p.gender === Gender.enum.female).length;
+    const daughtersInLaw = persons.filter((p) => p.isInLaw && p.gender === Gender.enum.female).length;
+    const sonsInLaw = persons.filter((p) => p.isInLaw && p.gender === Gender.enum.male).length;
     const deceased = persons.filter((p) => p.isDeceased).length;
     const firstBorn = persons.filter((p) => p.birthOrder === 1).length;
 

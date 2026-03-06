@@ -1,7 +1,7 @@
 import { Minus, Plus } from 'lucide-react';
 import type { MouseEvent } from 'react';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
-import type { Person } from '../../types';
+import { Gender, type Person } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 
 interface FamilyNodeCardProps {
@@ -60,9 +60,9 @@ export default function FamilyNodeCard({
           <div
             className={`h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center text-2xs sm:text-xs md:text-sm text-white overflow-hidden shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105
               ${
-                person.gender === 'male'
+                person.gender === Gender.enum.male
                   ? 'bg-linear-to-br from-sky-400 to-sky-700'
-                  : person.gender === 'female'
+                  : person.gender === Gender.enum.female
                     ? 'bg-linear-to-br from-rose-400 to-rose-700'
                     : 'bg-linear-to-br from-stone-400 to-stone-600'
               }`}

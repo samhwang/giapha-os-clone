@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboard } from '../../dashboard/components/DashboardContext';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
-import type { Person, Relationship } from '../../types';
+import { Gender, type Person, type Relationship } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { buildAdjacencyLists, getFilteredTreeData } from '../utils/treeHelpers';
 
@@ -107,7 +107,7 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
                   <div className="relative shrink-0">
                     <div
                       className={`size-10 rounded-full overflow-hidden flex items-center justify-center text-white text-xs font-bold shadow-md ring-2 ring-white transition-transform duration-300 group-hover/card:scale-105
-                      ${data.person.gender === 'male' ? 'bg-linear-to-br from-sky-400 to-sky-700' : data.person.gender === 'female' ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
+                      ${data.person.gender === Gender.enum.male ? 'bg-linear-to-br from-sky-400 to-sky-700' : data.person.gender === Gender.enum.female ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
                     >
                       {data.person.avatarUrl ? (
                         <img src={data.person.avatarUrl} alt={data.person.fullName} className="h-full w-full object-cover" />
@@ -140,14 +140,14 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
                     <div className="flex flex-wrap items-center gap-1 mt-1.5 shrink-0">
                       <span
                         className={`inline-flex items-center px-1.5 py-0.5 rounded text-3xs font-bold uppercase tracking-widest shadow-xs border ${
-                          data.person.gender === 'male'
+                          data.person.gender === Gender.enum.male
                             ? 'bg-sky-50 text-sky-700 border-sky-200/60'
-                            : data.person.gender === 'female'
+                            : data.person.gender === Gender.enum.female
                               ? 'bg-rose-50 text-rose-700 border-rose-200/60'
                               : 'bg-stone-50 text-stone-700 border-stone-200/60'
                         }`}
                       >
-                        {data.person.gender === 'male' ? 'Rể' : data.person.gender === 'female' ? 'Dâu' : 'Khách'}
+                        {data.person.gender === Gender.enum.male ? 'Rể' : data.person.gender === Gender.enum.female ? 'Dâu' : 'Khách'}
                       </span>
                     </div>
                   )}
@@ -166,12 +166,12 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
                       }}
                       className={`flex flex-col items-center gap-1 bg-stone-50/50 hover:bg-white rounded-xl p-1.5 border border-stone-200/60 hover:border-amber-300 transition-all shadow-sm hover:shadow-md group/spouse cursor-pointer
                         ${spouseData.person.isDeceased ? 'opacity-80 grayscale-[0.3]' : ''}`}
-                      title={spouseData.note || (spouseData.person.gender === 'male' ? 'Chồng' : 'Vợ')}
+                      title={spouseData.note || (spouseData.person.gender === Gender.enum.male ? 'Chồng' : 'Vợ')}
                     >
                       {showAvatar && (
                         <div
                           className={`size-8 rounded-full overflow-hidden flex items-center justify-center text-white text-2xs font-bold shadow-sm ring-2 ring-white transition-transform duration-300 group-hover/spouse:scale-105
-                          ${spouseData.person.gender === 'male' ? 'bg-linear-to-br from-sky-400 to-sky-700' : spouseData.person.gender === 'female' ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
+                          ${spouseData.person.gender === Gender.enum.male ? 'bg-linear-to-br from-sky-400 to-sky-700' : spouseData.person.gender === Gender.enum.female ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
                         >
                           {spouseData.person.avatarUrl ? (
                             <img src={spouseData.person.avatarUrl} alt={spouseData.person.fullName} className="h-full w-full object-cover" />

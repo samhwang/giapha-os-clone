@@ -1,4 +1,4 @@
-import type { Person, Relationship } from '../../types';
+import { Gender, type Person, type Relationship } from '../../types';
 
 export interface SpouseData {
   person: Person;
@@ -68,16 +68,16 @@ export function getFilteredTreeData(personId: string, personsMap: Map<string, Pe
     spousesList = [];
   } else {
     spousesList = spousesList.filter((s) => {
-      if (hideMales && s.person.gender === 'male') return false;
-      if (hideFemales && s.person.gender === 'female') return false;
+      if (hideMales && s.person.gender === Gender.enum.male) return false;
+      if (hideFemales && s.person.gender === Gender.enum.female) return false;
       return true;
     });
   }
 
   let childrenList = adj.childrenByPersonId.get(personId) || [];
   childrenList = childrenList.filter((c) => {
-    if (hideMales && c.gender === 'male') return false;
-    if (hideFemales && c.gender === 'female') return false;
+    if (hideMales && c.gender === Gender.enum.male) return false;
+    if (hideFemales && c.gender === Gender.enum.female) return false;
     return true;
   });
 

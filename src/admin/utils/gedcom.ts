@@ -1,4 +1,4 @@
-import type { Person, Relationship } from '../../types';
+import { Gender, type Person, type Relationship } from '../../types';
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
@@ -52,8 +52,8 @@ export function exportToGedcom(data: { persons: Person[]; relationships: Relatio
     }
 
     // Sex
-    if (person.gender === 'male') gedcom += '1 SEX M\n';
-    else if (person.gender === 'female') gedcom += '1 SEX F\n';
+    if (person.gender === Gender.enum.male) gedcom += '1 SEX M\n';
+    else if (person.gender === Gender.enum.female) gedcom += '1 SEX F\n';
     else gedcom += '1 SEX U\n';
 
     // Birth
@@ -96,8 +96,8 @@ export function exportToGedcom(data: { persons: Person[]; relationships: Relatio
 
     families.push({
       id: `F${familyCounter++}`,
-      husb: pA.gender === 'male' ? pA.id : pB.gender === 'male' ? pB.id : pA.id,
-      wife: pA.gender === 'female' ? pA.id : pB.gender === 'female' ? pB.id : pB.id,
+      husb: pA.gender === Gender.enum.male ? pA.id : pB.gender === Gender.enum.male ? pB.id : pA.id,
+      wife: pA.gender === Gender.enum.female ? pA.id : pB.gender === Gender.enum.female ? pB.id : pB.id,
       children: [],
     });
   }
@@ -113,8 +113,8 @@ export function exportToGedcom(data: { persons: Person[]; relationships: Relatio
       if (!parent) continue;
       fam = {
         id: `F${familyCounter++}`,
-        husb: parent.gender === 'male' ? parentId : undefined,
-        wife: parent.gender === 'female' ? parentId : undefined,
+        husb: parent.gender === Gender.enum.male ? parentId : undefined,
+        wife: parent.gender === Gender.enum.female ? parentId : undefined,
         children: [],
       };
       families.push(fam);
@@ -173,7 +173,7 @@ export function parseGedcom(gedcom: string): {
     idMap.set(record.id, uuid);
 
     let fullName = 'Unknown';
-    let gender: 'male' | 'female' | 'other' = 'other';
+    let gender: Gender = Gender.enum.other;
     let isDeceased = false;
     let birthDay: number | null = null;
     let birthMonth: number | null = null;
@@ -195,7 +195,7 @@ export function parseGedcom(gedcom: string): {
       if (level === 1) {
         currentTag = tag;
         if (tag === 'NAME') fullName = val.replace(/\//g, '').trim();
-        else if (tag === 'SEX') gender = val === 'M' ? 'male' : val === 'F' ? 'female' : 'other';
+        else if (tag === 'SEX') gender = val === 'M' ? Gender.enum.male : val === 'F' ? Gender.enum.female : Gender.enum.other;
         else if (tag === 'DEAT') isDeceased = val.trim().length === 0 || val === 'Y';
         else if (tag === 'NOTE') note = val;
       } else if (level === 2) {

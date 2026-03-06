@@ -2,7 +2,7 @@ import { ArrowUpDown, Filter, Plus, Search } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PersonCard from '../../members/components/PersonCard';
-import type { Person } from '../../types';
+import { Gender, type Person } from '../../types';
 import { useDashboard } from './DashboardContext';
 
 export default function DashboardMemberList({ initialPersons }: { initialPersons: Person[] }) {
@@ -18,16 +18,16 @@ export default function DashboardMemberList({ initialPersons }: { initialPersons
     let matchesFilter = true;
     switch (filterOption) {
       case 'male':
-        matchesFilter = person.gender === 'male';
+        matchesFilter = person.gender === Gender.enum.male;
         break;
       case 'female':
-        matchesFilter = person.gender === 'female';
+        matchesFilter = person.gender === Gender.enum.female;
         break;
       case 'in_law_female':
-        matchesFilter = person.gender === 'female' && person.isInLaw;
+        matchesFilter = person.gender === Gender.enum.female && person.isInLaw;
         break;
       case 'in_law_male':
-        matchesFilter = person.gender === 'male' && person.isInLaw;
+        matchesFilter = person.gender === Gender.enum.male && person.isInLaw;
         break;
       case 'deceased':
         matchesFilter = person.isDeceased;

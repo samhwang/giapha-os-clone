@@ -2,7 +2,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { AlertCircle, Briefcase, Image as ImageIcon, Loader2, Lock, MapPin, Phone, Settings2, Trash2, User } from 'lucide-react';
 import { type SubmitEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Gender, Person } from '../../types';
+import { Gender, type Person } from '../../types';
 import { createPerson, updatePerson, uploadPersonAvatar } from '../server/member';
 
 interface MemberFormData extends Person {
@@ -26,7 +26,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
   const [error, setError] = useState<string | null>(null);
 
   const [fullName, setFullName] = useState(initialData?.fullName || '');
-  const [gender, setGender] = useState<Gender>(initialData?.gender || 'male');
+  const [gender, setGender] = useState<Gender>(initialData?.gender || Gender.enum.male);
   const [birthYear, setBirthYear] = useState<number | ''>(initialData?.birthYear || '');
   const [birthMonth, setBirthMonth] = useState<number | ''>(initialData?.birthMonth || '');
   const [birthDay, setBirthDay] = useState<number | ''>(initialData?.birthDay || '');
@@ -189,9 +189,9 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             </label>
             <div className="relative">
               <select id="gender" value={gender} onChange={(e) => setGender(e.target.value as Gender)} className={`${inputClasses} appearance-none`}>
-                <option value="male">{t('common.male')}</option>
-                <option value="female">{t('common.female')}</option>
-                <option value="other">{t('common.other')}</option>
+                <option value={Gender.enum.male}>{t('common.male')}</option>
+                <option value={Gender.enum.female}>{t('common.female')}</option>
+                <option value={Gender.enum.other}>{t('common.other')}</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-stone-500">
                 <Settings2 className="size-4" />
@@ -260,7 +260,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 bg-stone-50/50 p-4 rounded-xl border border-stone-100">
               <div
                 className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center text-xl font-bold text-white overflow-hidden shrink-0 shadow-md border-4 border-white
-                  ${!avatarPreview ? (gender === 'male' ? 'bg-linear-to-br from-sky-400 to-sky-700' : gender === 'female' ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600') : ''}`}
+                  ${!avatarPreview ? (gender === Gender.enum.male ? 'bg-linear-to-br from-sky-400 to-sky-700' : gender === Gender.enum.female ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600') : ''}`}
               >
                 {avatarPreview ? (
                   <img src={avatarPreview} alt="Avatar preview" className="w-full h-full object-cover" />

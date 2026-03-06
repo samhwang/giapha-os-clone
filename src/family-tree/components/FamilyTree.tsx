@@ -1,7 +1,7 @@
 import { Filter, Minus, Plus } from 'lucide-react';
 import { Fragment, type MouseEvent, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Person, Relationship } from '../../types';
+import { Gender, type Person, type Relationship } from '../../types';
 import { buildAdjacencyLists, getFilteredTreeData } from '../utils/treeHelpers';
 import FamilyNodeCard from './FamilyNodeCard';
 import styles from './family-tree.module.css';
@@ -103,7 +103,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
                     isRingVisible={idx === 0}
                     isPlusVisible={idx > 0}
                     person={spouseData.person}
-                    role={spouseData.person.gender === 'male' ? 'Chồng' : 'Vợ'}
+                    role={spouseData.person.gender === Gender.enum.male ? 'Chồng' : 'Vợ'}
                     note={spouseData.note}
                   />
                 </div>

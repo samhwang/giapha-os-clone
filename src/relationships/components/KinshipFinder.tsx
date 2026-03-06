@@ -1,7 +1,7 @@
 import { ArrowLeftRight, BookOpen, GitMerge, Info, Search, Sparkles, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import type { PersonNode, RelEdge } from '../../types';
+import { Gender, type PersonNode, type RelEdge } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 import { computeKinship } from '../utils/kinshipHelpers';
@@ -12,14 +12,14 @@ interface Props {
 }
 
 const getGenderStyle = (gender: string) => {
-  if (gender === 'male') return 'bg-sky-100 text-sky-600';
-  if (gender === 'female') return 'bg-rose-100 text-rose-600';
+  if (gender === Gender.enum.male) return 'bg-sky-100 text-sky-600';
+  if (gender === Gender.enum.female) return 'bg-rose-100 text-rose-600';
   return 'bg-stone-100 text-stone-600';
 };
 
 const getAvatarBg = (gender: string) => {
-  if (gender === 'male') return 'bg-linear-to-br from-sky-400 to-sky-700';
-  if (gender === 'female') return 'bg-linear-to-br from-rose-400 to-rose-700';
+  if (gender === Gender.enum.male) return 'bg-linear-to-br from-sky-400 to-sky-700';
+  if (gender === Gender.enum.female) return 'bg-linear-to-br from-rose-400 to-rose-700';
   return 'bg-linear-to-br from-stone-400 to-stone-600';
 };
 
@@ -66,7 +66,11 @@ function PersonSelector({
             <div
               className={`absolute -bottom-1 -right-1 size-4 rounded-full ring-2 ring-white shadow-xs flex items-center justify-center ${getGenderStyle(selected.gender)}`}
             >
-              {selected.gender === 'male' ? <MaleIcon className="size-3" /> : selected.gender === 'female' ? <FemaleIcon className="size-3" /> : null}
+              {selected.gender === Gender.enum.male ? (
+                <MaleIcon className="size-3" />
+              ) : selected.gender === Gender.enum.female ? (
+                <FemaleIcon className="size-3" />
+              ) : null}
             </div>
           )}
         </div>
@@ -113,7 +117,11 @@ function PersonSelector({
                     <div
                       className={`absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full ring-1 ring-white shadow-xs flex items-center justify-center ${getGenderStyle(p.gender)}`}
                     >
-                      {p.gender === 'male' ? <MaleIcon className="size-2.5" /> : p.gender === 'female' ? <FemaleIcon className="size-2.5" /> : null}
+                      {p.gender === Gender.enum.male ? (
+                        <MaleIcon className="size-2.5" />
+                      ) : p.gender === Gender.enum.female ? (
+                        <FemaleIcon className="size-2.5" />
+                      ) : null}
                     </div>
                   </div>
 

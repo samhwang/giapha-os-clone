@@ -1,5 +1,7 @@
+import { Gender } from '../../types';
+
 export default function DefaultAvatar({ gender }: { gender?: string }) {
-  if (gender === 'male') {
+  if (gender === Gender.enum.male) {
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -14,7 +16,7 @@ export default function DefaultAvatar({ gender }: { gender?: string }) {
       </svg>
     );
   }
-  if (gender === 'female') {
+  if (gender === Gender.enum.female) {
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"
