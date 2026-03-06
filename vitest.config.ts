@@ -12,8 +12,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'ui-components',
-          include: ['src/**/**.test.tsx'],
-          exclude: ['src/routes'],
+          include: ['src/**/components/**/**.test.tsx', 'src/**/hooks/**/*.test.ts'],
           environment: 'jsdom',
           setupFiles: ['./test/setup.ts', './test/ui-mocks.ts'],
         },
@@ -23,7 +22,7 @@ export default defineConfig({
         test: {
           name: 'server',
           include: ['src/**/*.test.ts'],
-          exclude: ['src/routes/**'],
+          exclude: ['src/routes/**', 'src/**/hooks/**'],
           environment: 'node',
           globalSetup: ['./test/globalSetup.ts'],
           setupFiles: ['./test/per-file-db.ts', './test/setup.ts'],
