@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { waitForHydration } from '../fixtures';
 
 test.describe('Authentication Flow', () => {
   test('should display login form', async ({ page }) => {
@@ -10,6 +11,7 @@ test.describe('Authentication Flow', () => {
 
   test('should toggle to signup mode', async ({ page }) => {
     await page.goto('/login');
+    await waitForHydration(page);
     await page.getByRole('button', { name: /chưa có tài khoản/i }).click();
 
     await expect(page.locator('#confirmPassword')).toBeVisible({ timeout: 10000 });
@@ -18,6 +20,7 @@ test.describe('Authentication Flow', () => {
 
   test('should show error for invalid credentials', async ({ page }) => {
     await page.goto('/login');
+    await waitForHydration(page);
     await page.locator('#email-address').fill('invalid@test.com');
     await page.locator('#password').fill('wrongpassword');
     await page.getByRole('button', { name: /đăng nhập/i }).click();
