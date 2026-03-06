@@ -65,10 +65,12 @@ function computeGenerations(persons: Person[], relationships: Relationship[]): M
   const queue: Array<{ id: string; gen: number }> = trueRoots.map((r) => ({ id: r.id, gen: 1 }));
 
   while (queue.length > 0) {
-    const { id, gen } = queue.shift()!;
+    const item = queue.shift();
+    if (!item) continue;
+    const { id, gen } = item;
 
     // Use longest path (deepest generation)
-    if (genMap.has(id) && gen <= genMap.get(id)!) continue;
+    if (genMap.has(id) && gen <= (genMap.get(id) ?? 0)) continue;
     genMap.set(id, gen);
 
     // Propagate to children
@@ -80,7 +82,7 @@ function computeGenerations(persons: Person[], relationships: Relationship[]): M
     // Propagate to spouses during BFS
     const spouses = spouseMap.get(id) || [];
     for (const spouseId of spouses) {
-      if (!genMap.has(spouseId) || gen > genMap.get(spouseId)!) {
+      if (!genMap.has(spouseId) || gen > (genMap.get(spouseId) ?? 0)) {
         queue.push({ id: spouseId, gen });
       }
     }
@@ -95,7 +97,7 @@ function computeGenerations(persons: Person[], relationships: Relationship[]): M
       const spouses = spouseMap.get(p.id) || [];
       for (const spouseId of spouses) {
         if (genMap.has(spouseId)) {
-          genMap.set(p.id, genMap.get(spouseId)!);
+          genMap.set(p.id, genMap.get(spouseId) ?? 1);
           changed = true;
           break;
         }
@@ -112,7 +114,7 @@ function computeBirthOrders(persons: Person[], relationships: Relationship[]): M
   for (const r of relationships) {
     if (r.type === 'biological_child' || r.type === 'adopted_child') {
       if (!parentChildren.has(r.personAId)) parentChildren.set(r.personAId, new Set());
-      parentChildren.get(r.personAId)!.add(r.personBId);
+      parentChildren.get(r.personAId)?.add(r.personBId);
     }
   }
 
@@ -134,7 +136,7 @@ function computeBirthOrders(persons: Person[], relationships: Relationship[]): M
       const p = personsById.get(childId);
       if (p && !p.isInLaw) {
         // Keep largest order from any parent
-        if (!orderMap.has(childId) || orderMap.get(childId)! < order) {
+        if (!orderMap.has(childId) || (orderMap.get(childId) ?? 0) < order) {
           orderMap.set(childId, order);
         }
         order++;

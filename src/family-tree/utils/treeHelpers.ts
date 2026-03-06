@@ -30,14 +30,14 @@ export function buildAdjacencyLists(relationships: Relationship[], personsMap: M
       if (!spouses.has(r.personBId)) spouses.set(r.personBId, []);
 
       const pB = personsMap.get(r.personBId);
-      if (pB) spouses.get(r.personAId)!.push({ person: pB, note: r.note });
+      if (pB) spouses.get(r.personAId)?.push({ person: pB, note: r.note });
 
       const pA = personsMap.get(r.personAId);
-      if (pA) spouses.get(r.personBId)!.push({ person: pA, note: r.note });
+      if (pA) spouses.get(r.personBId)?.push({ person: pA, note: r.note });
     } else if (r.type === 'biological_child' || r.type === 'adopted_child') {
       if (!children.has(r.personAId)) children.set(r.personAId, []);
       const child = personsMap.get(r.personBId);
-      if (child) children.get(r.personAId)!.push(child);
+      if (child) children.get(r.personAId)?.push(child);
     }
   }
 
@@ -81,8 +81,13 @@ export function getFilteredTreeData(personId: string, personsMap: Map<string, Pe
     return true;
   });
 
+  const person = personsMap.get(personId);
+  if (!person) {
+    throw new Error(`Person with id ${personId} not found`);
+  }
+
   return {
-    person: personsMap.get(personId)!,
+    person,
     spouses: spousesList,
     children: childrenList,
   };

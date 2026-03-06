@@ -95,8 +95,9 @@ describe('AdminUserList', () => {
     // Find the role select for the member user (value should be 'member')
     const roleSelect = selects.find((s) => (s as HTMLSelectElement).value === 'member');
     expect(roleSelect).toBeDefined();
+    if (!roleSelect) throw new Error('Role select not found');
 
-    fireEvent.change(roleSelect!, { target: { value: 'admin' } });
+    fireEvent.change(roleSelect, { target: { value: 'admin' } });
 
     await waitFor(() => {
       expect(mockChangeRole).toHaveBeenCalledWith({ data: { userId: 'member-1', newRole: 'admin' } });
@@ -172,7 +173,9 @@ describe('AdminUserList', () => {
 
     const selects = screen.getAllByRole('combobox');
     const roleSelect = selects.find((s) => (s as HTMLSelectElement).value === 'member');
-    fireEvent.change(roleSelect!, { target: { value: 'admin' } });
+    if (!roleSelect) throw new Error('Role select not found');
+
+    fireEvent.change(roleSelect, { target: { value: 'admin' } });
 
     await waitFor(() => {
       expect(screen.getByText('Role change failed')).toBeInTheDocument();
