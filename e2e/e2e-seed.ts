@@ -4,14 +4,8 @@ import { test as setup } from '@playwright/test';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { hashPassword } from 'better-auth/crypto';
 import { PrismaClient } from '../src/generated/prisma/client';
+import { SEED_DATA_PATH, type SeedData } from './e2e-seed-data';
 import { TEST_ADMIN, TEST_MEMBER } from './fixtures';
-
-/** Path where seeded user IDs are stored for teardown */
-export const SEED_DATA_PATH = '.playwright/e2e-seed-data.json';
-
-export interface SeedData {
-  userIds: string[];
-}
 
 async function seedUser(prisma: PrismaClient, email: string, password: string, role: 'admin' | 'member') {
   const hashed = await hashPassword(password);

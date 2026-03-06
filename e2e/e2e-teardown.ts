@@ -3,7 +3,7 @@ import { existsSync, readFileSync, unlinkSync } from 'node:fs';
 import { test as teardown } from '@playwright/test';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../src/generated/prisma/client';
-import { SEED_DATA_PATH, type SeedData } from './e2e-seed';
+import { SEED_DATA_PATH, type SeedData } from './e2e-seed-data';
 
 teardown('cleanup e2e users', async () => {
   if (!existsSync(SEED_DATA_PATH)) {
