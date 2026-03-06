@@ -51,7 +51,10 @@ describe('buildAdjacencyLists', () => {
   it('sorts children by birthOrder then birthYear', () => {
     const adj = buildAdjacencyLists(mockRelationships as Relationship[], personsMap);
 
-    const thuanChildren = adj.childrenByPersonId.get(vanCongThuan.id)!;
+    const thuanChildren = adj.childrenByPersonId.get(vanCongThuan.id);
+    if (!thuanChildren) {
+      throw new Error('thuanChildren not found');
+    }
     expect(thuanChildren.map((c) => c.id)).toEqual([vanCongTri.id, vanThiCam.id, vanCongMoc.id]);
   });
 
@@ -94,7 +97,10 @@ describe('buildAdjacencyLists', () => {
     ];
 
     const adj = buildAdjacencyLists(rels as Relationship[], pMap);
-    const children = adj.childrenByPersonId.get(parent.id)!;
+    const children = adj.childrenByPersonId.get(parent.id);
+    if (!children) {
+      throw new Error('children not found');
+    }
     expect(children[0].id).toBe(childB.id);
     expect(children[1].id).toBe(childA.id);
   });
