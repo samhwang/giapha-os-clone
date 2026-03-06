@@ -19,6 +19,7 @@ export default defineConfig({
     },
   },
   globalSetup: './e2e/e2e-seed.ts',
+  globalTeardown: './e2e/e2e-teardown.ts',
   projects: [
     {
       name: 'setup',

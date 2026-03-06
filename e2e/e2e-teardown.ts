@@ -1,0 +1,29 @@
+import '@dotenvx/dotenvx/config';
+import { existsSync, readFileSync, unlinkSync } from 'node:fs';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '../src/generated/prisma/client';
+import { SEED_DATA_PATH, type SeedData } from './e2e-seed';
+
+export default async function e2eTeardown() {
+  if (!existsSync(SEED_DATA_PATH)) {
+    console.log('E2E teardown: no seed data file found, skipping');
+    return;
+  }
+
+  const seedData: SeedData = JSON.parse(readFileSync(SEED_DATA_PATH, 'utf-8'));
+
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+  const prisma = new PrismaClient({ adapter });
+
+  try {
+    // Cascade delete handles accounts and sessions via onDelete: Cascade
+    const { count } = await prisma.user.deleteMany({
+      where: { id: { in: seedData.userIds } },
+    });
+
+    unlinkSync(SEED_DATA_PATH);
+    console.log(`E2E teardown complete: deleted ${count} user(s)`);
+  } finally {
+    await prisma.$disconnect();
+  }
+}

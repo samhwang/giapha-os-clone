@@ -1,8 +1,16 @@
 import '@dotenvx/dotenvx/config';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { hashPassword } from 'better-auth/crypto';
 import { PrismaClient } from '../src/generated/prisma/client';
 import { TEST_ADMIN, TEST_MEMBER } from './fixtures';
+
+/** Path where seeded user IDs are stored for teardown */
+export const SEED_DATA_PATH = '.playwright/e2e-seed-data.json';
+
+export interface SeedData {
+  userIds: string[];
+}
 
 async function seedUser(prisma: PrismaClient, email: string, password: string, role: 'admin' | 'member') {
   const hashed = await hashPassword(password);
@@ -36,6 +44,12 @@ export default async function e2eSeed() {
   try {
     const admin = await seedUser(prisma, TEST_ADMIN.email, TEST_ADMIN.password, 'admin');
     const member = await seedUser(prisma, TEST_MEMBER.email, TEST_MEMBER.password, 'member');
+
+    // Write seeded user IDs so teardown can clean them up
+    const seedData: SeedData = { userIds: [admin.id, member.id] };
+    mkdirSync('.playwright', { recursive: true });
+    writeFileSync(SEED_DATA_PATH, JSON.stringify(seedData, null, 2));
+
     console.log(`E2E seed complete: admin (${admin.email}), member (${member.email})`);
   } finally {
     await prisma.$disconnect();
