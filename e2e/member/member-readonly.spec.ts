@@ -1,35 +1,34 @@
 import { expect, test } from '@playwright/test';
+import { waitForHydration } from '../fixtures';
 
 test.describe('Member Read-Only Access', () => {
   test('should view dashboard as member', async ({ page }) => {
     await page.goto('/dashboard');
     await expect(page).toHaveURL(/\/dashboard/);
-    await expect(page.getByPlaceholder(/tìm/i)).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('heading', { name: /gia phả os/i })).toBeVisible({ timeout: 15000 });
   });
 
-  test('should be able to create a member as non-admin', async ({ page }) => {
+  test('should not be able to create a member as non-admin', async ({ page }) => {
     await page.goto('/dashboard/members/new');
+    await waitForHydration(page, '#gender');
 
-    // Member can still add members (without private info)
-    const name = `E2E Member Created ${Date.now()}`;
-    await page.locator('#fullName').fill(name);
+    await page.locator('#fullName').fill('E2E Should Fail');
     await page.locator('#gender').selectOption('female');
     await page.getByRole('button', { name: /thêm thành viên/i }).click();
 
-    await expect(page).toHaveURL(/\/dashboard\/members\//, { timeout: 15000 });
-    await expect(page.getByText(name)).toBeVisible();
+    // Member role cannot create — should show authorization error
+    await expect(page.getByText(/quyền biên tập|editorOnly/i)).toBeVisible({ timeout: 10000 });
   });
 
   test('should not see private details section as member', async ({ page }) => {
-    // Create a member first
-    await page.goto('/dashboard/members/new');
-    const name = `E2E Private ${Date.now()}`;
-    await page.locator('#fullName').fill(name);
-    await page.locator('#gender').selectOption('male');
-    await page.getByRole('button', { name: /thêm thành viên/i }).click();
-    await expect(page).toHaveURL(/\/dashboard\/members\//, { timeout: 15000 });
+    // Navigate to member list and click a member card to open detail modal
+    await page.goto('/dashboard/members');
+    await waitForHydration(page);
 
-    // Private details should show restricted message
-    await expect(page.getByText(/chỉ hiển thị với quản trị viên/i)).toBeVisible({ timeout: 10000 });
+    const firstMemberCard = page.getByRole('button', { name: /Vạn Công Gốc/ });
+    await firstMemberCard.click();
+
+    // Private details should show restricted message in modal
+    await expect(page.getByText(/chỉ hiển thị với quản trị viên/i)).toBeVisible({ timeout: 15000 });
   });
 });

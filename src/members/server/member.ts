@@ -30,7 +30,7 @@ const basePersonFields = {
 const createPersonSchema = z.object(basePersonFields);
 
 const updatePersonSchema = z.object({
-  id: z.uuid(),
+  id: z.string().min(1),
   fullName: z.string().min(1).optional(),
   gender: genderEnum.optional(),
   birthYear: z.number().int().nullish(),
@@ -51,10 +51,10 @@ const updatePersonSchema = z.object({
   currentResidence: z.string().nullish(),
 });
 
-const idSchema = z.object({ id: z.uuid() });
+const idSchema = z.object({ id: z.string().min(1) });
 
 const uploadAvatarSchema = z.object({
-  personId: z.uuid(),
+  personId: z.string().min(1),
   filename: z.string().min(1),
   contentType: z.string().min(1),
   base64: z.string().min(1),
