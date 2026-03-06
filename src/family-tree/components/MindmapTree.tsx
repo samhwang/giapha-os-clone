@@ -301,7 +301,7 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
           <button
             type="button"
             onClick={handleResetZoom}
-            className="px-2 h-full hover:bg-stone-100/50 text-stone-600 transition-colors text-xs font-medium min-w-[50px] text-center border-x border-stone-200/50"
+            className="px-2 h-full hover:bg-stone-100/50 text-stone-600 transition-colors text-xs font-medium min-w-12.5 text-center border-x border-stone-200/50"
             title={t('tree.zoomReset')}
           >
             {Math.round(scale * 100)}%
