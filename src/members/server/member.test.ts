@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '../../lib/db';
 import { uploadAvatar } from '../../lib/storage';
 import { requireAdmin, requireAuth } from '../../server/functions/_auth';
+import { Gender, RelationshipType, UserRole } from '../../types';
 
 vi.mock('../../server/functions/_auth', () => ({
   requireAuth: vi.fn(),
@@ -20,7 +21,7 @@ describe('createPerson (inner logic)', () => {
     vi.clearAllMocks();
     vi.mocked(requireAuth).mockResolvedValue({
       id: 'user-1',
-      role: 'admin',
+      role: UserRole.enum.admin,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -34,7 +35,7 @@ describe('createPerson (inner logic)', () => {
 
   it('should create a person without private details', async () => {
     const result = await db.person.create({
-      data: { fullName: 'Nguyễn Văn A', gender: 'male' },
+      data: { fullName: 'Nguyễn Văn A', gender: Gender.enum.male },
       include: { privateDetails: true },
     });
 
@@ -48,7 +49,7 @@ describe('createPerson (inner logic)', () => {
     const result = await db.person.create({
       data: {
         fullName: 'Nguyễn Văn B',
-        gender: 'male',
+        gender: Gender.enum.male,
         privateDetails: {
           create: {
             phoneNumber: '0901234567',
@@ -78,7 +79,7 @@ describe('updatePerson (inner logic)', () => {
     vi.clearAllMocks();
     vi.mocked(requireAuth).mockResolvedValue({
       id: 'user-1',
-      role: 'admin',
+      role: UserRole.enum.admin,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -92,7 +93,7 @@ describe('updatePerson (inner logic)', () => {
 
   it('should update person fields', async () => {
     const person = await db.person.create({
-      data: { fullName: 'Original Name', gender: 'male' },
+      data: { fullName: 'Original Name', gender: Gender.enum.male },
     });
 
     const result = await db.person.update({
@@ -105,7 +106,7 @@ describe('updatePerson (inner logic)', () => {
 
   it('should upsert private details when provided', async () => {
     const person = await db.person.create({
-      data: { fullName: 'Test Person', gender: 'female' },
+      data: { fullName: 'Test Person', gender: Gender.enum.female },
     });
 
     await db.personDetailsPrivate.upsert({
@@ -133,7 +134,7 @@ describe('deleteMember (inner logic)', () => {
     vi.clearAllMocks();
     vi.mocked(requireAdmin).mockResolvedValue({
       id: 'user-1',
-      role: 'admin',
+      role: UserRole.enum.admin,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -148,7 +149,7 @@ describe('deleteMember (inner logic)', () => {
 
   it('should delete a member with no relationships', async () => {
     const person = await db.person.create({
-      data: { fullName: 'To Delete', gender: 'male' },
+      data: { fullName: 'To Delete', gender: Gender.enum.male },
     });
 
     await db.person.delete({ where: { id: person.id } });
@@ -158,10 +159,10 @@ describe('deleteMember (inner logic)', () => {
   });
 
   it('should throw when member has relationships', async () => {
-    const personA = await db.person.create({ data: { fullName: 'Person A', gender: 'male' } });
-    const personB = await db.person.create({ data: { fullName: 'Person B', gender: 'female' } });
+    const personA = await db.person.create({ data: { fullName: 'Person A', gender: Gender.enum.male } });
+    const personB = await db.person.create({ data: { fullName: 'Person B', gender: Gender.enum.female } });
     await db.relationship.create({
-      data: { type: 'marriage', personAId: personA.id, personBId: personB.id },
+      data: { type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id },
     });
 
     const relationshipCount = await db.relationship.count({
@@ -183,7 +184,7 @@ describe('uploadPersonAvatar (inner logic)', () => {
     vi.clearAllMocks();
     vi.mocked(requireAuth).mockResolvedValue({
       id: 'user-1',
-      role: 'admin',
+      role: UserRole.enum.admin,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -198,7 +199,7 @@ describe('uploadPersonAvatar (inner logic)', () => {
 
   it('should upload avatar and update person', async () => {
     const person = await db.person.create({
-      data: { fullName: 'Avatar Test', gender: 'male' },
+      data: { fullName: 'Avatar Test', gender: Gender.enum.male },
     });
 
     vi.mocked(uploadAvatar).mockResolvedValue(`https://test.url/avatars/${person.id}/photo.jpg`);
@@ -226,8 +227,8 @@ describe('getPersons (inner logic)', () => {
   });
 
   it('should return created persons', async () => {
-    const p1 = await db.person.create({ data: { fullName: 'Person 1', gender: 'male' } });
-    const p2 = await db.person.create({ data: { fullName: 'Person 2', gender: 'female' } });
+    const p1 = await db.person.create({ data: { fullName: 'Person 1', gender: Gender.enum.male } });
+    const p2 = await db.person.create({ data: { fullName: 'Person 2', gender: Gender.enum.female } });
 
     const result = await db.person.findMany({ orderBy: { createdAt: 'asc' } });
     const ids = result.map((p) => p.id);
@@ -247,7 +248,7 @@ describe('getPersonById (inner logic)', () => {
     const person = await db.person.create({
       data: {
         fullName: 'Test Person',
-        gender: 'male',
+        gender: Gender.enum.male,
         privateDetails: {
           create: { phoneNumber: '0901234567' },
         },

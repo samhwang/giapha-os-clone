@@ -1,4 +1,4 @@
-import type { Gender, RelationshipType, UserRole } from '../src/types';
+import { Gender, RelationshipType, UserRole } from '../src/types';
 
 // ============================================================
 // Type definitions for test fixtures
@@ -55,7 +55,7 @@ export function createPerson(overrides: Partial<MockPerson> = {}): MockPerson {
   return {
     id: crypto.randomUUID(),
     fullName: 'Test Person',
-    gender: 'male',
+    gender: Gender.enum.male,
     birthYear: 1990,
     birthMonth: 1,
     birthDay: 1,
@@ -78,7 +78,7 @@ export function createPerson(overrides: Partial<MockPerson> = {}): MockPerson {
 export function createRelationship(overrides: Partial<MockRelationship> = {}): MockRelationship {
   return {
     id: crypto.randomUUID(),
-    type: 'biological_child',
+    type: RelationshipType.enum.biological_child,
     personAId: '',
     personBId: '',
     note: null,
@@ -93,7 +93,7 @@ export function createUser(overrides: Partial<MockUser> = {}): MockUser {
     id: crypto.randomUUID(),
     email: 'test@example.com',
     name: 'Test User',
-    role: 'member',
+    role: UserRole.enum.member,
     isActive: true,
     createdAt: now,
     updatedAt: now,
@@ -109,7 +109,7 @@ export function createUser(overrides: Partial<MockUser> = {}): MockUser {
 export const vanCongGoc = createPerson({
   id: '10000000-0000-0000-0000-000000000001',
   fullName: 'Vạn Công Gốc',
-  gender: 'male',
+  gender: Gender.enum.male,
   birthYear: 1902,
   birthMonth: 3,
   birthDay: 15,
@@ -123,7 +123,7 @@ export const vanCongGoc = createPerson({
 export const binhThiMoc = createPerson({
   id: '10000000-0000-0000-0000-000000000002',
   fullName: 'Bình Thị Mộc',
-  gender: 'female',
+  gender: Gender.enum.female,
   birthYear: 1908,
   birthMonth: 6,
   birthDay: 10,
@@ -139,7 +139,7 @@ export const binhThiMoc = createPerson({
 export const vanCongThuan = createPerson({
   id: '20000000-0000-0000-0000-000000000001',
   fullName: 'Vạn Công Thuận',
-  gender: 'male',
+  gender: Gender.enum.male,
   birthYear: 1930,
   birthMonth: 2,
   birthDay: 4,
@@ -154,7 +154,7 @@ export const vanCongThuan = createPerson({
 export const camThiDiu = createPerson({
   id: '20000000-0000-0000-0000-000000000002',
   fullName: 'Cam Thị Dịu',
-  gender: 'female',
+  gender: Gender.enum.female,
   birthYear: 1934,
   birthMonth: 9,
   birthDay: 20,
@@ -169,7 +169,7 @@ export const camThiDiu = createPerson({
 export const vanThiBinh = createPerson({
   id: '20000000-0000-0000-0000-000000000003',
   fullName: 'Vạn Thị Bình',
-  gender: 'female',
+  gender: Gender.enum.female,
   birthYear: 1935,
   birthMonth: 7,
   birthDay: 7,
@@ -181,7 +181,7 @@ export const vanThiBinh = createPerson({
 export const vanCongVien = createPerson({
   id: '20000000-0000-0000-0000-000000000004',
   fullName: 'Vạn Công Viễn',
-  gender: 'male',
+  gender: Gender.enum.male,
   birthYear: 1942,
   birthMonth: 12,
   birthDay: 1,
@@ -193,7 +193,7 @@ export const vanCongVien = createPerson({
 export const tanThiKheo = createPerson({
   id: '20000000-0000-0000-0000-000000000005',
   fullName: 'Tân Thị Khéo',
-  gender: 'female',
+  gender: Gender.enum.female,
   birthYear: 1945,
   birthMonth: 3,
   birthDay: 8,
@@ -206,7 +206,7 @@ export const tanThiKheo = createPerson({
 export const vanCongTri = createPerson({
   id: '30000000-0000-0000-0000-000000000001',
   fullName: 'Vạn Công Trí',
-  gender: 'male',
+  gender: Gender.enum.male,
   birthYear: 1958,
   birthMonth: 4,
   birthDay: 12,
@@ -217,7 +217,7 @@ export const vanCongTri = createPerson({
 export const ngoThiDiuHien = createPerson({
   id: '30000000-0000-0000-0000-000000000002',
   fullName: 'Ngô Thị Dịu Hiền',
-  gender: 'female',
+  gender: Gender.enum.female,
   birthYear: 1961,
   birthMonth: 8,
   birthDay: 25,
@@ -228,7 +228,7 @@ export const ngoThiDiuHien = createPerson({
 export const vanThiCam = createPerson({
   id: '30000000-0000-0000-0000-000000000003',
   fullName: 'Vạn Thị Cẩm',
-  gender: 'female',
+  gender: Gender.enum.female,
   birthYear: 1962,
   birthMonth: 11,
   birthDay: 3,
@@ -239,7 +239,7 @@ export const vanThiCam = createPerson({
 export const vanCongMoc = createPerson({
   id: '30000000-0000-0000-0000-000000000005',
   fullName: 'Vạn Công Mộc',
-  gender: 'male',
+  gender: Gender.enum.male,
   birthYear: 1967,
   birthMonth: 6,
   birthDay: 20,
@@ -251,7 +251,7 @@ export const vanCongMoc = createPerson({
 export const vanTriMinh = createPerson({
   id: '40000000-0000-0000-0000-000000000001',
   fullName: 'Vạn Trí Minh',
-  gender: 'male',
+  gender: Gender.enum.male,
   birthYear: 1989,
   birthMonth: 3,
   birthDay: 14,
@@ -262,7 +262,7 @@ export const vanTriMinh = createPerson({
 export const dinhThiMyDuyen = createPerson({
   id: '40000000-0000-0000-0000-000000000002',
   fullName: 'Đinh Thị Mỹ Duyên',
-  gender: 'female',
+  gender: Gender.enum.female,
   birthYear: 1991,
   birthMonth: 7,
   birthDay: 8,
@@ -292,31 +292,31 @@ export const mockPersons: MockPerson[] = [
 
 export const mockRelationships: MockRelationship[] = [
   // Gen 1 marriage
-  createRelationship({ id: 'rel-001', type: 'marriage', personAId: vanCongGoc.id, personBId: binhThiMoc.id }),
+  createRelationship({ id: 'rel-001', type: RelationshipType.enum.marriage, personAId: vanCongGoc.id, personBId: binhThiMoc.id }),
   // Gen 1 → Gen 2
-  createRelationship({ id: 'rel-002', type: 'biological_child', personAId: vanCongGoc.id, personBId: vanCongThuan.id }),
-  createRelationship({ id: 'rel-003', type: 'biological_child', personAId: binhThiMoc.id, personBId: vanCongThuan.id }),
-  createRelationship({ id: 'rel-004', type: 'biological_child', personAId: vanCongGoc.id, personBId: vanThiBinh.id }),
-  createRelationship({ id: 'rel-005', type: 'biological_child', personAId: binhThiMoc.id, personBId: vanThiBinh.id }),
-  createRelationship({ id: 'rel-006', type: 'biological_child', personAId: vanCongGoc.id, personBId: vanCongVien.id }),
-  createRelationship({ id: 'rel-007', type: 'biological_child', personAId: binhThiMoc.id, personBId: vanCongVien.id }),
+  createRelationship({ id: 'rel-002', type: RelationshipType.enum.biological_child, personAId: vanCongGoc.id, personBId: vanCongThuan.id }),
+  createRelationship({ id: 'rel-003', type: RelationshipType.enum.biological_child, personAId: binhThiMoc.id, personBId: vanCongThuan.id }),
+  createRelationship({ id: 'rel-004', type: RelationshipType.enum.biological_child, personAId: vanCongGoc.id, personBId: vanThiBinh.id }),
+  createRelationship({ id: 'rel-005', type: RelationshipType.enum.biological_child, personAId: binhThiMoc.id, personBId: vanThiBinh.id }),
+  createRelationship({ id: 'rel-006', type: RelationshipType.enum.biological_child, personAId: vanCongGoc.id, personBId: vanCongVien.id }),
+  createRelationship({ id: 'rel-007', type: RelationshipType.enum.biological_child, personAId: binhThiMoc.id, personBId: vanCongVien.id }),
   // Gen 2 marriages
-  createRelationship({ id: 'rel-008', type: 'marriage', personAId: vanCongThuan.id, personBId: camThiDiu.id }),
-  createRelationship({ id: 'rel-009', type: 'marriage', personAId: vanCongVien.id, personBId: tanThiKheo.id }),
+  createRelationship({ id: 'rel-008', type: RelationshipType.enum.marriage, personAId: vanCongThuan.id, personBId: camThiDiu.id }),
+  createRelationship({ id: 'rel-009', type: RelationshipType.enum.marriage, personAId: vanCongVien.id, personBId: tanThiKheo.id }),
   // Gen 2 → Gen 3
-  createRelationship({ id: 'rel-010', type: 'biological_child', personAId: vanCongThuan.id, personBId: vanCongTri.id }),
-  createRelationship({ id: 'rel-011', type: 'biological_child', personAId: camThiDiu.id, personBId: vanCongTri.id }),
-  createRelationship({ id: 'rel-012', type: 'biological_child', personAId: vanCongThuan.id, personBId: vanThiCam.id }),
-  createRelationship({ id: 'rel-013', type: 'biological_child', personAId: camThiDiu.id, personBId: vanThiCam.id }),
-  createRelationship({ id: 'rel-014', type: 'biological_child', personAId: vanCongThuan.id, personBId: vanCongMoc.id }),
-  createRelationship({ id: 'rel-015', type: 'biological_child', personAId: camThiDiu.id, personBId: vanCongMoc.id }),
+  createRelationship({ id: 'rel-010', type: RelationshipType.enum.biological_child, personAId: vanCongThuan.id, personBId: vanCongTri.id }),
+  createRelationship({ id: 'rel-011', type: RelationshipType.enum.biological_child, personAId: camThiDiu.id, personBId: vanCongTri.id }),
+  createRelationship({ id: 'rel-012', type: RelationshipType.enum.biological_child, personAId: vanCongThuan.id, personBId: vanThiCam.id }),
+  createRelationship({ id: 'rel-013', type: RelationshipType.enum.biological_child, personAId: camThiDiu.id, personBId: vanThiCam.id }),
+  createRelationship({ id: 'rel-014', type: RelationshipType.enum.biological_child, personAId: vanCongThuan.id, personBId: vanCongMoc.id }),
+  createRelationship({ id: 'rel-015', type: RelationshipType.enum.biological_child, personAId: camThiDiu.id, personBId: vanCongMoc.id }),
   // Gen 3 marriage
-  createRelationship({ id: 'rel-016', type: 'marriage', personAId: vanCongTri.id, personBId: ngoThiDiuHien.id }),
+  createRelationship({ id: 'rel-016', type: RelationshipType.enum.marriage, personAId: vanCongTri.id, personBId: ngoThiDiuHien.id }),
   // Gen 3 → Gen 4
-  createRelationship({ id: 'rel-017', type: 'biological_child', personAId: vanCongTri.id, personBId: vanTriMinh.id }),
-  createRelationship({ id: 'rel-018', type: 'biological_child', personAId: ngoThiDiuHien.id, personBId: vanTriMinh.id }),
+  createRelationship({ id: 'rel-017', type: RelationshipType.enum.biological_child, personAId: vanCongTri.id, personBId: vanTriMinh.id }),
+  createRelationship({ id: 'rel-018', type: RelationshipType.enum.biological_child, personAId: ngoThiDiuHien.id, personBId: vanTriMinh.id }),
   // Gen 4 marriage
-  createRelationship({ id: 'rel-019', type: 'marriage', personAId: vanTriMinh.id, personBId: dinhThiMyDuyen.id }),
+  createRelationship({ id: 'rel-019', type: RelationshipType.enum.marriage, personAId: vanTriMinh.id, personBId: dinhThiMyDuyen.id }),
 ];
 
 // ============================================================
@@ -327,7 +327,7 @@ export const mockAdminUser = createUser({
   id: 'user-admin-001',
   email: 'admin@giapha.local',
   name: 'Admin User',
-  role: 'admin',
+  role: UserRole.enum.admin,
   isActive: true,
 });
 
@@ -335,7 +335,7 @@ export const mockMemberUser = createUser({
   id: 'user-member-001',
   email: 'member@giapha.local',
   name: 'Member User',
-  role: 'member',
+  role: UserRole.enum.member,
   isActive: true,
 });
 
@@ -343,6 +343,6 @@ export const mockInactiveUser = createUser({
   id: 'user-inactive-001',
   email: 'inactive@giapha.local',
   name: 'Inactive User',
-  role: 'member',
+  role: UserRole.enum.member,
   isActive: false,
 });

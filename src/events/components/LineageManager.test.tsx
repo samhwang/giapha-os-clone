@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson, createRelationship } from '../../../test/fixtures';
+import { Gender, RelationshipType } from '../../types';
 import LineageManager from './LineageManager';
 
 const mockUpdateBatch = vi.fn();
@@ -16,15 +17,15 @@ describe('LineageManager', () => {
   });
 
   it('renders calculate button', () => {
-    const persons = [createPerson({ fullName: 'Nguyễn Văn A', gender: 'male' })];
+    const persons = [createPerson({ fullName: 'Nguyễn Văn A', gender: Gender.enum.male })];
     render(<LineageManager persons={persons} relationships={[]} />);
     expect(screen.getByText(/tính toán/i)).toBeInTheDocument();
   });
 
   it('renders with persons and relationships', () => {
-    const pA = createPerson({ id: 'p1', fullName: 'Nguyễn Văn A', gender: 'male', generation: 1 });
-    const pB = createPerson({ id: 'p2', fullName: 'Nguyễn Văn B', gender: 'male', generation: 2 });
-    const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: 'biological_child' });
+    const pA = createPerson({ id: 'p1', fullName: 'Nguyễn Văn A', gender: Gender.enum.male, generation: 1 });
+    const pB = createPerson({ id: 'p2', fullName: 'Nguyễn Văn B', gender: Gender.enum.male, generation: 2 });
+    const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: RelationshipType.enum.biological_child });
 
     render(<LineageManager persons={[pA, pB]} relationships={[rel]} />);
     expect(screen.getByText(/tính toán/i)).toBeInTheDocument();
@@ -36,9 +37,9 @@ describe('LineageManager', () => {
   });
 
   it('calculate shows results table with change summary', async () => {
-    const parent = createPerson({ id: 'p1', fullName: 'Nguyễn Văn Cha', gender: 'male', generation: null, birthOrder: null });
-    const child = createPerson({ id: 'p2', fullName: 'Nguyễn Văn Con', gender: 'male', generation: null, birthOrder: null });
-    const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: 'biological_child' });
+    const parent = createPerson({ id: 'p1', fullName: 'Nguyễn Văn Cha', gender: Gender.enum.male, generation: null, birthOrder: null });
+    const child = createPerson({ id: 'p2', fullName: 'Nguyễn Văn Con', gender: Gender.enum.male, generation: null, birthOrder: null });
+    const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: RelationshipType.enum.biological_child });
 
     const user = userEvent.setup();
     render(<LineageManager persons={[parent, child]} relationships={[rel]} />);
@@ -54,9 +55,9 @@ describe('LineageManager', () => {
   });
 
   it('apply button calls updateBatch with changed records', async () => {
-    const parent = createPerson({ id: 'p1', fullName: 'Nguyễn Văn Cha', gender: 'male', generation: null, birthOrder: null });
-    const child = createPerson({ id: 'p2', fullName: 'Nguyễn Văn Con', gender: 'male', generation: null, birthOrder: null });
-    const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: 'biological_child' });
+    const parent = createPerson({ id: 'p1', fullName: 'Nguyễn Văn Cha', gender: Gender.enum.male, generation: null, birthOrder: null });
+    const child = createPerson({ id: 'p2', fullName: 'Nguyễn Văn Con', gender: Gender.enum.male, generation: null, birthOrder: null });
+    const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: RelationshipType.enum.biological_child });
 
     const user = userEvent.setup();
     render(<LineageManager persons={[parent, child]} relationships={[rel]} />);
@@ -79,9 +80,9 @@ describe('LineageManager', () => {
   });
 
   it('shows success message after apply', async () => {
-    const parent = createPerson({ id: 'p1', fullName: 'Cha', gender: 'male', generation: null, birthOrder: null });
-    const child = createPerson({ id: 'p2', fullName: 'Con', gender: 'male', generation: null, birthOrder: null });
-    const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: 'biological_child' });
+    const parent = createPerson({ id: 'p1', fullName: 'Cha', gender: Gender.enum.male, generation: null, birthOrder: null });
+    const child = createPerson({ id: 'p2', fullName: 'Con', gender: Gender.enum.male, generation: null, birthOrder: null });
+    const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: RelationshipType.enum.biological_child });
 
     const user = userEvent.setup();
     render(<LineageManager persons={[parent, child]} relationships={[rel]} />);
@@ -101,9 +102,9 @@ describe('LineageManager', () => {
   it('shows error when updateBatch rejects', async () => {
     mockUpdateBatch.mockRejectedValue(new Error('Database error'));
 
-    const parent = createPerson({ id: 'p1', fullName: 'Cha', gender: 'male', generation: null, birthOrder: null });
-    const child = createPerson({ id: 'p2', fullName: 'Con', gender: 'male', generation: null, birthOrder: null });
-    const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: 'biological_child' });
+    const parent = createPerson({ id: 'p1', fullName: 'Cha', gender: Gender.enum.male, generation: null, birthOrder: null });
+    const child = createPerson({ id: 'p2', fullName: 'Con', gender: Gender.enum.male, generation: null, birthOrder: null });
+    const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: RelationshipType.enum.biological_child });
 
     const user = userEvent.setup();
     render(<LineageManager persons={[parent, child]} relationships={[rel]} />);

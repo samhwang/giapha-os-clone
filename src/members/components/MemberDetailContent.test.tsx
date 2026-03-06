@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
+import { Gender } from '../../types';
 import MemberDetailContent from './MemberDetailContent';
 
 vi.mock('../../relationships/components/RelationshipManager', () => ({
@@ -23,7 +24,7 @@ vi.mock('../../dashboard/components/DashboardContext', () => ({
 describe('MemberDetailContent', () => {
   const basePerson = createPerson({
     fullName: 'Vạn Công Trí',
-    gender: 'male',
+    gender: Gender.enum.male,
     birthYear: 1958,
     birthMonth: 4,
     birthDay: 12,

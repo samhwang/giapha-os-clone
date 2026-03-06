@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '../../lib/db';
 import { requireAuth } from '../../server/functions/_auth';
+import { Gender, RelationshipType, UserRole } from '../../types';
 
 vi.mock('../../server/functions/_auth', () => ({
   requireAuth: vi.fn(),
@@ -13,7 +14,7 @@ describe('createRelationship (inner logic)', () => {
     vi.clearAllMocks();
     vi.mocked(requireAuth).mockResolvedValue({
       id: 'user-1',
-      role: 'admin',
+      role: UserRole.enum.admin,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -26,11 +27,11 @@ describe('createRelationship (inner logic)', () => {
   });
 
   it('should create a new relationship', async () => {
-    const personA = await db.person.create({ data: { fullName: 'Person A', gender: 'male' } });
-    const personB = await db.person.create({ data: { fullName: 'Person B', gender: 'female' } });
+    const personA = await db.person.create({ data: { fullName: 'Person A', gender: Gender.enum.male } });
+    const personB = await db.person.create({ data: { fullName: 'Person B', gender: Gender.enum.female } });
 
     const result = await db.relationship.create({
-      data: { type: 'marriage', personAId: personA.id, personBId: personB.id },
+      data: { type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id },
     });
 
     expect(result.type).toBe('marriage');
@@ -40,7 +41,7 @@ describe('createRelationship (inner logic)', () => {
   });
 
   it('should reject self-relationship', async () => {
-    const person = await db.person.create({ data: { fullName: 'Self', gender: 'male' } });
+    const person = await db.person.create({ data: { fullName: 'Self', gender: Gender.enum.male } });
 
     const selfRelationCheck = (aId: string, bId: string) => aId === bId;
     const isSelfRelation = selfRelationCheck(person.id, person.id);
@@ -49,18 +50,18 @@ describe('createRelationship (inner logic)', () => {
   });
 
   it('should detect duplicate relationship', async () => {
-    const personA = await db.person.create({ data: { fullName: 'Parent', gender: 'male' } });
-    const personB = await db.person.create({ data: { fullName: 'Child', gender: 'female' } });
+    const personA = await db.person.create({ data: { fullName: 'Parent', gender: Gender.enum.male } });
+    const personB = await db.person.create({ data: { fullName: 'Child', gender: Gender.enum.female } });
 
     await db.relationship.create({
-      data: { type: 'biological_child', personAId: personA.id, personBId: personB.id },
+      data: { type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personB.id },
     });
 
     const existing = await db.relationship.findFirst({
       where: {
         OR: [
-          { personAId: personA.id, personBId: personB.id, type: 'biological_child' },
-          { personAId: personB.id, personBId: personA.id, type: 'biological_child' },
+          { personAId: personA.id, personBId: personB.id, type: RelationshipType.enum.biological_child },
+          { personAId: personB.id, personBId: personA.id, type: RelationshipType.enum.biological_child },
         ],
       },
     });
@@ -69,18 +70,18 @@ describe('createRelationship (inner logic)', () => {
   });
 
   it('should check both directions for duplicates', async () => {
-    const personA = await db.person.create({ data: { fullName: 'A', gender: 'male' } });
-    const personB = await db.person.create({ data: { fullName: 'B', gender: 'female' } });
+    const personA = await db.person.create({ data: { fullName: 'A', gender: Gender.enum.male } });
+    const personB = await db.person.create({ data: { fullName: 'B', gender: Gender.enum.female } });
 
     await db.relationship.create({
-      data: { type: 'biological_child', personAId: personA.id, personBId: personB.id },
+      data: { type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personB.id },
     });
 
     const reversed = await db.relationship.findFirst({
       where: {
         OR: [
-          { personAId: personB.id, personBId: personA.id, type: 'biological_child' },
-          { personAId: personA.id, personBId: personB.id, type: 'biological_child' },
+          { personAId: personB.id, personBId: personA.id, type: RelationshipType.enum.biological_child },
+          { personAId: personA.id, personBId: personB.id, type: RelationshipType.enum.biological_child },
         ],
       },
     });
@@ -100,7 +101,7 @@ describe('deleteRelationship (inner logic)', () => {
     vi.clearAllMocks();
     vi.mocked(requireAuth).mockResolvedValue({
       id: 'user-1',
-      role: 'admin',
+      role: UserRole.enum.admin,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -113,11 +114,11 @@ describe('deleteRelationship (inner logic)', () => {
   });
 
   it('should delete a relationship', async () => {
-    const personA = await db.person.create({ data: { fullName: 'A', gender: 'male' } });
-    const personB = await db.person.create({ data: { fullName: 'B', gender: 'female' } });
+    const personA = await db.person.create({ data: { fullName: 'A', gender: Gender.enum.male } });
+    const personB = await db.person.create({ data: { fullName: 'B', gender: Gender.enum.female } });
 
     const rel = await db.relationship.create({
-      data: { type: 'marriage', personAId: personA.id, personBId: personB.id },
+      data: { type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id },
     });
 
     await db.relationship.delete({ where: { id: rel.id } });
@@ -140,14 +141,14 @@ describe('getRelationships (inner logic)', () => {
   });
 
   it('should return all relationships ordered by createdAt', async () => {
-    const personA = await db.person.create({ data: { fullName: 'A', gender: 'male' } });
-    const personB = await db.person.create({ data: { fullName: 'B', gender: 'female' } });
-    const personC = await db.person.create({ data: { fullName: 'C', gender: 'male' } });
+    const personA = await db.person.create({ data: { fullName: 'A', gender: Gender.enum.male } });
+    const personB = await db.person.create({ data: { fullName: 'B', gender: Gender.enum.female } });
+    const personC = await db.person.create({ data: { fullName: 'C', gender: Gender.enum.male } });
 
     await db.relationship.createMany({
       data: [
-        { type: 'marriage', personAId: personA.id, personBId: personB.id },
-        { type: 'biological_child', personAId: personA.id, personBId: personC.id },
+        { type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id },
+        { type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personC.id },
       ],
     });
 
@@ -166,14 +167,14 @@ describe('getRelationshipsForPerson (inner logic)', () => {
   });
 
   it('should return relationships for a specific person', async () => {
-    const personA = await db.person.create({ data: { fullName: 'A', gender: 'male' } });
-    const personB = await db.person.create({ data: { fullName: 'B', gender: 'female' } });
-    const personC = await db.person.create({ data: { fullName: 'C', gender: 'female' } });
+    const personA = await db.person.create({ data: { fullName: 'A', gender: Gender.enum.male } });
+    const personB = await db.person.create({ data: { fullName: 'B', gender: Gender.enum.female } });
+    const personC = await db.person.create({ data: { fullName: 'C', gender: Gender.enum.female } });
 
     await db.relationship.createMany({
       data: [
-        { type: 'marriage', personAId: personA.id, personBId: personB.id },
-        { type: 'biological_child', personAId: personA.id, personBId: personC.id },
+        { type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id },
+        { type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personC.id },
       ],
     });
 
@@ -188,7 +189,7 @@ describe('getRelationshipsForPerson (inner logic)', () => {
   });
 
   it('should return empty when person has no relationships', async () => {
-    const person = await db.person.create({ data: { fullName: 'Solo', gender: 'male' } });
+    const person = await db.person.create({ data: { fullName: 'Solo', gender: Gender.enum.male } });
 
     const result = await db.relationship.findMany({
       where: {

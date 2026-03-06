@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
+import { Gender } from '../../types';
 import PersonCard from './PersonCard';
 
 const mockSetMemberModalId = vi.fn();
@@ -33,13 +34,13 @@ describe('PersonCard', () => {
   });
 
   it('shows in-law badge for female in-law', () => {
-    const person = createPerson({ fullName: 'Cam Thị Dịu', gender: 'female', isInLaw: true });
+    const person = createPerson({ fullName: 'Cam Thị Dịu', gender: Gender.enum.female, isInLaw: true });
     render(<PersonCard person={person} />);
     expect(screen.getByText('Dâu')).toBeInTheDocument();
   });
 
   it('shows in-law badge for male in-law', () => {
-    const person = createPerson({ fullName: 'Nguyễn Văn Rể', gender: 'male', isInLaw: true });
+    const person = createPerson({ fullName: 'Nguyễn Văn Rể', gender: Gender.enum.male, isInLaw: true });
     render(<PersonCard person={person} />);
     expect(screen.getByText('Rể')).toBeInTheDocument();
   });

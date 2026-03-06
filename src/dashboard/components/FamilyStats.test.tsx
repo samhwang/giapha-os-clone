@@ -1,18 +1,19 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { createPerson, createRelationship } from '../../../test/fixtures';
+import { Gender, RelationshipType } from '../../types';
 import FamilyStats from './FamilyStats';
 
 describe('FamilyStats', () => {
   it('renders total member count', () => {
-    const persons = [createPerson({ gender: 'male' }), createPerson({ gender: 'female' })];
+    const persons = [createPerson({ gender: Gender.enum.male }), createPerson({ gender: Gender.enum.female })];
     render(<FamilyStats persons={persons} relationships={[]} />);
     const twos = screen.getAllByText('2');
     expect(twos.length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders male and female counts', () => {
-    const persons = [createPerson({ gender: 'male' }), createPerson({ gender: 'male' }), createPerson({ gender: 'female' })];
+    const persons = [createPerson({ gender: Gender.enum.male }), createPerson({ gender: Gender.enum.male }), createPerson({ gender: Gender.enum.female })];
     render(<FamilyStats persons={persons} relationships={[]} />);
     expect(screen.getAllByText('2').length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText('1').length).toBeGreaterThanOrEqual(1);
@@ -20,9 +21,9 @@ describe('FamilyStats', () => {
 
   it('renders deceased count', () => {
     const persons = [
-      createPerson({ gender: 'male', isDeceased: true }),
-      createPerson({ gender: 'male', isDeceased: true }),
-      createPerson({ gender: 'female', isDeceased: false }),
+      createPerson({ gender: Gender.enum.male, isDeceased: true }),
+      createPerson({ gender: Gender.enum.male, isDeceased: true }),
+      createPerson({ gender: Gender.enum.female, isDeceased: false }),
     ];
     render(<FamilyStats persons={persons} relationships={[]} />);
     const threes = screen.getAllByText('3');
@@ -31,19 +32,19 @@ describe('FamilyStats', () => {
 
   it('renders generation distribution when persons have generation', () => {
     const persons = [
-      createPerson({ gender: 'male', generation: 1 }),
-      createPerson({ gender: 'male', generation: 1 }),
-      createPerson({ gender: 'female', generation: 2 }),
+      createPerson({ gender: Gender.enum.male, generation: 1 }),
+      createPerson({ gender: Gender.enum.male, generation: 1 }),
+      createPerson({ gender: Gender.enum.female, generation: 2 }),
     ];
     render(<FamilyStats persons={persons} relationships={[]} />);
     expect(screen.getByText(/phân bố theo thế hệ/i)).toBeInTheDocument();
   });
 
   it('renders married count from marriage relationships', () => {
-    const pA = createPerson({ id: 'p1', gender: 'male' });
-    const pB = createPerson({ id: 'p2', gender: 'female' });
+    const pA = createPerson({ id: 'p1', gender: Gender.enum.male });
+    const pB = createPerson({ id: 'p2', gender: Gender.enum.female });
     const persons = [pA, pB];
-    const relationships = [createRelationship({ personAId: 'p1', personBId: 'p2', type: 'marriage' })];
+    const relationships = [createRelationship({ personAId: 'p1', personBId: 'p2', type: RelationshipType.enum.marriage })];
     render(<FamilyStats persons={persons} relationships={relationships} />);
     expect(screen.getByText(/tỉ lệ giới tính/i)).toBeInTheDocument();
   });
@@ -56,11 +57,11 @@ describe('FamilyStats', () => {
 
   it('renders exact stat values for known dataset', () => {
     const persons = [
-      createPerson({ id: 'p1', gender: 'male', isDeceased: false, isInLaw: false }),
-      createPerson({ id: 'p2', gender: 'male', isDeceased: false, isInLaw: false }),
-      createPerson({ id: 'p3', gender: 'male', isDeceased: true, isInLaw: false }),
-      createPerson({ id: 'p4', gender: 'female', isDeceased: false, isInLaw: false }),
-      createPerson({ id: 'p5', gender: 'female', isDeceased: false, isInLaw: true }),
+      createPerson({ id: 'p1', gender: Gender.enum.male, isDeceased: false, isInLaw: false }),
+      createPerson({ id: 'p2', gender: Gender.enum.male, isDeceased: false, isInLaw: false }),
+      createPerson({ id: 'p3', gender: Gender.enum.male, isDeceased: true, isInLaw: false }),
+      createPerson({ id: 'p4', gender: Gender.enum.female, isDeceased: false, isInLaw: false }),
+      createPerson({ id: 'p5', gender: Gender.enum.female, isDeceased: false, isInLaw: true }),
     ];
     render(<FamilyStats persons={persons} relationships={[]} />);
 
@@ -83,12 +84,12 @@ describe('FamilyStats', () => {
 
   it('computes married/unmarried from relationships', () => {
     const persons = [
-      createPerson({ id: 'p1', gender: 'male' }),
-      createPerson({ id: 'p2', gender: 'female' }),
-      createPerson({ id: 'p3', gender: 'male' }),
-      createPerson({ id: 'p4', gender: 'female' }),
+      createPerson({ id: 'p1', gender: Gender.enum.male }),
+      createPerson({ id: 'p2', gender: Gender.enum.female }),
+      createPerson({ id: 'p3', gender: Gender.enum.male }),
+      createPerson({ id: 'p4', gender: Gender.enum.female }),
     ];
-    const relationships = [createRelationship({ personAId: 'p1', personBId: 'p2', type: 'marriage' })];
+    const relationships = [createRelationship({ personAId: 'p1', personBId: 'p2', type: RelationshipType.enum.marriage })];
     render(<FamilyStats persons={persons} relationships={relationships} />);
 
     const marriedCard = screen.getByText(/đã kết hôn/i).closest('div') as HTMLElement;
@@ -100,10 +101,10 @@ describe('FamilyStats', () => {
 
   it('renders generation breakdown rows', () => {
     const persons = [
-      createPerson({ gender: 'male', generation: 1 }),
-      createPerson({ gender: 'male', generation: 1 }),
-      createPerson({ gender: 'female', generation: 2 }),
-      createPerson({ gender: 'male', generation: 3 }),
+      createPerson({ gender: Gender.enum.male, generation: 1 }),
+      createPerson({ gender: Gender.enum.male, generation: 1 }),
+      createPerson({ gender: Gender.enum.female, generation: 2 }),
+      createPerson({ gender: Gender.enum.male, generation: 3 }),
     ];
     render(<FamilyStats persons={persons} relationships={[]} />);
 
@@ -115,7 +116,7 @@ describe('FamilyStats', () => {
   });
 
   it('hides generation section when no generations', () => {
-    const persons = [createPerson({ gender: 'male', generation: null }), createPerson({ gender: 'female', generation: null })];
+    const persons = [createPerson({ gender: Gender.enum.male, generation: null }), createPerson({ gender: Gender.enum.female, generation: null })];
     render(<FamilyStats persons={persons} relationships={[]} />);
 
     expect(screen.queryByText(/phân bố theo thế hệ/i)).not.toBeInTheDocument();

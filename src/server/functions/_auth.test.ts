@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { UserRole } from '../../types';
 
 vi.mock('@tanstack/react-start/server', () => ({
   getRequestHeaders: vi.fn(() => new Headers()),
@@ -18,7 +19,7 @@ const activeAdmin = {
     id: 'user-1',
     email: 'admin@test.com',
     name: 'Admin',
-    role: 'admin',
+    role: UserRole.enum.admin,
     isActive: true,
     emailVerified: true,
     createdAt: new Date(),
@@ -32,7 +33,7 @@ const activeMember = {
     id: 'user-2',
     email: 'member@test.com',
     name: 'Member',
-    role: 'member',
+    role: UserRole.enum.member,
     isActive: true,
     emailVerified: true,
     createdAt: new Date(),
@@ -46,7 +47,7 @@ const inactiveUser = {
     id: 'user-3',
     email: 'inactive@test.com',
     name: 'Inactive',
-    role: 'member',
+    role: UserRole.enum.member,
     isActive: false,
     emailVerified: true,
     createdAt: new Date(),

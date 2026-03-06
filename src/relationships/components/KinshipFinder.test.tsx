@@ -2,12 +2,13 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { createPerson, createRelationship } from '../../../test/fixtures';
+import { Gender, RelationshipType } from '../../types';
 import KinshipFinder from './KinshipFinder';
 
-const father = createPerson({ id: 'father', fullName: 'Nguyễn Văn Cha', gender: 'male', generation: 1 });
-const son = createPerson({ id: 'son', fullName: 'Nguyễn Văn Con', gender: 'male', generation: 2 });
+const father = createPerson({ id: 'father', fullName: 'Nguyễn Văn Cha', gender: Gender.enum.male, generation: 1 });
+const son = createPerson({ id: 'son', fullName: 'Nguyễn Văn Con', gender: Gender.enum.male, generation: 2 });
 const persons = [father, son];
-const relationships = [createRelationship({ type: 'biological_child', personAId: 'father', personBId: 'son' })];
+const relationships = [createRelationship({ type: RelationshipType.enum.biological_child, personAId: 'father', personBId: 'son' })];
 
 describe('KinshipFinder', () => {
   it('renders prompt text when no persons selected', () => {

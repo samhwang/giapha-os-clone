@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Gender } from '../../types';
 import MemberForm from './MemberForm';
 
 const mockNavigate = vi.fn();
@@ -38,7 +39,7 @@ describe('MemberForm', () => {
         initialData={{
           id: '123',
           fullName: 'Nguyễn Văn A',
-          gender: 'male',
+          gender: Gender.enum.male,
           birthYear: 1990,
           birthMonth: 5,
           birthDay: 15,
@@ -106,7 +107,7 @@ describe('MemberForm', () => {
 
     await waitFor(() => {
       expect(mockCreatePerson).toHaveBeenCalledWith({
-        data: expect.objectContaining({ fullName: 'Nguyễn Văn Test', gender: 'male' }),
+        data: expect.objectContaining({ fullName: 'Nguyễn Văn Test', gender: Gender.enum.male }),
       });
     });
     expect(mockNavigate).toHaveBeenCalledWith({
@@ -123,7 +124,7 @@ describe('MemberForm', () => {
         initialData={{
           id: '123',
           fullName: 'Nguyễn Văn A',
-          gender: 'male',
+          gender: Gender.enum.male,
           birthYear: 1990,
           birthMonth: 5,
           birthDay: 15,

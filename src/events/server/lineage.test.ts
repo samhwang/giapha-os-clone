@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '../../lib/db';
 import { requireAuth } from '../../server/functions/_auth';
+import { Gender, UserRole } from '../../types';
 
 vi.mock('../../server/functions/_auth', () => ({
   requireAuth: vi.fn(),
@@ -13,7 +14,7 @@ describe('updateBatch (inner logic)', () => {
     vi.clearAllMocks();
     vi.mocked(requireAuth).mockResolvedValue({
       id: 'user-1',
-      role: 'admin',
+      role: UserRole.enum.admin,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -30,8 +31,8 @@ describe('updateBatch (inner logic)', () => {
   });
 
   it('should update generation and birthOrder for each person', async () => {
-    const personA = await db.person.create({ data: { fullName: 'A', gender: 'male' } });
-    const personB = await db.person.create({ data: { fullName: 'B', gender: 'female' } });
+    const personA = await db.person.create({ data: { fullName: 'A', gender: Gender.enum.male } });
+    const personB = await db.person.create({ data: { fullName: 'B', gender: Gender.enum.female } });
 
     await db.$transaction(
       [personA.id, personB.id].map((id, index) =>
@@ -53,7 +54,7 @@ describe('updateBatch (inner logic)', () => {
 
   it('should handle null values for generation and birthOrder', async () => {
     const person = await db.person.create({
-      data: { fullName: 'Test', gender: 'male', generation: 5, birthOrder: 3 },
+      data: { fullName: 'Test', gender: Gender.enum.male, generation: 5, birthOrder: 3 },
     });
 
     await db.person.update({

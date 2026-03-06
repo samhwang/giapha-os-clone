@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createUser } from '../../../test/fixtures';
+import { UserRole } from '../../types';
 import AdminUserList from './AdminUserList';
 
 const mockChangeRole = vi.fn();
@@ -16,9 +17,9 @@ vi.mock('../server/user', () => ({
   createUser: (...args: unknown[]) => mockCreateUser(...args),
 }));
 
-const adminUser = createUser({ id: 'admin-1', email: 'admin@test.com', role: 'admin', isActive: true });
-const memberUser = createUser({ id: 'member-1', email: 'member@test.com', role: 'member', isActive: true });
-const inactiveUser = createUser({ id: 'inactive-1', email: 'inactive@test.com', role: 'member', isActive: false });
+const adminUser = createUser({ id: 'admin-1', email: 'admin@test.com', role: UserRole.enum.admin, isActive: true });
+const memberUser = createUser({ id: 'member-1', email: 'member@test.com', role: UserRole.enum.member, isActive: true });
+const inactiveUser = createUser({ id: 'inactive-1', email: 'inactive@test.com', role: UserRole.enum.member, isActive: false });
 
 describe('AdminUserList', () => {
   let confirmSpy: ReturnType<typeof vi.spyOn>;
@@ -62,7 +63,7 @@ describe('AdminUserList', () => {
   });
 
   it('shows role select with correct value for admin users', () => {
-    const otherAdmin = createUser({ id: 'admin-2', email: 'admin2@test.com', role: 'admin', isActive: true });
+    const otherAdmin = createUser({ id: 'admin-2', email: 'admin2@test.com', role: UserRole.enum.admin, isActive: true });
     render(<AdminUserList initialUsers={[adminUser, otherAdmin]} currentUserId="admin-1" />);
     const selects = screen.getAllByRole('combobox');
     // The role select for the other admin should have 'admin' selected

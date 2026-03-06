@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
+import { Gender } from '../../types';
 import DashboardMemberList from './DashboardMemberList';
 
 vi.mock('@tanstack/react-router', () => ({
@@ -26,7 +27,10 @@ vi.mock('./DashboardContext', () => ({
 
 describe('DashboardMemberList', () => {
   it('renders person cards for each member', () => {
-    const persons = [createPerson({ fullName: 'Nguyễn Văn A', gender: 'male' }), createPerson({ fullName: 'Trần Thị B', gender: 'female' })];
+    const persons = [
+      createPerson({ fullName: 'Nguyễn Văn A', gender: Gender.enum.male }),
+      createPerson({ fullName: 'Trần Thị B', gender: Gender.enum.female }),
+    ];
     render(<DashboardMemberList initialPersons={persons} />);
 
     expect(screen.getByText('Nguyễn Văn A')).toBeInTheDocument();
@@ -45,7 +49,10 @@ describe('DashboardMemberList', () => {
 
   it('filters members by search term', async () => {
     const user = userEvent.setup();
-    const persons = [createPerson({ fullName: 'Nguyễn Văn A', gender: 'male' }), createPerson({ fullName: 'Trần Thị B', gender: 'female' })];
+    const persons = [
+      createPerson({ fullName: 'Nguyễn Văn A', gender: Gender.enum.male }),
+      createPerson({ fullName: 'Trần Thị B', gender: Gender.enum.female }),
+    ];
     render(<DashboardMemberList initialPersons={persons} />);
 
     const searchInput = screen.getByPlaceholderText(/tìm kiếm/i);
@@ -57,7 +64,7 @@ describe('DashboardMemberList', () => {
 
   it('shows no results message when search has no matches', async () => {
     const user = userEvent.setup();
-    const persons = [createPerson({ fullName: 'Nguyễn Văn A', gender: 'male' })];
+    const persons = [createPerson({ fullName: 'Nguyễn Văn A', gender: Gender.enum.male })];
     render(<DashboardMemberList initialPersons={persons} />);
 
     const searchInput = screen.getByPlaceholderText(/tìm kiếm/i);

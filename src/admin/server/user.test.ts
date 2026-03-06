@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDbClient } from '../../lib/db';
 import { requireAdmin } from '../../server/functions/_auth';
+import { UserRole } from '../../types';
 
 vi.mock('../../server/functions/_auth', () => ({
   requireAdmin: vi.fn(),
@@ -10,12 +11,12 @@ const db = getDbClient();
 
 const ADMIN_ID = crypto.randomUUID();
 
-async function seedUser(overrides: { id?: string; email?: string; role?: 'admin' | 'member'; isActive?: boolean } = {}) {
+async function seedUser(overrides: { id?: string; email?: string; role?: UserRole; isActive?: boolean } = {}) {
   const id = overrides.id ?? crypto.randomUUID();
   const data = {
     email: overrides.email ?? `user-${crypto.randomUUID()}@test.com`,
     name: 'Test User',
-    role: overrides.role ?? 'member',
+    role: overrides.role ?? UserRole.enum.member,
     isActive: overrides.isActive ?? true,
   };
 
@@ -31,7 +32,7 @@ describe('changeRole (inner logic)', () => {
     vi.clearAllMocks();
     vi.mocked(requireAdmin).mockResolvedValue({
       id: ADMIN_ID,
-      role: 'admin',
+      role: UserRole.enum.admin,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -43,18 +44,18 @@ describe('changeRole (inner logic)', () => {
   });
 
   it('should change another user role', async () => {
-    const user = await seedUser({ role: 'member' });
+    const user = await seedUser({ role: UserRole.enum.member });
 
     const result = await db.user.update({
       where: { id: user.id },
-      data: { role: 'admin' },
+      data: { role: UserRole.enum.admin },
     });
 
     expect(result.role).toBe('admin');
   });
 
   it('should prevent changing own role', async () => {
-    await seedUser({ id: ADMIN_ID, role: 'admin' });
+    await seedUser({ id: ADMIN_ID, role: UserRole.enum.admin });
 
     const currentUserId = ADMIN_ID;
     const targetUserId = 'different-user-id';
@@ -77,7 +78,7 @@ describe('deleteUser (inner logic)', () => {
     vi.clearAllMocks();
     vi.mocked(requireAdmin).mockResolvedValue({
       id: ADMIN_ID,
-      role: 'admin',
+      role: UserRole.enum.admin,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -115,7 +116,7 @@ describe('toggleStatus (inner logic)', () => {
     vi.clearAllMocks();
     vi.mocked(requireAdmin).mockResolvedValue({
       id: ADMIN_ID,
-      role: 'admin',
+      role: UserRole.enum.admin,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -155,7 +156,7 @@ describe('createUser (inner logic)', () => {
     vi.clearAllMocks();
     vi.mocked(requireAdmin).mockResolvedValue({
       id: ADMIN_ID,
-      role: 'admin',
+      role: UserRole.enum.admin,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -176,7 +177,7 @@ describe('createUser (inner logic)', () => {
 
   it('should create user with specified role', async () => {
     const email = `new-admin-${crypto.randomUUID()}@test.com`;
-    const user = await seedUser({ email, role: 'admin' });
+    const user = await seedUser({ email, role: UserRole.enum.admin });
 
     expect(user.role).toBe('admin');
     expect(user.email).toBe(email);
@@ -205,8 +206,8 @@ describe('getUsers (inner logic)', () => {
   it('should return users with selected fields', async () => {
     const email1 = `user1-${crypto.randomUUID()}@test.com`;
     const email2 = `user2-${crypto.randomUUID()}@test.com`;
-    await seedUser({ email: email1, role: 'admin' });
-    await seedUser({ email: email2, role: 'member' });
+    await seedUser({ email: email1, role: UserRole.enum.admin });
+    await seedUser({ email: email2, role: UserRole.enum.member });
 
     const result = await db.user.findMany({
       select: { email: true, role: true },
