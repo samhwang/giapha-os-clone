@@ -7,23 +7,22 @@ permissions:
   contents: read
 
 jobs:
-  non-docker-tasks:
+  parallel-tasks:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        task: ["ci", "typecheck", "test:ui"]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-node-deps
-      - run: pnpm run ${{ matrix.task }}
-
-  docker-tasks:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        task: ["test:server", "test:integration", "test:e2e"]
+        task: ["ci", "typecheck", "test:ui", "test:server", "test:integration"]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node-deps
       - run: cp .env.sample .env
       - run: pnpm run ${{ matrix.task }}
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node-deps
+      - run: npx playwright install
+      - run: cp .env.sample .env
+      - run: pnpm run test:e2e
