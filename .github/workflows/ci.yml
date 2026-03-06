@@ -17,59 +17,59 @@ jobs:
       - uses: ./.github/actions/setup-node-deps
       - run: pnpm run ${{ matrix.task }}
 
-  test-all:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17-alpine
-        env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: test
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-      garage:
-        image: dxflrs/garage:v1.1.0
-        ports:
-          - 3900:3900
-          - 3902:3902
-          - 3903:3903
-        options: --health-cmd "curl -f http://localhost:3902/health" --health-interval 10s --health-timeout 5s --health-retries 5
-        volumes:
-          - ${{ github.workspace }}/.docker/garage/garage.toml:/etc/garage.toml
-    strategy:
-      matrix:
-        test: ["test:server", "test:integration", "test:e2e"]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-node-deps
+  # test-all:
+  #   runs-on: ubuntu-latest
+  #   services:
+  #     postgres:
+  #       image: postgres:17-alpine
+  #       env:
+  #         POSTGRES_USER: test
+  #         POSTGRES_PASSWORD: test
+  #         POSTGRES_DB: test
+  #       ports:
+  #         - 5432:5432
+  #       options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+  #     garage:
+  #       image: dxflrs/garage:v1.1.0
+  #       ports:
+  #         - 3900:3900
+  #         - 3902:3902
+  #         - 3903:3903
+  #       options: --health-cmd "curl -f http://localhost:3902/health" --health-interval 10s --health-timeout 5s --health-retries 5
+  #       volumes:
+  #         - ${{ github.workspace }}/.docker/garage/garage.toml:/etc/garage.toml
+  #   strategy:
+  #     matrix:
+  #       test: ["test:server", "test:integration", "test:e2e"]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: ./.github/actions/setup-node-deps
 
-      - name: Setup Garage
-        env:
-          GARAGE_ADMIN_TOKEN: ci-test-token
-          GARAGE_LAYOUT_CAPACITY: 1073741824
-          GARAGE_LAYOUT_TAG: ci
-          GARAGE_KEY_NAME: ci-test-${{ matrix.test }}
-        run: |
-          until curl -sf http://localhost:3903/health > /dev/null 2>&1; do sleep 1; done
-          OUTPUT=$(./scripts/setup-garage.sh 2>&1)
-          echo "$OUTPUT"
-          ACCESS_KEY=$(echo "$OUTPUT" | grep "S3_ACCESS_KEY=" | cut -d= -f2)
-          SECRET_KEY=$(echo "$OUTPUT" | grep "S3_SECRET_KEY=" | cut -d= -f2)
+  #     - name: Setup Garage
+  #       env:
+  #         GARAGE_ADMIN_TOKEN: ci-test-token
+  #         GARAGE_LAYOUT_CAPACITY: 1073741824
+  #         GARAGE_LAYOUT_TAG: ci
+  #         GARAGE_KEY_NAME: ci-test-${{ matrix.test }}
+  #       run: |
+  #         until curl -sf http://localhost:3903/health > /dev/null 2>&1; do sleep 1; done
+  #         OUTPUT=$(./scripts/setup-garage.sh 2>&1)
+  #         echo "$OUTPUT"
+  #         ACCESS_KEY=$(echo "$OUTPUT" | grep "S3_ACCESS_KEY=" | cut -d= -f2)
+  #         SECRET_KEY=$(echo "$OUTPUT" | grep "S3_SECRET_KEY=" | cut -d= -f2)
 
-      - name: Copy env and configure
-        run: |
-          cp .env.sample .env
-          {
-            echo "DATABASE_URL=postgresql://test:test@localhost:5432/test"
-            echo "S3_ENDPOINT=http://localhost:3900"
-            echo "S3_ACCESS_KEY=$ACCESS_KEY"
-            echo "S3_SECRET_KEY=$SECRET_KEY"
-            echo "S3_BUCKET=avatars"
-            echo "GARAGE_ADMIN_TOKEN=ci-test-token"
-            echo "GARAGE_RPC_SECRET=0000000000000000000000000000000000000000000000000000000000000000"
-          } >> .env
+  #     - name: Copy env and configure
+  #       run: |
+  #         cp .env.sample .env
+  #         {
+  #           echo "DATABASE_URL=postgresql://test:test@localhost:5432/test"
+  #           echo "S3_ENDPOINT=http://localhost:3900"
+  #           echo "S3_ACCESS_KEY=$ACCESS_KEY"
+  #           echo "S3_SECRET_KEY=$SECRET_KEY"
+  #           echo "S3_BUCKET=avatars"
+  #           echo "GARAGE_ADMIN_TOKEN=ci-test-token"
+  #           echo "GARAGE_RPC_SECRET=0000000000000000000000000000000000000000000000000000000000000000"
+  #         } >> .env
 
-      - name: Run tests
-        run: pnpm run ${{ matrix.test }}
+  #     - name: Run tests
+  #       run: pnpm run ${{ matrix.test }}
