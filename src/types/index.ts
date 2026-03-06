@@ -1,10 +1,17 @@
+import { z } from 'zod';
+
 // ============================================================
-// Base types (matching Prisma enums)
+// App-level enums (Zod as single source of truth)
 // ============================================================
 
-export type Gender = 'male' | 'female' | 'other';
-export type RelationshipType = 'marriage' | 'biological_child' | 'adopted_child';
-export type UserRole = 'admin' | 'editor' | 'member';
+export const GenderSchema = z.enum(['male', 'female', 'other']);
+export type Gender = z.infer<typeof GenderSchema>;
+
+export const RelationshipTypeSchema = z.enum(['marriage', 'biological_child', 'adopted_child']);
+export type RelationshipType = z.infer<typeof RelationshipTypeSchema>;
+
+export const UserRoleSchema = z.enum(['admin', 'editor', 'member']);
+export type UserRole = z.infer<typeof UserRoleSchema>;
 
 // ============================================================
 // Domain types (camelCase, matching Prisma model output)
@@ -74,7 +81,7 @@ export interface PersonNode {
 }
 
 export interface RelEdge {
-  type: RelationshipType | string;
+  type: RelationshipType;
   personAId: string;
   personBId: string;
 }
