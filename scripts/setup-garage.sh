@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-GARAGE_ADMIN_API="${GARAGE_ADMIN_API:-http://localhost:3903}"
-GARAGE_ADMIN_TOKEN="${GARAGE_ADMIN_TOKEN:-dev-admin-token}"
+GARAGE_ADMIN_API="http://localhost:3903"
+GARAGE_ADMIN_TOKEN=$(grep "^admin_token" .docker/garage/garage.toml | cut -d'=' -f2 | tr -d ' "')
 BUCKET_NAME="${S3_BUCKET:-avatars}"
 LAYOUT_CAPACITY="${GARAGE_LAYOUT_CAPACITY:-1073741824}"  # 1GB default
 LAYOUT_TAG="${GARAGE_LAYOUT_TAG:-dev}"

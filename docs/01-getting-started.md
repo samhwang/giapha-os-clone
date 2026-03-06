@@ -35,10 +35,10 @@ Edit `.env` with your settings. The default values work for local development:
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/giapha"
-GARAGE_ACCESS_KEY="garage_access_key"
-GARAGE_SECRET_KEY="garage_secret_key"
-GARAGE_ENDPOINT="http://localhost:3900"
-GARAGE_BUCKET="giapha"
+S3_ACCESS_KEY="garage_access_key"
+S3_SECRET_KEY="garage_secret_key"
+S3_ENDPOINT="http://localhost:3900"
+S3_BUCKET="giapha"
 BETTER_AUTH_SECRET="your-secret-key-change-in-production"
 BETTER_AUTH_URL="http://localhost:3000"
 ```

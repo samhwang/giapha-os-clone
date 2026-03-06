@@ -23,9 +23,8 @@ services:
   garage:
     image: dxflrs/garage:v1.1.0
     restart: unless-stopped
-    env_file:
-      - .env
     volumes:
+      - ./.docker/garage/garage.toml:/etc/garage.toml
       # Option 1: Named volume (default, portable)
       - garage_data:/var/lib/garage
 

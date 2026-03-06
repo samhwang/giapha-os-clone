@@ -123,6 +123,6 @@ Used in loaders and actions for database operations.
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string |
-| `GARAGE_*` | S3 storage configuration |
+| `S3_*` | S3 storage configuration (endpoint, access key, secret key, bucket) |
 | `BETTER_AUTH_SECRET` | Auth encryption key |
 | `BETTER_AUTH_URL` | Public URL for auth |

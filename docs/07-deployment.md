@@ -34,12 +34,6 @@ openssl rand -hex 32
 
 # Generate database password
 openssl rand -hex 16
-
-# Generate Garage RPC secret (64 characters)
-openssl rand -hex 32
-
-# Generate Garage admin token (64 characters)
-openssl rand -hex 32
 ```
 
 Update your `.env` file:
@@ -52,10 +46,6 @@ DATABASE_URL=postgresql://giapha:${DB_PASSWORD}@postgres:5432/giapha
 # Auth
 BETTER_AUTH_SECRET=your-auth-secret-here
 BETTER_AUTH_URL=https://your-domain.com
-
-# Garage RPC & Admin
-GARAGE_RPC_SECRET=your-garage-rpc-secret-here
-GARAGE_ADMIN_TOKEN=your-garage-admin-token-here
 
 # S3 (will be updated after Garage setup)
 S3_ENDPOINT=http://localhost:3900
@@ -92,7 +82,7 @@ services:
     volumes:
       # Named volume (default)
       # - postgres_data:/var/lib/postgresql/data
-      
+
       # Bind mount (uncomment and customize path)
       - "./data/postgres:/var/lib/postgresql/data"
 
@@ -100,7 +90,7 @@ services:
     volumes:
       # Named volume (default)
       # - garage_data:/var/lib/garage
-      
+
       # Bind mount (uncomment and customize path)
       - "./data/garage:/var/lib/garage"
 ```
@@ -111,20 +101,64 @@ Create the directories if using bind mounts:
 mkdir -p data/postgres data/garage
 ```
 
-## Garage Configuration
+### Garage Configuration
+
+Garage uses TOML configuration files, not environment variables. You must configure `garage.toml` directly.
+
+#### Configure garage.toml
+
+Edit `.docker/garage/garage.toml` and set secure values. Note: Garage does NOT support environment variable interpolation in TOML files - all values must be hardcoded:
+
+```toml
+metadata_dir = "/var/lib/garage/meta"
+data_dir = "/var/lib/garage/data"
+db_engine = "sqlite"
+
+replication_factor = 1
+rpc_bind_addr = "[::]:3901"
+rpc_secret = "your-64-char-hex-rpc-secret"  # Generate with: openssl rand -hex 32
+
+[s3_api]
+s3_region = "garage"
+api_bind_addr = "[::]:3900"
+root_domain = ".s3.garage.localhost"
+
+[s3_web]
+bind_addr = "[::]:3902"
+root_domain = ".web.garage.localhost"
+
+[admin]
+api_bind_addr = "[::]:3903"
+admin_token = "your-64-char-hex-admin-token"  # Generate with: openssl rand -hex 32
+```
+
+Generate secure values:
+
+```bash
+# Generate RPC secret (64 characters)
+openssl rand -hex 32
+
+# Generate admin token (64 characters)
+openssl rand -hex 32
+```
+
+#### Start Garage
+
+```bash
+docker compose -f docker-compose.production.yml up -d garage
+```
+
+Wait for Garage to be ready:
+
+```bash
+until curl -sf http://localhost:3903/health > /dev/null 2>&1; do sleep 1; done
+```
 
 ### Automated Setup
 
-Set production environment variables in `.env`, then run the setup script:
+Run the setup script to configure node layout, create buckets, and generate S3 keys:
 
 ```bash
-# In .env, set:
-GARAGE_ADMIN_TOKEN=your-garage-admin-token-here
-GARAGE_LAYOUT_CAPACITY=107374182400  # 100GB
-GARAGE_LAYOUT_TAG=prod
-GARAGE_KEY_NAME=giapha-prod
-
-# Run setup
 ./scripts/setup-garage.sh
 ```
 
@@ -137,9 +171,12 @@ This will:
 
 ### Manual Setup
 
-If you prefer manual configuration:
+If you prefer manual configuration, you need to read the admin token from your `garage.toml`:
 
 ```bash
+# Read admin token from garage.toml (or set it as a variable)
+GARAGE_ADMIN_TOKEN=$(grep "^admin_token" .docker/garage/garage.toml | cut -d'=' -f2 | tr -d ' "')
+
 # Wait for Garage
 until curl -sf http://localhost:3903/health > /dev/null 2>&1; do sleep 1; done
 
@@ -429,7 +466,8 @@ docker compose -f docker-compose.production.yml exec app sh -c 'nc -zv postgres 
 # Check Garage health
 curl http://localhost:3902/health
 
-# Verify API key
+# Verify API key (read token from garage.toml)
+GARAGE_ADMIN_TOKEN=$(grep "^admin_token" .docker/garage/garage.toml | cut -d'=' -f2 | tr -d ' "')
 curl http://localhost:3903/v1/key \
   -H "Authorization: Bearer $GARAGE_ADMIN_TOKEN"
 ```
