@@ -1,29 +1,29 @@
 import { Filter, Minus, Plus } from 'lucide-react';
-import { Fragment, type MouseEvent, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDashboard } from '../../dashboard/components/DashboardContext';
 import { Gender, type Person, type Relationship } from '../../types';
+import { usePanZoom } from '../hooks/usePanZoom';
 import { buildAdjacencyLists, getFilteredTreeData } from '../utils/treeHelpers';
 import FamilyNodeCard from './FamilyNodeCard';
 import styles from './family-tree.module.css';
 
 export default function FamilyTree({ personsMap, relationships, roots }: { personsMap: Map<string, Person>; relationships: Relationship[]; roots: Person[] }) {
   const { t } = useTranslation();
+  const { showAvatar } = useDashboard();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isPressed, setIsPressed] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const hasDraggedRef = useRef(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [scrollStart, setScrollStart] = useState({ left: 0, top: 0 });
-  const [scale, setScale] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [hideSpouses, setHideSpouses] = useState(false);
   const [hideMales, setHideMales] = useState(false);
   const [hideFemales, setHideFemales] = useState(false);
   const filtersRef = useRef<HTMLDivElement>(null);
 
-  const handleZoomIn = () => setScale((s) => Math.min(s + 0.1, 2));
-  const handleZoomOut = () => setScale((s) => Math.max(s - 0.1, 0.3));
-  const handleResetZoom = () => setScale(1);
+  const {
+    scale,
+    isPressed,
+    isDragging,
+    handlers: { handleMouseDown, handleMouseMove, handleMouseUpOrLeave, handleClickCapture, handleZoomIn, handleZoomOut, handleResetZoom },
+  } = usePanZoom(containerRef);
 
   useEffect(() => {
     const handleClickOutside = (event: globalThis.MouseEvent) => {
@@ -35,50 +35,13 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-center scroll when root changes
   useEffect(() => {
     if (containerRef.current) {
       const el = containerRef.current;
       el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
     }
-  }, []);
-
-  const handleMouseDown = (e: MouseEvent) => {
-    setIsPressed(true);
-    hasDraggedRef.current = false;
-    setDragStart({ x: e.pageX, y: e.pageY });
-    if (containerRef.current) {
-      setScrollStart({ left: containerRef.current.scrollLeft, top: containerRef.current.scrollTop });
-    }
-  };
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isPressed || !containerRef.current) return;
-    const dx = e.pageX - dragStart.x;
-    const dy = e.pageY - dragStart.y;
-    const hasExceededDragThreshold = Math.abs(dx) > 5 || Math.abs(dy) > 5;
-    if (!hasDraggedRef.current && hasExceededDragThreshold) {
-      setIsDragging(true);
-      hasDraggedRef.current = true;
-    }
-    if (hasDraggedRef.current) {
-      e.preventDefault();
-      containerRef.current.scrollLeft = scrollStart.left - dx;
-      containerRef.current.scrollTop = scrollStart.top - dy;
-    }
-  };
-
-  const handleMouseUpOrLeave = () => {
-    setIsPressed(false);
-    setIsDragging(false);
-  };
-
-  const handleClickCapture = (e: MouseEvent) => {
-    if (hasDraggedRef.current) {
-      e.stopPropagation();
-      e.preventDefault();
-      hasDraggedRef.current = false;
-    }
-  };
+  }, [roots]);
 
   const adj = useMemo(() => buildAdjacencyLists(relationships, personsMap), [relationships, personsMap]);
 
@@ -94,8 +57,10 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
     return (
       <li key={personId}>
         <div className="node-container inline-flex flex-col items-center">
-          <div className="flex relative z-10 bg-white rounded-2xl shadow-md border border-stone-200/80 transition-opacity">
-            <FamilyNodeCard person={data.person} isMainNode />
+          <div
+            className={`flex relative z-10 items-stretch h-full${showAvatar ? ' bg-white rounded-2xl shadow-md border border-stone-200/80 transition-opacity' : ''}`}
+          >
+            <FamilyNodeCard person={data.person} />
             {data.spouses.length > 0 &&
               data.spouses.map((spouseData, idx) => (
                 <div key={spouseData.person.id} className="flex relative">

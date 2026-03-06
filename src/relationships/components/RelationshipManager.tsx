@@ -312,7 +312,17 @@ export default function RelationshipManager({ personId, canEdit = false, personG
     }
   };
 
-  const groupByType = (type: string) => relationships.filter((r) => r.direction === type);
+  const groupByType = (type: string) =>
+    relationships
+      .filter((r) => r.direction === type)
+      .sort((a, b) => {
+        const yearA = a.targetPerson.birthYear;
+        const yearB = b.targetPerson.birthYear;
+        if (yearA == null && yearB == null) return 0;
+        if (yearA == null) return 1;
+        if (yearB == null) return -1;
+        return yearA - yearB;
+      });
 
   if (loading) return <div className="text-stone-500 text-sm">{t('relationship.loadingFamily')}</div>;
 

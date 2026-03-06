@@ -8,7 +8,6 @@ interface FamilyNodeCardProps {
   person: Person;
   role?: string;
   note?: string | null;
-  isMainNode?: boolean;
   onClickCard?: () => void;
   onClickName?: (e: MouseEvent) => void;
   isExpandable?: boolean;
@@ -19,7 +18,6 @@ interface FamilyNodeCardProps {
 
 export default function FamilyNodeCard({
   person,
-  isMainNode = false,
   onClickCard,
   onClickName,
   isExpandable = false,
@@ -34,8 +32,9 @@ export default function FamilyNodeCard({
     // biome-ignore lint/a11y/noStaticElementInteractions: interactive wrapper handles a11y
     <div
       onClick={onClickCard}
-      className={`group py-2 px-1 w-20 sm:w-24 md:w-28 flex flex-col items-center justify-start transition-all duration-300 hover:-translate-y-1 hover:shadow-xl relative bg-white/70 backdrop-blur-md rounded-2xl
-        ${isMainNode && person.isDeceased ? 'grayscale-[0.4] opacity-80' : ''}
+      className={`group py-2 px-1 flex flex-col items-center justify-start transition-all duration-300 hover:-translate-y-1 rounded-2xl relative h-full
+        ${person.isDeceased ? 'grayscale-[0.4] opacity-80' : ''}
+        ${showAvatar ? 'w-20 sm:w-24 md:w-28 bg-white/70 hover:shadow-xl' : 'px-3'}
       `}
     >
       {isRingVisible && (
@@ -91,7 +90,13 @@ export default function FamilyNodeCard({
             }
           }}
         >
-          {person.fullName}
+          {showAvatar
+            ? person.fullName
+            : person.fullName.split(' ').map((word) => (
+                <span key={word} className="block">
+                  {word}
+                </span>
+              ))}
         </span>
       </div>
     </div>
