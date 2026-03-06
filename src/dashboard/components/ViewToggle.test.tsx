@@ -42,4 +42,10 @@ describe('ViewToggle', () => {
     await user.click(screen.getByText('Sơ đồ cây'));
     expect(mockSetView).toHaveBeenCalledWith('tree');
   });
+
+  it('highlights the active view button', () => {
+    render(<ViewToggle />);
+    const listButton = screen.getByText('Danh sách').closest('button');
+    expect(listButton?.className).toContain('text-stone-900');
+  });
 });
