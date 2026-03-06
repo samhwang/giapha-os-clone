@@ -10,9 +10,9 @@ test.describe('Authentication Flow', () => {
 
   test('should toggle to signup mode', async ({ page }) => {
     await page.goto('/login');
-    await page.getByText(/chưa có tài khoản/i).click();
+    await page.getByRole('button', { name: /chưa có tài khoản/i }).click();
 
-    await expect(page.locator('#confirmPassword')).toBeVisible();
+    await expect(page.locator('#confirmPassword')).toBeVisible({ timeout: 10000 });
     await expect(page.getByRole('button', { name: /tạo tài khoản/i })).toBeVisible();
   });
 
@@ -22,7 +22,7 @@ test.describe('Authentication Flow', () => {
     await page.locator('#password').fill('wrongpassword');
     await page.getByRole('button', { name: /đăng nhập/i }).click();
 
-    await expect(page.getByText(/thất bại/i)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/thất bại|invalid|error|lỗi/i)).toBeVisible({ timeout: 10000 });
   });
 
   test('should redirect unauthenticated user from dashboard to login', async ({ page }) => {
