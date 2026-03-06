@@ -27,5 +27,7 @@ jobs:
       - run: cp .env.sample .env
       - run: |
           docker compose up -d
+          ./scripts/setup-garage.sh
+          pnpm run prisma:migrate:dev
           pnpm run test:e2e
           docker compose down
