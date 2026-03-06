@@ -12,7 +12,8 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'ui-components',
-          include: ['src/**/components/**/**.test.tsx', 'src/**/hooks/**/*.test.ts'],
+          include: ['src/**/*.test.tsx', 'src/**/hooks/**/*.test.ts'],
+          exclude: ['src/routes/**'],
           environment: 'jsdom',
           setupFiles: ['./test/setup.ts', './test/ui-mocks.ts'],
         },
