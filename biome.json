@@ -19,7 +19,8 @@
       "!**/generated",
       "!**/.content-collections",
       "!**/.claude",
-      "!base"
+      "!base",
+      "!.playwright"
     ]
   },
   "linter": {
