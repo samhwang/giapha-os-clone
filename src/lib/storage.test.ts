@@ -25,6 +25,17 @@ describe('uploadAvatar', () => {
     expect(url).toMatch(/^https?:\/\//);
   });
 
+  it('should handle special characters in filename', async () => {
+    const buffer = Buffer.from('special-chars');
+    const personId = 'test-person-special';
+    const filename = 'ảnh đại diện (1).jpg';
+
+    const url = await uploadAvatar(buffer, personId, filename, 'image/jpeg');
+
+    expect(url).toContain(`avatars/${personId}/`);
+    expect(url).toMatch(/^https?:\/\//);
+  });
+
   it('should handle different content types', async () => {
     const buffer = Buffer.from('fake-png-content');
     const personId = 'test-person-png';
@@ -33,6 +44,15 @@ describe('uploadAvatar', () => {
     const url = await uploadAvatar(buffer, personId, filename, 'image/png');
 
     expect(url).toContain(`avatars/${personId}/${filename}`);
+  });
+});
+
+describe('getPublicUrl consistency', () => {
+  it('should return the same URL for the same key', () => {
+    const key = 'avatars/person-x/photo.png';
+    const url1 = getPublicUrl(key);
+    const url2 = getPublicUrl(key);
+    expect(url1).toBe(url2);
   });
 });
 

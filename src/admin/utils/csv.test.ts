@@ -64,6 +64,23 @@ describe('CSV export/import via zip', () => {
     expect(parsed.persons[0].fullName).toBe('Nguyễn, Văn "Tèo"');
   });
 
+  it('handles null and undefined fields in round-trip', async () => {
+    const person = createPerson({ fullName: 'Test', birthYear: null, deathYear: null, note: null });
+    const buf = await exportToZipBuffer({ persons: [person as Person], relationships: [] });
+    const parsed = await parseZipBuffer(buf);
+
+    expect(parsed.persons[0].fullName).toBe('Test');
+    expect(parsed.persons[0].birthYear).toBeNull();
+  });
+
+  it('preserves empty arrays in round-trip', async () => {
+    const buf = await exportToZipBuffer({ persons: [], relationships: [] });
+    const parsed = await parseZipBuffer(buf);
+
+    expect(parsed.persons).toHaveLength(0);
+    expect(parsed.relationships).toHaveLength(0);
+  });
+
   it('throws on invalid zip (missing files)', async () => {
     const zip = new JSZip();
     zip.file('wrong.csv', 'data');

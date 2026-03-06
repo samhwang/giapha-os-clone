@@ -67,6 +67,36 @@ describe('updateBatch (inner logic)', () => {
     expect(updated?.birthOrder).toBeNull();
   });
 
+  it('should update multiple persons in a batch transaction', async () => {
+    const persons = await Promise.all([
+      db.person.create({ data: { fullName: 'P1', gender: Gender.enum.male } }),
+      db.person.create({ data: { fullName: 'P2', gender: Gender.enum.female } }),
+      db.person.create({ data: { fullName: 'P3', gender: Gender.enum.male } }),
+    ]);
+
+    await db.$transaction(persons.map((p, i) => db.person.update({ where: { id: p.id }, data: { generation: i + 1, birthOrder: i + 1 } })));
+
+    const updated = await db.person.findMany({ orderBy: { generation: 'asc' } });
+    expect(updated).toHaveLength(3);
+    expect(updated[0].generation).toBe(1);
+    expect(updated[1].generation).toBe(2);
+    expect(updated[2].generation).toBe(3);
+  });
+
+  it('should verify ordering after batch update', async () => {
+    const personA = await db.person.create({ data: { fullName: 'Elder', gender: Gender.enum.male, birthOrder: 5 } });
+    const personB = await db.person.create({ data: { fullName: 'Younger', gender: Gender.enum.male, birthOrder: 10 } });
+
+    await db.$transaction([
+      db.person.update({ where: { id: personA.id }, data: { birthOrder: 1 } }),
+      db.person.update({ where: { id: personB.id }, data: { birthOrder: 2 } }),
+    ]);
+
+    const results = await db.person.findMany({ orderBy: { birthOrder: 'asc' } });
+    expect(results[0].fullName).toBe('Elder');
+    expect(results[1].fullName).toBe('Younger');
+  });
+
   it('should require authentication', async () => {
     vi.mocked(requireAuth).mockRejectedValue(new Error('Vui lòng đăng nhập.'));
 

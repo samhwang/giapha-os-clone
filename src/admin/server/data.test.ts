@@ -41,6 +41,18 @@ describe('exportData (inner logic)', () => {
     expect(relationships[0].type).toBe('marriage');
   });
 
+  it('should return backup payload with correct structure', async () => {
+    await db.person.create({ data: { fullName: 'Test', gender: Gender.enum.male } });
+
+    const persons = await db.person.findMany();
+    const relationships = await db.relationship.findMany();
+
+    expect(persons[0]).toHaveProperty('id');
+    expect(persons[0]).toHaveProperty('fullName');
+    expect(persons[0]).toHaveProperty('gender');
+    expect(relationships).toHaveLength(0);
+  });
+
   it('should require admin access', async () => {
     vi.mocked(requireAdmin).mockRejectedValue(new Error('Từ chối truy cập.'));
 
@@ -84,6 +96,17 @@ describe('importData (inner logic)', () => {
 
     expect(persons).toHaveLength(2);
     expect(relationships).toHaveLength(1);
+  });
+
+  it('should handle import with empty data as no-op', async () => {
+    await db.person.deleteMany({});
+    await db.relationship.deleteMany({});
+
+    const persons = await db.person.findMany();
+    const relationships = await db.relationship.findMany();
+
+    expect(persons).toHaveLength(0);
+    expect(relationships).toHaveLength(0);
   });
 
   it('should handle import with only persons (no relationships)', async () => {
