@@ -5,6 +5,7 @@ import EventsList from '../../events/components/EventsList';
 import { getCustomEvents } from '../../events/server/customEvent';
 import MemberDetailModal from '../../members/components/MemberDetailModal';
 import { getPersons } from '../../members/server/member';
+import { UserRole } from '../../types';
 
 export const Route = createFileRoute('/dashboard/events')({
   loader: async () => {
@@ -18,7 +19,7 @@ function EventsPage() {
   const { t } = useTranslation();
   const { persons, customEvents } = Route.useLoaderData();
   const { session } = Route.useRouteContext();
-  const isAdmin = session.role === 'admin';
+  const isAdmin = session.role === UserRole.enum.admin;
   const router = useRouter();
 
   const handleCustomEventChange = useCallback(() => {

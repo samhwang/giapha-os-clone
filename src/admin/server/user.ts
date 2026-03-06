@@ -86,7 +86,7 @@ export const createUser = createServerFn({ method: 'POST' })
       await prisma.user.update({
         where: { id: ctx.user.id },
         data: {
-          role: data.role ?? 'member',
+          role: data.role ?? UserRole.enum.member,
           isActive: data.isActive ?? true,
         },
       });

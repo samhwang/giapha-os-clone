@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import MemberForm from '../../../members/components/MemberForm';
+import { UserRole } from '../../../types';
 
 export const Route = createFileRoute('/dashboard/members/new')({
   component: NewMemberPage,
@@ -7,7 +8,7 @@ export const Route = createFileRoute('/dashboard/members/new')({
 
 function NewMemberPage() {
   const { session } = Route.useRouteContext();
-  const isAdmin = session.role === 'admin';
+  const isAdmin = session.role === UserRole.enum.admin;
 
   return (
     <div className="flex-1 w-full relative flex flex-col pb-8">

@@ -4,6 +4,7 @@ import ViewToggle from '../../../dashboard/components/ViewToggle';
 import MemberDetailModal from '../../../members/components/MemberDetailModal';
 import { getPersons } from '../../../members/server/member';
 import { getRelationships } from '../../../relationships/server/relationship';
+import { UserRole } from '../../../types';
 
 export const Route = createFileRoute('/dashboard/members/')({
   loader: async () => {
@@ -16,8 +17,8 @@ export const Route = createFileRoute('/dashboard/members/')({
 function MembersPage() {
   const { persons, relationships } = Route.useLoaderData();
   const { session } = Route.useRouteContext();
-  const isAdmin = session.role === 'admin';
-  const canEdit = session.role === 'admin' || session.role === 'editor';
+  const isAdmin = session.role === UserRole.enum.admin;
+  const canEdit = session.role === UserRole.enum.admin || session.role === UserRole.enum.editor;
 
   return (
     <>

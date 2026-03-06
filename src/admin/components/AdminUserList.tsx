@@ -1,6 +1,6 @@
 import { type SubmitEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { UserProfile, UserRole } from '../../types';
+import { type UserProfile, UserRole } from '../../types';
 import { changeRole, createUser, deleteUser, toggleStatus } from '../server/user';
 
 interface AdminUserListProps {
@@ -139,9 +139,9 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                   <td className="px-6 py-4">
                     <span
                       className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
-                        user.role === 'admin'
+                        user.role === UserRole.enum.admin
                           ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                          : user.role === 'editor'
+                          : user.role === UserRole.enum.editor
                             ? 'bg-sky-100 text-sky-800 border border-sky-200'
                             : 'bg-stone-100 text-stone-600 border border-stone-200'
                       }`}

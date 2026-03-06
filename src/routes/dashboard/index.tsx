@@ -6,7 +6,7 @@ import { getCustomEvents } from '../../events/server/customEvent';
 import { getTodayLunar } from '../../events/utils/dateHelpers';
 import { computeEvents } from '../../events/utils/eventHelpers';
 import { getPersons } from '../../members/server/member';
-import type { CustomEventRecord, Person } from '../../types';
+import { type CustomEventRecord, type Person, UserRole } from '../../types';
 
 export const Route = createFileRoute('/dashboard/')({
   loader: async () => {
@@ -26,7 +26,7 @@ function DashboardLaunchpad() {
   const { t } = useTranslation();
   const { persons, customEvents } = Route.useLoaderData() as { persons: Person[]; customEvents: CustomEventRecord[] };
   const { session } = Route.useRouteContext();
-  const isAdmin = session.role === 'admin';
+  const isAdmin = session.role === UserRole.enum.admin;
 
   const lunar = useMemo(() => getTodayLunar(), []);
 

@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import MemberForm from '../../../../members/components/MemberForm';
 import { getPersonById } from '../../../../members/server/member';
+import { UserRole } from '../../../../types';
 
 export const Route = createFileRoute('/dashboard/members/$id/edit')({
   loader: async ({ params }) => {
@@ -14,7 +15,7 @@ export const Route = createFileRoute('/dashboard/members/$id/edit')({
 function EditMemberPage() {
   const { person, privateData } = Route.useLoaderData();
   const { session } = Route.useRouteContext();
-  const isAdmin = session.role === 'admin';
+  const isAdmin = session.role === UserRole.enum.admin;
 
   if (!isAdmin) {
     return (

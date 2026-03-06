@@ -6,6 +6,7 @@ import { DashboardProvider } from '../../dashboard/components/DashboardContext';
 import DashboardHeader from '../../dashboard/components/DashboardHeader';
 import { auth } from '../../lib/auth';
 import config from '../../lib/config';
+import { UserRole } from '../../types';
 import Footer from '../../ui/layout/Footer';
 import LogoutButton from '../../ui/layout/LogoutButton';
 
@@ -74,7 +75,7 @@ function InactiveAccountPage() {
 
 function DashboardLayout() {
   const { session } = Route.useRouteContext();
-  const isAdmin = session.role === 'admin';
+  const isAdmin = session.role === UserRole.enum.admin;
 
   if (!session.isActive) {
     return <InactiveAccountPage />;

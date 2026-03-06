@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next';
 import LineageManager from '../../events/components/LineageManager';
 import { getPersons } from '../../members/server/member';
 import { getRelationships } from '../../relationships/server/relationship';
+import { UserRole } from '../../types';
 
 export const Route = createFileRoute('/dashboard/lineage')({
   beforeLoad: ({ context }) => {
-    if (context.session.role !== 'admin') {
+    if (context.session.role !== UserRole.enum.admin) {
       throw redirect({ to: '/dashboard' });
     }
   },

@@ -2,10 +2,11 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import AdminUserList from '../../admin/components/AdminUserList';
 import { getUsers } from '../../admin/server/user';
+import { UserRole } from '../../types';
 
 export const Route = createFileRoute('/dashboard/users')({
   beforeLoad: ({ context }) => {
-    if (context.session.role !== 'admin') {
+    if (context.session.role !== UserRole.enum.admin) {
       throw redirect({ to: '/dashboard' });
     }
   },
