@@ -14,6 +14,7 @@ Welcome to the Gia Pha OS documentation.
 - [05 - Features](./05-features.md) - Family tree, kinship, events, i18n
 - [06 - Testing](./06-testing.md) - Unit, integration, and browser tests
 - [07 - Deployment](./07-deployment.md) - Docker Compose and self-hosting
+- [09 - CI/CD](./09-cicd.md) - GitHub Actions and pipeline
 
 ## Reference
 
