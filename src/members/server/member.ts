@@ -4,9 +4,9 @@ import { getDbClient } from '../../lib/db';
 import { ERRORS } from '../../lib/errors';
 import { deleteAvatar, uploadAvatar } from '../../lib/storage';
 import { requireEditor } from '../../server/functions/_auth';
-import { GenderSchema } from '../../types';
+import { Gender } from '../../types';
 
-const genderEnum = GenderSchema;
+const genderEnum = Gender;
 
 const basePersonFields = {
   fullName: z.string().min(1),
