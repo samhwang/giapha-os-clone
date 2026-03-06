@@ -4,14 +4,14 @@ import { z } from 'zod';
 // App-level enums (Zod as single source of truth)
 // ============================================================
 
-export const GenderSchema = z.enum(['male', 'female', 'other']);
-export type Gender = z.infer<typeof GenderSchema>;
+export const Gender = z.enum(['male', 'female', 'other']);
+export type Gender = z.infer<typeof Gender>;
 
-export const RelationshipTypeSchema = z.enum(['marriage', 'biological_child', 'adopted_child']);
-export type RelationshipType = z.infer<typeof RelationshipTypeSchema>;
+export const RelationshipType = z.enum(['marriage', 'biological_child', 'adopted_child']);
+export type RelationshipType = z.infer<typeof RelationshipType>;
 
-export const UserRoleSchema = z.enum(['admin', 'editor', 'member']);
-export type UserRole = z.infer<typeof UserRoleSchema>;
+export const UserRole = z.enum(['admin', 'editor', 'member']);
+export type UserRole = z.infer<typeof UserRole>;
 
 // ============================================================
 // Domain types (camelCase, matching Prisma model output)
