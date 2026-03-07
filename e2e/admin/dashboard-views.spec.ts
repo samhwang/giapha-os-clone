@@ -1,15 +1,17 @@
 import { expect, test } from '@playwright/test';
+import { waitForHydration } from '../fixtures';
 
 test.describe('Dashboard Views', () => {
   test('should display dashboard with member list', async ({ page }) => {
     await page.goto('/dashboard/members');
+    await waitForHydration(page);
     await expect(page).toHaveURL(/\/dashboard\/members/);
     await expect(page.getByPlaceholder(/tìm/i)).toBeVisible({ timeout: 15000 });
   });
 
   test('should switch between list, tree, and mindmap views', async ({ page }) => {
     await page.goto('/dashboard/members');
-    await page.getByPlaceholder(/tìm/i).waitFor();
+    await waitForHydration(page);
 
     // List view should be default
     await expect(page.getByText(/danh sách/i)).toBeVisible();
@@ -29,7 +31,7 @@ test.describe('Dashboard Views', () => {
 
   test('should show admin menu items in header', async ({ page }) => {
     await page.goto('/dashboard/members');
-    await page.getByPlaceholder(/tìm/i).waitFor();
+    await waitForHydration(page);
 
     // Open the header menu
     const menuButton = page.locator('button').filter({ has: page.locator('svg.lucide-chevron-down') });

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { waitForHydration } from '../fixtures';
 
 test.describe('User Management', () => {
   test('should display user list', async ({ page }) => {
@@ -20,6 +21,7 @@ test.describe('User Management', () => {
 
   test('should open create user modal', async ({ page }) => {
     await page.goto('/dashboard/users');
+    await waitForHydration(page);
     await page.getByText(/thêm người dùng/i).click();
     await expect(page.getByText(/tạo người dùng mới/i)).toBeVisible();
     await expect(page.locator('#createEmail')).toBeVisible();

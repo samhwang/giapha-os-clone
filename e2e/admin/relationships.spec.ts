@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { waitForHydration } from '../fixtures';
 
 test.describe('Relationships', () => {
   let memberUrl: string;
@@ -6,7 +7,7 @@ test.describe('Relationships', () => {
   test.beforeEach(async ({ page }) => {
     // Create a member to work with
     await page.goto('/dashboard/members/new');
-    await page.locator('#fullName').waitFor();
+    await waitForHydration(page, '#fullName');
     const name = `E2E Rel ${Date.now()}`;
     await page.locator('#fullName').fill(name);
     await page.locator('#gender').selectOption('male');
