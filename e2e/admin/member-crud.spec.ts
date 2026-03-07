@@ -6,7 +6,7 @@ const TEST_MEMBER_NAME = `E2E Nguyễn Văn Test ${Date.now()}`;
 test.describe('Member CRUD', () => {
   test('should create a new member', async ({ page }) => {
     await page.goto('/dashboard/members/new');
-    await page.waitForLoadState('networkidle');
+    await page.locator('#fullName').waitFor();
 
     // Fill the form
     await page.locator('#fullName').fill(TEST_MEMBER_NAME);
@@ -27,7 +27,7 @@ test.describe('Member CRUD', () => {
   test('should view member detail page', async ({ page }) => {
     // First create a member
     await page.goto('/dashboard/members/new');
-    await page.waitForLoadState('networkidle');
+    await page.locator('#fullName').waitFor();
     const memberName = `E2E Detail ${Date.now()}`;
     await page.locator('#fullName').fill(memberName);
     await page.locator('#gender').selectOption(Gender.enum.female);
@@ -42,7 +42,7 @@ test.describe('Member CRUD', () => {
   test('should edit member and see updated data', async ({ page }) => {
     // Create a member first
     await page.goto('/dashboard/members/new');
-    await page.waitForLoadState('networkidle');
+    await page.locator('#fullName').waitFor();
     const originalName = `E2E Edit ${Date.now()}`;
     await page.locator('#fullName').fill(originalName);
     await page.locator('#gender').selectOption(Gender.enum.male);
@@ -51,7 +51,7 @@ test.describe('Member CRUD', () => {
 
     // Click edit button
     await page.getByText(/chỉnh sửa/i).click();
-    await page.waitForLoadState('networkidle');
+    await page.locator('#fullName').waitFor();
 
     // Update the name
     const updatedName = `${originalName} Updated`;
@@ -66,7 +66,7 @@ test.describe('Member CRUD', () => {
   test('should delete standalone member', async ({ page }) => {
     // Create a standalone member (no relationships)
     await page.goto('/dashboard/members/new');
-    await page.waitForLoadState('networkidle');
+    await page.locator('#fullName').waitFor();
     const deletableName = `E2E Delete ${Date.now()}`;
     await page.locator('#fullName').fill(deletableName);
     await page.locator('#gender').selectOption(Gender.enum.male);

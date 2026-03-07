@@ -9,7 +9,7 @@ test.describe('Dashboard Views', () => {
 
   test('should switch between list, tree, and mindmap views', async ({ page }) => {
     await page.goto('/dashboard/members');
-    await page.waitForLoadState('networkidle');
+    await page.getByPlaceholder(/tìm/i).waitFor();
 
     // List view should be default
     await expect(page.getByText(/danh sách/i)).toBeVisible();
@@ -29,7 +29,7 @@ test.describe('Dashboard Views', () => {
 
   test('should show admin menu items in header', async ({ page }) => {
     await page.goto('/dashboard/members');
-    await page.waitForLoadState('networkidle');
+    await page.getByPlaceholder(/tìm/i).waitFor();
 
     // Open the header menu
     const menuButton = page.locator('button').filter({ has: page.locator('svg.lucide-chevron-down') });

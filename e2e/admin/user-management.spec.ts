@@ -28,11 +28,10 @@ test.describe('User Management', () => {
 
   test('should show action buttons for non-self users', async ({ page }) => {
     await page.goto('/dashboard/users');
-    await page.waitForLoadState('networkidle');
 
     // The member user row should have action buttons
     const memberRow = page.locator('tr', { hasText: 'member@e2e.test' });
-    await expect(memberRow).toBeVisible({ timeout: 10000 });
+    await expect(memberRow).toBeVisible({ timeout: 15000 });
     await expect(memberRow.getByRole('button').first()).toBeVisible();
   });
 });
