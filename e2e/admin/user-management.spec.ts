@@ -32,8 +32,7 @@ test.describe('User Management', () => {
 
     // The member user row should have action buttons
     const memberRow = page.locator('tr', { hasText: 'member@e2e.test' });
-    if (await memberRow.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await expect(memberRow.getByRole('button').first()).toBeVisible();
-    }
+    await expect(memberRow).toBeVisible({ timeout: 10000 });
+    await expect(memberRow.getByRole('button').first()).toBeVisible();
   });
 });
