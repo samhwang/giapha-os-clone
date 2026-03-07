@@ -91,11 +91,19 @@ export const MindmapNode = memo(function MindmapNode({
           )}
         </div>
 
-        <button
-          type="button"
+        {/* biome-ignore lint/a11y/useSemanticElements: can't use <button> because spouse <button> elements are nested inside */}
+        <div
+          role="button"
+          tabIndex={0}
           className={`group/card relative flex flex-wrap items-center gap-2 bg-white/60 backdrop-blur-md rounded-2xl border border-stone-200/60 p-2 sm:p-2.5 shadow-sm hover:border-amber-300 hover:shadow-md hover:bg-white/90 transition-all duration-300 overflow-hidden cursor-pointer animate-[fade-in_0.3s_ease-out_forwards]
             ${data.person.isDeceased ? 'opacity-80 grayscale-[0.3]' : ''}`}
           onClick={() => ctx.setMemberModalId(data.person.id)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              ctx.setMemberModalId(data.person.id);
+            }
+          }}
         >
           <div className="flex items-center gap-2.5 relative z-10 w-full">
             <div className="flex flex-1 items-center gap-2.5 min-w-0">
@@ -182,7 +190,7 @@ export const MindmapNode = memo(function MindmapNode({
               </div>
             )}
           </div>
-        </button>
+        </div>
       </div>
 
       {hasChildren && isExpanded && (
