@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import config from '../lib/config';
+import { env } from '../lib/env.client';
 import Footer from '../ui/layout/Footer';
 import LandingHero from '../ui/layout/LandingHero';
 
@@ -18,7 +18,7 @@ function LandingPage() {
       </div>
 
       <main className="flex flex-col items-center justify-center min-h-screen px-4 py-12 sm:py-20 relative z-10">
-        <LandingHero siteName={config.siteName} />
+        <LandingHero siteName={env.VITE_SITE_NAME} />
       </main>
 
       <Footer className="bg-transparent relative z-10 border-none" />
