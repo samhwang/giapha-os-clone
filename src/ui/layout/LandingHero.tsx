@@ -11,7 +11,7 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
 
   return (
     <div className="max-w-5xl text-center space-y-12 w-full relative z-10">
-      <div className="space-y-6 sm:space-y-8 flex flex-col items-center animate-[fade-in-up_0.8s_ease-out_forwards]">
+      <div className="space-y-6 sm:space-y-8 flex flex-col items-center animate-fade-in-up">
         <div className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-amber-800 bg-white/60 backdrop-blur-md rounded-full shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-amber-200/50 relative overflow-hidden group hover:scale-105 transition-transform duration-300">
           <Sparkles className="size-4 text-amber-500" />
           {t('landing.tagline')}
@@ -25,7 +25,7 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
         <p className="text-lg sm:text-xl md:text-2xl text-stone-600 max-w-2xl mx-auto leading-relaxed font-light">{t('landing.subtitle')}</p>
       </div>
 
-      <div className="pt-6 flex flex-col sm:flex-row gap-4 justify-center items-center w-full px-4 sm:px-0 relative animate-[fade-in-up_0.8s_ease-out_forwards]">
+      <div className="pt-6 flex flex-col sm:flex-row gap-4 justify-center items-center w-full px-4 sm:px-0 relative animate-fade-in-up">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-16 bg-amber-500/30 blur-2xl rounded-full z-0 hidden sm:block" />
 
         <Link
@@ -59,7 +59,7 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
         ].map((feature, index) => (
           <div
             key={feature.title}
-            className="bg-white/70 backdrop-blur-xl p-8 rounded-3xl border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:bg-white transition-all duration-500 flex flex-col items-start group relative overflow-hidden animate-[fade-in-up_0.8s_ease-out_forwards]"
+            className="bg-white/70 backdrop-blur-xl p-8 rounded-3xl border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:bg-white transition-all duration-500 flex flex-col items-start group relative overflow-hidden animate-fade-in-up"
             style={{ animationDelay: `${index * 0.15 + 0.3}s`, animationFillMode: 'forwards', opacity: 0 }}
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-amber-100/50 to-transparent rounded-bl-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

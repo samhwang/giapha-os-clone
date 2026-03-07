@@ -213,7 +213,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                       {person.note}
                     </p>
                     {isNoteLong && !isNoteExpanded && (
-                      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white/90 to-transparent pointer-events-none" />
+                      <div className="absolute bottom-0 left-0 right-0 h-16 bg-linear-to-t from-white/90 to-transparent pointer-events-none" />
                     )}
                     {isNoteLong && (
                       <button
