@@ -2,13 +2,13 @@ import { expect, test } from '@playwright/test';
 
 test.describe('Dashboard Views', () => {
   test('should display dashboard with member list', async ({ page }) => {
-    await page.goto('/dashboard');
-    await expect(page).toHaveURL(/\/dashboard/);
+    await page.goto('/dashboard/members');
+    await expect(page).toHaveURL(/\/dashboard\/members/);
     await expect(page.getByPlaceholder(/tìm/i)).toBeVisible({ timeout: 15000 });
   });
 
   test('should switch between list, tree, and mindmap views', async ({ page }) => {
-    await page.goto('/dashboard');
+    await page.goto('/dashboard/members');
     await page.waitForLoadState('networkidle');
 
     // List view should be default
@@ -28,7 +28,7 @@ test.describe('Dashboard Views', () => {
   });
 
   test('should show admin menu items in header', async ({ page }) => {
-    await page.goto('/dashboard');
+    await page.goto('/dashboard/members');
     await page.waitForLoadState('networkidle');
 
     // Open the header menu
