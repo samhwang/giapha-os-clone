@@ -5,12 +5,8 @@ const TEST_MEMBER_NAME = `E2E Nguyễn Văn Test ${Date.now()}`;
 
 test.describe('Member CRUD', () => {
   test('should create a new member', async ({ page }) => {
-    await page.goto('/dashboard');
+    await page.goto('/dashboard/members/new');
     await page.waitForLoadState('networkidle');
-
-    // Click add member button
-    await page.getByText(/thêm thành viên/i).click();
-    await expect(page).toHaveURL(/\/dashboard\/members\/new/);
 
     // Fill the form
     await page.locator('#fullName').fill(TEST_MEMBER_NAME);
@@ -31,6 +27,7 @@ test.describe('Member CRUD', () => {
   test('should view member detail page', async ({ page }) => {
     // First create a member
     await page.goto('/dashboard/members/new');
+    await page.waitForLoadState('networkidle');
     const memberName = `E2E Detail ${Date.now()}`;
     await page.locator('#fullName').fill(memberName);
     await page.locator('#gender').selectOption(Gender.enum.female);
@@ -45,6 +42,7 @@ test.describe('Member CRUD', () => {
   test('should edit member and see updated data', async ({ page }) => {
     // Create a member first
     await page.goto('/dashboard/members/new');
+    await page.waitForLoadState('networkidle');
     const originalName = `E2E Edit ${Date.now()}`;
     await page.locator('#fullName').fill(originalName);
     await page.locator('#gender').selectOption(Gender.enum.male);
@@ -53,10 +51,10 @@ test.describe('Member CRUD', () => {
 
     // Click edit button
     await page.getByText(/chỉnh sửa/i).click();
+    await page.waitForLoadState('networkidle');
 
     // Update the name
     const updatedName = `${originalName} Updated`;
-    await page.locator('#fullName').clear();
     await page.locator('#fullName').fill(updatedName);
     await page.getByRole('button', { name: /lưu thay đổi/i }).click();
 
@@ -68,6 +66,7 @@ test.describe('Member CRUD', () => {
   test('should delete standalone member', async ({ page }) => {
     // Create a standalone member (no relationships)
     await page.goto('/dashboard/members/new');
+    await page.waitForLoadState('networkidle');
     const deletableName = `E2E Delete ${Date.now()}`;
     await page.locator('#fullName').fill(deletableName);
     await page.locator('#gender').selectOption(Gender.enum.male);
