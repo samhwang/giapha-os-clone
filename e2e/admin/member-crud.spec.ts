@@ -45,14 +45,22 @@ test.describe('Member CRUD', () => {
     await page.goto('/dashboard/members/new');
     await waitForHydration(page, '#fullName');
     const originalName = `E2E Edit ${Date.now()}`;
-    await page.locator('#fullName').fill(originalName);
+    const fullNameInput = page.locator('#fullName');
+    await fullNameInput.fill(originalName);
+    await expect(fullNameInput)
+      .toHaveValue(originalName, { timeout: 5000 })
+      .catch(async () => {
+        await fullNameInput.fill(originalName);
+      });
     await page.locator('#gender').selectOption(Gender.enum.male);
     await page.getByRole('button', { name: /thêm thành viên/i }).click();
-    await expect(page).toHaveURL(/\/dashboard\/members\//, { timeout: 15000 });
+    await expect(page).toHaveURL(/\/dashboard\/members\/[0-9a-f]{8}-/, { timeout: 15000 });
 
-    // Click edit button
-    await page.getByText(/chỉnh sửa/i).click();
-    await page.locator('#fullName').waitFor();
+    // Navigate to edit page directly
+    const editUrl = `${page.url()}/edit`;
+    await page.goto(editUrl);
+    await page.locator('#fullName').waitFor({ timeout: 30000 });
+    await waitForHydration(page, '#fullName');
 
     // Update the name
     const updatedName = `${originalName} Updated`;

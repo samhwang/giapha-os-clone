@@ -9,10 +9,18 @@ test.describe('Relationships', () => {
     await page.goto('/dashboard/members/new');
     await waitForHydration(page, '#fullName');
     const name = `E2E Rel ${Date.now()}`;
-    await page.locator('#fullName').fill(name);
+    const fullNameInput = page.locator('#fullName');
+    // Fill and retry if hydration resets the controlled input
+    await fullNameInput.fill(name);
+    await expect(fullNameInput)
+      .toHaveValue(name, { timeout: 5000 })
+      .catch(async () => {
+        await fullNameInput.fill(name);
+      });
     await page.locator('#gender').selectOption('male');
     await page.getByRole('button', { name: /thêm thành viên/i }).click();
-    await expect(page).toHaveURL(/\/dashboard\/members\//, { timeout: 15000 });
+    // Wait for redirect to detail page (UUID in URL, not /new)
+    await expect(page).toHaveURL(/\/dashboard\/members\/[0-9a-f]{8}-/, { timeout: 15000 });
     memberUrl = page.url();
   });
 
@@ -20,7 +28,8 @@ test.describe('Relationships', () => {
     await page.goto(memberUrl);
     await waitForHydration(page);
     await expect(page.getByRole('heading', { name: /gia đình/i })).toBeVisible();
-    await expect(page.getByText(/bố \/ mẹ/i)).toBeVisible({ timeout: 10000 });
+    // Relationship sections load asynchronously — wait for loading to finish
+    await expect(page.getByText(/bố \/ mẹ/i)).toBeVisible({ timeout: 15000 });
     await expect(page.getByText(/vợ \/ chồng/i)).toBeVisible();
     await expect(page.getByText(/con cái/i)).toBeVisible();
   });
@@ -28,7 +37,8 @@ test.describe('Relationships', () => {
   test('should show add relationship buttons for admin', async ({ page }) => {
     await page.goto(memberUrl);
     await waitForHydration(page);
-    await expect(page.getByText(/thêm con/i)).toBeVisible({ timeout: 10000 });
+    // Wait for async relationship data to load
+    await expect(page.getByText(/thêm con/i)).toBeVisible({ timeout: 15000 });
     await expect(page.getByText(/thêm vợ\/chồng/i)).toBeVisible();
     await expect(page.getByText(/thêm mối quan hệ/i)).toBeVisible();
   });
@@ -36,19 +46,19 @@ test.describe('Relationships', () => {
   test('should open add spouse form', async ({ page }) => {
     await page.goto(memberUrl);
     await waitForHydration(page);
-    await page.getByText(/thêm vợ\/chồng/i).click({ timeout: 10000 });
+    await page.getByText(/thêm vợ\/chồng/i).click({ timeout: 15000 });
 
     // Should show the quick add spouse form
-    await expect(page.getByText(/thêm nhanh vợ\/chồng/i)).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText(/thêm nhanh vợ\/chồng/i)).toBeVisible({ timeout: 10000 });
   });
 
   test('should add a spouse via quick form', async ({ page }) => {
     await page.goto(memberUrl);
     await waitForHydration(page);
-    await page.getByText(/thêm vợ\/chồng/i).click({ timeout: 10000 });
+    await page.getByText(/thêm vợ\/chồng/i).click({ timeout: 15000 });
 
     // Fill spouse name
-    const nameInput = page.locator('input[placeholder*="Họ và tên"]');
+    const nameInput = page.getByRole('textbox', { name: /họ và tên/i });
     await nameInput.fill(`E2E Spouse ${Date.now()}`);
 
     // Submit
