@@ -14,7 +14,7 @@ test.describe('Data Backup & Restore', () => {
 
   test('should show restore file selector', async ({ page }) => {
     await page.goto('/dashboard/data');
-    await expect(page.getByText(/chọn file json/i)).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText(/chọn file.*phục hồi/i)).toBeVisible({ timeout: 15000 });
   });
 
   test('should show restore warning', async ({ page }) => {
