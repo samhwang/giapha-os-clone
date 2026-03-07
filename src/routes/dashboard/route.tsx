@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { DashboardProvider } from '../../dashboard/components/DashboardContext';
 import DashboardHeader from '../../dashboard/components/DashboardHeader';
 import { auth } from '../../lib/auth';
-import { env } from '../../lib/env.client';
+import config from '../../lib/config';
 import { UserRole } from '../../types';
 import Footer from '../../ui/layout/Footer';
 import LogoutButton from '../../ui/layout/LogoutButton';
@@ -42,7 +42,7 @@ function InactiveAccountPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/" className="group flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-serif font-bold text-stone-800 group-hover:text-amber-700 transition-colors">{env.VITE_SITE_NAME}</h1>
+              <h1 className="text-xl sm:text-2xl font-serif font-bold text-stone-800 group-hover:text-amber-700 transition-colors">{config.siteName}</h1>
             </Link>
           </div>
           <div className="w-32">

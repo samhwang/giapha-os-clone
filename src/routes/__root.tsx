@@ -2,7 +2,7 @@ import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/r
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { createI18nInstance, type Language } from '../i18n';
 import { getLanguage } from '../i18n/getLanguage';
-import { env } from '../lib/env.client';
+import config from '../lib/config';
 import appCss from '../styles.css?url';
 
 export const Route = createRootRoute({
@@ -14,8 +14,8 @@ export const Route = createRootRoute({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: env.VITE_SITE_NAME },
-      { name: 'description', content: env.VITE_SITE_NAME },
+      { title: config.siteName },
+      { name: 'description', content: config.siteName },
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
