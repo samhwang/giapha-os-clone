@@ -62,7 +62,7 @@ import { getDbClient } from '@/lib/db'
 
 test('creates person with private details', async () => {
   const db = getDbClient()
-  
+
   const person = await db.person.create({
     data: {
       fullName: 'Test User',
@@ -73,7 +73,7 @@ test('creates person with private details', async () => {
     },
     include: { privateDetails: true }
   })
-  
+
   expect(person.privateDetails?.phoneNumber).toBe('0901234567')
 })
 ```
@@ -109,6 +109,28 @@ test('landing page displays correctly', async ({ page }) => {
 })
 ```
 
+#### Prerequisites
+
+Before running E2E test, we need to make sure:
+
+- Chromium for Testing is installed (this can be managed via Playwright).
+- The DB migration and seeding scripts has been ran.
+- Garage has been setup and env is populated in the `.env` file.
+- There is a dev server running.
+
+The setup can be triggered by this script:
+
+```bash
+npx playwright install
+
+docker compose up -d
+pnpm run prisma:migrate:dev && pnpm run prisma:seed
+./scripts/install-garage.sh
+pnpm run dev
+
+pnpm run test:e2e
+```
+
 ## Writing E2E Tests
 
 ### File Pattern
@@ -130,10 +152,10 @@ test.describe('Feature Name', () => {
   test('user flow description', async ({ page }) => {
     // Navigate
     await page.goto('/')
-    
+
     // Interact
     await page.getByRole('link', { name: 'Login' }).click()
-    
+
     // Assert
     await expect(page).toHaveURL(/.*\/login/)
   })
@@ -161,7 +183,7 @@ test('can access dashboard when logged in', async ({ page }) => {
   await page.fill('[name="email"]', 'test@example.com')
   await page.fill('[name="password"]', 'password')
   await page.click('button[type="submit"]')
-  
+
   await expect(page).toHaveURL('/dashboard')
   await expect(page.getByText('Welcome')).toBeVisible()
 })
