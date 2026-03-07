@@ -6,6 +6,7 @@ test.describe('Relationships', () => {
   test.beforeEach(async ({ page }) => {
     // Create a member to work with
     await page.goto('/dashboard/members/new');
+    await page.waitForLoadState('networkidle');
     const name = `E2E Rel ${Date.now()}`;
     await page.locator('#fullName').fill(name);
     await page.locator('#gender').selectOption('male');
