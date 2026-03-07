@@ -49,7 +49,7 @@ describe('LogoutButton', () => {
       expect(screen.getByRole('button')).toBeDisabled();
     });
 
-    resolveSignOut!();
+    resolveSignOut?.();
   });
 
   it('recovers from logout error', async () => {

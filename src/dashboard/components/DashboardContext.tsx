@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 import type { ViewMode } from './ViewToggle';
 
 interface DashboardState {
@@ -16,7 +16,7 @@ interface DashboardState {
 
 export const DashboardContext = createContext<DashboardState | undefined>(undefined);
 
-export function DashboardProvider({ children }: { children: React.ReactNode }) {
+export function DashboardProvider({ children }: { children: ReactNode }) {
   const [memberModalId, setMemberModalId] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAvatar, setShowAvatarState] = useState(true);

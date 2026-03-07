@@ -1,5 +1,5 @@
 import { AlertCircle, AlignLeft, Calendar as CalendarIcon, Loader2, MapPin, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { type SubmitEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { CustomEventRecord } from '../../types';
 import { createCustomEvent, deleteCustomEvent, updateCustomEvent } from '../server/customEvent';
@@ -49,7 +49,7 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
     };
   }, [isOpen]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
