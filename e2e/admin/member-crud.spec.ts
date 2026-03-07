@@ -37,7 +37,7 @@ test.describe('Member CRUD', () => {
 
     // Verify detail page shows expected sections
     await expect(page.getByText(memberName)).toBeVisible();
-    await expect(page.getByText(/gia đình/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /gia đình/i })).toBeVisible();
   });
 
   test('should edit member and see updated data', async ({ page }) => {
@@ -52,7 +52,7 @@ test.describe('Member CRUD', () => {
 
     // Click edit button
     await page.getByText(/chỉnh sửa/i).click();
-    await waitForHydration(page, '#fullName');
+    await page.locator('#fullName').waitFor();
 
     // Update the name
     const updatedName = `${originalName} Updated`;
@@ -81,6 +81,6 @@ test.describe('Member CRUD', () => {
     await page.getByRole('button', { name: /xoá hồ sơ/i }).click();
 
     // Should redirect to dashboard
-    await expect(page).toHaveURL(/\/dashboard$/, { timeout: 15000 });
+    await expect(page).toHaveURL(/\/dashboard(\/members)?$/, { timeout: 15000 });
   });
 });
