@@ -1,7 +1,7 @@
 import { AlignLeft, Cake, CalendarDays, Clock, Flower, MapPin, Plus, Star } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDashboard } from '../../dashboard/components/DashboardContext';
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import type { CustomEventRecord, EventType, FamilyEvent } from '../../types';
 import { getTodayLunar, getZodiacSign } from '../utils/dateHelpers';
 import { computeEvents } from '../utils/eventHelpers';
@@ -38,7 +38,7 @@ function EventCard({ event, index, onCustomEventClick }: { event: FamilyEvent; i
   const isCustom = event.type === 'custom_event';
   const isToday = event.daysUntil === 0;
   const isSoon = event.daysUntil <= 7;
-  const { setMemberModalId } = useDashboard();
+  const { setMemberModalId } = useDashboardStore();
 
   const handleClick = () => {
     if (isCustom && onCustomEventClick) {

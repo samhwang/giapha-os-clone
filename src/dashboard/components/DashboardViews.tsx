@@ -3,8 +3,8 @@ import FamilyTree from '../../family-tree/components/FamilyTree';
 import MindmapTree from '../../family-tree/components/MindmapTree';
 import { type Person, type Relationship, RelationshipType } from '../../types';
 import ExportButton from '../../ui/common/ExportButton';
+import { useDashboardStore } from '../store/dashboardStore';
 import AvatarToggle from './AvatarToggle';
-import { useDashboard } from './DashboardContext';
 import DashboardMemberList from './DashboardMemberList';
 import RootSelector from './RootSelector';
 
@@ -14,7 +14,7 @@ interface DashboardViewsProps {
 }
 
 export default function DashboardViews({ persons, relationships }: DashboardViewsProps) {
-  const { view: currentView, rootId } = useDashboard();
+  const { view: currentView, rootId } = useDashboardStore();
 
   const { personsMap, roots, defaultRootId } = useMemo(() => {
     const pMap = new Map<string, Person>();

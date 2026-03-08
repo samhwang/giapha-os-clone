@@ -1,7 +1,7 @@
 import { ChevronsDownUp, ChevronsUpDown, Filter, Minus, Plus, Share2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDashboard } from '../../dashboard/components/DashboardContext';
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import type { Person, Relationship } from '../../types';
 import { buildAdjacencyLists } from '../utils/treeHelpers';
 import type { ExpandSignal, MindmapContextData } from './MindmapNode';
@@ -15,7 +15,7 @@ interface MindmapTreeProps {
 
 export default function MindmapTree({ personsMap, relationships, roots }: MindmapTreeProps) {
   const { t } = useTranslation();
-  const { showAvatar, setMemberModalId } = useDashboard();
+  const { showAvatar, setMemberModalId } = useDashboardStore();
   const [scale, setScale] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [hideSpouses, setHideSpouses] = useState(false);

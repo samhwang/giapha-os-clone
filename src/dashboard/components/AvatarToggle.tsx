@@ -1,9 +1,9 @@
 import { Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useDashboard } from './DashboardContext';
+import { useDashboardStore } from '../store/dashboardStore';
 
 export default function AvatarToggle() {
-  const { showAvatar, setShowAvatar } = useDashboard();
+  const { showAvatar, setShowAvatar } = useDashboardStore();
   const { t } = useTranslation();
 
   return (

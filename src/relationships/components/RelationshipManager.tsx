@@ -1,8 +1,7 @@
-import { useNavigate } from '@tanstack/react-router';
 import { Trash2 } from 'lucide-react';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DashboardContext, useDashboard } from '../../dashboard/components/DashboardContext';
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import { createPerson, getPersons } from '../../members/server/member';
 import { Gender, type Person, RelationshipType } from '../../types';
@@ -25,16 +24,10 @@ interface EnrichedRelationship {
 
 export default function RelationshipManager({ personId, canEdit = false, personGender }: RelationshipManagerProps) {
   const { t } = useTranslation();
-  const dashboardContext = useContext(DashboardContext);
-  const { setMemberModalId } = useDashboard();
-  const navigate = useNavigate();
+  const { setMemberModalId } = useDashboardStore();
 
   const handlePersonClick = (id: string) => {
-    if (dashboardContext !== undefined) {
-      setMemberModalId(id);
-    } else {
-      navigate({ to: '/dashboard/members/$id', params: { id } });
-    }
+    setMemberModalId(id);
   };
 
   const [relationships, setRelationships] = useState<EnrichedRelationship[]>([]);

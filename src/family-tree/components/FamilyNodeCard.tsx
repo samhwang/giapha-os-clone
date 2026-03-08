@@ -1,6 +1,6 @@
 import { Minus, Plus } from 'lucide-react';
 import type { MouseEvent } from 'react';
-import { useDashboard } from '../../dashboard/components/DashboardContext';
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { Gender, type Person } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 
@@ -25,7 +25,7 @@ export default function FamilyNodeCard({
   isRingVisible = false,
   isPlusVisible = false,
 }: FamilyNodeCardProps) {
-  const { showAvatar, setMemberModalId } = useDashboard();
+  const { showAvatar, setMemberModalId } = useDashboardStore();
 
   const content = (
     // biome-ignore lint/a11y/useKeyWithClickEvents: wrapped in button when used standalone

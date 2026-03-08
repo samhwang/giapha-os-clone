@@ -3,11 +3,11 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PersonCard from '../../members/components/PersonCard';
 import { Gender, type Person } from '../../types';
-import { useDashboard } from './DashboardContext';
+import { useDashboardStore } from '../store/dashboardStore';
 
 export default function DashboardMemberList({ initialPersons }: { initialPersons: Person[] }) {
   const { t } = useTranslation();
-  const { setShowCreateModal } = useDashboard();
+  const { setShowCreateModal } = useDashboardStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState('birth_asc');
   const [filterOption, setFilterOption] = useState('all');

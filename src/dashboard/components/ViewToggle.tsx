@@ -1,11 +1,11 @@
 import { List, ListTree, Network } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useDashboard } from './DashboardContext';
+import { useDashboardStore } from '../store/dashboardStore';
 
 export type ViewMode = 'list' | 'tree' | 'mindmap';
 
 export default function ViewToggle() {
-  const { view: currentView, setView } = useDashboard();
+  const { view: currentView, setView } = useDashboardStore();
   const { t } = useTranslation();
 
   const tabs = [

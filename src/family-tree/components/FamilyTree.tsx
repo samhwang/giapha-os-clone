@@ -1,7 +1,7 @@
 import { Filter, Minus, Plus } from 'lucide-react';
 import { Fragment, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDashboard } from '../../dashboard/components/DashboardContext';
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { Gender, type Person, type Relationship } from '../../types';
 import { usePanZoom } from '../hooks/usePanZoom';
 import { buildAdjacencyLists, getFilteredTreeData } from '../utils/treeHelpers';
@@ -10,7 +10,7 @@ import styles from './family-tree.module.css';
 
 export default function FamilyTree({ personsMap, relationships, roots }: { personsMap: Map<string, Person>; relationships: Relationship[]; roots: Person[] }) {
   const { t } = useTranslation();
-  const { showAvatar } = useDashboard();
+  const { showAvatar } = useDashboardStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [hideSpouses, setHideSpouses] = useState(false);

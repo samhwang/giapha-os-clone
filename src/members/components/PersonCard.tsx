@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useDashboard } from '../../dashboard/components/DashboardContext';
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import { Gender, type Person } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
@@ -11,7 +11,7 @@ interface PersonCardProps {
 
 export default function PersonCard({ person }: PersonCardProps) {
   const { t } = useTranslation();
-  const { setMemberModalId } = useDashboard();
+  const { setMemberModalId } = useDashboardStore();
 
   const getGenderStyle = (gender: string) => {
     if (gender === Gender.enum.male) return 'bg-sky-100 text-sky-600';

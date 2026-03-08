@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { AlertCircle, ArrowLeft, ExternalLink, Pencil, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDashboard } from '../../dashboard/components/DashboardContext';
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import type { Person } from '../../types';
 import { getPersonById } from '../server/member';
 import MemberDetailContent from './MemberDetailContent';
@@ -10,7 +10,7 @@ import MemberForm from './MemberForm';
 
 export default function MemberDetailModal({ isAdmin, canEdit = false }: { isAdmin: boolean; canEdit?: boolean }) {
   const { t } = useTranslation();
-  const { memberModalId: memberId, setMemberModalId, showCreateModal, setShowCreateModal } = useDashboard();
+  const { memberModalId: memberId, setMemberModalId, showCreateModal, setShowCreateModal } = useDashboardStore();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

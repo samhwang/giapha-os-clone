@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Gender, type Person } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
-import { useDashboard } from './DashboardContext';
+import { useDashboardStore } from '../store/dashboardStore';
 
 const getGenderStyle = (gender: string) => {
   if (gender === Gender.enum.male) return 'bg-sky-100 text-sky-600';
@@ -19,7 +19,7 @@ const getAvatarBg = (gender: string) => {
 };
 
 export default function RootSelector({ persons, currentRootId }: { persons: Person[]; currentRootId: string }) {
-  const { setRootId } = useDashboard();
+  const { setRootId } = useDashboardStore();
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
