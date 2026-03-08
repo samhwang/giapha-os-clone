@@ -169,6 +169,26 @@ This will:
 4. Generate S3 access keys
 5. Output the values to add to `.env`
 
+### Windows Setup
+
+If you're on Windows, you can use the provided scripts instead:
+
+**Prerequisites for Windows:**
+- [jq for Windows](https://jqlang.github.io/jq/download/) - download the `jq.exe` and place it in your PATH
+- [curl for Windows](https://curl.se/windows/) - usually pre-installed on Windows 10+
+
+**Option 1 - PowerShell (recommended for Windows):**
+```powershell
+.\scripts\setup-garage.ps1
+```
+
+**Option 2 - Command Prompt:**
+```cmd
+.\scripts\setup-garage.bat
+```
+
+> **Note**: These Windows scripts have limited testing. If you encounter issues, we strongly recommend using [WSL](https://learn.microsoft.com/en-us/windows/wsl/) to run the Linux script instead. WSL provides the most reliable experience and easiest troubleshooting.
+
 ### Manual Setup
 
 If you prefer manual configuration, you need to read the admin token from your `garage.toml`:

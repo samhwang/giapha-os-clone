@@ -33,6 +33,9 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 - [pnpm](https://pnpm.io/) v10.x
 - [Docker](https://www.docker.com/) + Docker Compose
 - [jq](https://jqlang.github.io/jq/) (used by `setup-garage.sh`)
+- For Windows: [jq for Windows](https://jqlang.github.io/jq/download/) + [curl](https://curl.se/windows/) (or use WSL - see below)
+
+> **Note for Windows users**: While Windows versions of the Garage setup script are provided (`setup-garage.bat` and `setup-garage.ps1`), they have limited testing. For the best experience and easiest troubleshooting, we strongly recommend using [WSL](https://learn.microsoft.com/en-us/windows/wsl/) to run the Linux scripts. If you encounter issues with the Windows versions, please try running the bash script in WSL instead.
 
 ## Quick Start (Development)
 
