@@ -8,21 +8,6 @@ vi.mock('../../relationships/components/RelationshipManager', () => ({
   default: () => <div data-testid="relationship-manager" />,
 }));
 
-vi.mock('../../dashboard/store/dashboardStore', () => ({
-  useDashboardStore: () => ({
-    memberModalId: null,
-    setMemberModalId: vi.fn(),
-    showAvatar: true,
-    setShowAvatar: vi.fn(),
-    view: 'list' as const,
-    setView: vi.fn(),
-    rootId: null,
-    setRootId: vi.fn(),
-    showCreateModal: false,
-    setShowCreateModal: vi.fn(),
-  }),
-}));
-
 describe('MemberDetailContent', () => {
   const basePerson = createPerson({
     fullName: 'Vạn Công Trí',

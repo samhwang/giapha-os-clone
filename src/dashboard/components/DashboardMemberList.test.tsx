@@ -1,31 +1,20 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
 import { Gender } from '../../types';
+import { useDashboardStore } from '../store/dashboardStore';
 import DashboardMemberList from './DashboardMemberList';
 
 vi.mock('@tanstack/react-router', () => ({
   Link: ({ children, to }: { children: ReactNode; to: string }) => <a href={to}>{children}</a>,
 }));
 
-vi.mock('../store/dashboardStore', () => ({
-  useDashboardStore: () => ({
-    memberModalId: null,
-    setMemberModalId: vi.fn(),
-    showCreateModal: false,
-    setShowCreateModal: vi.fn(),
-    showAvatar: true,
-    setShowAvatar: vi.fn(),
-    view: 'list' as const,
-    setView: vi.fn(),
-    rootId: null,
-    setRootId: vi.fn(),
-  }),
-}));
-
 describe('DashboardMemberList', () => {
+  beforeEach(() => {
+    useDashboardStore.getState().reset();
+  });
   it('renders person cards for each member', () => {
     const persons = [
       createPerson({ fullName: 'Nguyễn Văn A', gender: Gender.enum.male }),

@@ -1,24 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import EventsList from './EventsList';
-
-vi.mock('../../dashboard/store/dashboardStore', () => ({
-  useDashboardStore: () => ({
-    memberModalId: null,
-    setMemberModalId: vi.fn(),
-    showAvatar: true,
-    setShowAvatar: vi.fn(),
-    view: 'list' as const,
-    setView: vi.fn(),
-    rootId: null,
-    setRootId: vi.fn(),
-    showCreateModal: false,
-    setShowCreateModal: vi.fn(),
-  }),
-}));
 
 describe('EventsList', () => {
   beforeEach(() => {
+    useDashboardStore.getState().reset();
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2025, 0, 15));
   });

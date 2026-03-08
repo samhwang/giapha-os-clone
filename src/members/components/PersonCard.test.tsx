@@ -1,28 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { Gender } from '../../types';
 import PersonCard from './PersonCard';
 
-const mockSetMemberModalId = vi.fn();
-
-vi.mock('../../dashboard/store/dashboardStore', () => ({
-  useDashboardStore: () => ({
-    memberModalId: null,
-    setMemberModalId: mockSetMemberModalId,
-    showAvatar: true,
-    setShowAvatar: vi.fn(),
-    view: 'list' as const,
-    setView: vi.fn(),
-    rootId: null,
-    setRootId: vi.fn(),
-    showCreateModal: false,
-    setShowCreateModal: vi.fn(),
-  }),
-}));
-
 describe('PersonCard', () => {
+  beforeEach(() => {
+    useDashboardStore.getState().reset();
+  });
   it('renders person name', () => {
     const person = createPerson({ fullName: 'Vạn Công Trí' });
     render(<PersonCard person={person} />);
@@ -67,6 +54,6 @@ describe('PersonCard', () => {
     const card = screen.getByText('Test Person').closest('button') as HTMLButtonElement;
     expect(card).not.toBeNull();
     await user.click(card);
-    expect(mockSetMemberModalId).toHaveBeenCalledWith('test-id');
+    expect(useDashboardStore.getState().memberModalId).toBe('test-id');
   });
 });

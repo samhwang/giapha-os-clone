@@ -2,26 +2,12 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { Gender, RelationshipType } from '../../types';
 import RelationshipManager from './RelationshipManager';
 
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => vi.fn(),
-}));
-
-vi.mock('../../dashboard/store/dashboardStore', () => ({
-  useDashboardStore: () => ({
-    memberModalId: null,
-    setMemberModalId: vi.fn(),
-    showCreateModal: false,
-    setShowCreateModal: vi.fn(),
-    showAvatar: true,
-    setShowAvatar: vi.fn(),
-    view: 'list' as const,
-    setView: vi.fn(),
-    rootId: null,
-    setRootId: vi.fn(),
-  }),
 }));
 
 const mockGetRelationshipsForPerson = vi.fn();
@@ -48,6 +34,7 @@ describe('RelationshipManager', () => {
   let confirmSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    useDashboardStore.getState().reset();
     mockGetRelationshipsForPerson.mockReset().mockResolvedValue([]);
     mockGetPersons.mockReset().mockResolvedValue([]);
     mockCreateRelationship.mockReset().mockResolvedValue(undefined);

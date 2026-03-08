@@ -1,30 +1,13 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import MemberDetailModal from './MemberDetailModal';
 
 vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: { children: ReactNode }) => <a href="/mock">{children}</a>,
-}));
-
-const mockSetMemberModalId = vi.fn();
-let mockMemberModalId: string | null = null;
-
-vi.mock('../../dashboard/store/dashboardStore', () => ({
-  useDashboardStore: () => ({
-    memberModalId: mockMemberModalId,
-    setMemberModalId: mockSetMemberModalId,
-    showAvatar: true,
-    setShowAvatar: vi.fn(),
-    view: 'list' as const,
-    setView: vi.fn(),
-    rootId: null,
-    setRootId: vi.fn(),
-    showCreateModal: false,
-    setShowCreateModal: vi.fn(),
-  }),
 }));
 
 const mockGetPersonById = vi.fn();
@@ -38,14 +21,18 @@ vi.mock('./MemberDetailContent', () => ({
 }));
 
 describe('MemberDetailModal', () => {
+  beforeEach(() => {
+    useDashboardStore.getState().reset();
+    mockGetPersonById.mockReset();
+  });
+
   it('does not render when memberModalId is null', () => {
-    mockMemberModalId = null;
     const { container } = render(<MemberDetailModal isAdmin={true} />);
     expect(container.querySelector('.fixed')).not.toBeInTheDocument();
   });
 
   it('renders modal with member content when open', async () => {
-    mockMemberModalId = 'person-1';
+    useDashboardStore.getState().setMemberModalId('person-1');
     const person = createPerson({ id: 'person-1', fullName: 'Nguyễn Văn A' });
     mockGetPersonById.mockResolvedValue({ ...person, privateDetails: null });
 
@@ -58,7 +45,7 @@ describe('MemberDetailModal', () => {
   });
 
   it('shows close button', async () => {
-    mockMemberModalId = 'person-1';
+    useDashboardStore.getState().setMemberModalId('person-1');
     mockGetPersonById.mockResolvedValue({
       ...createPerson({ id: 'person-1', fullName: 'Test' }),
       privateDetails: null,
@@ -72,7 +59,7 @@ describe('MemberDetailModal', () => {
   });
 
   it('shows loading state while fetching', () => {
-    mockMemberModalId = 'person-1';
+    useDashboardStore.getState().setMemberModalId('person-1');
     mockGetPersonById.mockReturnValue(new Promise(() => {}));
 
     render(<MemberDetailModal isAdmin={true} />);
@@ -80,7 +67,7 @@ describe('MemberDetailModal', () => {
   });
 
   it('shows error state when getPersonById rejects', async () => {
-    mockMemberModalId = 'person-1';
+    useDashboardStore.getState().setMemberModalId('person-1');
     mockGetPersonById.mockRejectedValue(new Error('Fetch failed'));
 
     render(<MemberDetailModal isAdmin={true} />);
@@ -91,7 +78,7 @@ describe('MemberDetailModal', () => {
   });
 
   it('close button calls setMemberModalId(null)', async () => {
-    mockMemberModalId = 'person-1';
+    useDashboardStore.getState().setMemberModalId('person-1');
     mockGetPersonById.mockResolvedValue({
       ...createPerson({ id: 'person-1', fullName: 'Test' }),
       privateDetails: null,
@@ -105,6 +92,6 @@ describe('MemberDetailModal', () => {
     });
 
     await user.click(screen.getByLabelText(/đóng/i));
-    expect(mockSetMemberModalId).toHaveBeenCalledWith(null);
+    expect(useDashboardStore.getState().memberModalId).toBeNull();
   });
 });

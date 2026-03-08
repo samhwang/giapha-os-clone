@@ -1,31 +1,17 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import type { Person } from '../../types';
-
-const mockSetMemberModalId = vi.fn();
-
-vi.mock('../../dashboard/store/dashboardStore', () => ({
-  useDashboardStore: () => ({
-    showAvatar: true,
-    setShowAvatar: vi.fn(),
-    setMemberModalId: mockSetMemberModalId,
-    view: 'tree' as const,
-    setView: vi.fn(),
-    memberModalId: null,
-    rootId: null,
-    setRootId: vi.fn(),
-    showCreateModal: false,
-    setShowCreateModal: vi.fn(),
-  }),
-}));
-
 import FamilyNodeCard from './FamilyNodeCard';
 
 const makePerson = (overrides: Partial<Person> = {}) => createPerson(overrides) as Person;
 
 describe('FamilyNodeCard', () => {
+  beforeEach(() => {
+    useDashboardStore.getState().reset();
+  });
   it('renders person name', () => {
     const person = makePerson({ fullName: 'Vạn Công Trí' });
     render(<FamilyNodeCard person={person} />);
@@ -69,7 +55,7 @@ describe('FamilyNodeCard', () => {
     render(<FamilyNodeCard person={person} />);
 
     await user.click(screen.getByRole('button'));
-    expect(mockSetMemberModalId).toHaveBeenCalledWith('person-123');
+    expect(useDashboardStore.getState().memberModalId).toBe('person-123');
   });
 
   it('calls onClickCard when provided', async () => {

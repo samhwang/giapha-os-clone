@@ -1,32 +1,18 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { vanCongGoc, vanCongThuan, vanThiBinh } from '../../../test/fixtures';
 import { renderWithProviders } from '../../../test/render-wrapper';
 import type { Person } from '../../types';
-
-const mockSetRootId = vi.fn();
-
-vi.mock('../store/dashboardStore', () => ({
-  useDashboardStore: () => ({
-    setRootId: mockSetRootId,
-    showAvatar: true,
-    setShowAvatar: vi.fn(),
-    view: 'tree' as const,
-    setView: vi.fn(),
-    memberModalId: null,
-    setMemberModalId: vi.fn(),
-    rootId: null,
-    showCreateModal: false,
-    setShowCreateModal: vi.fn(),
-  }),
-}));
-
+import { useDashboardStore } from '../store/dashboardStore';
 import RootSelector from './RootSelector';
 
 const persons = [vanCongGoc, vanCongThuan, vanThiBinh] as Person[];
 
 describe('RootSelector', () => {
+  beforeEach(() => {
+    useDashboardStore.getState().reset();
+  });
   it('displays current root person name', () => {
     renderWithProviders(<RootSelector persons={persons} currentRootId={vanCongGoc.id} />);
     expect(screen.getByText('Vạn Công Gốc')).toBeInTheDocument();
@@ -58,7 +44,7 @@ describe('RootSelector', () => {
     await user.click(screen.getByText('Vạn Công Gốc'));
     await user.click(screen.getByText('Vạn Công Thuận'));
 
-    expect(mockSetRootId).toHaveBeenCalledWith(vanCongThuan.id);
+    expect(useDashboardStore.getState().rootId).toBe(vanCongThuan.id);
   });
 
   it('shows empty state when no search results', async () => {
