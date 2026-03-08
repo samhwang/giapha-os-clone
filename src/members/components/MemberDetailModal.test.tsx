@@ -12,9 +12,8 @@ vi.mock('@tanstack/react-router', () => ({
 const mockSetMemberModalId = vi.fn();
 let mockMemberModalId: string | null = null;
 
-vi.mock('../../dashboard/components/DashboardContext', () => ({
-  DashboardContext: { Provider: ({ children }: { children: ReactNode }) => children },
-  useDashboard: () => ({
+vi.mock('../../dashboard/store/dashboardStore', () => ({
+  useDashboardStore: () => ({
     memberModalId: mockMemberModalId,
     setMemberModalId: mockSetMemberModalId,
     showAvatar: true,
@@ -23,6 +22,8 @@ vi.mock('../../dashboard/components/DashboardContext', () => ({
     setView: vi.fn(),
     rootId: null,
     setRootId: vi.fn(),
+    showCreateModal: false,
+    setShowCreateModal: vi.fn(),
   }),
 }));
 

@@ -8,8 +8,8 @@ vi.mock('../../relationships/components/RelationshipManager', () => ({
   default: () => <div data-testid="relationship-manager" />,
 }));
 
-vi.mock('../../dashboard/components/DashboardContext', () => ({
-  useDashboard: () => ({
+vi.mock('../../dashboard/store/dashboardStore', () => ({
+  useDashboardStore: () => ({
     memberModalId: null,
     setMemberModalId: vi.fn(),
     showAvatar: true,
@@ -18,6 +18,8 @@ vi.mock('../../dashboard/components/DashboardContext', () => ({
     setView: vi.fn(),
     rootId: null,
     setRootId: vi.fn(),
+    showCreateModal: false,
+    setShowCreateModal: vi.fn(),
   }),
 }));
 

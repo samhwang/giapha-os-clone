@@ -6,8 +6,8 @@ import type { Person } from '../../types';
 
 const mockSetMemberModalId = vi.fn();
 
-vi.mock('../../dashboard/components/DashboardContext', () => ({
-  useDashboard: () => ({
+vi.mock('../../dashboard/store/dashboardStore', () => ({
+  useDashboardStore: () => ({
     showAvatar: true,
     setShowAvatar: vi.fn(),
     setMemberModalId: mockSetMemberModalId,
@@ -16,6 +16,8 @@ vi.mock('../../dashboard/components/DashboardContext', () => ({
     memberModalId: null,
     rootId: null,
     setRootId: vi.fn(),
+    showCreateModal: false,
+    setShowCreateModal: vi.fn(),
   }),
 }));
 

@@ -5,8 +5,8 @@ import { describe, expect, it, vi } from 'vitest';
 const mockSetShowAvatar = vi.fn();
 let mockShowAvatar = true;
 
-vi.mock('./DashboardContext', () => ({
-  useDashboard: () => ({
+vi.mock('../store/dashboardStore', () => ({
+  useDashboardStore: () => ({
     showAvatar: mockShowAvatar,
     setShowAvatar: mockSetShowAvatar,
     view: 'list' as const,
@@ -15,6 +15,8 @@ vi.mock('./DashboardContext', () => ({
     setMemberModalId: vi.fn(),
     rootId: null,
     setRootId: vi.fn(),
+    showCreateModal: false,
+    setShowCreateModal: vi.fn(),
   }),
 }));
 

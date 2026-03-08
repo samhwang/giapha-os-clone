@@ -2,8 +2,8 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import EventsList from './EventsList';
 
-vi.mock('../../dashboard/components/DashboardContext', () => ({
-  useDashboard: () => ({
+vi.mock('../../dashboard/store/dashboardStore', () => ({
+  useDashboardStore: () => ({
     memberModalId: null,
     setMemberModalId: vi.fn(),
     showAvatar: true,
@@ -12,6 +12,8 @@ vi.mock('../../dashboard/components/DashboardContext', () => ({
     setView: vi.fn(),
     rootId: null,
     setRootId: vi.fn(),
+    showCreateModal: false,
+    setShowCreateModal: vi.fn(),
   }),
 }));
 
