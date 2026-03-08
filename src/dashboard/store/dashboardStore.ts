@@ -1,5 +1,6 @@
+import { produce } from 'immer';
 import { create } from 'zustand';
-import { immer } from 'zustand/middleware/immer';
+import { devtools } from 'zustand/middleware';
 import type { ViewMode } from '../components/ViewToggle';
 
 export interface DashboardState {
@@ -27,99 +28,100 @@ const updateUrl = (key: string, value: string | null) => {
   window.history.replaceState(null, '', newUrl.toString());
 };
 
-const getInitialState = (): Omit<DashboardState, 'setMemberModalId' | 'setShowCreateModal' | 'setShowAvatar' | 'setView' | 'setRootId' | 'reset'> => {
-  if (typeof window === 'undefined') {
-    return {
-      memberModalId: null,
-      showCreateModal: false,
-      showAvatar: true,
-      view: 'list' as ViewMode,
-      rootId: null,
-    };
-  }
+const getInitialState = () => ({
+  memberModalId: null as string | null,
+  showCreateModal: false,
+  showAvatar: true,
+  view: 'list' as ViewMode,
+  rootId: null as string | null,
+});
+
+const readUrlState = () => {
+  if (typeof window === 'undefined') return getInitialState();
 
   const sp = new URLSearchParams(window.location.search);
+  const defaults = getInitialState();
 
-  let showAvatar = true;
   const avatarParam = sp.get('avatar');
-  if (avatarParam === 'hide') showAvatar = false;
+  if (avatarParam === 'hide') defaults.showAvatar = false;
 
-  let view: ViewMode = 'list';
   const viewParam = sp.get('view') as ViewMode;
-  if (viewParam) view = viewParam;
+  if (viewParam) defaults.view = viewParam;
 
-  let rootId: string | null = null;
   const rootIdParam = sp.get('rootId');
-  if (rootIdParam) rootId = rootIdParam;
+  if (rootIdParam) defaults.rootId = rootIdParam;
 
-  let memberModalId: string | null = null;
   const modalId = sp.get('memberModalId');
-  if (modalId) memberModalId = modalId;
+  if (modalId) defaults.memberModalId = modalId;
 
-  return {
-    memberModalId,
-    showCreateModal: false,
-    showAvatar,
-    view,
-    rootId,
-  };
+  return defaults;
 };
 
-const initial = getInitialState();
+const initial = readUrlState();
 
-type ImmerSet = typeof import('zustand').create<DashboardState> extends (
-  f: (set: (partial: (state: DashboardState) => void) => void) => DashboardState
-) => unknown
-  ? (partial: (state: DashboardState) => void) => void
-  : never;
+export const useDashboardStore = create<DashboardState>()(
+  devtools(
+    (set) => ({
+      ...initial,
 
-export const useDashboardStore = create(
-  immer((set: ImmerSet) => ({
-    ...initial,
+      reset: () => {
+        set(getInitialState());
+      },
 
-    reset: () => {
-      const initialState = getInitialState();
-      set((state: DashboardState) => {
-        state.memberModalId = initialState.memberModalId;
-        state.showCreateModal = initialState.showCreateModal;
-        state.showAvatar = initialState.showAvatar;
-        state.view = initialState.view;
-        state.rootId = initialState.rootId;
-      });
-    },
+      setMemberModalId: (id) => {
+        set(
+          produce((state: DashboardState) => {
+            state.memberModalId = id;
+          }),
+          undefined,
+          'setMemberModalId'
+        );
+        updateUrl('memberModalId', id);
+      },
 
-    setMemberModalId: (id: string | null) => {
-      set((state: DashboardState) => {
-        state.memberModalId = id;
-      });
-      updateUrl('memberModalId', id);
-    },
+      setShowCreateModal: (show) => {
+        set(
+          produce((state: DashboardState) => {
+            state.showCreateModal = show;
+          }),
+          undefined,
+          'setShowCreateModal'
+        );
+      },
 
-    setShowCreateModal: (show: boolean) => {
-      set((state: DashboardState) => {
-        state.showCreateModal = show;
-      });
-    },
+      setShowAvatar: (show) => {
+        set(
+          produce((state: DashboardState) => {
+            state.showAvatar = show;
+          }),
+          undefined,
+          'setShowAvatar'
+        );
+        updateUrl('avatar', show ? null : 'hide');
+      },
 
-    setShowAvatar: (show: boolean) => {
-      set((state: DashboardState) => {
-        state.showAvatar = show;
-      });
-      updateUrl('avatar', show ? null : 'hide');
-    },
+      setView: (v) => {
+        set(
+          produce((state: DashboardState) => {
+            state.view = v;
+          }),
+          undefined,
+          'setView'
+        );
+        updateUrl('view', v);
+      },
 
-    setView: (v: ViewMode) => {
-      set((state: DashboardState) => {
-        state.view = v;
-      });
-      updateUrl('view', v);
-    },
-
-    setRootId: (id: string | null) => {
-      set((state: DashboardState) => {
-        state.rootId = id;
-      });
-      updateUrl('rootId', id);
-    },
-  })) as unknown as () => DashboardState
+      setRootId: (id) => {
+        set(
+          produce((state: DashboardState) => {
+            state.rootId = id;
+          }),
+          undefined,
+          'setRootId'
+        );
+        updateUrl('rootId', id);
+      },
+    }),
+    { name: 'dashboard' }
+  )
 );
