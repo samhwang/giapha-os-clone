@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
 import type { ViewMode } from '../components/ViewToggle';
 
 export interface DashboardState {
@@ -12,6 +13,7 @@ export interface DashboardState {
   setView: (view: ViewMode) => void;
   rootId: string | null;
   setRootId: (id: string | null) => void;
+  reset: () => void;
 }
 
 const updateUrl = (key: string, value: string | null) => {
@@ -25,7 +27,7 @@ const updateUrl = (key: string, value: string | null) => {
   window.history.replaceState(null, '', newUrl.toString());
 };
 
-const getInitialState = () => {
+const getInitialState = (): Omit<DashboardState, 'setMemberModalId' | 'setShowCreateModal' | 'setShowAvatar' | 'setView' | 'setRootId' | 'reset'> => {
   if (typeof window === 'undefined') {
     return {
       memberModalId: null,
@@ -63,34 +65,61 @@ const getInitialState = () => {
   };
 };
 
-export const useDashboardStore = create<DashboardState>((set) => {
-  const initial = getInitialState();
+const initial = getInitialState();
 
-  return {
+type ImmerSet = typeof import('zustand').create<DashboardState> extends (
+  f: (set: (partial: (state: DashboardState) => void) => void) => DashboardState
+) => unknown
+  ? (partial: (state: DashboardState) => void) => void
+  : never;
+
+export const useDashboardStore = create(
+  immer((set: ImmerSet) => ({
     ...initial,
 
-    setMemberModalId: (id) => {
-      set({ memberModalId: id });
+    reset: () => {
+      const initialState = getInitialState();
+      set((state: DashboardState) => {
+        state.memberModalId = initialState.memberModalId;
+        state.showCreateModal = initialState.showCreateModal;
+        state.showAvatar = initialState.showAvatar;
+        state.view = initialState.view;
+        state.rootId = initialState.rootId;
+      });
+    },
+
+    setMemberModalId: (id: string | null) => {
+      set((state: DashboardState) => {
+        state.memberModalId = id;
+      });
       updateUrl('memberModalId', id);
     },
 
-    setShowCreateModal: (show) => {
-      set({ showCreateModal: show });
+    setShowCreateModal: (show: boolean) => {
+      set((state: DashboardState) => {
+        state.showCreateModal = show;
+      });
     },
 
-    setShowAvatar: (show) => {
-      set({ showAvatar: show });
+    setShowAvatar: (show: boolean) => {
+      set((state: DashboardState) => {
+        state.showAvatar = show;
+      });
       updateUrl('avatar', show ? null : 'hide');
     },
 
-    setView: (v) => {
-      set({ view: v });
+    setView: (v: ViewMode) => {
+      set((state: DashboardState) => {
+        state.view = v;
+      });
       updateUrl('view', v);
     },
 
-    setRootId: (id) => {
-      set({ rootId: id });
+    setRootId: (id: string | null) => {
+      set((state: DashboardState) => {
+        state.rootId = id;
+      });
       updateUrl('rootId', id);
     },
-  };
-});
+  })) as unknown as () => DashboardState
+);
