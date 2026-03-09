@@ -2,9 +2,6 @@
   "name": "giapha-os-clone",
   "private": true,
   "type": "module",
-  "imports": {
-    "#/*": "./src/*"
-  },
   "engines": {
     "node": "^22.0.0",
     "pnpm": "^10.0.0"
@@ -28,7 +25,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "lint:fix:unsafe": "biome check --write --unsafe .",
-    "ci": "biome ci .",
+    "lint:ci": "biome ci .",
     "typecheck": "tsc",
     "prisma:push": "prisma db push",
     "prisma:migrate:dev": "prisma migrate dev",

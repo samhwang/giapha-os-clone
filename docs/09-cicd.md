@@ -99,7 +99,7 @@ The project uses lint-staged with Biome to run lint checks on staged files befor
 Before pushing to remote, the pre-push hook runs:
 
 ```bash
-pnpm run ci          # Lint check
+pnpm run lint:ci     # Lint check
 pnpm run test:run    # All tests
 pnpm run typecheck   # TypeScript check
 ```

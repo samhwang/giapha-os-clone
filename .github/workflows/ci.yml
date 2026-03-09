@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        task: ["ci", "typecheck", "test:ui", "test:server", "test:integration"]
+        task: ["lint:ci", "typecheck", "test:ui", "test:server", "test:integration"]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node-deps
@@ -23,8 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node-deps
-      - run: npx playwright install
       - run: cp .env.sample .env
+      - run: npx playwright install
       - run: |
           docker compose up -d
           ./scripts/setup-garage.sh

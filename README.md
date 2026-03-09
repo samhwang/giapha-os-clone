@@ -107,7 +107,7 @@ For self-hosted production deployment, see the [Deployment Guide](./docs/07-depl
 | `pnpm run lint` | Check linting (Biome) |
 | `pnpm run lint:fix` | Auto-fix lint issues |
 | `pnpm run typecheck` | TypeScript type checking |
-| `pnpm run ci` | Strict CI linting check |
+| `pnpm run lint:ci` | Strict CI linting check |
 | `pnpm run prisma:studio` | Open Prisma database GUI |
 | `pnpm run prisma:push` | Push schema to database |
 | `pnpm run prisma:generate` | Generate Prisma client |
