@@ -1,47 +1,36 @@
-import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { serverEnv } from './env.server';
 
-const s3 = new S3Client({
-  endpoint: serverEnv.S3_ENDPOINT,
-  region: 'garage',
-  credentials: {
-    accessKeyId: serverEnv.S3_ACCESS_KEY,
-    secretAccessKey: serverEnv.S3_SECRET_KEY,
-  },
-  forcePathStyle: true,
-});
-
-const bucket = serverEnv.S3_BUCKET;
+const UPLOADS_PREFIX = '/api/uploads/';
 
 export function getPublicUrl(key: string): string {
-  return `${serverEnv.S3_ENDPOINT}/${bucket}/${key}`;
+  return `${UPLOADS_PREFIX}${key}`;
 }
 
-export async function uploadAvatar(buffer: Buffer, personId: string, filename: string, contentType: string): Promise<string> {
+export async function uploadAvatar(buffer: Buffer, personId: string, filename: string, _contentType: string): Promise<string> {
   const key = `avatars/${personId}/${filename}`;
+  const dir = path.join(serverEnv.UPLOAD_DIR, 'avatars', personId);
 
-  await s3.send(
-    new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: buffer,
-      ContentType: contentType,
-    })
-  );
+  await fs.mkdir(dir, { recursive: true });
+  await fs.writeFile(path.join(dir, filename), buffer);
 
   return getPublicUrl(key);
 }
 
 export async function deleteAvatar(url: string): Promise<void> {
-  const baseUrl = `${serverEnv.S3_ENDPOINT}/${bucket}/`;
-  if (!url.startsWith(baseUrl)) return;
+  if (!url.startsWith(UPLOADS_PREFIX)) return;
 
-  const key = url.slice(baseUrl.length);
+  const key = url.slice(UPLOADS_PREFIX.length);
+  const filePath = path.resolve(serverEnv.UPLOAD_DIR, key);
 
-  await s3.send(
-    new DeleteObjectCommand({
-      Bucket: bucket,
-      Key: key,
-    })
-  );
+  // Ensure the resolved path is within UPLOAD_DIR to prevent traversal
+  const resolvedUploadDir = path.resolve(serverEnv.UPLOAD_DIR);
+  if (!filePath.startsWith(resolvedUploadDir)) return;
+
+  try {
+    await fs.unlink(filePath);
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
+  }
 }
