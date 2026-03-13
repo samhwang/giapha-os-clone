@@ -18,16 +18,27 @@ jobs:
       - run: cp .env.sample .env
       - run: pnpm run ${{ matrix.task }}
 
-  # e2e:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v6
-  #     - uses: ./.github/actions/setup-node-deps
-  #     - run: cp .env.sample .env
-  #     - run: npx playwright install
-  #     - run: |
-  #         docker compose up -d
-  #         pnpm run prisma:migrate:dev
-  #         pnpm run prisma:seed
-  #         pnpm run test:e2e
-  #         docker compose down
+  e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: giapha
+          POSTGRES_DB: giapha
+          POSTGRES_USER: giapha
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-node-deps
+      - run: cp .env.sample .env
+      - run: npx playwright install
+      - run: pnpm run prisma:migrate:dev
+      - run: pnpm run prisma:seed
+      - run: pnpm run test:e2e
