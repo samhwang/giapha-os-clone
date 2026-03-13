@@ -19,11 +19,11 @@ docker compose logs -f        # Follow logs
 - Backup: `docker compose exec postgres pg_dump -U giapha giapha > backup.sql`
 - Restore: `docker compose exec -T postgres psql -U giapha giapha < backup.sql`
 
-### Garage (S3 Storage)
+### File Storage
 
-- Setup: `./scripts/setup-garage.sh`
-- S3 API: port 3900
-- Admin API: port 3902
+- Uploads are stored on the local filesystem under `UPLOAD_DIR` (default `./uploads`)
+- Served via `/api/uploads/` route
+- In Docker, mount a volume at `/app/uploads` for persistence
 
 ### Environment Variables
 
@@ -32,15 +32,11 @@ docker compose logs -f        # Follow logs
 | `DATABASE_URL` | PostgreSQL connection string |
 | `BETTER_AUTH_SECRET` | Auth secret (32+ chars) |
 | `BETTER_AUTH_URL` | Application URL |
-| `S3_ENDPOINT` | Garage S3 API URL |
-| `S3_ACCESS_KEY` | Garage access key |
-| `S3_SECRET_KEY` | Garage secret key |
-| `S3_BUCKET` | Storage bucket name |
+| `UPLOAD_DIR` | File upload directory (default `./uploads`) |
 
 ### Health Checks
 
 ```bash
 docker compose exec postgres pg_isready     # PostgreSQL
-curl http://localhost:3902/health          # Garage
-curl http://localhost:3000                # Application
+curl http://localhost:3000                   # Application
 ```

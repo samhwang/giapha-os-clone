@@ -10,7 +10,7 @@ Gia Pha OS Clone is a self-hosted Vietnamese genealogy and family tree managemen
 
 The project focuses on:
 
-- **Self-hosting**: All infrastructure runs via Docker Compose (PostgreSQL, Garage S3)
+- **Self-hosting**: All infrastructure runs via Docker Compose (PostgreSQL, local filesystem)
 - **Data sovereignty**: Families control their own genealogical data
 - **Vietnamese culture**: Kinship naming, lunar calendar, death anniversaries
 - **Maintainability**: Clean code, comprehensive tests, clear documentation
@@ -18,7 +18,7 @@ The project focuses on:
 ## Role & Technical Context
 
 - **Domain**: Vietnamese genealogy/family tree management
-- **Tech Stack**: TanStack Start, React 19, TypeScript, Prisma, PostgreSQL, Better Auth, Garage (S3), Tailwind CSS v4
+- **Tech Stack**: TanStack Start, React 19, TypeScript, Prisma, PostgreSQL, Better Auth, Local filesystem, Tailwind CSS v4
 - **Architecture**: Full-stack app with server functions, file-based routing, Docker Compose infrastructure
 - **Deployment**: Self-hosted via Docker Compose
 - **Package Manager**: pnpm
@@ -41,7 +41,7 @@ All changes must be:
 ├── rules/                # Domain-specific guidelines and constraints
 │   ├── commands.md       # Development workflow commands
 │   ├── code-style.md     # Formatting, naming, file organization
-│   ├── patterns.md       # TanStack, Prisma, Better Auth, S3 patterns
+│   ├── patterns.md       # TanStack, Prisma, Better Auth, storage patterns
 │   ├── testing.md        # Vitest, React Testing Library, TDD/BDD
 │   ├── deployment.md     # Docker Compose, self-hosting
 │   └── communication.md  # Commit messages, docs, writing style
@@ -88,9 +88,9 @@ Load these rules when working on relevant domains:
 
 - **[commands.md](.agents/rules/commands.md)** - Development workflow commands (Docker, pnpm, Prisma, Biome, Vitest)
 - **[code-style.md](.agents/rules/code-style.md)** - Code formatting, TypeScript conventions, naming, file organization
-- **[patterns.md](.agents/rules/patterns.md)** - TanStack Start/Router, Prisma, Better Auth, Tailwind, S3 patterns
+- **[patterns.md](.agents/rules/patterns.md)** - TanStack Start/Router, Prisma, Better Auth, Tailwind, storage patterns
 - **[testing.md](.agents/rules/testing.md)** - Vitest, React Testing Library, TDD/BDD, coverage targets
-- **[deployment.md](.agents/rules/deployment.md)** - Docker Compose, PostgreSQL, Garage, environment setup
+- **[deployment.md](.agents/rules/deployment.md)** - Docker Compose, PostgreSQL, file storage, environment setup
 - **[communication.md](.agents/rules/communication.md)** - Conventional Commits, documentation style, writing conventions
 
 ## Available Skills
@@ -113,7 +113,7 @@ Add skills under `.agents/skills/[skill-name]/SKILL.md` as needed.
 - **TanStack Router** (file-based routing)
 - **Prisma** + PostgreSQL (database)
 - **Better Auth** (authentication)
-- **Garage** (S3-compatible file storage)
+- **Local filesystem** (file uploads via `UPLOAD_DIR`)
 - **Tailwind CSS v4** (styling/animation)
 - **Biome** (linting + formatting)
 - **Vitest** + React Testing Library (testing)
@@ -121,7 +121,7 @@ Add skills under `.agents/skills/[skill-name]/SKILL.md` as needed.
 ### Essential Commands
 
 ```bash
-docker compose up -d     # Start PostgreSQL + Garage
+docker compose up -d     # Start PostgreSQL
 pnpm dev                 # Development server
 pnpm build               # Production build
 pnpm test                # Run tests (watch mode)
@@ -196,7 +196,7 @@ pnpm prisma generate
 
 - **Clone project**: Reimplementation of [Gia Pha OS](https://github.com/homielab/giapha-os)
 - **Reference code**: Available in `base/giapha-os/` directory
-- **Self-hosted**: Docker Compose for PostgreSQL + Garage (S3)
+- **Self-hosted**: Docker Compose for PostgreSQL + Local filesystem
 - **Vietnamese genealogy**: Kinship terms, lunar calendar, family tree visualization
 - **Core modules**: `src/utils/**` (kinship, dates, events), `src/server/functions/**` (business logic)
 - **Code quality**: Biome for linting/formatting, TypeScript strict mode, comprehensive tests

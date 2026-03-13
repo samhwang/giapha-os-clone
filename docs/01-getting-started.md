@@ -4,7 +4,7 @@ TL;DR: Clone the repo, install dependencies, start Docker services, run migratio
 
 ## Prerequisites
 
-- **Docker** & Docker Compose - for PostgreSQL and Garage (S3 storage)
+- **Docker** & Docker Compose - for PostgreSQL
 - **pnpm** - package manager
 - **Node.js** 20+ - runtime
 
@@ -35,10 +35,7 @@ Edit `.env` with your settings. The default values work for local development:
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/giapha"
-S3_ACCESS_KEY="garage_access_key"
-S3_SECRET_KEY="garage_secret_key"
-S3_ENDPOINT="http://localhost:3900"
-S3_BUCKET="giapha"
+UPLOAD_DIR=./uploads
 BETTER_AUTH_SECRET="your-secret-key-change-in-production"
 BETTER_AUTH_URL="http://localhost:3000"
 ```
@@ -51,7 +48,8 @@ docker compose up -d
 
 This starts:
 - **PostgreSQL** on port 5432
-- **Garage** (S3-compatible storage) on port 3900
+
+File uploads are stored locally under `UPLOAD_DIR` (default `./uploads`), which is created automatically.
 
 ### 5. Setup database
 
@@ -111,7 +109,7 @@ Make sure Docker is running:
 
 ```bash
 docker ps
-# Should show postgres and garage containers
+# Should show postgres container
 ```
 
 ### Reset database

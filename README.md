@@ -9,7 +9,7 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 - **Framework**: [TanStack Start](https://tanstack.com/start) (React 19, TypeScript)
 - **Authentication**: [Better Auth](https://www.better-auth.com/)
 - **Database**: [Prisma](https://www.prisma.io/) + PostgreSQL
-- **File Storage**: [Garage](https://garagehq.deuxfleurs.fr/) (S3-compatible)
+- **File Storage**: Local filesystem
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Linting/Formatting**: [Biome](https://biomejs.dev/)
 - **Testing**: [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) + [Vitest Browser Mode](https://vitest.dev/guide/browser/)
@@ -32,10 +32,6 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 - [Node.js](https://nodejs.org/) v22.x
 - [pnpm](https://pnpm.io/) v10.x
 - [Docker](https://www.docker.com/) + Docker Compose
-- [jq](https://jqlang.github.io/jq/) (used by `setup-garage.sh`)
-- For Windows: [jq for Windows](https://jqlang.github.io/jq/download/) + [curl](https://curl.se/windows/) (or use WSL - see below)
-
-> **Note for Windows users**: While Windows versions of the Garage setup script are provided (`setup-garage.bat` and `setup-garage.ps1`), they have limited testing. For the best experience and easiest troubleshooting, we strongly recommend using [WSL](https://learn.microsoft.com/en-us/windows/wsl/) to run the Linux scripts. If you encounter issues with the Windows versions, please try running the bash script in WSL instead.
 
 ## Quick Start (Development)
 
@@ -45,39 +41,35 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
    docker compose up -d
    ```
 
-2. **Set up Garage storage bucket**
-
-   ```bash
-   ./scripts/setup-garage.sh
-   ```
-
-3. **Set up Better Auth token**
+2. **Set up Better Auth token**
 
   ```bash
   pnpm run auth:secret
   ```
 
-4. **Install dependencies**
+3. **Install dependencies**
 
    ```bash
    pnpm install
    ```
 
-5. **Configure environment**
+   > The uploads directory is created automatically when the server starts.
+
+4. **Configure environment**
 
    ```bash
    cp .env.sample .env
-   # Edit .env with your S3 keys from the Garage and Better Auth setup output
+   # Edit .env with your settings
    ```
 
-6. **Set up database**
+5. **Set up database**
 
    ```bash
    pnpm run prisma:migrate:dev
    pnpm run prisma:seed
    ```
 
-7. **Start development server**
+6. **Start development server**
 
    ```bash
    pnpm run dev
@@ -134,7 +126,7 @@ For self-hosted production deployment, see the [Deployment Guide](./docs/07-depl
 │   ├── test-utils/       # Test fixtures and helpers
 │   ├── types/            # TypeScript type definitions
 │   └── utils/            # Pure utility functions
-├── docker-compose.yml    # PostgreSQL + Garage
+├── docker-compose.yml    # PostgreSQL
 └── biome.json            # Linter/formatter config
 ```
 

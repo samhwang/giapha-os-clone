@@ -1,6 +1,6 @@
 # Attribution & Divergence
 
-TL;DR: This project is a reimplementation of Gia Pha OS, with significant architectural changes including TanStack Start, Better Auth, Prisma, and Garage S3.
+TL;DR: This project is a reimplementation of Gia Pha OS, with significant architectural changes including TanStack Start, Better Auth, Prisma, and local filesystem storage.
 
 ## Attribution
 
@@ -17,7 +17,7 @@ This project has evolved significantly beyond being a direct clone. The original
 | Framework | Next.js | TanStack Start |
 | Auth | Supabase Auth | Better Auth |
 | Database | Supabase (PostgreSQL) | Prisma + PostgreSQL |
-| File Storage | Supabase Storage | Garage (S3-compatible) |
+| File Storage | Supabase Storage | Local filesystem |
 | Styling | CSS Modules + custom | Tailwind CSS v4 |
 
 ## Code Improvements

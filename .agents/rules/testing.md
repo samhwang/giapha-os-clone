@@ -41,7 +41,7 @@ pnpm test:e2e:ui            # Playwright UI mode
 
 ### Layer 2: Server Functions (inner logic via Testcontainers)
 
-- **DO NOT mock Prisma** — use Testcontainers for real PostgreSQL + Garage
+- **DO NOT mock Prisma** — use Testcontainers for real PostgreSQL
 - Test the **inner business logic** directly, not the TanStack Start wrapper
 - Extract core logic into testable functions, call them directly from tests
 - Use Testcontainers globalSetup for database lifecycle

@@ -1,6 +1,6 @@
 # Architecture
 
-TL;DR: TanStack Start + React 19 + TanStack Router for full-stack, Prisma + PostgreSQL for database, Better Auth for authentication, Garage (S3) for file storage.
+TL;DR: TanStack Start + React 19 + TanStack Router for full-stack, Prisma + PostgreSQL for database, Better Auth for authentication, local filesystem for file storage.
 
 ## Tech Stack
 
@@ -12,7 +12,7 @@ TL;DR: TanStack Start + React 19 + TanStack Router for full-stack, Prisma + Post
 | Database | PostgreSQL | 15+ |
 | ORM | Prisma | 6.x |
 | Auth | Better Auth | latest |
-| Storage | Garage (S3-compatible) | latest |
+| Storage | Local filesystem | - |
 | Styling | Tailwind CSS | 4.x |
 | i18n | react-i18next | latest |
 | Testing | Vitest | 4.x |
@@ -29,7 +29,7 @@ src/
 │   ├── auth-client.ts    # Auth client (browser)
 │   ├── auth-server.ts    # Auth server (node)
 │   ├── db.ts            # Prisma client
-│   └── storage.ts       # S3 storage utilities
+│   └── storage.ts       # File storage utilities
 ├── routes/              # TanStack Router file-based routing
 │   ├── index.tsx        # Landing page (/)
 │   ├── login.tsx        # Login page (/login)
@@ -123,6 +123,6 @@ Used in loaders and actions for database operations.
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string |
-| `S3_*` | S3 storage configuration (endpoint, access key, secret key, bucket) |
+| `UPLOAD_DIR` | File upload directory (default `./uploads`) |
 | `BETTER_AUTH_SECRET` | Auth encryption key |
 | `BETTER_AUTH_URL` | Public URL for auth |

@@ -205,34 +205,29 @@ Available animations: `fade-in`, `fade-in-up`, `scale-in` (defined in `src/style
 >
 ```
 
-## S3/Garage Storage
+## File Storage
 
 ### Upload Pattern
 
-```tsx
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+Avatar files are stored on the local filesystem under `UPLOAD_DIR` (default `./uploads`):
 
-const s3 = new S3Client({
-  endpoint: process.env.S3_ENDPOINT,
-  region: 'garage',
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY!,
-    secretAccessKey: process.env.S3_SECRET_KEY!,
-  },
-  forcePathStyle: true,
-});
+```tsx
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 // Upload
-await s3.send(new PutObjectCommand({
-  Bucket: process.env.S3_BUCKET,
-  Key: `avatars/${personId}/${filename}`,
-  Body: buffer,
-  ContentType: contentType,
-}));
+const dir = path.join(UPLOAD_DIR, 'avatars', personId);
+await fs.mkdir(dir, { recursive: true });
+await fs.writeFile(path.join(dir, filename), buffer);
+
+// Delete
+await fs.unlink(path.join(UPLOAD_DIR, key));
 ```
 
 ### Public URL Construction
 
+Files are served via an API route and stored as relative paths in the database:
+
 ```
-${S3_ENDPOINT}/${S3_BUCKET}/avatars/${personId}/${filename}
+/api/uploads/avatars/${personId}/${filename}
 ```

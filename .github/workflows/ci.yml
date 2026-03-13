@@ -27,7 +27,6 @@ jobs:
       - run: npx playwright install
       - run: |
           docker compose up -d
-          ./scripts/setup-garage.sh
           pnpm run prisma:migrate:dev
           pnpm run prisma:seed
           pnpm run test:e2e

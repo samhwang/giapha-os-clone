@@ -104,25 +104,25 @@ Language is managed via react-i18next. UI includes language switcher.
 
 ### Storage
 
-Images are stored in Garage (S3-compatible storage).
+Images are stored on the local filesystem under `UPLOAD_DIR` and served via the `/api/uploads/` route.
 
 ### Avatar Upload
 
 Members can upload avatars:
 - Supported formats: JPG, PNG, WebP
 - Max size: 5MB
-- Stored in `avatars/` bucket path
+- Stored in `uploads/avatars/{personId}/` directory
 
 ### Implementation
 
 ```typescript
-import { uploadFile, deleteFile } from '@/lib/storage'
+import { uploadAvatar, deleteAvatar } from '@/lib/storage'
 
 // Upload
-const url = await uploadFile(file, 'avatars/')
+const url = await uploadAvatar(buffer, personId, filename, contentType)
 
 // Delete
-await deleteFile('avatars/filename.jpg')
+await deleteAvatar(url)
 ```
 
 ## User Roles

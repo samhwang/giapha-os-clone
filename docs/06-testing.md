@@ -115,7 +115,7 @@ Before running E2E test, we need to make sure:
 
 - Chromium for Testing is installed (this can be managed via Playwright).
 - The DB migration and seeding scripts has been ran.
-- Garage has been setup and env is populated in the `.env` file.
+- `UPLOAD_DIR` is configured in the `.env` file.
 - There is a dev server running.
 
 The setup can be triggered by this script:
@@ -125,7 +125,6 @@ npx playwright install
 
 docker compose up -d
 pnpm run prisma:migrate:dev && pnpm run prisma:seed
-./scripts/install-garage.sh
 pnpm run dev
 
 pnpm run test:e2e

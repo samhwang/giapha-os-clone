@@ -7,7 +7,7 @@ See [docs/en/01-getting-started.md](../docs/en/01-getting-started.md) for compre
 ### Infrastructure (Docker Compose)
 
 ```bash
-docker compose up -d          # Start PostgreSQL + Garage
+docker compose up -d          # Start PostgreSQL
 docker compose down           # Stop all services
 docker compose logs -f        # Follow logs
 docker compose ps             # Check running services
@@ -57,4 +57,3 @@ pnpm typecheck && pnpm lint && pnpm test:run && pnpm build
 
 - Port 3000: `lsof -i :3000`
 - Port 5432: `lsof -i :5432` (PostgreSQL)
-- Port 3900: `lsof -i :3900` (Garage S3)

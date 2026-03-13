@@ -28,7 +28,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 ```
 feat: add kinship calculator page
 fix: correct lunar date conversion for leap months
-docs: update README with Garage setup instructions
+docs: update README with deployment instructions
 test: add kinship helper unit tests
 chore: update Prisma to v6
 refactor: extract avatar upload to shared utility
