@@ -20,7 +20,7 @@ vi.mock('@tanstack/react-start', async () => {
 });
 
 vi.mock('../src/lib/storage', () => ({
-  uploadAvatar: vi.fn(() => Promise.resolve('https://test.url/avatar.jpg')),
+  uploadAvatar: vi.fn(() => Promise.resolve('/api/uploads/avatars/test/avatar.jpg')),
   deleteAvatar: vi.fn(() => Promise.resolve()),
 }));
 
