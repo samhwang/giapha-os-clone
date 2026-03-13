@@ -5,11 +5,13 @@ import { Gender } from '../../types';
 import MemberForm from './MemberForm';
 
 const mockNavigate = vi.fn();
+const mockInvalidate = vi.fn().mockResolvedValue(undefined);
 const mockCreatePerson = vi.fn();
 const mockUpdatePerson = vi.fn();
 
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => mockNavigate,
+  useRouter: () => ({ invalidate: mockInvalidate }),
 }));
 
 vi.mock('../server/member', () => ({

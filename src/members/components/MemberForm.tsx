@@ -1,4 +1,4 @@
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useRouter } from '@tanstack/react-router';
 import { AlertCircle, Briefcase, Image as ImageIcon, Loader2, Lock, MapPin, Phone, Settings2, Trash2, User } from 'lucide-react';
 import { type SubmitEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,7 @@ interface MemberFormProps {
 export default function MemberForm({ initialData, isEditing = false, isAdmin = false, onSuccess, onCancel }: MemberFormProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -134,6 +135,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
       if (!personId) throw new Error(t('member.noIdAfterSave'));
 
       if (onSuccess) return onSuccess(personId);
+      await router.invalidate();
       navigate({ to: '/dashboard/members/$id', params: { id: personId } });
     } catch (err) {
       console.error('Error saving member:', err);
