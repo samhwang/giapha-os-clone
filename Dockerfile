@@ -39,6 +39,9 @@ RUN set -xe && \
 COPY --chown=node:node --from=build /app/dist dist
 COPY --chown=node:node --from=build /app/node_modules node_modules
 
+RUN mkdir -p /app/uploads && chown node:node /app/uploads
+VOLUME /app/uploads
+
 USER node
 ENV NODE_ENV=production
 EXPOSE 3000

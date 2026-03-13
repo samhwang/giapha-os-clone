@@ -15,16 +15,5 @@ services:
       timeout: 5s
       retries: 5
 
-  garage:
-    image: dxflrs/garage:v1.1.0
-    ports:
-      - "3900:3900"
-      - "3902:3902"
-      - "3903:3903"
-    volumes:
-      - ./.docker/garage/data:/var/lib/garage
-      - ./.docker/garage/garage.toml:/etc/garage.toml
-
 volumes:
   postgres_data:
-  garage_data:

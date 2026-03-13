@@ -20,28 +20,6 @@ services:
     networks:
       - giapha-network
 
-  garage:
-    image: dxflrs/garage:v1.1.0
-    restart: unless-stopped
-    volumes:
-      - ./.docker/garage/garage.toml:/etc/garage.toml
-      # Option 1: Named volume (default, portable)
-      - garage_data:/var/lib/garage
-
-      # Option 2: Bind mount (uncomment and customize path)
-      # - "./data/garage:/var/lib/garage"
-    ports:
-      - "3900:3900"
-      - "3902:3902"
-      - "3903:3903"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3902/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - giapha-network
-
   app:
     build: .
     image: ghcr.io/samhwang/giapha-os-clone:latest
@@ -52,17 +30,22 @@ services:
       - .env
     environment:
       - DATABASE_URL=postgresql://giapha:${DB_PASSWORD}@postgres:5432/giapha
+      - UPLOAD_DIR=/app/uploads
+    volumes:
+      # Option 1: Named volume (default, portable)
+      - uploads_data:/app/uploads
+
+      # Option 2: Bind mount (uncomment and customize path)
+      # - "./data/uploads:/app/uploads"
     depends_on:
       postgres:
-        condition: service_healthy
-      garage:
         condition: service_healthy
     networks:
       - giapha-network
 
 volumes:
   postgres_data:
-  garage_data:
+  uploads_data:
 
 networks:
   giapha-network:

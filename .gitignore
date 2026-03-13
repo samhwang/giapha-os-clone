@@ -16,5 +16,6 @@ src/generated
 src/routeTree.gen.ts
 base
 .docker/**/data
+/uploads
 .claude
 .playwright
