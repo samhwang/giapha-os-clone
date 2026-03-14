@@ -23,7 +23,7 @@ When user asks to:
 
 Create `src/components/[ComponentName].tsx`:
 
-```typescript
+```tsx
 interface ComponentNameProps {
   title: string
   children?: React.ReactNode
@@ -50,7 +50,7 @@ Use Tailwind v4 classes:
 ### Step 4: Add Animations (optional)
 
 Use Tailwind CSS animations (custom keyframes in `src/styles.css`):
-```typescript
+```tsx
 // Fade in with slide up
 <div className="animate-[fade-in-up_0.3s_ease-out_forwards]">
 
@@ -76,7 +76,7 @@ Create co-located test: `src/components/[ComponentName].test.tsx`
 
 ### Button Component
 
-```typescript
+```tsx
 import { ButtonHTMLAttributes, forwardRef } from 'react'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -114,7 +114,7 @@ Button.displayName = 'Button'
 
 ### Card Component
 
-```typescript
+```tsx
 interface CardProps {
   children: React.ReactNode
   className?: string
@@ -147,7 +147,7 @@ export function CardContent({ children, className = '' }: CardProps) {
 
 ### Form Input
 
-```typescript
+```tsx
 import { InputHTMLAttributes, forwardRef } from 'react'
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
