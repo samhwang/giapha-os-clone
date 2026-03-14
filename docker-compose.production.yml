@@ -24,12 +24,14 @@ services:
     image: ghcr.io/viet-aus-it/prisma-migrate-service
     volumes:
       - ./prisma:/src/prisma
-      - ./prisma.config.ts:/prisma.config.ts
+      - ./prisma.config.ts:/src/prisma.config.ts
     env_file:
       - .env
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - giapha-network
 
   app:
     build: .
