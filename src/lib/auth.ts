@@ -31,6 +31,7 @@ export const auth = betterAuth({
               data: {
                 ...user,
                 role: UserRole.enum.admin,
+                emailVerified: true,
                 isActive: true,
               },
             };
