@@ -144,7 +144,7 @@ describe('createMember', () => {
 
 ### Component Test (React Testing Library)
 
-```typescript
+```tsx
 // src/components/Button.test.tsx
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
@@ -187,7 +187,7 @@ describe('Button', () => {
 
 ### Integration Test (Browser)
 
-```typescript
+```tsx
 // src/routes/members.test.tsx
 import { describe, it, expect } from 'vitest'
 import { setup, createRouter } from '@testing-library/react'
