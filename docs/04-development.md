@@ -8,7 +8,7 @@ TanStack Router uses file-based routing. The route file path determines the URL.
 
 ### Basic Route
 
-```typescript
+```tsx
 // src/routes/about.tsx → /about
 import { createFileRoute } from '@tanstack/react-router'
 
@@ -30,7 +30,7 @@ function AboutPage() {
 
 ### Dynamic Segments
 
-```typescript
+```tsx
 // src/routes/dashboard/members/$id.tsx → /dashboard/members/:id
 import { createFileRoute } from '@tanstack/react-router'
 
@@ -48,7 +48,7 @@ function MemberDetailPage() {
 
 Loaders run on the server to fetch data before rendering.
 
-```typescript
+```tsx
 import { getDbClient } from '@/lib/db'
 
 export const Route = createFileRoute('/dashboard/members')({
@@ -78,7 +78,7 @@ function MembersPage() {
 
 Actions handle form submissions on the server.
 
-```typescript
+```tsx
 export const Route = createFileRoute('/dashboard/members/new')({
   component: NewMemberPage,
 })
@@ -136,7 +136,7 @@ export const Route = createFileRoute('/dashboard')({
 
 ### Getting User in Component
 
-```typescript
+```tsx
 import { useRouteContext } from '@tanstack/react-router'
 
 function DashboardPage() {
