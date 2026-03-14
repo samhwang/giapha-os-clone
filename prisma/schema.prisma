@@ -42,6 +42,7 @@ model User {
   image         String?
   role          UserRole  @default(member)
   isActive      Boolean   @default(false) @map("is_active")
+  timeZone      String?   @map("time_zone")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
   sessions      Session[]

@@ -57,7 +57,8 @@ export function calculateAge(
   deathYear: number | null,
   deathMonth: number | null,
   deathDay: number | null,
-  isDeceased: boolean = false
+  isDeceased: boolean = false,
+  timeZone: string = 'UTC'
 ): { age: number; isDeceased: boolean } | null {
   if (!birthYear) return null;
 
@@ -75,17 +76,17 @@ export function calculateAge(
   }
 
   const now = new Date();
-  const vnTimeStr = now.toLocaleString('en-US', {
-    timeZone: 'Asia/Ho_Chi_Minh',
+  const tzTimeStr = now.toLocaleString('en-US', {
+    timeZone,
   });
-  const vnDate = new Date(vnTimeStr);
-  const currentYear = vnDate.getFullYear();
+  const tzDate = new Date(tzTimeStr);
+  const currentYear = tzDate.getFullYear();
 
   let age = currentYear - birthYear;
 
   if (birthMonth && birthDay) {
-    const currentMonth = vnDate.getMonth() + 1;
-    const currentDay = vnDate.getDate();
+    const currentMonth = tzDate.getMonth() + 1;
+    const currentDay = tzDate.getDate();
     if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
       age--;
     }
@@ -168,18 +169,19 @@ function ganZhiToVietnamese(ganZhi: string): string {
   return `${can} ${chi}`;
 }
 
-export function getTodayLunar() {
+export function getTodayLunar(timeZone: string = 'UTC') {
   const now = new Date();
-  const vnTimeStr = now.toLocaleString('en-US', {
-    timeZone: 'Asia/Ho_Chi_Minh',
+  const tzTimeStr = now.toLocaleString('en-US', {
+    timeZone,
   });
-  const vnDate = new Date(vnTimeStr);
+  const tzDate = new Date(tzTimeStr);
 
-  const solar = Solar.fromYmd(vnDate.getFullYear(), vnDate.getMonth() + 1, vnDate.getDate());
+  const solar = Solar.fromYmd(tzDate.getFullYear(), tzDate.getMonth() + 1, tzDate.getDate());
   const lunar = solar.getLunar();
 
   return {
-    solarStr: vnDate.toLocaleDateString('vi-VN', {
+    solarStr: tzDate.toLocaleDateString('vi-VN', {
+      timeZone,
       weekday: 'long',
       day: '2-digit',
       month: 'long',

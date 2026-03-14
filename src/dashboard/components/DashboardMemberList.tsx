@@ -9,7 +9,7 @@ export default function DashboardMemberList({ initialPersons }: { initialPersons
   const { t } = useTranslation();
   const { setShowCreateModal } = useDashboardStore();
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortOption, setSortOption] = useState('birth_asc');
+  const [sortOption, setSortOption] = useState('updated_desc');
   const [filterOption, setFilterOption] = useState('all');
 
   const filteredPersons = initialPersons.filter((person) => {

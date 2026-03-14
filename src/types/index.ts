@@ -57,6 +57,7 @@ export interface UserProfile {
   name: string | null;
   role: UserRole;
   isActive: boolean;
+  timeZone: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
