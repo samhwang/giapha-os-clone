@@ -11,7 +11,7 @@
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "node dist/server/index.js",
+    "start": "dotenvx run -- node dist/server/server.js",
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --project ui-components",
