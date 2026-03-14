@@ -115,4 +115,4 @@ ghcr.io/<owner>/giapha-os-clone:latest
 ghcr.io/<owner>/giapha-os-clone:sha-<short_sha>
 ```
 
-See [Deployment Guide](./07-deployment.md) for using the pre-built image.
+See [Deployment Guide](./01-deployment.md) for using the pre-built image.

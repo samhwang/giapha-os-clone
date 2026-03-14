@@ -4,18 +4,21 @@ Welcome to the Gia Pha OS documentation.
 
 ## Getting Started
 
-- [01 - Getting Started](./01-getting-started.md) - Installation and setup
-- [02 - Architecture](./02-architecture.md) - Tech stack and project structure
-- [03 - Database](./03-database.md) - Schema and Prisma
-- [04 - Development](./04-development.md) - Creating routes and features
+- [01 - Deployment](./01-deployment.md) - Self-hosted production deployment
+- [02 - Quick Start](./02-quick-start.md) - Local development setup
 
 ## Features
 
-- [05 - Features](./05-features.md) - Family tree, kinship, events, i18n
+- [03 - Features](./03-features.md) - Family tree, kinship, events, i18n
+- [04 - Architecture](./04-architecture.md) - Tech stack and project structure
+- [05 - Database](./05-database.md) - Schema and Prisma
+
+## Contributing
+
 - [06 - Testing](./06-testing.md) - Unit, integration, and browser tests
-- [07 - Deployment](./07-deployment.md) - Docker Compose and self-hosting
-- [09 - CI/CD](./09-cicd.md) - GitHub Actions and pipeline
+- [07 - Development](./07-development.md) - Creating routes and features
+- [08 - CI/CD](./08-cicd.md) - GitHub Actions and pipeline
 
 ## Reference
 
-- [08 - Attribution](./08-attribution.md) - Project origins and divergence from original
+- [09 - Attribution](./09-attribution.md) - Project origins and divergence from original
