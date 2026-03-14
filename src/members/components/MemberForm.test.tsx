@@ -216,10 +216,10 @@ describe('MemberForm', () => {
     await user.click(screen.getByText('Đã qua đời'));
 
     await waitFor(() => {
-      expect(screen.getAllByPlaceholderText('Năm')).toHaveLength(2);
+      expect(screen.getAllByPlaceholderText('Năm')).toHaveLength(3);
     });
     const yearInputs = screen.getAllByPlaceholderText('Năm');
-    await user.type(yearInputs[1], '1990');
+    await user.type(yearInputs[2], '1990');
     await user.click(screen.getByRole('button', { name: /Thêm thành viên/ }));
 
     await waitFor(() => {
