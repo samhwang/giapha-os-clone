@@ -84,7 +84,7 @@ The server test project is configured with Testcontainers in `test/globalSetup.t
 
 Test rendering and user interactions.
 
-```typescript
+```tsx
 // src/components/PersonCard.test.tsx
 import { render, screen } from '@testing-library/react'
 import { PersonCard } from './PersonCard'
@@ -219,7 +219,7 @@ pnpm test:coverage
 
 Use helpers from `src/test-utils/`:
 
-```typescript
+```tsx
 import { renderWithProviders } from '@/test-utils/render-wrapper'
 
 renderWithProviders(<Component />)
