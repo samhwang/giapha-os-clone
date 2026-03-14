@@ -27,6 +27,9 @@ export interface Person {
   deathYear: number | null;
   deathMonth: number | null;
   deathDay: number | null;
+  deathLunarYear: number | null;
+  deathLunarMonth: number | null;
+  deathLunarDay: number | null;
   isDeceased: boolean;
   isInLaw: boolean;
   birthOrder: number | null;
