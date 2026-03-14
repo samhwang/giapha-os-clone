@@ -1,4 +1,5 @@
 import { Lunar, Solar } from 'lunar-javascript';
+import { getUserTimeZone, nowInTimeZone } from '../../lib/date';
 
 export function formatDisplayDate(year: number | null, month: number | null, day: number | null, unknownLabel = 'Chưa rõ'): string {
   if (!year && !month && !day) return unknownLabel;
@@ -58,66 +59,58 @@ export function calculateAge(
   deathMonth: number | null,
   deathDay: number | null,
   isDeceased: boolean = false,
-  timeZone: string = 'UTC'
+  timeZone?: string
 ): { age: number; isDeceased: boolean } | null {
   if (!birthYear) return null;
 
-  if (isDeceased || deathYear) {
-    if (deathYear) {
-      let age = deathYear - birthYear;
-      if (birthMonth && birthDay && deathMonth && deathDay) {
-        if (deathMonth < birthMonth || (deathMonth === birthMonth && deathDay < birthDay)) {
-          age--;
-        }
+  if (!isDeceased && !deathYear) {
+    const now = nowInTimeZone(timeZone || getUserTimeZone());
+    const currentYear = now.year();
+    const currentMonth = now.month() + 1;
+    const currentDay = now.date();
+
+    let age = currentYear - birthYear;
+    if (birthMonth && birthDay) {
+      if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+        age--;
       }
-      return { age, isDeceased: true };
     }
-    return null;
+    return { age, isDeceased: false };
   }
 
-  const now = new Date();
-  const tzTimeStr = now.toLocaleString('en-US', {
-    timeZone,
-  });
-  const tzDate = new Date(tzTimeStr);
-  const currentYear = tzDate.getFullYear();
+  if (!deathYear) return null;
 
-  let age = currentYear - birthYear;
-
-  if (birthMonth && birthDay) {
-    const currentMonth = tzDate.getMonth() + 1;
-    const currentDay = tzDate.getDate();
-    if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+  let age = deathYear - birthYear;
+  if (birthMonth && birthDay && deathMonth && deathDay) {
+    if (deathMonth < birthMonth || (deathMonth === birthMonth && deathDay < birthDay)) {
       age--;
     }
   }
-
-  return { age, isDeceased: false };
+  return { age, isDeceased: true };
 }
 
 export function getZodiacSign(day: number | null, month: number | null): string | null {
   if (!day || !month) return null;
-  const d = day;
-  const m = month;
 
-  if ((m === 3 && d >= 21) || (m === 4 && d <= 19)) return 'Bạch Dương';
-  if ((m === 4 && d >= 20) || (m === 5 && d <= 20)) return 'Kim Ngưu';
-  if ((m === 5 && d >= 21) || (m === 6 && d <= 21)) return 'Song Tử';
-  if ((m === 6 && d >= 22) || (m === 7 && d <= 22)) return 'Cự Giải';
-  if ((m === 7 && d >= 23) || (m === 8 && d <= 22)) return 'Sư Tử';
-  if ((m === 8 && d >= 23) || (m === 9 && d <= 22)) return 'Xử Nữ';
-  if ((m === 9 && d >= 23) || (m === 10 && d <= 23)) return 'Thiên Bình';
-  if ((m === 10 && d >= 24) || (m === 11 && d <= 21)) return 'Thiên Yết';
-  if ((m === 11 && d >= 22) || (m === 12 && d <= 21)) return 'Nhân Mã';
-  if ((m === 12 && d >= 22) || (m === 1 && d <= 19)) return 'Ma Kết';
-  if ((m === 1 && d >= 20) || (m === 2 && d <= 18)) return 'Bảo Bình';
-  if ((m === 2 && d >= 19) || (m === 3 && d <= 20)) return 'Song Ngư';
+  if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return 'Bạch Dương';
+  if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return 'Kim Ngưu';
+  if ((month === 5 && day >= 21) || (month === 6 && day <= 21)) return 'Song Tử';
+  if ((month === 6 && day >= 22) || (month === 7 && day <= 22)) return 'Cự Giải';
+  if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return 'Sư Tử';
+  if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return 'Xử Nữ';
+  if ((month === 9 && day >= 23) || (month === 10 && day <= 23)) return 'Thiên Bình';
+  if ((month === 10 && day >= 24) || (month === 11 && day <= 21)) return 'Thiên Yết';
+  if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return 'Nhân Mã';
+  if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return 'Ma Kết';
+  if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return 'Bảo Bình';
+  if ((month === 2 && day >= 19) || (month === 3 && day <= 20)) return 'Song Ngư';
 
   return null;
 }
 
 export function getZodiacAnimal(year: number | null, month: number | null = null, day: number | null = null): string | null {
   if (!year) return null;
+
   const animals = ['Thân', 'Dậu', 'Tuất', 'Hợi', 'Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi'];
 
   let targetYear = year;
@@ -169,24 +162,15 @@ function ganZhiToVietnamese(ganZhi: string): string {
   return `${can} ${chi}`;
 }
 
-export function getTodayLunar(timeZone: string = 'UTC') {
-  const now = new Date();
-  const tzTimeStr = now.toLocaleString('en-US', {
-    timeZone,
-  });
-  const tzDate = new Date(tzTimeStr);
+export function getTodayLunar(timeZone?: string) {
+  const tz = timeZone || getUserTimeZone();
+  const now = nowInTimeZone(tz);
 
-  const solar = Solar.fromYmd(tzDate.getFullYear(), tzDate.getMonth() + 1, tzDate.getDate());
+  const solar = Solar.fromYmd(now.year(), now.month() + 1, now.date());
   const lunar = solar.getLunar();
 
   return {
-    solarStr: tzDate.toLocaleDateString('vi-VN', {
-      timeZone,
-      weekday: 'long',
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    }),
+    solarStr: now.format('dddd, DD MMMM YYYY'),
     lunarDay: lunar.getDay(),
     lunarMonth: Math.abs(lunar.getMonth()),
     lunarYear: ganZhiToVietnamese(lunar.getYearInGanZhi()),
