@@ -47,11 +47,7 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
    docker compose -f docker-compose.production.yml up -d
    ```
 
-4. **Set up database**
-
-   ```bash
-   docker compose -f docker-compose.production.yml exec app pnpm prisma:migrate deploy
-   ```
+   The `db-migrate` service automatically runs database migrations on startup.
 
 5. **Access the app**
 
