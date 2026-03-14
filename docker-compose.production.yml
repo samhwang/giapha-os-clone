@@ -20,6 +20,14 @@ services:
     networks:
       - giapha-network
 
+  db-migrate:
+    image: ghcr.io/viet-aus-it/prisma-migrate-service
+    volumes:
+      - ./prisma:/src/prisma
+      - ./prisma.config.ts:/prisma.config.ts
+    env_file:
+      - .env
+
   app:
     build: .
     image: ghcr.io/samhwang/giapha-os-clone:latest
@@ -40,6 +48,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      db-migrate:
+        condition: service_completed_successfully
     networks:
       - giapha-network
 
