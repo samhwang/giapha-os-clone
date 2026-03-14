@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { getDbClient } from '../../lib/db';
-import { requireAdmin } from '../../server/functions/_auth';
+import { isAdminMiddleware } from '../../server/auth/middleware';
 import { Gender, type Person, type Relationship, RelationshipType } from '../../types';
 
 interface BackupPayload {
@@ -10,8 +10,6 @@ interface BackupPayload {
   persons: Person[];
   relationships: Relationship[];
 }
-
-const prisma = getDbClient();
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
@@ -52,26 +50,29 @@ const importDataSchema = z.object({
 
 const CHUNK_SIZE = 200;
 
-export const exportData = createServerFn({ method: 'GET' }).handler(async () => {
-  await requireAdmin();
+export const exportData = createServerFn({ method: 'GET' })
+  .middleware([isAdminMiddleware])
+  .handler(async () => {
+    const prisma = getDbClient();
 
-  const persons = await prisma.person.findMany({ orderBy: { createdAt: 'asc' } });
-  const relationships = await prisma.relationship.findMany({ orderBy: { createdAt: 'asc' } });
+    const persons = await prisma.person.findMany({ orderBy: { createdAt: 'asc' } });
+    const relationships = await prisma.relationship.findMany({ orderBy: { createdAt: 'asc' } });
 
-  const payload: BackupPayload = {
-    version: 2,
-    timestamp: new Date().toISOString(),
-    persons,
-    relationships,
-  };
+    const payload: BackupPayload = {
+      version: 2,
+      timestamp: new Date().toISOString(),
+      persons,
+      relationships,
+    };
 
-  return payload;
-});
+    return payload;
+  });
 
 export const importData = createServerFn({ method: 'POST' })
   .inputValidator(importDataSchema)
+  .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
-    await requireAdmin();
+    const prisma = getDbClient();
 
     await prisma.$transaction(async (tx) => {
       await tx.relationship.deleteMany();

@@ -1,34 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { getDbClient } from '../../lib/db';
 import { uploadAvatar } from '../../lib/storage';
-import { requireAdmin, requireAuth } from '../../server/functions/_auth';
-import { Gender, RelationshipType, UserRole } from '../../types';
-
-vi.mock('../../server/functions/_auth', () => ({
-  requireAuth: vi.fn(),
-  requireAdmin: vi.fn(),
-}));
-
-vi.mock('../../lib/storage', () => ({
-  uploadAvatar: vi.fn(),
-  deleteAvatar: vi.fn(),
-}));
+import { Gender } from '../../types';
 
 const db = getDbClient();
 
 describe('createPerson (inner logic)', () => {
   beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.mocked(requireAuth).mockResolvedValue({
-      id: 'user-1',
-      role: UserRole.enum.admin,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      email: 'test@test.com',
-      emailVerified: true,
-      name: 'Test',
-    });
     await db.person.deleteMany({});
     await db.personDetailsPrivate.deleteMany({});
   });
@@ -66,27 +44,10 @@ describe('createPerson (inner logic)', () => {
     expect(result.privateDetails?.occupation).toBe('Kỹ sư');
     expect(result.privateDetails?.currentResidence).toBeNull();
   });
-
-  it('should throw when not authenticated', async () => {
-    vi.mocked(requireAuth).mockRejectedValue(new Error('Vui lòng đăng nhập.'));
-
-    await expect(requireAuth()).rejects.toThrow('Vui lòng đăng nhập.');
-  });
 });
 
 describe('updatePerson (inner logic)', () => {
   beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.mocked(requireAuth).mockResolvedValue({
-      id: 'user-1',
-      role: UserRole.enum.admin,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      email: 'test@test.com',
-      emailVerified: true,
-      name: 'Test',
-    });
     await db.person.deleteMany({});
     await db.personDetailsPrivate.deleteMany({});
   });
@@ -131,17 +92,6 @@ describe('updatePerson (inner logic)', () => {
 
 describe('deleteMember (inner logic)', () => {
   beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.mocked(requireAdmin).mockResolvedValue({
-      id: 'user-1',
-      role: UserRole.enum.admin,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      email: 'test@test.com',
-      emailVerified: true,
-      name: 'Test',
-    });
     await db.person.deleteMany({});
     await db.personDetailsPrivate.deleteMany({});
     await db.relationship.deleteMany({});
@@ -158,11 +108,11 @@ describe('deleteMember (inner logic)', () => {
     expect(found).toBeNull();
   });
 
-  it('should throw when member has relationships', async () => {
+  it('should not delete a member with relationships', async () => {
     const personA = await db.person.create({ data: { fullName: 'Person A', gender: Gender.enum.male } });
     const personB = await db.person.create({ data: { fullName: 'Person B', gender: Gender.enum.female } });
     await db.relationship.create({
-      data: { type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id },
+      data: { type: 'marriage', personAId: personA.id, personBId: personB.id },
     });
 
     const relationshipCount = await db.relationship.count({
@@ -171,28 +121,10 @@ describe('deleteMember (inner logic)', () => {
 
     expect(relationshipCount).toBe(1);
   });
-
-  it('should require admin role', async () => {
-    vi.mocked(requireAdmin).mockRejectedValue(new Error('Từ chối truy cập.'));
-
-    await expect(requireAdmin()).rejects.toThrow('Từ chối truy cập.');
-  });
 });
 
 describe('uploadPersonAvatar (inner logic)', () => {
   beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.mocked(requireAuth).mockResolvedValue({
-      id: 'user-1',
-      role: UserRole.enum.admin,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      email: 'test@test.com',
-      emailVerified: true,
-      name: 'Test',
-    });
-    vi.mocked(uploadAvatar).mockResolvedValue('https://test.url/avatars/test.jpg');
     await db.person.deleteMany({});
     await db.personDetailsPrivate.deleteMany({});
   });
@@ -202,7 +134,6 @@ describe('uploadPersonAvatar (inner logic)', () => {
       data: { fullName: 'Avatar Test', gender: Gender.enum.male },
     });
 
-    vi.mocked(uploadAvatar).mockResolvedValue(`https://test.url/avatars/${person.id}/photo.jpg`);
     const url = await uploadAvatar(Buffer.from('fake-image'), person.id, 'photo.jpg', 'image/jpeg');
 
     const result = await db.person.update({

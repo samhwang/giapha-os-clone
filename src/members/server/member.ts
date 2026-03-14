@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { getDbClient } from '../../lib/db';
 import { ERRORS } from '../../lib/errors';
 import { deleteAvatar, uploadAvatar } from '../../lib/storage';
-import { requireEditor } from '../../server/functions/_auth';
+import { isEditorMiddleware } from '../../server/auth/middleware';
 import { Gender } from '../../types';
 
 const genderEnum = Gender;
@@ -63,8 +63,8 @@ const uploadAvatarSchema = z.object({
 
 export const createPerson = createServerFn({ method: 'POST' })
   .inputValidator(createPersonSchema)
+  .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    await requireEditor();
     const db = getDbClient();
 
     const { phoneNumber, occupation, currentResidence, ...personData } = data;
@@ -89,8 +89,8 @@ export const createPerson = createServerFn({ method: 'POST' })
 
 export const updatePerson = createServerFn({ method: 'POST' })
   .inputValidator(updatePersonSchema)
+  .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    await requireEditor();
     const db = getDbClient();
 
     const { id, phoneNumber, occupation, currentResidence, ...personData } = data;
@@ -126,8 +126,8 @@ export const updatePerson = createServerFn({ method: 'POST' })
 
 export const deleteMember = createServerFn({ method: 'POST' })
   .inputValidator(idSchema)
+  .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    await requireEditor();
     const db = getDbClient();
 
     const person = await db.person.findUnique({ where: { id: data.id } });
@@ -151,8 +151,8 @@ export const deleteMember = createServerFn({ method: 'POST' })
 
 export const uploadPersonAvatar = createServerFn({ method: 'POST' })
   .inputValidator(uploadAvatarSchema)
+  .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    await requireEditor();
     const db = getDbClient();
 
     const existing = await db.person.findUnique({ where: { id: data.personId } });

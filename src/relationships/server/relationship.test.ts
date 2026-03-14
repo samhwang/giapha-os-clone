@@ -1,27 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { getDbClient } from '../../lib/db';
-import { requireAuth } from '../../server/functions/_auth';
-import { Gender, RelationshipType, UserRole } from '../../types';
-
-vi.mock('../../server/functions/_auth', () => ({
-  requireAuth: vi.fn(),
-}));
+import { Gender, RelationshipType } from '../../types';
 
 const db = getDbClient();
 
 describe('createRelationship (inner logic)', () => {
   beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.mocked(requireAuth).mockResolvedValue({
-      id: 'user-1',
-      role: UserRole.enum.admin,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      email: 'test@test.com',
-      emailVerified: true,
-      name: 'Test',
-    });
     await db.relationship.deleteMany({});
     await db.person.deleteMany({});
   });
@@ -88,27 +72,10 @@ describe('createRelationship (inner logic)', () => {
 
     expect(reversed).not.toBeNull();
   });
-
-  it('should require authentication', async () => {
-    vi.mocked(requireAuth).mockRejectedValue(new Error('Vui lòng đăng nhập.'));
-
-    await expect(requireAuth()).rejects.toThrow('Vui lòng đăng nhập.');
-  });
 });
 
 describe('deleteRelationship (inner logic)', () => {
   beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.mocked(requireAuth).mockResolvedValue({
-      id: 'user-1',
-      role: UserRole.enum.admin,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      email: 'test@test.com',
-      emailVerified: true,
-      name: 'Test',
-    });
     await db.relationship.deleteMany({});
     await db.person.deleteMany({});
   });
@@ -125,12 +92,6 @@ describe('deleteRelationship (inner logic)', () => {
 
     const found = await db.relationship.findUnique({ where: { id: rel.id } });
     expect(found).toBeNull();
-  });
-
-  it('should require authentication', async () => {
-    vi.mocked(requireAuth).mockRejectedValue(new Error('Vui lòng đăng nhập.'));
-
-    await expect(requireAuth()).rejects.toThrow('Vui lòng đăng nhập.');
   });
 });
 

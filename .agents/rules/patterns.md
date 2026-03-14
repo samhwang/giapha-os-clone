@@ -40,16 +40,72 @@ export const createPerson = createServerFn({ method: 'POST' })
 
 ### Middleware
 
-Use TanStack Start middleware for auth guards:
+Use TanStack Start middleware for auth guards. The app separates auth logic from middleware:
+
+#### Auth Library (`src/server/auth/lib.ts`)
+
+Inner logic functions that perform the actual auth checks:
+
+```tsx
+import { auth } from 'better-auth';
+import { getHeaders } from '@tanstack/react-start/server';
+
+export async function requireSession(): Promise<Session> {
+  const session = await auth.api.getSession({ headers: getHeaders() });
+  if (!session) throw new Error('Unauthorized');
+  return session;
+}
+
+export async function requireUser(): Promise<User> {
+  const session = await requireSession();
+  if (!session.user) throw new Error('Unauthorized');
+  return session.user;
+}
+
+export async function requireAdmin(): Promise<User> {
+  const user = await requireUser();
+  if (user.role !== 'admin') throw new Error('Từ chối truy cập.');
+  return user;
+}
+```
+
+#### Middleware (`src/server/auth/middleware.ts`)
+
+TanStack Start middlewares that use the auth library:
 
 ```tsx
 import { createMiddleware } from '@tanstack/react-start';
+import { getHeaders } from '@tanstack/react-start/server';
+import { auth } from 'better-auth';
+import { requireSession, requireUser, requireAdmin } from './lib';
 
-export const authMiddleware = createMiddleware().server(async ({ next }) => {
-  const session = await auth.api.getSession({ headers: getHeaders() });
-  if (!session) throw redirect({ to: '/login' });
-  return next({ context: { user: session.user } });
+export const isSessionMiddleware = createMiddleware().server(async ({ next }) => {
+  const session = await requireSession();
+  return next({ context: { session } });
 });
+
+export const isUserMiddleware = createMiddleware().server(async ({ next }) => {
+  const user = await requireUser();
+  return next({ context: { user } });
+});
+
+export const isAdminMiddleware = createMiddleware().server(async ({ next }) => {
+  const user = await requireAdmin();
+  return next({ context: { user } });
+});
+```
+
+#### Usage in Server Functions
+
+```tsx
+import { createServerFn } from '@tanstack/react-start';
+import { isAdminMiddleware } from '@/server/auth/middleware';
+
+export const exportData = createServerFn({ method: 'GET' })
+  .middleware([isAdminMiddleware])
+  .handler(async () => {
+    // Handler logic
+  });
 ```
 
 ## TanStack Router

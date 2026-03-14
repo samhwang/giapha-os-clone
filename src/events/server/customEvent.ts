@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { getDbClient } from '../../lib/db';
-import { requireAdmin } from '../../server/functions/_auth';
+import { isAdminMiddleware } from '../../server/auth/middleware';
 
 const createCustomEventSchema = z.object({
   name: z.string().min(1),
@@ -27,8 +27,8 @@ export const getCustomEvents = createServerFn({ method: 'GET' }).handler(async (
 
 export const createCustomEvent = createServerFn({ method: 'POST' })
   .inputValidator(createCustomEventSchema)
+  .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
-    await requireAdmin();
     const db = getDbClient();
     return db.customEvent.create({
       data: {
@@ -42,8 +42,8 @@ export const createCustomEvent = createServerFn({ method: 'POST' })
 
 export const updateCustomEvent = createServerFn({ method: 'POST' })
   .inputValidator(updateCustomEventSchema)
+  .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
-    await requireAdmin();
     const db = getDbClient();
     const { id, ...updateData } = data;
     return db.customEvent.update({
@@ -54,8 +54,8 @@ export const updateCustomEvent = createServerFn({ method: 'POST' })
 
 export const deleteCustomEvent = createServerFn({ method: 'POST' })
   .inputValidator(idSchema)
+  .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
-    await requireAdmin();
     const db = getDbClient();
     await db.customEvent.delete({ where: { id: data.id } });
     return { success: true };

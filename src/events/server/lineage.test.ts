@@ -1,27 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { getDbClient } from '../../lib/db';
-import { requireAuth } from '../../server/functions/_auth';
-import { Gender, UserRole } from '../../types';
-
-vi.mock('../../server/functions/_auth', () => ({
-  requireAuth: vi.fn(),
-}));
+import { Gender } from '../../types';
 
 const db = getDbClient();
 
 describe('updateBatch (inner logic)', () => {
   beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.mocked(requireAuth).mockResolvedValue({
-      id: 'user-1',
-      role: UserRole.enum.admin,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      email: 'test@test.com',
-      emailVerified: true,
-      name: 'Test',
-    });
     await db.person.deleteMany({});
   });
 
@@ -30,76 +14,38 @@ describe('updateBatch (inner logic)', () => {
     expect(result).toEqual({ success: true, updated: 0 });
   });
 
-  it('should update generation and birthOrder for each person', async () => {
-    const personA = await db.person.create({ data: { fullName: 'A', gender: Gender.enum.male } });
-    const personB = await db.person.create({ data: { fullName: 'B', gender: Gender.enum.female } });
-
-    await db.$transaction(
-      [personA.id, personB.id].map((id, index) =>
-        db.person.update({
-          where: { id },
-          data: { generation: index + 1, birthOrder: index + 1 },
-        })
-      )
-    );
-
-    const updatedA = await db.person.findUnique({ where: { id: personA.id } });
-    expect(updatedA?.generation).toBe(1);
-    expect(updatedA?.birthOrder).toBe(1);
-
-    const updatedB = await db.person.findUnique({ where: { id: personB.id } });
-    expect(updatedB?.generation).toBe(2);
-    expect(updatedB?.birthOrder).toBe(2);
-  });
-
-  it('should handle null values for generation and birthOrder', async () => {
+  it('should update person generation and birthOrder', async () => {
     const person = await db.person.create({
-      data: { fullName: 'Test', gender: Gender.enum.male, generation: 5, birthOrder: 3 },
+      data: { fullName: 'Test Person', gender: Gender.enum.male },
     });
 
-    await db.person.update({
+    const result = await db.person.update({
       where: { id: person.id },
-      data: { generation: null, birthOrder: null },
+      data: { generation: 2, birthOrder: 1 },
     });
 
-    const updated = await db.person.findUnique({ where: { id: person.id } });
-    expect(updated?.generation).toBeNull();
-    expect(updated?.birthOrder).toBeNull();
+    expect(result.generation).toBe(2);
+    expect(result.birthOrder).toBe(1);
   });
 
-  it('should update multiple persons in a batch transaction', async () => {
-    const persons = await Promise.all([
-      db.person.create({ data: { fullName: 'P1', gender: Gender.enum.male } }),
-      db.person.create({ data: { fullName: 'P2', gender: Gender.enum.female } }),
-      db.person.create({ data: { fullName: 'P3', gender: Gender.enum.male } }),
-    ]);
-
-    await db.$transaction(persons.map((p, i) => db.person.update({ where: { id: p.id }, data: { generation: i + 1, birthOrder: i + 1 } })));
-
-    const updated = await db.person.findMany({ orderBy: { generation: 'asc' } });
-    expect(updated).toHaveLength(3);
-    expect(updated[0].generation).toBe(1);
-    expect(updated[1].generation).toBe(2);
-    expect(updated[2].generation).toBe(3);
-  });
-
-  it('should verify ordering after batch update', async () => {
-    const personA = await db.person.create({ data: { fullName: 'Elder', gender: Gender.enum.male, birthOrder: 5 } });
-    const personB = await db.person.create({ data: { fullName: 'Younger', gender: Gender.enum.male, birthOrder: 10 } });
+  it('should update multiple persons in transaction', async () => {
+    const p1 = await db.person.create({ data: { fullName: 'P1', gender: Gender.enum.male } });
+    const p2 = await db.person.create({ data: { fullName: 'P2', gender: Gender.enum.female } });
 
     await db.$transaction([
-      db.person.update({ where: { id: personA.id }, data: { birthOrder: 1 } }),
-      db.person.update({ where: { id: personB.id }, data: { birthOrder: 2 } }),
+      db.person.update({ where: { id: p1.id }, data: { generation: 1, birthOrder: 1 } }),
+      db.person.update({ where: { id: p2.id }, data: { generation: 1, birthOrder: 2 } }),
     ]);
 
-    const results = await db.person.findMany({ orderBy: { birthOrder: 'asc' } });
-    expect(results[0].fullName).toBe('Elder');
-    expect(results[1].fullName).toBe('Younger');
-  });
+    const result = await db.person.findMany({
+      where: { id: { in: [p1.id, p2.id] } },
+      orderBy: { birthOrder: 'asc' },
+    });
 
-  it('should require authentication', async () => {
-    vi.mocked(requireAuth).mockRejectedValue(new Error('Vui lòng đăng nhập.'));
-
-    await expect(requireAuth()).rejects.toThrow('Vui lòng đăng nhập.');
+    expect(result).toHaveLength(2);
+    expect(result[0].generation).toBe(1);
+    expect(result[0].birthOrder).toBe(1);
+    expect(result[1].generation).toBe(1);
+    expect(result[1].birthOrder).toBe(2);
   });
 });

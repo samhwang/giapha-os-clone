@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { getDbClient } from '../../lib/db';
 import { ERRORS } from '../../lib/errors';
-import { requireEditor } from '../../server/functions/_auth';
+import { isEditorMiddleware } from '../../server/auth/middleware';
 import { RelationshipType } from '../../types';
 
 const relationshipTypeEnum = RelationshipType;
@@ -19,8 +19,8 @@ const personIdSchema = z.object({ personId: z.uuid() });
 
 export const createRelationship = createServerFn({ method: 'POST' })
   .inputValidator(createRelationshipSchema)
+  .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    await requireEditor();
     const db = getDbClient();
 
     if (data.personAId === data.personBId) {
@@ -45,8 +45,8 @@ export const createRelationship = createServerFn({ method: 'POST' })
 
 export const deleteRelationship = createServerFn({ method: 'POST' })
   .inputValidator(idSchema)
+  .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    await requireEditor();
     const db = getDbClient();
 
     await db.relationship.delete({ where: { id: data.id } });

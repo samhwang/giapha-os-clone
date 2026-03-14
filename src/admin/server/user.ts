@@ -2,10 +2,8 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { auth } from '../../lib/auth';
 import { getDbClient } from '../../lib/db';
-import { requireAdmin } from '../../server/functions/_auth';
+import { isAdminMiddleware } from '../../server/auth/middleware';
 import { UserRole } from '../../types';
-
-const prisma = getDbClient();
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
@@ -35,8 +33,10 @@ const toggleStatusSchema = z.object({
 
 export const changeRole = createServerFn({ method: 'POST' })
   .inputValidator(changeRoleSchema)
-  .handler(async ({ data }) => {
-    const admin = await requireAdmin();
+  .middleware([isAdminMiddleware])
+  .handler(async ({ data, context }) => {
+    const prisma = getDbClient();
+    const admin = context.user;
 
     if (data.userId === admin.id) {
       throw new Error('error.user.selfRole');
@@ -52,8 +52,10 @@ export const changeRole = createServerFn({ method: 'POST' })
 
 export const deleteUser = createServerFn({ method: 'POST' })
   .inputValidator(userIdSchema)
-  .handler(async ({ data }) => {
-    const admin = await requireAdmin();
+  .middleware([isAdminMiddleware])
+  .handler(async ({ data, context }) => {
+    const prisma = getDbClient();
+    const admin = context.user;
 
     if (data.userId === admin.id) {
       throw new Error('error.user.selfDelete');
@@ -66,9 +68,9 @@ export const deleteUser = createServerFn({ method: 'POST' })
 
 export const createUser = createServerFn({ method: 'POST' })
   .inputValidator(createUserSchema)
+  .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
-    await requireAdmin();
-
+    const prisma = getDbClient();
     const existing = await prisma.user.findUnique({ where: { email: data.email } });
     if (existing) {
       throw new Error('error.user.emailTaken');
@@ -97,8 +99,10 @@ export const createUser = createServerFn({ method: 'POST' })
 
 export const toggleStatus = createServerFn({ method: 'POST' })
   .inputValidator(toggleStatusSchema)
-  .handler(async ({ data }) => {
-    const admin = await requireAdmin();
+  .middleware([isAdminMiddleware])
+  .handler(async ({ data, context }) => {
+    const prisma = getDbClient();
+    const admin = context.user;
 
     if (data.userId === admin.id) {
       throw new Error('error.user.selfStatus');
@@ -112,19 +116,20 @@ export const toggleStatus = createServerFn({ method: 'POST' })
     return { success: true };
   });
 
-export const getUsers = createServerFn({ method: 'GET' }).handler(async () => {
-  await requireAdmin();
-
-  return prisma.user.findMany({
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      role: true,
-      isActive: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-    orderBy: { createdAt: 'asc' },
+export const getUsers = createServerFn({ method: 'GET' })
+  .middleware([isAdminMiddleware])
+  .handler(async () => {
+    const prisma = getDbClient();
+    return prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: { createdAt: 'asc' },
+    });
   });
-});

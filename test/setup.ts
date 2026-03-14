@@ -3,17 +3,20 @@ import '@testing-library/jest-dom/vitest';
 import { afterEach, vi } from 'vitest';
 import { createI18nInstance } from '../src/i18n';
 
-const createMockHandler = () => {
-  const obj = {
-    inputValidator: () => obj,
-    handler: vi.fn(),
-  };
-  return obj;
-};
-
 vi.mock('@tanstack/react-start', async () => {
+  const createMockHandler = () => {
+    const obj = {
+      inputValidator: () => obj,
+      middleware: () => obj,
+      handler: vi.fn(),
+    };
+    return obj;
+  };
   return {
     createServerFn: vi.fn(() => createMockHandler()),
+    createMiddleware: vi.fn(() => ({
+      server: vi.fn((fn) => fn),
+    })),
     getRequestHeaders: vi.fn(() => ({})),
     getH3Event: vi.fn(() => null),
   };

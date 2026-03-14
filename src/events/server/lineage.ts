@@ -1,9 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { getDbClient } from '../../lib/db';
-import { requireAuth } from '../../server/functions/_auth';
-
-const prisma = getDbClient();
+import { isAuthenticatedMiddleware } from '../../server/auth/middleware';
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
@@ -21,11 +19,11 @@ const updateBatchSchema = z.object({
 
 export const updateBatch = createServerFn({ method: 'POST' })
   .inputValidator(updateBatchSchema)
+  .middleware([isAuthenticatedMiddleware])
   .handler(async ({ data }) => {
-    await requireAuth();
-
     if (data.updates.length === 0) return { success: true, updated: 0 };
 
+    const prisma = getDbClient();
     await prisma.$transaction(
       data.updates.map((u) =>
         prisma.person.update({

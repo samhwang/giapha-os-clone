@@ -1,27 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { getDbClient } from '../../lib/db';
-import { requireAdmin } from '../../server/functions/_auth';
-import { Gender, RelationshipType, UserRole } from '../../types';
-
-vi.mock('../../server/functions/_auth', () => ({
-  requireAdmin: vi.fn(),
-}));
+import { Gender, RelationshipType } from '../../types';
 
 const db = getDbClient();
 
 describe('exportData (inner logic)', () => {
   beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.mocked(requireAdmin).mockResolvedValue({
-      id: 'user-1',
-      role: UserRole.enum.admin,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      email: 'test@test.com',
-      emailVerified: true,
-      name: 'Test',
-    });
     await db.person.deleteMany({});
     await db.relationship.deleteMany({});
   });
@@ -52,27 +36,10 @@ describe('exportData (inner logic)', () => {
     expect(persons[0]).toHaveProperty('gender');
     expect(relationships).toHaveLength(0);
   });
-
-  it('should require admin access', async () => {
-    vi.mocked(requireAdmin).mockRejectedValue(new Error('Từ chối truy cập.'));
-
-    await expect(requireAdmin()).rejects.toThrow('Từ chối truy cập.');
-  });
 });
 
 describe('importData (inner logic)', () => {
   beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.mocked(requireAdmin).mockResolvedValue({
-      id: 'user-1',
-      role: UserRole.enum.admin,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      email: 'test@test.com',
-      emailVerified: true,
-      name: 'Test',
-    });
     await db.person.deleteMany({});
     await db.relationship.deleteMany({});
   });
@@ -117,11 +84,5 @@ describe('importData (inner logic)', () => {
 
     expect(persons).toHaveLength(1);
     expect(relationships).toHaveLength(0);
-  });
-
-  it('should require admin access', async () => {
-    vi.mocked(requireAdmin).mockRejectedValue(new Error('Từ chối truy cập.'));
-
-    await expect(requireAdmin()).rejects.toThrow('Từ chối truy cập.');
   });
 });

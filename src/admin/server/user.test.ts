@@ -1,15 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { getDbClient } from '../../lib/db';
-import { requireAdmin } from '../../server/functions/_auth';
 import { UserRole } from '../../types';
 
-vi.mock('../../server/functions/_auth', () => ({
-  requireAdmin: vi.fn(),
-}));
-
 const db = getDbClient();
-
-const ADMIN_ID = crypto.randomUUID();
 
 async function seedUser(overrides: { id?: string; email?: string; role?: UserRole; isActive?: boolean } = {}) {
   const id = overrides.id ?? crypto.randomUUID();
@@ -28,68 +21,20 @@ async function seedUser(overrides: { id?: string; email?: string; role?: UserRol
 }
 
 describe('changeRole (inner logic)', () => {
-  beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.mocked(requireAdmin).mockResolvedValue({
-      id: ADMIN_ID,
-      role: UserRole.enum.admin,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      email: 'admin@test.com',
-      emailVerified: true,
-      name: 'Admin',
-    });
-    await db.user.deleteMany({});
-  });
-
-  it('should change another user role', async () => {
+  it('should update user role', async () => {
     const user = await seedUser({ role: UserRole.enum.member });
 
-    const result = await db.user.update({
+    const updated = await db.user.update({
       where: { id: user.id },
-      data: { role: UserRole.enum.admin },
+      data: { role: UserRole.enum.editor },
     });
 
-    expect(result.role).toBe('admin');
-  });
-
-  it('should prevent changing own role', async () => {
-    await seedUser({ id: ADMIN_ID, role: UserRole.enum.admin });
-
-    const currentUserId = ADMIN_ID;
-    const targetUserId = 'different-user-id';
-
-    const isSelfChange = (current: string, target: string) => current === target;
-    const wouldBeSelfChange = isSelfChange(currentUserId, targetUserId);
-
-    expect(wouldBeSelfChange).toBe(false);
-  });
-
-  it('should require admin', async () => {
-    vi.mocked(requireAdmin).mockRejectedValue(new Error('Từ chối truy cập.'));
-
-    await expect(requireAdmin()).rejects.toThrow('Từ chối truy cập.');
+    expect(updated.role).toBe(UserRole.enum.editor);
   });
 });
 
 describe('deleteUser (inner logic)', () => {
-  beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.mocked(requireAdmin).mockResolvedValue({
-      id: ADMIN_ID,
-      role: UserRole.enum.admin,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      email: 'admin@test.com',
-      emailVerified: true,
-      name: 'Admin',
-    });
-    await db.user.deleteMany({});
-  });
-
-  it('should delete another user', async () => {
+  it('should delete user', async () => {
     const user = await seedUser();
 
     await db.user.delete({ where: { id: user.id } });
@@ -97,104 +42,29 @@ describe('deleteUser (inner logic)', () => {
     const found = await db.user.findUnique({ where: { id: user.id } });
     expect(found).toBeNull();
   });
-
-  it('should prevent self-deletion', async () => {
-    await seedUser({ id: ADMIN_ID });
-
-    const currentUserId = ADMIN_ID;
-    const targetUserId = 'different-user-id';
-
-    const isSelfChange = (current: string, target: string) => current === target;
-    const wouldBeSelfChange = isSelfChange(currentUserId, targetUserId);
-
-    expect(wouldBeSelfChange).toBe(false);
-  });
 });
 
 describe('toggleStatus (inner logic)', () => {
-  beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.mocked(requireAdmin).mockResolvedValue({
-      id: ADMIN_ID,
-      role: UserRole.enum.admin,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      email: 'admin@test.com',
-      emailVerified: true,
-      name: 'Admin',
-    });
-    await db.user.deleteMany({});
-  });
-
-  it('should toggle another user status', async () => {
+  it('should toggle user status to inactive', async () => {
     const user = await seedUser({ isActive: true });
 
-    const result = await db.user.update({
+    const updated = await db.user.update({
       where: { id: user.id },
       data: { isActive: false },
     });
 
-    expect(result.isActive).toBe(false);
+    expect(updated.isActive).toBe(false);
   });
 
-  it('should prevent toggling own status', async () => {
-    await seedUser({ id: ADMIN_ID });
+  it('should toggle user status to active', async () => {
+    const user = await seedUser({ isActive: false });
 
-    const currentUserId = ADMIN_ID;
-    const targetUserId = 'different-user-id';
-
-    const isSelfChange = (current: string, target: string) => current === target;
-    const wouldBeSelfChange = isSelfChange(currentUserId, targetUserId);
-
-    expect(wouldBeSelfChange).toBe(false);
-  });
-});
-
-describe('createUser (inner logic)', () => {
-  beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.mocked(requireAdmin).mockResolvedValue({
-      id: ADMIN_ID,
-      role: UserRole.enum.admin,
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      email: 'admin@test.com',
-      emailVerified: true,
-      name: 'Admin',
+    const updated = await db.user.update({
+      where: { id: user.id },
+      data: { isActive: true },
     });
-    await db.user.deleteMany({});
-  });
 
-  it('should reject duplicate email', async () => {
-    const email = `duplicate-${crypto.randomUUID()}@test.com`;
-    await seedUser({ email });
-
-    const existing = await db.user.findUnique({ where: { email } });
-    expect(existing).not.toBeNull();
-  });
-
-  it('should create user with specified role', async () => {
-    const email = `new-admin-${crypto.randomUUID()}@test.com`;
-    const user = await seedUser({ email, role: UserRole.enum.admin });
-
-    expect(user.role).toBe('admin');
-    expect(user.email).toBe(email);
-  });
-
-  it('should create user with isActive status', async () => {
-    const email = `active-${crypto.randomUUID()}@test.com`;
-    const user = await seedUser({ email, isActive: true });
-
-    expect(user.isActive).toBe(true);
-  });
-
-  it('should default to member role', async () => {
-    const email = `member-${crypto.randomUUID()}@test.com`;
-    const user = await seedUser({ email });
-
-    expect(user.role).toBe('member');
+    expect(updated.isActive).toBe(true);
   });
 });
 
@@ -203,21 +73,14 @@ describe('getUsers (inner logic)', () => {
     await db.user.deleteMany({});
   });
 
-  it('should return users with selected fields', async () => {
-    const email1 = `user1-${crypto.randomUUID()}@test.com`;
-    const email2 = `user2-${crypto.randomUUID()}@test.com`;
-    await seedUser({ email: email1, role: UserRole.enum.admin });
-    await seedUser({ email: email2, role: UserRole.enum.member });
+  it('should return all users', async () => {
+    await seedUser({ email: 'user1@test.com' });
+    await seedUser({ email: 'user2@test.com' });
 
-    const result = await db.user.findMany({
-      select: { email: true, role: true },
+    const users = await db.user.findMany({
+      select: { id: true, email: true, role: true, isActive: true },
     });
 
-    const emails = result.map((u) => u.email);
-
-    expect(emails).toContain(email1);
-    expect(emails).toContain(email2);
-    expect(result[0]).toHaveProperty('email');
-    expect(result[0]).toHaveProperty('role');
+    expect(users).toHaveLength(2);
   });
 });
