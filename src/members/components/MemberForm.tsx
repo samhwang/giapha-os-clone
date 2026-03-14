@@ -1,5 +1,6 @@
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { AlertCircle, Briefcase, Image as ImageIcon, Loader2, Lock, MapPin, Phone, Settings2, Trash2, User } from 'lucide-react';
+import { Lunar, Solar } from 'lunar-javascript';
 import { type SubmitEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Gender, type Person } from '../../types';
@@ -34,6 +35,9 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
   const [deathYear, setDeathYear] = useState<number | ''>(initialData?.deathYear || '');
   const [deathMonth, setDeathMonth] = useState<number | ''>(initialData?.deathMonth || '');
   const [deathDay, setDeathDay] = useState<number | ''>(initialData?.deathDay || '');
+  const [deathLunarYear, setDeathLunarYear] = useState<number | ''>(initialData?.deathLunarYear || '');
+  const [deathLunarMonth, setDeathLunarMonth] = useState<number | ''>(initialData?.deathLunarMonth || '');
+  const [deathLunarDay, setDeathLunarDay] = useState<number | ''>(initialData?.deathLunarDay || '');
   const [isDeceased, setIsDeceased] = useState<boolean>(initialData?.isDeceased || false);
   const [isInLaw, setIsInLaw] = useState<boolean>(initialData?.isInLaw || false);
   const [birthOrder, setBirthOrder] = useState<number | ''>(initialData?.birthOrder || '');
@@ -46,6 +50,60 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
   const [phoneNumber, setPhoneNumber] = useState(initialData?.phoneNumber || '');
   const [occupation, setOccupation] = useState(initialData?.occupation || '');
   const [currentResidence, setCurrentResidence] = useState(initialData?.currentResidence || '');
+
+  const handleSolarDeathChange = (field: 'day' | 'month' | 'year', val: string) => {
+    const num = val ? Number(val) : '';
+    let d = deathDay;
+    let m = deathMonth;
+    let y = deathYear;
+
+    if (field === 'day') d = num;
+    else if (field === 'month') m = num;
+    else if (field === 'year') y = num;
+
+    setDeathDay(d);
+    setDeathMonth(m);
+    setDeathYear(y);
+
+    if (d !== '' && m !== '' && y !== '' && y > 100) {
+      try {
+        const solar = Solar.fromYmd(y, m, d);
+        const lunar = solar.getLunar();
+        setDeathLunarDay(lunar.getDay());
+        setDeathLunarMonth(Math.abs(lunar.getMonth()));
+        setDeathLunarYear(lunar.getYear());
+      } catch {
+        // Ignore invalid dates
+      }
+    }
+  };
+
+  const handleLunarDeathChange = (field: 'day' | 'month' | 'year', val: string) => {
+    const num = val ? Number(val) : '';
+    let d = deathLunarDay;
+    let m = deathLunarMonth;
+    let y = deathLunarYear;
+
+    if (field === 'day') d = num;
+    else if (field === 'month') m = num;
+    else if (field === 'year') y = num;
+
+    setDeathLunarDay(d);
+    setDeathLunarMonth(m);
+    setDeathLunarYear(y);
+
+    if (d !== '' && m !== '' && y !== '' && y > 100) {
+      try {
+        const lunar = Lunar.fromYmd(y, m, d);
+        const solar = lunar.getSolar();
+        setDeathDay(solar.getDay());
+        setDeathMonth(solar.getMonth());
+        setDeathYear(solar.getYear());
+      } catch {
+        // Ignore invalid dates
+      }
+    }
+  };
 
   const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
@@ -94,6 +152,9 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
         deathYear: isDeceased && deathYear !== '' ? Number(deathYear) : null,
         deathMonth: isDeceased && deathMonth !== '' ? Number(deathMonth) : null,
         deathDay: isDeceased && deathDay !== '' ? Number(deathDay) : null,
+        deathLunarYear: isDeceased && deathLunarYear !== '' ? Number(deathLunarYear) : null,
+        deathLunarMonth: isDeceased && deathLunarMonth !== '' ? Number(deathLunarMonth) : null,
+        deathLunarDay: isDeceased && deathLunarDay !== '' ? Number(deathLunarDay) : null,
         isDeceased,
         isInLaw,
         birthOrder: birthOrder === '' ? null : Number(birthOrder),
@@ -384,36 +445,76 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
 
             {isDeceased && (
               <div className="overflow-hidden animate-[fade-in_0.3s_ease-out_forwards]">
-                <label htmlFor="deathDay" className="block text-sm font-semibold text-stone-700 mb-1.5 mt-5">
-                  {t('member.deathDate')}
-                </label>
-                <div className="grid grid-cols-3 gap-3 pt-1">
-                  <input
-                    id="deathDay"
-                    type="number"
-                    placeholder={t('common.day')}
-                    min="1"
-                    max="31"
-                    value={deathDay}
-                    onChange={(e) => setDeathDay(e.target.value ? Number(e.target.value) : '')}
-                    className={inputClasses}
-                  />
-                  <input
-                    type="number"
-                    placeholder={t('common.month')}
-                    min="1"
-                    max="12"
-                    value={deathMonth}
-                    onChange={(e) => setDeathMonth(e.target.value ? Number(e.target.value) : '')}
-                    className={inputClasses}
-                  />
-                  <input
-                    type="number"
-                    placeholder={t('common.year')}
-                    value={deathYear}
-                    onChange={(e) => setDeathYear(e.target.value ? Number(e.target.value) : '')}
-                    className={inputClasses}
-                  />
+                <p className="text-[13px] text-stone-500 mb-4 italic">
+                  * Nhập Ngày Dương lịch hoặc Ngày Âm lịch. Hệ thống sẽ tự động tính toán và điền phần còn lại.
+                </p>
+
+                <div>
+                  <label htmlFor="deathLunarDay" className="block text-sm font-semibold text-stone-700 mb-2">
+                    Ngày mất (Âm lịch)
+                  </label>
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    <input
+                      id="deathLunarDay"
+                      type="number"
+                      placeholder="Ngày"
+                      min="1"
+                      max="31"
+                      value={deathLunarDay}
+                      onChange={(e) => handleLunarDeathChange('day', e.target.value)}
+                      className={inputClasses}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Tháng"
+                      min="1"
+                      max="12"
+                      value={deathLunarMonth}
+                      onChange={(e) => handleLunarDeathChange('month', e.target.value)}
+                      className={inputClasses}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Năm"
+                      value={deathLunarYear}
+                      onChange={(e) => handleLunarDeathChange('year', e.target.value)}
+                      className={inputClasses}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="deathSolarDay" className="block text-sm font-semibold text-stone-700 mb-2">
+                    Ngày mất (Dương lịch)
+                  </label>
+                  <div className="grid grid-cols-3 gap-3 pt-1">
+                    <input
+                      id="deathSolarDay"
+                      type="number"
+                      placeholder={t('common.day')}
+                      min="1"
+                      max="31"
+                      value={deathDay}
+                      onChange={(e) => handleSolarDeathChange('day', e.target.value)}
+                      className={inputClasses}
+                    />
+                    <input
+                      type="number"
+                      placeholder={t('common.month')}
+                      min="1"
+                      max="12"
+                      value={deathMonth}
+                      onChange={(e) => handleSolarDeathChange('month', e.target.value)}
+                      className={inputClasses}
+                    />
+                    <input
+                      type="number"
+                      placeholder={t('common.year')}
+                      value={deathYear}
+                      onChange={(e) => handleSolarDeathChange('year', e.target.value)}
+                      className={inputClasses}
+                    />
+                  </div>
                 </div>
               </div>
             )}
