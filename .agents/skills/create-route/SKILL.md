@@ -66,7 +66,7 @@ Create co-located test: `src/routes/[route-name].test.tsx`
 
 ### Member List Route
 
-```typescript
+```tsx
 // src/routes/members.tsx
 import { createFileRoute } from '@tanstack/react-router'
 import { membersOptions } from '@/members/server/member'
@@ -85,7 +85,7 @@ export default function MembersPage() {
 
 ### Member Detail Route
 
-```typescript
+```tsx
 // src/routes/members.$memberId.tsx
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
