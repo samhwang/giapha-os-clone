@@ -36,8 +36,8 @@ RUN set -xe && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /usr/share/man/* /usr/share/doc/*
 
-COPY --chown=node:node --from=build /app/dist dist
-COPY --chown=node:node --from=build /app/node_modules node_modules
+COPY --chown=node:node --from=build /app/.output /app/.output
+COPY --chown=node:node --from=build /app/node_modules /app/node_modules
 
 RUN mkdir -p /app/uploads && chown node:node /app/uploads
 VOLUME /app/uploads
@@ -45,4 +45,4 @@ VOLUME /app/uploads
 USER node
 ENV NODE_ENV=production
 EXPOSE 3000
-CMD ["node", "dist/server/server.js"]
+CMD ["node", "/app/.output/server/index.mjs"]

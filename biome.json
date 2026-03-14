@@ -15,6 +15,7 @@
       "!**/src/routeTree.gen.ts",
       "!**/node_modules",
       "!**/dist",
+      "!**/.output",
       "!**/coverage",
       "!**/generated",
       "!**/.content-collections",
