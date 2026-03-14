@@ -11,8 +11,6 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 - **Database**: [Prisma](https://www.prisma.io/) + PostgreSQL
 - **File Storage**: Local filesystem
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Linting/Formatting**: [Biome](https://biomejs.dev/)
-- **Testing**: [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) + [Vitest Browser Mode](https://vitest.dev/guide/browser/)
 - **Infrastructure**: Docker Compose
 
 ## Features
@@ -27,11 +25,39 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 - Role-based access control (admin/member)
 - Admin user management (approve, block, create users)
 
-## Prerequisites
+## Quick Start (Self-Hosted)
 
-- [Node.js](https://nodejs.org/) v22.x
-- [pnpm](https://pnpm.io/) v10.x
-- [Docker](https://www.docker.com/) + Docker Compose
+1. **Clone and configure**
+
+   ```bash
+   git clone https://github.com/your-repo/giapha-os-clone.git
+   cd giapha-os-clone
+   cp .env.sample .env
+   ```
+
+2. **Generate secrets**
+
+   ```bash
+   openssl rand -hex 32  # For BETTER_AUTH_SECRET
+   ```
+
+3. **Start services**
+
+   ```bash
+   docker compose -f docker-compose.production.yml up -d
+   ```
+
+4. **Set up database**
+
+   ```bash
+   docker compose -f docker-compose.production.yml exec app pnpm prisma:migrate deploy
+   ```
+
+5. **Access the app**
+
+   Open `http://localhost:3000`. The first user to sign up becomes admin.
+
+See the [Deployment Guide](./docs/01-deployment.md) for detailed instructions.
 
 ## Quick Start (Development)
 
@@ -43,9 +69,9 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 
 2. **Set up Better Auth token**
 
-  ```bash
-  pnpm run auth:secret
-  ```
+   ```bash
+   pnpm run auth:secret
+   ```
 
 3. **Install dependencies**
 
@@ -53,13 +79,10 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
    pnpm install
    ```
 
-   > The uploads directory is created automatically when the server starts.
-
 4. **Configure environment**
 
    ```bash
    cp .env.sample .env
-   # Edit .env with your settings
    ```
 
 5. **Set up database**
@@ -75,40 +98,7 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
    pnpm run dev
    ```
 
-   Open [http://localhost:3000](http://localhost:3000). The first user to sign up automatically becomes admin.
-
-## Production Deployment
-
-For self-hosted production deployment, see the [Deployment Guide](./docs/07-deployment.md).
-
-## Available Scripts
-
-| Command | Description |
-|---|---|
-| `pnpm run dev` | Start development server |
-| `pnpm run build` | Production build |
-| `pnpm run start` | Start production server |
-| `pnpm run test` | Run tests in watch mode |
-| `pnpm run test:run` | Run tests once |
-| `pnpm run test:coverage` | Run tests with coverage report |
-| `pnpm run test:ui` | Run UI component tests |
-| `pnpm run test:server` | Run server function tests |
-| `pnpm run test:integration` | Run integration tests |
-| `pnpm run test:browser` | Run browser (E2E) tests in watch mode |
-| `pnpm run test:browser:run` | Run browser (E2E) tests once |
-| `pnpm run lint` | Check linting (Biome) |
-| `pnpm run lint:fix` | Auto-fix lint issues |
-| `pnpm run typecheck` | TypeScript type checking |
-| `pnpm run lint:ci` | Strict CI linting check |
-| `pnpm run prisma:studio` | Open Prisma database GUI |
-| `pnpm run prisma:push` | Push schema to database |
-| `pnpm run prisma:generate` | Generate Prisma client |
-| `pnpm run prisma:seed` | Seed database with sample data |
-| `pnpm run prisma:migrate:dev` | Create and apply migration |
-| `pnpm run prisma:migrate:prod` | Deploy migration |
-| `pnpm run prisma:format` | Format Prisma schema |
-| `pnpm run auth:secret` | Generate Better Auth secret |
-| `pnpm run auth:generate` | Generate Better Auth client |
+   Open [http://localhost:3000](http://localhost:3000).
 
 ## Project Structure
 
@@ -129,11 +119,3 @@ For self-hosted production deployment, see the [Deployment Guide](./docs/07-depl
 ├── docker-compose.yml    # PostgreSQL
 └── biome.json            # Linter/formatter config
 ```
-
-## Testing
-
-See [docs/06-testing.md](./docs/en/06-testing.md) for detailed testing guide.
-
-## Attribution & Divergence
-
-See [docs/08-attribution.md](./docs/en/08-attribution.md) for detailed information about the original project and how this clone has evolved.
