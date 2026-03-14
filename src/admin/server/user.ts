@@ -127,6 +127,7 @@ export const getUsers = createServerFn({ method: 'GET' })
         name: true,
         role: true,
         isActive: true,
+        timeZone: true,
         createdAt: true,
         updatedAt: true,
       },

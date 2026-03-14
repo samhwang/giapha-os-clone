@@ -77,25 +77,25 @@ describe('calculateAge', () => {
 
   describe('when person is living', () => {
     it('should calculate age from birth year to current year', () => {
-      const result = calculateAge(1990, null);
+      const result = calculateAge(1990, null, null, null, null, null);
       expect(result).toEqual({ age: 35, isDeceased: false });
     });
   });
 
   describe('when person is deceased', () => {
     it('should calculate age at death', () => {
-      const result = calculateAge(1902, 1975);
+      const result = calculateAge(1902, null, null, 1975, null, null, true);
       expect(result).toEqual({ age: 73, isDeceased: true });
     });
   });
 
   describe('when birth year is null', () => {
     it('should return null', () => {
-      expect(calculateAge(null, null)).toBeNull();
+      expect(calculateAge(null, null, null, null, null, null)).toBeNull();
     });
 
     it('should return null even if death year is provided', () => {
-      expect(calculateAge(null, 2020)).toBeNull();
+      expect(calculateAge(null, null, null, 2020, null, null, true)).toBeNull();
     });
   });
 });

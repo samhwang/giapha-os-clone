@@ -168,7 +168,15 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
               )}
 
               {(() => {
-                const ageData = calculateAge(person.birthYear, person.deathYear);
+                const ageData = calculateAge(
+                  person.birthYear,
+                  person.birthMonth,
+                  person.birthDay,
+                  person.deathYear,
+                  person.deathMonth,
+                  person.deathDay,
+                  person.isDeceased
+                );
                 if (!ageData) return null;
                 return (
                   <div

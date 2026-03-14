@@ -14,6 +14,9 @@ interface MockPerson {
   deathYear: number | null;
   deathMonth: number | null;
   deathDay: number | null;
+  deathLunarYear: number | null;
+  deathLunarMonth: number | null;
+  deathLunarDay: number | null;
   isDeceased: boolean;
   isInLaw: boolean;
   generation: number | null;
@@ -41,6 +44,7 @@ interface MockUser {
   name: string | null;
   role: UserRole;
   isActive: boolean;
+  timeZone: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -62,6 +66,9 @@ export function createPerson(overrides: Partial<MockPerson> = {}): MockPerson {
     deathYear: null,
     deathMonth: null,
     deathDay: null,
+    deathLunarYear: null,
+    deathLunarMonth: null,
+    deathLunarDay: null,
     isDeceased: false,
     isInLaw: false,
     generation: 1,
@@ -95,6 +102,7 @@ export function createUser(overrides: Partial<MockUser> = {}): MockUser {
     name: 'Test User',
     role: UserRole.enum.member,
     isActive: true,
+    timeZone: 'UTC',
     createdAt: now,
     updatedAt: now,
     ...overrides,
