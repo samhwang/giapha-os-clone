@@ -1,4 +1,7 @@
+import { TanStackDevtools } from '@tanstack/react-devtools';
+import { formDevtoolsPlugin } from '@tanstack/react-form-devtools';
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router';
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { createI18nInstance, type Language } from '../i18n';
 import { getLanguage } from '../i18n/getLanguage';
@@ -55,6 +58,15 @@ function RootComponent() {
         </head>
         <body className="font-sans antialiased relative">
           <Outlet />
+          <TanStackDevtools
+            plugins={[
+              formDevtoolsPlugin(),
+              {
+                name: 'TanStack Router',
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+            ]}
+          />
           <Scripts />
         </body>
       </html>
