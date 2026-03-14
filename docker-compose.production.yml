@@ -27,6 +27,8 @@ services:
       - ./prisma.config.ts:/src/prisma.config.ts
     env_file:
       - .env
+    environment:
+      - DATABASE_HOST=postgres
     depends_on:
       postgres:
         condition: service_healthy
@@ -42,7 +44,7 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://giapha:${DB_PASSWORD}@postgres:5432/giapha
+      - DATABASE_HOST=postgres
       - UPLOAD_DIR=/app/uploads
     volumes:
       # Option 1: Named volume (default, portable)
