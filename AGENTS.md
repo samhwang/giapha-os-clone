@@ -95,14 +95,13 @@ Load these rules when working on relevant domains:
 
 ## Available Skills
 
-Skills will be added as needed for specific task types.
+Load a skill when working on specific task types:
 
-**Currently**: No skills defined yet. Future skills might include:
-- Component creation templates
-- Route creation workflows
-- Database migration patterns
-
-Add skills under `.agents/skills/[skill-name]/SKILL.md` as needed.
+- **[create-component](.agents/skills/create-component/SKILL.md)** - Create React components with proper structure and tests
+- **[create-route](.agents/skills/create-route/SKILL.md)** - Create TanStack Start routes with loader, validation, and tests
+- **[create-test](.agents/skills/create-test/SKILL.md)** - Write unit and browser tests with Vitest and React Testing Library
+- **[create-server-function](.agents/skills/create-server-function/SKILL.md)** - Create server functions with Zod validation and Prisma
+- **[db-migration](.agents/skills/db-migration/SKILL.md)** - Manage Prisma schema changes and migrations
 
 ## Quick Reference
 
