@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 // ============================================================
 // App-level enums (Zod as single source of truth)

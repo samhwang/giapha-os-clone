@@ -1,5 +1,5 @@
 import { createServerFn } from '@tanstack/react-start';
-import { z } from 'zod';
+import * as z from 'zod';
 import { auth } from '../../lib/auth';
 import { getDbClient } from '../../lib/db';
 import { isAdminMiddleware } from '../../server/auth/middleware';

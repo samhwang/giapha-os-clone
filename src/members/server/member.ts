@@ -1,5 +1,5 @@
 import { createServerFn } from '@tanstack/react-start';
-import { z } from 'zod';
+import * as z from 'zod';
 import { getDbClient } from '../../lib/db';
 import { ERRORS } from '../../lib/errors';
 import { deleteAvatar, uploadAvatar } from '../../lib/storage';

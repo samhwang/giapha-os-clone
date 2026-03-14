@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 const ServerEnv = z.object({
   DATABASE_URL: z.url(),
