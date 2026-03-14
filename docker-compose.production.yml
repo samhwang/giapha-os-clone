@@ -27,6 +27,9 @@ services:
       - ./prisma.config.ts:/prisma.config.ts
     env_file:
       - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   app:
     build: .
