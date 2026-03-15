@@ -7,6 +7,7 @@ import { getTodayLunar } from '../../events/utils/dateHelpers';
 import { computeEvents } from '../../events/utils/eventHelpers';
 import { getPersons } from '../../members/server/member';
 import { type CustomEventRecord, type Person, UserRole } from '../../types';
+import { cn } from '../../ui/utils/cn';
 
 export const Route = createFileRoute('/dashboard/')({
   loader: async () => {
@@ -160,8 +161,8 @@ function DashboardLaunchpad() {
                         key={`${evt.personId}-${evt.type}`}
                         className="flex items-center gap-3.5 p-3 rounded-2xl bg-stone-50/50 hover:bg-stone-50 border border-transparent hover:border-stone-100 transition-all duration-300 cursor-pointer"
                       >
-                        <div className={`size-10 rounded-xl ${cfg.bg} flex items-center justify-center shrink-0 shadow-sm border border-white`}>
-                          <Icon className={`size-4 ${cfg.color}`} />
+                        <div className={cn('size-10 rounded-xl', cfg.bg, 'flex items-center justify-center shrink-0 shadow-sm border border-white')}>
+                          <Icon className={cn('size-4', cfg.color)} />
                         </div>
                         <div className="min-w-0 flex-1">
                           <span className="text-sm font-semibold text-stone-700 truncate block">{evt.personName}</span>
@@ -208,10 +209,17 @@ function DashboardLaunchpad() {
               <Link
                 key={feat.href}
                 to={feat.href}
-                className={`group flex flex-col p-6 rounded-2xl bg-white border ${feat.borderColor} ${feat.hoverColor} transition-all duration-300 hover:-translate-y-1 shadow-sm`}
+                className={cn(
+                  'group flex flex-col p-6 rounded-2xl bg-white border',
+                  feat.borderColor,
+                  feat.hoverColor,
+                  'transition-all duration-300 hover:-translate-y-1 shadow-sm'
+                )}
               >
-                <div className={`size-14 rounded-xl flex items-center justify-center mb-5 ${feat.bgColor} transition-colors duration-300`}>{feat.icon}</div>
-                <h4 className={`text-lg font-bold text-stone-800 mb-2 ${feat.hoverTitle} transition-colors`}>{feat.title}</h4>
+                <div className={cn('size-14 rounded-xl flex items-center justify-center mb-5', feat.bgColor, 'transition-colors duration-300')}>
+                  {feat.icon}
+                </div>
+                <h4 className={cn('text-lg font-bold text-stone-800 mb-2', feat.hoverTitle, 'transition-colors')}>{feat.title}</h4>
                 <p className="text-sm text-stone-500 line-clamp-2">{feat.description}</p>
               </Link>
             ))}
@@ -229,9 +237,16 @@ function DashboardLaunchpad() {
                 <Link
                   key={feat.href}
                   to={feat.href}
-                  className={`group flex flex-col p-6 rounded-2xl bg-white border ${feat.borderColor} ${feat.hoverColor} transition-all duration-300 hover:-translate-y-1 shadow-sm`}
+                  className={cn(
+                    'group flex flex-col p-6 rounded-2xl bg-white border',
+                    feat.borderColor,
+                    feat.hoverColor,
+                    'transition-all duration-300 hover:-translate-y-1 shadow-sm'
+                  )}
                 >
-                  <div className={`size-14 rounded-xl flex items-center justify-center mb-5 ${feat.bgColor} transition-colors duration-300`}>{feat.icon}</div>
+                  <div className={cn('size-14 rounded-xl flex items-center justify-center mb-5', feat.bgColor, 'transition-colors duration-300')}>
+                    {feat.icon}
+                  </div>
                   <h4 className="text-lg font-bold text-stone-800 mb-2 group-hover:text-rose-700 transition-colors">{feat.title}</h4>
                   <p className="text-sm text-stone-500 line-clamp-2">{feat.description}</p>
                 </Link>
