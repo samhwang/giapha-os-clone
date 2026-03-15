@@ -6,6 +6,8 @@ import RelationshipManager from '../../relationships/components/RelationshipMana
 import { Gender, type Person } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
+import { cn } from '../../ui/utils/cn';
+import { getAvatarBg, getGenderStyle } from '../../ui/utils/styles';
 
 interface MemberDetailContentProps {
   person: Person;
@@ -25,14 +27,21 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
     <div className="bg-stone-50/50">
       <div className="h-28 sm:h-36 bg-linear-to-r from-stone-200 via-stone-100 to-stone-200 relative shrink-0">
         <div
-          className={`absolute right-0 -top-20 w-64 h-64 rounded-full blur-4xl opacity-40 ${person.gender === Gender.enum.male ? 'bg-sky-300' : person.gender === Gender.enum.female ? 'bg-rose-300' : 'bg-stone-300'}`}
+          className={cn(
+            'absolute right-0 -top-20 w-64 h-64 rounded-full blur-4xl opacity-40',
+            person.gender === Gender.enum.male && 'bg-sky-300',
+            person.gender === Gender.enum.female && 'bg-rose-300',
+            person.gender === Gender.enum.other && 'bg-stone-300'
+          )}
         />
         <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full blur-4xl opacity-20 bg-amber-200" />
 
         <div className="absolute -bottom-12 sm:-bottom-16 left-6 sm:left-8 z-10">
           <div
-            className={`h-24 w-24 sm:h-32 sm:w-32 rounded-full border-4 sm:border-[6px] border-white flex items-center justify-center text-3xl sm:text-4xl font-bold text-white overflow-hidden shadow-xl shrink-0
-             ${person.gender === Gender.enum.male ? 'bg-linear-to-br from-sky-400 to-sky-700' : person.gender === Gender.enum.female ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
+            className={cn(
+              'h-24 w-24 sm:h-32 sm:w-32 rounded-full border-4 sm:border-[6px] border-white flex items-center justify-center text-3xl sm:text-4xl font-bold text-white overflow-hidden shadow-xl shrink-0',
+              getAvatarBg(person.gender)
+            )}
           >
             {person.avatarUrl ? (
               <img src={person.avatarUrl} alt={person.fullName} className="h-full w-full object-cover" />
@@ -41,13 +50,10 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
             )}
           </div>
           <div
-            className={`absolute bottom-1 right-1 sm:bottom-2 sm:right-2 size-6 sm:size-8 rounded-full ring-2 sm:ring-4 ring-white shadow-md flex items-center justify-center ${
-              person.gender === Gender.enum.male
-                ? 'bg-sky-100 text-sky-600'
-                : person.gender === Gender.enum.female
-                  ? 'bg-rose-100 text-rose-600'
-                  : 'bg-stone-100 text-stone-600'
-            }`}
+            className={cn(
+              'absolute bottom-1 right-1 sm:bottom-2 sm:right-2 size-6 sm:size-8 rounded-full ring-2 sm:ring-4 ring-white shadow-md flex items-center justify-center',
+              getGenderStyle(person.gender)
+            )}
           >
             {person.gender === Gender.enum.male ? (
               <MaleIcon className="size-4 sm:size-5" />
@@ -70,13 +76,12 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
               )}
               {person.isInLaw && (
                 <span
-                  className={`text-2xs sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border uppercase tracking-wider ${
-                    person.gender === Gender.enum.female
-                      ? 'text-rose-700 bg-rose-50/50 border-rose-200/60'
-                      : person.gender === Gender.enum.male
-                        ? 'text-sky-700 bg-sky-50/50 border-sky-200/60'
-                        : 'text-stone-700 bg-stone-50/50 border-stone-200/60'
-                  }`}
+                  className={cn(
+                    'text-2xs sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border uppercase tracking-wider',
+                    person.gender === Gender.enum.female && 'text-rose-700 bg-rose-50/50 border-rose-200/60',
+                    person.gender === Gender.enum.male && 'text-sky-700 bg-sky-50/50 border-sky-200/60',
+                    person.gender === Gender.enum.other && 'text-stone-700 bg-stone-50/50 border-stone-200/60'
+                  )}
                 >
                   {person.gender === Gender.enum.female
                     ? t('member.filterInLawFemale')
