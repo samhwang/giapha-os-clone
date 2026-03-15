@@ -2,9 +2,9 @@ import { createFileRoute, Link, Outlet, redirect } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start';
 import { getRequestHeaders } from '@tanstack/react-start/server';
 import { useTranslation } from 'react-i18next';
+import { auth } from '../../auth/server';
 import DashboardHeader from '../../dashboard/components/DashboardHeader';
 import { DashboardProvider } from '../../dashboard/components/DashboardProvider';
-import { auth } from '../../lib/auth';
 import config from '../../lib/config';
 import { UserRole } from '../../types';
 import Footer from '../../ui/layout/Footer';

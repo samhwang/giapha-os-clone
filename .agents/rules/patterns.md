@@ -42,7 +42,7 @@ export const createPerson = createServerFn({ method: 'POST' })
 
 Use TanStack Start middleware for auth guards. The app separates auth logic from middleware:
 
-#### Auth Library (`src/server/auth/lib.ts`)
+#### Auth Library (`src/auth/server/lib.ts`)
 
 Inner logic functions that perform the actual auth checks:
 
@@ -69,7 +69,7 @@ export async function requireAdmin(): Promise<User> {
 }
 ```
 
-#### Middleware (`src/server/auth/middleware.ts`)
+#### Middleware (`src/auth/server/middleware.ts`)
 
 TanStack Start middlewares that use the auth library:
 
@@ -99,7 +99,7 @@ export const isAdminMiddleware = createMiddleware().server(async ({ next }) => {
 
 ```tsx
 import { createServerFn } from '@tanstack/react-start';
-import { isAdminMiddleware } from '@/server/auth/middleware';
+import { isAdminMiddleware } from '../../auth/server/middleware';
 
 export const exportData = createServerFn({ method: 'GET' })
   .middleware([isAdminMiddleware])
@@ -187,7 +187,7 @@ try {
 ### Client Usage
 
 ```tsx
-import { authClient } from '@/lib/auth-client';
+import { authClient } from '../../auth/client';
 
 // Sign up
 await authClient.signUp.email({ email, password, name });

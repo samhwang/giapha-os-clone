@@ -1,9 +1,9 @@
 import { createServerFn } from '@tanstack/react-start';
-import { z } from 'zod';
+import * as z from 'zod';
+import { isEditorMiddleware } from '../../auth/server/middleware';
 import { getDbClient } from '../../lib/db';
 import { ERRORS } from '../../lib/errors';
 import { deleteAvatar, uploadAvatar } from '../../lib/storage';
-import { isEditorMiddleware } from '../../server/auth/middleware';
 import { Gender } from '../../types';
 
 const genderEnum = Gender;

@@ -9,7 +9,7 @@ vi.mock('@tanstack/react-router', () => ({
 
 const mockSignOut = vi.fn(() => Promise.resolve());
 
-vi.mock('../../lib/auth-client', () => ({
+vi.mock('../../auth/client', () => ({
   authClient: { signOut: () => mockSignOut() },
 }));
 

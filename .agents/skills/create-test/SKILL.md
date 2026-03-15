@@ -100,10 +100,10 @@ describe('formatVietnameseDate', () => {
 // src/members/server/member.test.ts
 import { describe, it, expect, beforeEach } from 'vitest'
 import { createMember } from './member'
-import { db } from '@/lib/db'
-import { auth } from '@/lib/auth'
+import { db } from '../../../lib/db'
+import { auth } from '../../../auth/server'
 
-vi.mock('@/lib/db', () => ({
+vi.mock('../../../lib/db', () => ({
   db: {
     member: {
       create: vi.fn(),
@@ -111,7 +111,7 @@ vi.mock('@/lib/db', () => ({
   },
 }))
 
-vi.mock('@/lib/auth', () => ({
+vi.mock('../../../auth/server', () => ({
   auth: vi.fn(),
 }))
 

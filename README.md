@@ -105,7 +105,8 @@ See the [Deployment Guide](./docs/01-deployment.md) for detailed instructions.
 ├── public/               # Static assets (favicons, manifest)
 ├── src/
 │   ├── components/       # React components
-│   ├── lib/              # Core libraries (auth, db, storage)
+│   ├── lib/              # Core libraries (db, storage)
+│   ├── auth/            # Authentication
 │   ├── routes/           # TanStack Start file-based routes
 │   ├── server/functions/ # Server functions (API logic)
 │   ├── styles/           # Global CSS styles

@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { ArrowLeft, Info, KeyRound, Mail, Shield, UserPlus } from 'lucide-react';
-import { type SubmitEvent, useState } from 'react';
+import { ArrowLeft, Info, Shield } from 'lucide-react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { authClient } from '../lib/auth-client';
+import LoginForm from '../auth/components/LoginForm';
+import RegisterForm from '../auth/components/RegisterForm';
 import LanguageSwitcher from '../ui/common/LanguageSwitcher';
 import Footer from '../ui/layout/Footer';
 
@@ -11,52 +12,15 @@ export const Route = createFileRoute('/login')({
 });
 
 function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isLogin, setIsLogin] = useState(true);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const handleSubmit = async (e: SubmitEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccessMessage(null);
-
-    try {
-      if (isLogin) {
-        const { error } = await authClient.signIn.email({ email, password });
-        if (error) {
-          setError(error.message || t('auth.loginFailed'));
-          return;
-        }
-        navigate({ to: '/dashboard' });
-        return;
-      }
-
-      if (password !== confirmPassword) {
-        setError(t('auth.passwordMismatch'));
-        setLoading(false);
-        return;
-      }
-
-      const { error } = await authClient.signUp.email({ email, password, name: email });
-      if (error) {
-        setError(error.message || t('auth.registerFailed'));
-        return;
-      }
-      setSuccessMessage(t('auth.registerSuccess'));
+  const handleSuccess = () => {
+    if (isLogin) {
+      navigate({ to: '/dashboard' });
+    } else {
       setIsLogin(true);
-      setConfirmPassword('');
-      setPassword('');
-    } catch {
-      setError(t('auth.unexpectedError'));
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -85,129 +49,23 @@ function LoginPage() {
             <p className="mt-3 text-sm text-stone-500 font-medium tracking-wide">{isLogin ? t('auth.loginSubtitle') : t('auth.registerSubtitle')}</p>
           </div>
 
-          <form className="space-y-5 relative z-10" onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <div className="relative">
-                <label htmlFor="email-address" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
-                  {t('auth.emailLabel')}
-                </label>
-                <div className="relative flex items-center group">
-                  <Mail className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
-                  <input
-                    id="email-address"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
-                    placeholder={t('auth.emailPlaceholder')}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-              </div>
+          <div className="relative z-10">
+            {isLogin ? <LoginForm onSuccess={handleSuccess} /> : <RegisterForm onSuccess={handleSuccess} />}
 
-              <div className="relative">
-                <label htmlFor="password" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
-                  {t('auth.passwordLabel')}
-                </label>
-                <div className="relative flex items-center group">
-                  <KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete={isLogin ? 'current-password' : 'new-password'}
-                    required
-                    className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
-                    placeholder={t('auth.passwordPlaceholder')}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {!isLogin && (
-                <div className="relative overflow-hidden animate-[fade-in_0.3s_ease-out_forwards]">
-                  <label htmlFor="confirmPassword" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
-                    {t('auth.confirmPasswordLabel')}
-                  </label>
-                  <div className="relative flex items-center group">
-                    <KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
-                    <input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      autoComplete="new-password"
-                      required={!isLogin}
-                      className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
-                      placeholder={t('auth.confirmPasswordPlaceholder')}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                  </div>
-                </div>
-              )}
+            <div className="relative flex items-center py-4 opacity-60">
+              <div className="grow border-t border-stone-200" />
+              <span className="shrink-0 mx-4 text-stone-400 text-xs-plus uppercase tracking-wider font-bold">{t('common.or')}</span>
+              <div className="grow border-t border-stone-200" />
             </div>
 
-            {error && (
-              <div className="text-red-700 text-sm-plus text-center bg-red-50 p-3 rounded-xl border border-red-100/50 font-medium animate-[fade-in-up_0.3s_ease-out_forwards]">
-                {error}
-              </div>
-            )}
-
-            {successMessage && (
-              <div className="text-teal-700 text-sm-plus text-center bg-teal-50 p-3 rounded-xl border border-teal-100/50 font-medium animate-[fade-in-up_0.3s_ease-out_forwards]">
-                {successMessage}
-              </div>
-            )}
-
-            <div className="flex flex-col gap-4 pt-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="group relative w-full flex justify-center items-center gap-2 py-4 px-4 text-base-plus font-bold rounded-xl text-white bg-stone-900 hover:bg-stone-800 border border-stone-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-900 disabled:opacity-70 disabled:cursor-wait transition-all duration-300 shadow-xl shadow-stone-900/10 hover:shadow-2xl hover:shadow-stone-900/20 hover:-translate-y-0.5"
-              >
-                {loading ? (
-                  <span className="flex items-center gap-2.5">
-                    <svg className="animate-spin -ml-1 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" role="img" aria-label="Loading">
-                      <title>Loading</title>
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    {t('common.processing')}
-                  </span>
-                ) : (
-                  <>
-                    {isLogin ? t('auth.loginButton') : t('auth.createAccountButton')}
-                    {!isLogin && <UserPlus className="size-4 ml-1" />}
-                  </>
-                )}
-              </button>
-
-              <div className="relative flex items-center py-2 opacity-60">
-                <div className="grow border-t border-stone-200" />
-                <span className="shrink-0 mx-4 text-stone-400 text-xs-plus uppercase tracking-wider font-bold">{t('common.or')}</span>
-                <div className="grow border-t border-stone-200" />
-              </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setError(null);
-                  setSuccessMessage(null);
-                }}
-                className="w-full text-sm font-semibold text-stone-600 hover:text-stone-900 bg-white hover:bg-stone-50 border border-stone-200/80 py-3.5 rounded-xl shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] focus:outline-none transition-all duration-200"
-              >
-                {isLogin ? t('auth.noAccount') : t('auth.hasAccount')}
-              </button>
-            </div>
-          </form>
+            <button
+              type="button"
+              onClick={() => setIsLogin(!isLogin)}
+              className="w-full text-sm font-semibold text-stone-600 hover:text-stone-900 bg-white hover:bg-stone-50 border border-stone-200/80 py-3.5 rounded-xl shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] focus:outline-none transition-all duration-200"
+            >
+              {isLogin ? t('auth.noAccount') : t('auth.hasAccount')}
+            </button>
+          </div>
         </div>
       </div>
 

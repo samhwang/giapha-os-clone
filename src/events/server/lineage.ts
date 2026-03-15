@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
-import { z } from 'zod';
+import * as z from 'zod';
+import { isAuthenticatedMiddleware } from '../../auth/server/middleware';
 import { getDbClient } from '../../lib/db';
-import { isAuthenticatedMiddleware } from '../../server/auth/middleware';
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 

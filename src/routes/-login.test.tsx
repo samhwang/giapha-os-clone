@@ -15,7 +15,7 @@ vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-vi.mock('../lib/auth-client', () => ({
+vi.mock('../auth/client', () => ({
   authClient: {
     signIn: { email: mockSignIn },
     signUp: { email: mockSignUp },

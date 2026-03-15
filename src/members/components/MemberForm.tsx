@@ -445,7 +445,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
 
             {isDeceased && (
               <div className="overflow-hidden animate-[fade-in_0.3s_ease-out_forwards]">
-                <p className="text-[13px] text-stone-500 mb-4 italic">
+                <p className="text-sm-plus text-stone-500 mb-4 italic">
                   * Nhập Ngày Dương lịch hoặc Ngày Âm lịch. Hệ thống sẽ tự động tính toán và điền phần còn lại.
                 </p>
 

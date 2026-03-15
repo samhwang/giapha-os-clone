@@ -26,8 +26,11 @@ src/
 │   ├── ui/              # Base UI components (Button, Input, etc.)
 │   └── ...
 ├── lib/                  # Core libraries
-│   ├── auth-client.ts    # Auth client (browser)
-│   ├── auth-server.ts    # Auth server (node)
+│   ├── auth/            # Auth (Better Auth)
+│   │   ├── client.ts    # Auth client (browser)
+│   │   ├── server.ts   # Auth server (node)
+│   │   ├── server/     # Auth helpers & middleware
+│   │   └── components/ # Auth UI components
 │   ├── db.ts            # Prisma client
 │   └── storage.ts       # File storage utilities
 ├── routes/              # TanStack Router file-based routing

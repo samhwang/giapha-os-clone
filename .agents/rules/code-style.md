@@ -119,7 +119,8 @@ Organize `src/` by domain functionality, not by technical layer:
 ```
 src/
 ├── routes/           # File-based routing (framework requirement)
-├── lib/              # Core infrastructure (db, auth, storage, config)
+├── lib/              # Core infrastructure (db, storage, config)
+├── auth/             # Authentication (Better Auth)
 ├── i18n/             # Internationalization
 ├── types/            # Global types
 │

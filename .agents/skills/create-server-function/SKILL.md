@@ -28,8 +28,8 @@ Create `src/*/server/[feature].ts`:
 ```typescript
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { db } from '@/lib/db'
-import { auth } from '@/lib/auth'
+import { db } from '../../lib/db'
+import { auth } from '../../auth/server'
 
 const [getItems, createItem] = createServerFn({ method: 'GET' })
   .validator((data: unknown) => {
@@ -80,7 +80,7 @@ Create: `src/*/server/[feature].test.ts`
 ```typescript
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { db } from '@/lib/db'
+import { db } from '../../lib/db'
 
 const getMemberById = createServerFn({ method: 'GET' })
   .validator((data: unknown) => z.string().parse(data))
@@ -100,8 +100,8 @@ const getMemberById = createServerFn({ method: 'GET' })
 ```typescript
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { db } from '@/lib/db'
-import { auth } from '@/lib/auth'
+import { db } from '../../lib/db'
+import { auth } from '../../auth/server'
 
 const createMember = createServerFn({ method: 'POST' })
   .validator((data: unknown) => {
@@ -161,7 +161,7 @@ At: 'desc      db.member.count({ where }),
 ## Notes
 
 - Always validate inputs with Zod
-- Use `auth()` from `@/lib/auth` for protected routes
-- Use `db` from `@/lib/db` for Prisma operations
+- Use `auth()` from `../../auth/server` for protected routes
+- Use `db` from `../../lib/db` for Prisma operations
 - Export functions in a named object for clean imports
 - Follow naming: `getXxx`, `createXxx`, `updateXxx`, `deleteXxx`, `listXxx`

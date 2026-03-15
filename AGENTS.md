@@ -52,7 +52,8 @@ prisma/                   # Database schema and seed data
 scripts/                  # Infrastructure setup scripts
 src/
 ├── components/           # React components (30+ files)
-├── lib/                  # Core libraries (auth, db, storage)
+├── lib/                  # Core libraries (db, storage)
+├── auth/                 # Authentication
 ├── routes/               # TanStack Start file-based routes
 ├── server/functions/     # Server functions (API logic)
 ├── styles/               # Global CSS styles

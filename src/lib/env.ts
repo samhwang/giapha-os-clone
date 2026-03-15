@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
 const Env = z.object({
   VITE_SITE_NAME: z.string().min(1).default('Gia Phả OS'),
