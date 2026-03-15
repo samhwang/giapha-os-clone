@@ -35,7 +35,8 @@
     "monthsFromNow": "{{months}} tháng nữa",
     "homepage": "Trang chủ",
     "about": "Giới thiệu",
-    "loadingFamilyData": "Đang tải dữ liệu gia phả..."
+    "loadingFamilyData": "Đang tải dữ liệu gia phả...",
+    "lunarLeap": "nhuận"
   },
   "auth": {
     "login": "Đăng nhập",
@@ -112,7 +113,14 @@
     "hideMales": "Ẩn nam",
     "hideFemales": "Ẩn nữ",
     "expandAll": "Mở rộng tất cả",
-    "collapseAll": "Thu gọn tất cả"
+    "collapseAll": "Thu gọn tất cả",
+    "noData": "Không tìm thấy dữ liệu.",
+    "emptyTree": "Gia phả trống",
+    "husband": "Chồng",
+    "wife": "Vợ",
+    "collapse": "Thu gọn",
+    "expand": "Mở rộng",
+    "dateLabel": "Ngày"
   },
   "member": {
     "addMember": "Thêm thành viên",
@@ -136,6 +144,9 @@
     "solarBirthDate": "Ngày sinh dương lịch",
     "isDeceased": "Đã qua đời",
     "deathDate": "Ngày mất",
+    "deathDateLunar": "Ngày mất (Âm lịch)",
+    "deathDateSolar": "Ngày mất (Dương lịch)",
+    "deathDateHint": "* Nhập Ngày Dương lịch hoặc Ngày Âm lịch. Hệ thống sẽ tự động tính toán và điền phần còn lại.",
     "notePlaceholder": "Thêm thông tin bổ sung, tiểu sử...",
     "privateInfo": "Thông tin riêng tư",
     "adminOnly": "Chỉ Admin",
@@ -194,7 +205,8 @@
     "contactInfo": "Thông tin liên hệ",
     "notUpdated": "Chưa cập nhật",
     "contactAdminOnly": "Thông tin liên hệ chỉ hiển thị với Quản trị viên.",
-    "inLawOther": "Khách"
+    "inLawOther": "Khách",
+    "editMember": "Chỉnh Sửa Thành Viên"
   },
   "relationship": {
     "loadingFamily": "Đang tải thông tin gia đình...",
@@ -455,13 +467,15 @@
     "auth": {
       "loginRequired": "Vui lòng đăng nhập.",
       "inactive": "Tài khoản đã bị khoá hoặc chưa kích hoạt.",
+      "accessDenied": "Truy cập bị từ chối",
       "adminOnly": "Từ chối truy cập.",
       "editorOnly": "Cần quyền biên tập để thực hiện."
     },
     "member": {
       "nameRequired": "Tên là bắt buộc.",
       "notFound": "Không tìm thấy thành viên.",
-      "hasRelationships": "Không thể xoá. Vui lòng xoá hết các mối quan hệ gia đình của người này trước."
+      "hasRelationships": "Không thể xoá. Vui lòng xoá hết các mối quan hệ gia đình của người này trước.",
+      "editDenied": "Bạn không có quyền chỉnh sửa thành viên."
     },
     "user": {
       "selfRole": "Không thể thay đổi vai trò của chính mình.",

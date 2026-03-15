@@ -1,110 +1,111 @@
 import { KeyRound, Mail, UserPlus } from 'lucide-react';
-import { type SubmitEvent, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as z from 'zod';
 import { authClient } from '../../auth/client';
+import { useAuthForm } from '../hooks/useAuthForm';
 
 interface RegisterFormProps {
   onSuccess: () => void;
 }
 
+const Register = z
+  .object({
+    email: z.email(),
+    password: z.string().min(1),
+    confirmPassword: z.string().min(1),
+  })
+  .refine(
+    (v) => {
+      if (v.password !== v.confirmPassword) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: 'auth.passwordMismatch',
+    }
+  );
+type Register = z.infer<typeof Register>;
+
 export default function RegisterForm({ onSuccess }: RegisterFormProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const { t } = useTranslation();
 
-  const handleSubmit = async (e: SubmitEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccessMessage(null);
+  const form = useAuthForm({
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+    } satisfies Register,
+    validators: {
+      onSubmit: Register,
+    },
+    onSubmit: async ({ value }) => {
+      setLoading(true);
+      setError(null);
+      setSuccessMessage(null);
 
-    try {
-      if (password !== confirmPassword) {
-        setError(t('auth.passwordMismatch'));
+      try {
+        const { error } = await authClient.signUp.email({ email: value.email, password: value.password, name: value.email });
+        if (error) {
+          setError(error.message || t('auth.registerFailed'));
+          return;
+        }
+        setSuccessMessage(t('auth.registerSuccess'));
+        onSuccess();
+      } catch {
+        setError(t('auth.unexpectedError'));
+      } finally {
         setLoading(false);
-        return;
       }
-
-      const { error } = await authClient.signUp.email({ email, password, name: email });
-      if (error) {
-        setError(error.message || t('auth.registerFailed'));
-        return;
-      }
-      setSuccessMessage(t('auth.registerSuccess'));
-      onSuccess();
-    } catch {
-      setError(t('auth.unexpectedError'));
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
 
   return (
-    <form className="space-y-5" onSubmit={handleSubmit}>
+    <form
+      className="space-y-5"
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
       <div className="space-y-4">
-        <div className="relative">
-          <label htmlFor="email-address" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
-            {t('auth.emailLabel')}
-          </label>
-          <div className="relative flex items-center group">
-            <Mail className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
-            <input
-              id="email-address"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
+        <form.AppField name="email">
+          {(field) => (
+            <field.AuthField
+              label={t('auth.emailLabel')}
               placeholder={t('auth.emailPlaceholder')}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              leftIcon={<Mail className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />}
+              type="email"
             />
-          </div>
-        </div>
+          )}
+        </form.AppField>
 
-        <div className="relative">
-          <label htmlFor="password" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
-            {t('auth.passwordLabel')}
-          </label>
-          <div className="relative flex items-center group">
-            <KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              required
-              className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
+        <form.AppField name="password">
+          {(field) => (
+            <field.AuthField
+              label={t('auth.passwordLabel')}
               placeholder={t('auth.passwordPlaceholder')}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="relative overflow-hidden animate-[fade-in_0.3s_ease-out_forwards]">
-          <label htmlFor="confirmPassword" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
-            {t('auth.confirmPasswordLabel')}
-          </label>
-          <div className="relative flex items-center group">
-            <KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
+              leftIcon={<KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />}
               type="password"
-              autoComplete="new-password"
-              required
-              className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
-              placeholder={t('auth.confirmPasswordPlaceholder')}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
             />
-          </div>
-        </div>
+          )}
+        </form.AppField>
+
+        <form.AppField name="confirmPassword">
+          {(field) => (
+            <field.AuthField
+              label={t('auth.confirmPasswordLabel')}
+              placeholder={t('auth.confirmPasswordPlaceholder')}
+              leftIcon={<KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />}
+              type="password"
+            />
+          )}
+        </form.AppField>
       </div>
 
       {error && (

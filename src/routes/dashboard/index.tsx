@@ -29,7 +29,7 @@ function DashboardLaunchpad() {
   const { session } = Route.useRouteContext();
   const isAdmin = session.role === UserRole.enum.admin;
 
-  const lunar = useMemo(() => getTodayLunar(), []);
+  const lunar = useMemo(() => getTodayLunar(undefined, t('common.month')), [t]);
 
   const upcomingEvents = useMemo(() => {
     const personData = persons.map((p) => ({

@@ -1,7 +1,8 @@
-import { type SubmitEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type UserProfile, UserRole } from '../../types';
 import { cn } from '../../ui/utils/cn';
+import { useAdminForm } from '../hooks/useAdminForm';
 import { changeRole, createUser, deleteUser, toggleStatus } from '../server/user';
 
 interface AdminUserListProps {
@@ -19,8 +20,33 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
   const [users, setUsers] = useState<UserProfile[]>(initialUsers);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
+
+  const form = useAdminForm({
+    defaultValues: {
+      email: '',
+      password: '',
+      role: 'member' as UserRole,
+      isActive: true,
+    },
+    onSubmit: async ({ value }) => {
+      try {
+        await createUser({
+          data: {
+            email: value.email,
+            password: value.password,
+            role: value.role,
+            isActive: value.isActive,
+          },
+        });
+        showNotification(t('admin.createSuccess'), 'success');
+        setIsCreateModalOpen(false);
+        setTimeout(() => window.location.reload(), 1500);
+      } catch (error: unknown) {
+        showNotification(error instanceof Error ? error.message : t('admin.createError'), 'error');
+      }
+    },
+  });
 
   useEffect(() => {
     if (!notification) return;
@@ -69,29 +95,6 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
       showNotification(error instanceof Error ? error.message : t('admin.deleteError'), 'error');
     } finally {
       setLoadingId(null);
-    }
-  };
-
-  const handleCreateUser = async (e: SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsCreating(true);
-    const formData = new FormData(e.currentTarget);
-    try {
-      await createUser({
-        data: {
-          email: formData.get('email') as string,
-          password: formData.get('password') as string,
-          role: (formData.get('role') as UserRole) || 'member',
-          isActive: formData.get('is_active') === 'true',
-        },
-      });
-      showNotification(t('admin.createSuccess'), 'success');
-      setIsCreateModalOpen(false);
-      setTimeout(() => window.location.reload(), 1500);
-    } catch (error: unknown) {
-      showNotification(error instanceof Error ? error.message : t('admin.createError'), 'error');
-    } finally {
-      setIsCreating(false);
     }
   };
 
@@ -233,64 +236,92 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
               </button>
             </div>
 
-            <form onSubmit={handleCreateUser} className="p-6">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                form.handleSubmit();
+              }}
+              className="p-6"
+            >
               <div className="space-y-4">
-                <div>
-                  <label htmlFor="createEmail" className="block text-sm font-medium text-stone-700 mb-1">
-                    {t('admin.emailRequired')}
-                  </label>
-                  <input
-                    id="createEmail"
-                    type="email"
-                    name="email"
-                    required
-                    className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 placeholder-stone-400 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
-                    placeholder={t('admin.emailPlaceholder')}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="createPassword" className="block text-sm font-medium text-stone-700 mb-1">
-                    {t('admin.passwordRequired')}
-                  </label>
-                  <input
-                    id="createPassword"
-                    type="password"
-                    name="password"
-                    required
-                    minLength={8}
-                    className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 placeholder-stone-400 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
-                    placeholder={t('admin.passwordHint')}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="createRole" className="block text-sm font-medium text-stone-700 mb-1">
-                    {t('common.role')}
-                  </label>
-                  <select
-                    id="createRole"
-                    name="role"
-                    className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
-                    defaultValue="member"
-                  >
-                    <option value="member">{t('admin.roleMember')}</option>
-                    <option value="editor">{t('admin.roleEditor')}</option>
-                    <option value="admin">{t('admin.roleAdmin')}</option>
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="createStatus" className="block text-sm font-medium text-stone-700 mb-1">
-                    {t('common.status')}
-                  </label>
-                  <select
-                    id="createStatus"
-                    name="is_active"
-                    className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
-                    defaultValue="true"
-                  >
-                    <option value="true">{t('admin.statusActive')}</option>
-                    <option value="false">{t('admin.statusPending')}</option>
-                  </select>
-                </div>
+                <form.AppField name="email">
+                  {(field) => (
+                    <div>
+                      <label htmlFor={field.name} className="block text-sm font-medium text-stone-700 mb-1">
+                        {t('admin.emailRequired')}
+                      </label>
+                      <input
+                        id={field.name}
+                        type="email"
+                        required
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 placeholder-stone-400 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                        placeholder={t('admin.emailPlaceholder')}
+                      />
+                    </div>
+                  )}
+                </form.AppField>
+
+                <form.AppField name="password">
+                  {(field) => (
+                    <div>
+                      <label htmlFor={field.name} className="block text-sm font-medium text-stone-700 mb-1">
+                        {t('admin.passwordRequired')}
+                      </label>
+                      <input
+                        id={field.name}
+                        type="password"
+                        required
+                        minLength={8}
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 placeholder-stone-400 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                        placeholder={t('admin.passwordHint')}
+                      />
+                    </div>
+                  )}
+                </form.AppField>
+
+                <form.AppField name="role">
+                  {(field) => (
+                    <div>
+                      <label htmlFor={field.name} className="block text-sm font-medium text-stone-700 mb-1">
+                        {t('common.role')}
+                      </label>
+                      <select
+                        id={field.name}
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value as UserRole)}
+                        className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                      >
+                        <option value="member">{t('admin.roleMember')}</option>
+                        <option value="editor">{t('admin.roleEditor')}</option>
+                        <option value="admin">{t('admin.roleAdmin')}</option>
+                      </select>
+                    </div>
+                  )}
+                </form.AppField>
+
+                <form.AppField name="isActive">
+                  {(field) => (
+                    <div>
+                      <label htmlFor={field.name} className="block text-sm font-medium text-stone-700 mb-1">
+                        {t('common.status')}
+                      </label>
+                      <select
+                        id={field.name}
+                        value={field.state.value ? 'true' : 'false'}
+                        onChange={(e) => field.handleChange(e.target.value === 'true')}
+                        className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                      >
+                        <option value="true">{t('admin.statusActive')}</option>
+                        <option value="false">{t('admin.statusPending')}</option>
+                      </select>
+                    </div>
+                  )}
+                </form.AppField>
               </div>
               <div className="mt-8 flex justify-end gap-3 pt-2">
                 <button
@@ -302,10 +333,10 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                 </button>
                 <button
                   type="submit"
-                  disabled={isCreating}
+                  disabled={form.state.isSubmitting}
                   className="px-4 py-2 text-sm font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-xl transition-colors shadow-sm disabled:opacity-50"
                 >
-                  {isCreating ? t('admin.creating') : t('admin.createUser')}
+                  {form.state.isSubmitting ? t('admin.creating') : t('admin.createUser')}
                 </button>
               </div>
             </form>

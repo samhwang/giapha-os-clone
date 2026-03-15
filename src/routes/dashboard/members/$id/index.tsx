@@ -1,4 +1,5 @@
 import { createFileRoute, getRouteApi, Link } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 import DeleteMemberButton from '../../../../members/components/DeleteMemberButton';
 import MemberDetailContent from '../../../../members/components/MemberDetailContent';
 import { type Person, UserRole } from '../../../../types';
@@ -10,6 +11,7 @@ export const Route = createFileRoute('/dashboard/members/$id/')({
 });
 
 function MemberDetailPage() {
+  const { t } = useTranslation();
   const { person, privateData } = parentRoute.useLoaderData();
   const { session } = Route.useRouteContext();
   const isAdmin = session.role === UserRole.enum.admin;
@@ -19,7 +21,7 @@ function MemberDetailPage() {
       <div className="w-full relative z-20 py-4 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto flex items-center justify-between">
         <Link to="/dashboard/members" className="group flex items-center text-stone-500 hover:text-amber-700 font-medium text-sm transition-colors">
           <span className="mr-1 group-hover:-translate-x-1 transition-transform">←</span>
-          Quay lại
+          {t('common.back')}
         </Link>
         {isAdmin && (
           <div className="flex items-center gap-2.5">
@@ -28,7 +30,7 @@ function MemberDetailPage() {
               params={{ id: person.id }}
               className="px-4 py-2 bg-stone-100/80 text-stone-700 rounded-lg hover:bg-stone-200 hover:text-stone-900 font-medium text-sm transition-all shadow-sm"
             >
-              Chỉnh sửa
+              {t('common.edit')}
             </Link>
             <DeleteMemberButton memberId={person.id} />
           </div>

@@ -83,7 +83,7 @@ function EventCard({ event, index, onCustomEventClick }: { event: FamilyEvent; i
         <div className="flex items-center gap-2">
           <p className="font-semibold text-stone-800 truncate group-hover:text-amber-700 transition-colors">{event.personName}</p>
           {isBirthday && event.originDay && event.originMonth && getZodiacSign(event.originDay, event.originMonth) && (
-            <span className="shrink-0 text-[10px] font-sans font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/60 rounded-md px-1.5 py-0.5 whitespace-nowrap shadow-xs tracking-wider">
+            <span className="shrink-0 text-2xs font-sans font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/60 rounded-md px-1.5 py-0.5 whitespace-nowrap shadow-xs tracking-wider">
               {getZodiacSign(event.originDay, event.originMonth)}
             </span>
           )}
@@ -151,7 +151,7 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
   const todayCount = allEvents.filter((e) => e.daysUntil === 0).length;
   const soonCount = allEvents.filter((e) => e.daysUntil > 0 && e.daysUntil <= 7).length;
 
-  const lunarToday = useMemo(() => getTodayLunar(), []);
+  const lunarToday = useMemo(() => getTodayLunar(undefined, t('common.month')), [t]);
 
   const handleCustomEventClick = useCallback(
     (event: FamilyEvent) => {
@@ -179,7 +179,7 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
   return (
     <div className="space-y-5">
       {/* Summary banner with lunar date */}
-      <div className="bg-gradient-to-r from-amber-50 to-orange-50/40 border border-amber-200/60 rounded-2xl p-4 sm:p-5 animate-[fade-in-up_0.3s_ease-out_forwards]">
+      <div className="bg-linear-to-r from-amber-50 to-orange-50/40 border border-amber-200/60 rounded-2xl p-4 sm:p-5 animate-[fade-in-up_0.3s_ease-out_forwards]">
         <p className="text-sm font-medium text-amber-900">{lunarToday.solarStr}</p>
         <p className="text-xs text-amber-700/70 mt-0.5">
           {t('events.lunarDate')}: {lunarToday.lunarDayStr}, {lunarToday.lunarYear}

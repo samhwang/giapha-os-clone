@@ -147,6 +147,128 @@ const navigate = useNavigate();
 navigate({ search: { view: 'mindmap' } });
 ```
 
+## TanStack Form
+
+Forms use `@tanstack/react-form-start` for type-safe form handling.
+
+### Validation Strategy
+
+- **Calling server functions**: If the form calls a server function that already has `.inputValidator()` or `.validator()`, the form does NOT need Zod validators
+- **Calling external APIs**: If the form calls an external API (e.g., Better Auth client), add Zod validators to the form
+
+### Create Form Hook
+
+Create a hook file per feature domain:
+
+```tsx
+// src/admin/hooks/useAdminForm.ts
+import { createFormHook, createFormHookContexts } from '@tanstack/react-form-start';
+
+export const { fieldContext, formContext, useFieldContext } = createFormHookContexts();
+
+export const { useAppForm: useAdminForm } = createFormHook({
+  fieldContext,
+  formContext,
+  fieldComponents: {},  // Add custom field components if needed
+  formComponents: {},
+});
+```
+
+### Form with Server Function (no validators needed)
+
+```tsx
+import { useAdminForm } from '../hooks/useAdminForm';
+
+export default function AdminUserList({ ... }) {
+  const form = useAdminForm({
+    defaultValues: {
+      email: '',
+      password: '',
+      role: 'member' as UserRole,
+      isActive: true,
+    },
+    // No validators - server function handles validation
+    onSubmit: async ({ value }) => {
+      await createUser({ data: value });
+    },
+  });
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <form.AppField name="email">
+        {(field) => (
+          <div>
+            <label htmlFor={field.name}>Email</label>
+            <input
+              id={field.name}
+              value={field.state.value}
+              onChange={(e) => field.handleChange(e.target.value)}
+            />
+          </div>
+        )}
+      </form.AppField>
+
+      <button type="submit" disabled={form.state.isSubmitting}>
+        Submit
+      </button>
+    </form>
+  );
+}
+```
+
+### Form with External API (validators needed)
+
+```tsx
+import * as z from 'zod';
+import { authClient } from '../../auth/client';
+
+const Login = z.object({
+  email: z.email(),
+  password: z.string().min(1),
+});
+
+export default function LoginForm() {
+  const form = useAuthForm({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    validators: {
+      onSubmit: Login,  // Validators needed for external API
+    },
+    onSubmit: async ({ value }) => {
+      await authClient.signIn.email({ email: value.email, password: value.password });
+    },
+  });
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      {/* ...fields */}
+    </form>
+  );
+}
+```
+
+### Best Practices
+
+- **Server function = no form validators**: The server function already validates with Zod
+- **External API = add form validators**: Use Zod schema in `validators.onSubmit`
+- **Use render props**: `form.AppField` with render props gives access to `field.state.value`, `field.handleChange()`
+- **Custom field components**: Extract reusable field logic (e.g., AuthField, CustomEventField) into custom components
+- **Complex forms**: For forms with complex logic (date conversion, file handling), consider keeping some state management separate
+
 ## Prisma
 
 ### Query Patterns

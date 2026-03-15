@@ -76,45 +76,117 @@ function MembersPage() {
 
 ## Actions (Form Submissions)
 
-Actions handle form submissions on the server.
+This project uses TanStack Form for type-safe form handling.
+
+### Validation Strategy
+
+- **Calling server functions**: No form validators needed — server functions already validate with `.inputValidator()` or `.validator()`
+- **Calling external APIs**: Add Zod validators to the form (e.g., Better Auth client)
+
+### Creating a Form Hook
+
+Create a form hook in your feature's hooks directory:
 
 ```tsx
-export const Route = createFileRoute('/dashboard/members/new')({
-  component: NewMemberPage,
-})
+// src/admin/hooks/useAdminForm.ts
+import { createFormHook, createFormHookContexts } from '@tanstack/react-form-start';
 
-export const action = async ({ request }: ActionArgs) => {
-  const formData = await request.formData()
-  
-  const person = await db.person.create({
-    data: {
-      fullName: formData.get('fullName') as string,
-      gender: formData.get('gender') as any,
+export const { fieldContext, formContext, useFieldContext } = createFormHookContexts();
+
+export const { useAppForm: useAdminForm } = createFormHook({
+  fieldContext,
+  formContext,
+  fieldComponents: {},
+  formComponents: {},
+});
+```
+
+### Using the Form (Server Function)
+
+```tsx
+import { useAdminForm } from '../hooks/useAdminForm';
+import { createUser } from '../server/user';
+
+function CreateUserForm() {
+  const form = useAdminForm({
+    defaultValues: {
+      email: '',
+      password: '',
+      role: 'member',
     },
-  })
-  
-  return { success: true, person }
-}
+    // No validators - server function handles validation
+    onSubmit: async ({ value }) => {
+      await createUser({ data: value });
+    },
+  });
 
-function NewMemberPage() {
-  const navigate = useNavigate()
-  const action = useAction()
-  
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    
-    await fetch('?action', {
-      method: 'POST',
-      body: formData,
-    })
-    
-    navigate({ to: '/dashboard/members' })
-  }
-  
-  return <form onSubmit={handleSubmit}>...</form>
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <form.AppField name="email">
+        {(field) => (
+          <input
+            value={field.state.value}
+            onChange={(e) => field.handleChange(e.target.value)}
+          />
+        )}
+      </form.AppField>
+      <button type="submit">Create</button>
+    </form>
+  );
 }
 ```
+
+### Using the Form (External API)
+
+```tsx
+import * as z from 'zod';
+import { authClient } from '../../auth/client';
+
+const Login = z.object({
+  email: z.email(),
+  password: z.string().min(1),
+});
+
+function LoginForm() {
+  const form = useAuthForm({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    validators: {
+      onSubmit: Login,  // Validators needed for external API
+    },
+    onSubmit: async ({ value }) => {
+      await authClient.signIn.email({ email: value.email, password: value.password });
+    },
+  });
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      {/* ...fields */}
+    </form>
+  );
+}
+```
+
+**Key points:**
+- Server functions already validate — no form validators needed
+- External APIs (e.g., Better Auth) need Zod validators in `validators.onSubmit`
+- Forms use `form.AppField` with render props for controlled inputs
+- Use `field.handleChange(value)` to update field values
+- Use `form.state.isSubmitting` for loading state
 
 ## Authentication
 

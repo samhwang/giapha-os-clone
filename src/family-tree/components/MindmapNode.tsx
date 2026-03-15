@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { memo, useState } from 'react';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
@@ -23,6 +24,7 @@ export interface MindmapContextData {
   showAvatar: boolean;
   expandSignal: ExpandSignal | null;
   setMemberModalId: (id: string | null) => void;
+  t: TFunction;
 }
 
 function getTreeData(personId: string, ctx: MindmapContextData) {
@@ -84,7 +86,7 @@ export const MindmapNode = memo(function MindmapNode({
               type="button"
               onClick={() => setIsExpanded(!isExpanded)}
               className="size-5 flex items-center justify-center bg-white hover:bg-amber-50 border border-stone-200 rounded shadow-sm text-stone-500 hover:text-amber-600 focus:outline-none transition-colors"
-              aria-label={isExpanded ? 'Thu gọn' : 'Mở rộng'}
+              aria-label={isExpanded ? ctx.t('tree.collapse') : ctx.t('tree.expand')}
             >
               {isExpanded ? <ChevronDown strokeWidth={2.5} className="w-3.5 h-3.5" /> : <ChevronRight strokeWidth={2.5} className="w-3.5 h-3.5" />}
             </button>
@@ -132,8 +134,15 @@ export const MindmapNode = memo(function MindmapNode({
                   {data.person.fullName}
                 </span>
                 <span className="text-xs-plus text-stone-500 font-medium truncate flex items-center gap-1">
-                  <svg className="size-3 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" role="img" aria-label="Ngày">
-                    <title>Ngày</title>
+                  <svg
+                    className="size-3 text-stone-400 shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    role="img"
+                    aria-label={ctx.t('tree.dateLabel')}
+                  >
+                    <title>{ctx.t('tree.dateLabel')}</title>
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -142,8 +151,9 @@ export const MindmapNode = memo(function MindmapNode({
                     />
                   </svg>
                   <span className="truncate">
-                    {formatDisplayDate(data.person.birthYear, data.person.birthMonth, data.person.birthDay)}
-                    {data.person.isDeceased && ` → ${formatDisplayDate(data.person.deathYear, data.person.deathMonth, data.person.deathDay)}`}
+                    {formatDisplayDate(data.person.birthYear, data.person.birthMonth, data.person.birthDay, ctx.t('common.unknown'))}
+                    {data.person.isDeceased &&
+                      ` → ${formatDisplayDate(data.person.deathYear, data.person.deathMonth, data.person.deathDay, ctx.t('common.unknown'))}`}
                   </span>
                 </span>
                 {data.person.isInLaw && (
@@ -156,7 +166,11 @@ export const MindmapNode = memo(function MindmapNode({
                         data.person.gender === Gender.enum.other && 'bg-stone-50 text-stone-700 border-stone-200/60'
                       )}
                     >
-                      {data.person.gender === Gender.enum.male ? 'Rể' : data.person.gender === Gender.enum.female ? 'Dâu' : 'Khách'}
+                      {data.person.gender === Gender.enum.male
+                        ? ctx.t('member.filterInLawMale')
+                        : data.person.gender === Gender.enum.female
+                          ? ctx.t('member.filterInLawFemale')
+                          : ctx.t('member.inLawOther')}
                     </span>
                   </div>
                 )}
@@ -177,7 +191,7 @@ export const MindmapNode = memo(function MindmapNode({
                       'flex flex-col items-center gap-1 bg-stone-50/50 hover:bg-white rounded-xl p-1.5 border border-stone-200/60 hover:border-amber-300 transition-all shadow-sm hover:shadow-md group/spouse cursor-pointer',
                       spouseData.person.isDeceased && 'opacity-80 grayscale-[0.3]'
                     )}
-                    title={spouseData.note || (spouseData.person.gender === Gender.enum.male ? 'Chồng' : 'Vợ')}
+                    title={spouseData.note || (spouseData.person.gender === Gender.enum.male ? ctx.t('tree.husband') : ctx.t('tree.wife'))}
                   >
                     {ctx.showAvatar && (
                       <div

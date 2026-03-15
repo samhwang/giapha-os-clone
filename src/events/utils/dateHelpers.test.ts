@@ -27,8 +27,12 @@ describe('formatDisplayDate', () => {
   });
 
   describe('when all date components are null', () => {
-    it('should return "Chưa rõ"', () => {
-      expect(formatDisplayDate(null, null, null)).toBe('Chưa rõ');
+    it('should return empty string by default', () => {
+      expect(formatDisplayDate(null, null, null)).toBe('');
+    });
+
+    it('should return custom unknown label when provided', () => {
+      expect(formatDisplayDate(null, null, null, 'Unknown')).toBe('Unknown');
     });
   });
 });
@@ -145,7 +149,7 @@ describe('getTodayLunar', () => {
   });
 
   it('should return solar and lunar date info', () => {
-    const result = getTodayLunar();
+    const result = getTodayLunar(undefined, 'tháng');
     expect(result.lunarDay).toBe(1);
     expect(result.lunarMonth).toBe(1);
     expect(result.lunarYear).toMatch(/\S+ \S+/); // Gan-Zhi format "X Y"

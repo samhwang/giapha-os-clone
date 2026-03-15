@@ -123,7 +123,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                   {(person.birthYear || person.birthMonth || person.birthDay) && (
                     <p className="text-sm font-medium text-stone-500 flex items-center gap-1.5">
                       <span className="text-2xs border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
-                      {getLunarDateString(person.birthYear, person.birthMonth, person.birthDay) || t('common.unknown')}
+                      {getLunarDateString(person.birthYear, person.birthMonth, person.birthDay, t('common.lunarLeap')) || t('common.unknown')}
                     </p>
                   )}
                   {person.birthMonth && person.birthDay && (
@@ -165,7 +165,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                     {(person.deathYear || person.deathMonth || person.deathDay) && (
                       <p className="text-xs font-medium text-stone-500 flex items-center gap-1.5">
                         <span className="text-2xs border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
-                        {getLunarDateString(person.deathYear, person.deathMonth, person.deathDay) || t('common.unknown')}
+                        {getLunarDateString(person.deathYear, person.deathMonth, person.deathDay, t('common.lunarLeap')) || t('common.unknown')}
                       </p>
                     )}
                   </div>

@@ -7,6 +7,7 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 ## Tech Stack
 
 - **Framework**: [TanStack Start](https://tanstack.com/start) (React 19, TypeScript)
+- **Forms**: [TanStack Form](https://tanstack.com/form) (type-safe form handling)
 - **Authentication**: [Better Auth](https://www.better-auth.com/)
 - **Database**: [Prisma](https://www.prisma.io/) + PostgreSQL
 - **File Storage**: Local filesystem

@@ -1,7 +1,7 @@
 import { Lunar, Solar } from 'lunar-javascript';
 import { getUserTimeZone, nowInTimeZone } from '../../lib/date';
 
-export function formatDisplayDate(year: number | null, month: number | null, day: number | null, unknownLabel = 'Chưa rõ'): string {
+export function formatDisplayDate(year: number | null, month: number | null, day: number | null, unknownLabel = ''): string {
   if (!year && !month && !day) return unknownLabel;
 
   const parts = [];
@@ -12,7 +12,7 @@ export function formatDisplayDate(year: number | null, month: number | null, day
   return parts.join('/');
 }
 
-export function getLunarDateString(year: number | null, month: number | null, day: number | null): string | null {
+export function getLunarDateString(year: number | null, month: number | null, day: number | null, leapLabel = ''): string | null {
   if (!year || !month || !day) return null;
 
   try {
@@ -25,7 +25,7 @@ export function getLunarDateString(year: number | null, month: number | null, da
     const lMonth = Math.abs(lMonthRaw).toString().padStart(2, '0');
     const lYear = lunar.getYear();
 
-    return `${lDay}/${lMonth}${isLeap ? ' nhuận' : ''}/${lYear}`;
+    return `${lDay}/${lMonth}${isLeap ? ` ${leapLabel}` : ''}/${lYear}`;
   } catch (error) {
     console.error('Lunar conversion error:', error);
     return null;
@@ -162,7 +162,7 @@ function ganZhiToVietnamese(ganZhi: string): string {
   return `${can} ${chi}`;
 }
 
-export function getTodayLunar(timeZone?: string) {
+export function getTodayLunar(timeZone?: string, monthLabel = '') {
   const tz = timeZone || getUserTimeZone();
   const now = nowInTimeZone(tz);
 
@@ -174,6 +174,6 @@ export function getTodayLunar(timeZone?: string) {
     lunarDay: lunar.getDay(),
     lunarMonth: Math.abs(lunar.getMonth()),
     lunarYear: ganZhiToVietnamese(lunar.getYearInGanZhi()),
-    lunarDayStr: `${lunar.getDay()} tháng ${Math.abs(lunar.getMonth())}`,
+    lunarDayStr: `${lunar.getDay()} ${monthLabel} ${Math.abs(lunar.getMonth())}`.trim(),
   };
 }

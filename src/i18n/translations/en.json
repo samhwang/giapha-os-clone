@@ -35,7 +35,8 @@
     "monthsFromNow": "{{months}} months away",
     "homepage": "Home",
     "about": "About",
-    "loadingFamilyData": "Loading family tree data..."
+    "loadingFamilyData": "Loading family tree data...",
+    "lunarLeap": "leap"
   },
   "auth": {
     "login": "Login",
@@ -112,7 +113,14 @@
     "hideMales": "Hide males",
     "hideFemales": "Hide females",
     "expandAll": "Expand all",
-    "collapseAll": "Collapse all"
+    "collapseAll": "Collapse all",
+    "noData": "No data found.",
+    "emptyTree": "Family tree is empty",
+    "husband": "Husband",
+    "wife": "Wife",
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "dateLabel": "Date"
   },
   "member": {
     "addMember": "Add Member",
@@ -136,6 +144,9 @@
     "solarBirthDate": "Solar birth date",
     "isDeceased": "Deceased",
     "deathDate": "Death date",
+    "deathDateLunar": "Death date (Lunar)",
+    "deathDateSolar": "Death date (Solar)",
+    "deathDateHint": "* Enter either the solar or lunar date. The system will automatically calculate the other.",
     "notePlaceholder": "Add additional info, biography...",
     "privateInfo": "Private Information",
     "adminOnly": "Admin Only",
@@ -194,7 +205,8 @@
     "contactInfo": "Contact Information",
     "notUpdated": "Not updated",
     "contactAdminOnly": "Contact information is only visible to administrators.",
-    "inLawOther": "Guest"
+    "inLawOther": "Guest",
+    "editMember": "Edit Member"
   },
   "relationship": {
     "loadingFamily": "Loading family information...",
@@ -455,13 +467,15 @@
     "auth": {
       "loginRequired": "Please log in.",
       "inactive": "Account has been locked or is not yet activated.",
+      "accessDenied": "Access Denied",
       "adminOnly": "Access denied.",
       "editorOnly": "Editor permission required."
     },
     "member": {
       "nameRequired": "Name is required.",
       "notFound": "Member not found.",
-      "hasRelationships": "Cannot delete. Please remove all family relationships for this person first."
+      "hasRelationships": "Cannot delete. Please remove all family relationships for this person first.",
+      "editDenied": "You do not have permission to edit members."
     },
     "user": {
       "selfRole": "Cannot change your own role.",

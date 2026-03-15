@@ -1,8 +1,9 @@
-import { AlertCircle, AlignLeft, Calendar as CalendarIcon, Loader2, MapPin, X } from 'lucide-react';
-import { type SubmitEvent, useEffect, useState } from 'react';
+import { AlertCircle, Loader2, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { CustomEventRecord } from '../../types';
 import { cn } from '../../ui/utils/cn';
+import { useCustomEventForm } from '../hooks/useCustomEventForm';
 import { createCustomEvent, deleteCustomEvent, updateCustomEvent } from '../server/customEvent';
 
 interface CustomEventModalProps {
@@ -17,27 +18,69 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [name, setName] = useState(eventToEdit?.name || '');
-  const [eventDate, setEventDate] = useState(eventToEdit?.eventDate || '');
-  const [location, setLocation] = useState(eventToEdit?.location || '');
-  const [content, setContent] = useState(eventToEdit?.content || '');
+  const form = useCustomEventForm({
+    defaultValues: {
+      name: '',
+      eventDate: '',
+      location: '',
+      content: '',
+    },
+    listeners: {
+      onMount: ({ formApi }) => {
+        if (!isOpen) {
+          return;
+        }
 
-  useEffect(() => {
-    if (isOpen) {
-      if (eventToEdit) {
-        setName(eventToEdit.name);
-        setEventDate(eventToEdit.eventDate);
-        setLocation(eventToEdit.location || '');
-        setContent(eventToEdit.content || '');
-      } else {
-        setName('');
-        setEventDate('');
-        setLocation('');
-        setContent('');
-      }
+        if (!eventToEdit) {
+          setError(null);
+          return;
+        }
+
+        formApi.setFieldValue('name', eventToEdit.name);
+        formApi.setFieldValue('eventDate', eventToEdit.eventDate);
+        formApi.setFieldValue('location', eventToEdit.location || '');
+        formApi.setFieldValue('content', eventToEdit.content || '');
+        setError(null);
+      },
+    },
+    onSubmit: async ({ value }) => {
+      setLoading(true);
       setError(null);
-    }
-  }, [isOpen, eventToEdit]);
+      try {
+        console.log();
+        if (eventToEdit) {
+          await updateCustomEvent({
+            data: {
+              id: eventToEdit.id,
+              name: value.name,
+              eventDate: value.eventDate,
+              location: value.location || null,
+              content: value.content || null,
+            },
+          });
+          onSuccess();
+          onClose();
+          return;
+        }
+
+        await createCustomEvent({
+          data: {
+            name: value.name,
+            eventDate: value.eventDate,
+            location: value.location || null,
+            content: value.content || null,
+          },
+        });
+        onSuccess();
+        onClose();
+      } catch (err) {
+        console.error(err);
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      } finally {
+        setLoading(false);
+      }
+    },
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -49,31 +92,6 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
-
-  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      if (eventToEdit) {
-        await updateCustomEvent({
-          data: { id: eventToEdit.id, name, eventDate, location: location || null, content: content || null },
-        });
-      } else {
-        await createCustomEvent({
-          data: { name, eventDate, location: location || null, content: content || null },
-        });
-      }
-      onSuccess();
-      onClose();
-    } catch (err) {
-      console.error(err);
-      setError(err instanceof Error ? err.message : t('customEvent.saveError'));
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleDelete = async () => {
     if (!eventToEdit) return;
@@ -124,73 +142,59 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              form.handleSubmit();
+            }}
+            className="space-y-6"
+          >
             <div className="bg-white/80 p-5 sm:p-6 rounded-2xl shadow-sm border border-stone-200/80 space-y-5">
-              <div>
-                <label htmlFor="ce-name" className="block text-sm font-semibold text-stone-700 mb-1.5">
-                  {t('customEvent.name')} <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="ce-name"
-                  required
-                  type="text"
-                  className={inputClasses}
-                  placeholder={t('customEvent.namePlaceholder')}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
+              <form.AppField name="name">
+                {(field) => (
+                  <div>
+                    <label htmlFor={`ce-${field.name}`} className="block text-sm font-semibold text-stone-700 mb-1.5">
+                      {t('customEvent.name')} <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id={`ce-${field.name}`}
+                      required
+                      type="text"
+                      className={inputClasses}
+                      placeholder={t('customEvent.namePlaceholder')}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                  </div>
+                )}
+              </form.AppField>
 
-              <div>
-                <label htmlFor="ce-date" className="block text-sm font-semibold text-stone-700 mb-1.5">
-                  {t('customEvent.date')} <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-stone-400" />
-                  <input
-                    id="ce-date"
-                    required
-                    type="date"
-                    className={cn(inputClasses, 'pl-11')}
-                    value={eventDate}
-                    onChange={(e) => setEventDate(e.target.value)}
-                  />
-                </div>
-              </div>
+              <form.AppField name="eventDate">
+                {(field) => <field.CustomEventField type="date" className={cn(inputClasses, 'pl-11')} required label={t('customEvent.date')} />}
+              </form.AppField>
 
-              <div>
-                <label htmlFor="ce-location" className="block text-sm font-semibold text-stone-700 mb-1.5">
-                  {t('customEvent.location')}
-                </label>
-                <div className="relative">
-                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-stone-400" />
-                  <input
-                    id="ce-location"
+              <form.AppField name="location">
+                {(field) => (
+                  <field.CustomEventField
                     type="text"
                     className={cn(inputClasses, 'pl-11')}
+                    label={t('customEvent.location')}
                     placeholder={t('customEvent.locationPlaceholder')}
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
                   />
-                </div>
-              </div>
+                )}
+              </form.AppField>
 
-              <div>
-                <label htmlFor="ce-content" className="block text-sm font-semibold text-stone-700 mb-1.5">
-                  {t('customEvent.content')}
-                </label>
-                <div className="relative">
-                  <AlignLeft className="absolute left-4 top-4 size-4 text-stone-400" />
-                  <textarea
-                    id="ce-content"
-                    rows={3}
+              <form.AppField name="content">
+                {(field) => (
+                  <field.CustomEventField
+                    type="textarea"
                     className={cn(inputClasses, 'pl-11 resize-none')}
+                    label={t('customEvent.content')}
                     placeholder={t('customEvent.contentPlaceholder')}
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
                   />
-                </div>
-              </div>
+                )}
+              </form.AppField>
             </div>
 
             <div className="flex justify-between items-center gap-4 pt-4 sm:pt-6">

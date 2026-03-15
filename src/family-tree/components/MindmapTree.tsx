@@ -52,8 +52,9 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
       showAvatar,
       expandSignal,
       setMemberModalId,
+      t,
     }),
-    [personsMap, relationships, adj, hideSpouses, hideMales, hideFemales, showAvatar, expandSignal, setMemberModalId]
+    [personsMap, relationships, adj, hideSpouses, hideMales, hideFemales, showAvatar, expandSignal, setMemberModalId, t]
   );
 
   if (roots.length === 0) {
@@ -62,7 +63,7 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-stone-100 mb-4">
           <Share2 className="size-8 text-stone-300" />
         </div>
-        <p className="text-stone-500 font-medium tracking-wide">Gia phả trống</p>
+        <p className="text-stone-500 font-medium tracking-wide">{t('tree.emptyTree')}</p>
       </div>
     );
   }

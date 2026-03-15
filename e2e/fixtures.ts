@@ -29,7 +29,7 @@ export const TEST_MEMBER = {
 export async function loginViaUI(page: Page, email: string, password: string) {
   await page.goto('/login');
   await waitForHydration(page);
-  await page.locator('#email-address').fill(email);
+  await page.locator('#email').fill(email);
   await page.locator('#password').fill(password);
   await page.getByRole('button', { name: /đăng nhập/i }).click();
   await page.waitForURL(/\/dashboard/, { timeout: 15000 });

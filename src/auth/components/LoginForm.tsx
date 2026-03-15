@@ -1,80 +1,83 @@
 import { KeyRound, Mail } from 'lucide-react';
-import { type SubmitEvent, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as z from 'zod';
 import { authClient } from '../../auth/client';
+import { useAuthForm } from '../../auth/hooks/useAuthForm';
 
 interface LoginFormProps {
   onSuccess: () => void;
 }
 
+const Login = z.object({
+  email: z.email(),
+  password: z.string().min(1),
+});
+type Login = z.infer<typeof Login>;
+
 export default function LoginForm({ onSuccess }: LoginFormProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
 
-  const handleSubmit = async (e: SubmitEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  const form = useAuthForm({
+    defaultValues: {
+      email: '',
+      password: '',
+    } satisfies Login,
+    validators: {
+      onSubmit: Login,
+    },
+    onSubmit: async ({ value }) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const { error } = await authClient.signIn.email({ email, password });
-      if (error) {
-        setError(error.message || t('auth.loginFailed'));
-        return;
+      try {
+        const { error } = await authClient.signIn.email({ email: value.email, password: value.password });
+        if (error) {
+          setError(error.message || t('auth.loginFailed'));
+          return;
+        }
+        onSuccess();
+      } catch {
+        setError(t('auth.unexpectedError'));
+      } finally {
+        setLoading(false);
       }
-      onSuccess();
-    } catch {
-      setError(t('auth.unexpectedError'));
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
 
   return (
-    <form className="space-y-5" onSubmit={handleSubmit}>
+    <form
+      className="space-y-5"
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
       <div className="space-y-4">
-        <div className="relative">
-          <label htmlFor="email-address" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
-            {t('auth.emailLabel')}
-          </label>
-          <div className="relative flex items-center group">
-            <Mail className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
-            <input
-              id="email-address"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
+        <form.AppField name="email">
+          {(field) => (
+            <field.AuthField
+              label={t('auth.emailLabel')}
               placeholder={t('auth.emailPlaceholder')}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              leftIcon={<Mail className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />}
+              type="email"
             />
-          </div>
-        </div>
+          )}
+        </form.AppField>
 
-        <div className="relative">
-          <label htmlFor="password" className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
-            {t('auth.passwordLabel')}
-          </label>
-          <div className="relative flex items-center group">
-            <KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              className="bg-white/50 text-stone-900 placeholder-stone-400 block w-full rounded-xl border border-stone-200/80 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 focus:bg-white pl-11 pr-4 py-3.5 transition-all duration-200 outline-none"
+        <form.AppField name="password">
+          {(field) => (
+            <field.AuthField
+              label={t('auth.passwordLabel')}
               placeholder={t('auth.passwordPlaceholder')}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              leftIcon={<KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />}
+              type="password"
             />
-          </div>
-        </div>
+          )}
+        </form.AppField>
       </div>
 
       {error && (

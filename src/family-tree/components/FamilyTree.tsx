@@ -72,7 +72,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
                     isRingVisible={idx === 0}
                     isPlusVisible={idx > 0}
                     person={spouseData.person}
-                    role={spouseData.person.gender === Gender.enum.male ? 'Chồng' : 'Vợ'}
+                    role={spouseData.person.gender === Gender.enum.male ? t('tree.husband') : t('tree.wife')}
                     note={spouseData.note}
                   />
                 </div>
@@ -91,7 +91,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
     );
   };
 
-  if (roots.length === 0) return <div className="text-center p-10 text-stone-500">Không tìm thấy dữ liệu.</div>;
+  if (roots.length === 0) return <div className="text-center p-10 text-stone-500">{t('tree.noData')}</div>;
 
   return (
     <section aria-label="Family tree" className="relative w-full">
