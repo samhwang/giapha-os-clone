@@ -1,8 +1,10 @@
 import { Minus, Plus } from 'lucide-react';
 import type { MouseEvent } from 'react';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
-import { Gender, type Person } from '../../types';
+import type { Person } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
+import { cn } from '../../ui/utils/cn';
+import { getAvatarBg } from '../../ui/utils/styles';
 
 interface FamilyNodeCardProps {
   person: Person;
@@ -32,10 +34,11 @@ export default function FamilyNodeCard({
     // biome-ignore lint/a11y/noStaticElementInteractions: interactive wrapper handles a11y
     <div
       onClick={onClickCard}
-      className={`group py-2 px-1 flex flex-col items-center justify-start transition-all duration-300 hover:-translate-y-1 rounded-2xl relative h-full
-        ${person.isDeceased ? 'grayscale-[0.4] opacity-80' : ''}
-        ${showAvatar ? 'w-20 sm:w-24 md:w-28 bg-white/70 hover:shadow-xl' : 'px-3'}
-      `}
+      className={cn(
+        'group py-2 px-1 flex flex-col items-center justify-start transition-all duration-300 hover:-translate-y-1 rounded-2xl relative h-full',
+        person.isDeceased && 'grayscale-[0.4] opacity-80',
+        showAvatar ? 'w-20 sm:w-24 md:w-28 bg-white/70 hover:shadow-xl' : 'px-3'
+      )}
     >
       {isRingVisible && (
         <div className="absolute top-3/12 -left-2.5 sm:-left-4 size-5 sm:size-6 rounded-full shadow-sm bg-white z-20 flex items-center justify-center text-2xs sm:text-sm">
@@ -57,14 +60,10 @@ export default function FamilyNodeCard({
       {showAvatar && (
         <div className="relative z-10 mb-1.5 sm:mb-2">
           <div
-            className={`h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center text-2xs sm:text-xs md:text-sm text-white overflow-hidden shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105
-              ${
-                person.gender === Gender.enum.male
-                  ? 'bg-linear-to-br from-sky-400 to-sky-700'
-                  : person.gender === Gender.enum.female
-                    ? 'bg-linear-to-br from-rose-400 to-rose-700'
-                    : 'bg-linear-to-br from-stone-400 to-stone-600'
-              }`}
+            className={cn(
+              'h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center text-2xs sm:text-xs md:text-sm text-white overflow-hidden shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105',
+              getAvatarBg(person.gender)
+            )}
           >
             {person.avatarUrl ? (
               <img src={person.avatarUrl} alt={person.fullName} className="w-full h-full object-cover" />
@@ -79,8 +78,10 @@ export default function FamilyNodeCard({
         {/* biome-ignore lint/a11y/useKeyWithClickEvents: wrapped in button when standalone */}
         {/* biome-ignore lint/a11y/noStaticElementInteractions: parent button handles a11y */}
         <span
-          className={`text-2xs sm:text-xs-plus md:text-xs font-bold text-center leading-tight line-clamp-2 transition-colors cursor-pointer
-            ${onClickName ? 'text-stone-800 group-hover:text-amber-700 hover:underline' : 'text-stone-800 group-hover:text-amber-800'}`}
+          className={cn(
+            'text-2xs sm:text-xs-plus md:text-xs font-bold text-center leading-tight line-clamp-2 transition-colors cursor-pointer',
+            onClickName ? 'text-stone-800 group-hover:text-amber-700 hover:underline' : 'text-stone-800 group-hover:text-amber-800'
+          )}
           title={person.fullName}
           onClick={(e) => {
             if (onClickName) {
