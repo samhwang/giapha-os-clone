@@ -1,6 +1,7 @@
 import { AlertTriangle, CheckCircle2, Download, Upload } from 'lucide-react';
 import { type ChangeEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { cn } from '../../ui/utils/cn';
 import { exportData, importData } from '../server/data';
 import { exportToCsvZip, parseCsvZip } from '../utils/csv';
 import { exportToGedcom, parseGedcom } from '../utils/gedcom';
@@ -148,9 +149,10 @@ export default function DataImportExport() {
                 type="button"
                 key={fmt}
                 onClick={() => setExportFormat(fmt)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                className={cn(
+                  'px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors',
                   exportFormat === fmt ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
-                }`}
+                )}
               >
                 {fmt === 'json' ? 'JSON' : fmt === 'gedcom' ? 'GEDCOM' : 'CSV (ZIP)'}
               </button>
@@ -241,9 +243,10 @@ export default function DataImportExport() {
       {/* Status messages */}
       {importStatus && (
         <div
-          className={`p-4 rounded-xl flex items-center gap-3 border animate-[fade-in-up_0.3s_ease-out_forwards] ${
+          className={cn(
+            'p-4 rounded-xl flex items-center gap-3 border animate-[fade-in-up_0.3s_ease-out_forwards]',
             importStatus.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-800'
-          }`}
+          )}
         >
           {importStatus.type === 'success' ? <CheckCircle2 className="size-5 shrink-0" /> : <AlertTriangle className="size-5 shrink-0" />}
           <p className="text-sm font-medium">{importStatus.message}</p>

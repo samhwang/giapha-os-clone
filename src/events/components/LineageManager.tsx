@@ -2,6 +2,7 @@ import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, RefreshCw, 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Person, type Relationship, RelationshipType } from '../../types';
+import { cn } from '../../ui/utils/cn';
 import { updateBatch } from '../server/lineage';
 
 interface LineageManagerProps {
@@ -285,9 +286,12 @@ export default function LineageManager({ persons, relationships }: LineageManage
                   {displayedRows.map((u, i) => (
                     <tr
                       key={u.id}
-                      className={`border-b border-stone-100 last:border-0 transition-colors ${
-                        u.changed ? 'bg-amber-50/40' : ''
-                      } ${i % 2 === 0 && !u.changed ? 'bg-white' : !u.changed ? 'bg-stone-50/30' : ''}`}
+                      className={cn(
+                        'border-b border-stone-100 last:border-0 transition-colors',
+                        u.changed && 'bg-amber-50/40',
+                        i % 2 === 0 && !u.changed && 'bg-white',
+                        !u.changed && i % 2 !== 0 && 'bg-stone-50/30'
+                      )}
                     >
                       <td className="px-4 py-3 font-medium text-stone-800">{u.fullName}</td>
                       <td className="px-4 py-3 text-center">
