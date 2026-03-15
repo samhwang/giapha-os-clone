@@ -1,6 +1,7 @@
 import { Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { type Language, supportedLanguages } from '../../i18n';
+import { cn } from '../utils/cn';
 
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 
@@ -18,7 +19,7 @@ export default function LanguageSwitcher({ className = '' }: { className?: strin
     <button
       type="button"
       onClick={() => switchLanguage(nextLang)}
-      className={`flex items-center gap-1.5 text-sm font-medium text-stone-600 hover:text-amber-700 transition-colors ${className}`}
+      className={cn('flex items-center gap-1.5 text-sm font-medium text-stone-600 hover:text-amber-700 transition-colors', className)}
       title={t(`language.${nextLang}`)}
     >
       <Globe className="size-4" />

@@ -69,10 +69,13 @@ function EventCard({ event, index, onCustomEventClick }: { event: FamilyEvent; i
     <button
       type="button"
       onClick={handleClick}
-      className={`w-full text-left flex items-center gap-4 p-4 rounded-2xl border transition-all hover:shadow-md group animate-[fade-in-up_0.35s_ease-out_forwards] ${borderClass}`}
+      className={cn(
+        'w-full text-left flex items-center gap-4 p-4 rounded-2xl border transition-all hover:shadow-md group animate-[fade-in-up_0.35s_ease-out_forwards]',
+        borderClass
+      )}
       style={{ animationDelay: `${index * 0.04}s`, animationFillMode: 'backwards' }}
     >
-      <div className={`shrink-0 size-11 flex items-center justify-center rounded-xl ${iconBg}`}>
+      <div className={cn('shrink-0 size-11 flex items-center justify-center rounded-xl', iconBg)}>
         {isCustom ? <Star className="size-5" /> : isBirthday ? <Cake className="size-5" /> : <Flower className="size-5" />}
       </div>
 
@@ -108,9 +111,12 @@ function EventCard({ event, index, onCustomEventClick }: { event: FamilyEvent; i
       </div>
 
       <div
-        className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold ${
-          isToday ? 'bg-amber-400 text-white' : isSoon ? 'bg-red-100 text-red-600' : 'bg-stone-100 text-stone-500'
-        }`}
+        className={cn(
+          'shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold',
+          isToday && 'bg-amber-400 text-white',
+          isSoon && !isToday && 'bg-red-100 text-red-600',
+          !isToday && !isSoon && 'bg-stone-100 text-stone-500'
+        )}
       >
         <Clock className="size-3" />
         {daysUntilLabel(event.daysUntil, t)}

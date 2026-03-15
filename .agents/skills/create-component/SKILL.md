@@ -78,6 +78,7 @@ Create co-located test: `src/components/[ComponentName].test.tsx`
 
 ```tsx
 import { ButtonHTMLAttributes, forwardRef } from 'react'
+import { cn } from '../../ui/utils/cn'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost'
@@ -101,7 +102,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
+        className={cn(baseStyles, variants[variant], sizes[size], className)}
         {...props}
       >
         {children}
@@ -115,6 +116,8 @@ Button.displayName = 'Button'
 ### Card Component
 
 ```tsx
+import { cn } from '../../ui/utils/cn'
+
 interface CardProps {
   children: React.ReactNode
   className?: string
@@ -122,7 +125,7 @@ interface CardProps {
 
 export function Card({ children, className = '' }: CardProps) {
   return (
-    <div className={`bg-white rounded-xl border shadow-sm ${className}`}>
+    <div className={cn('bg-white rounded-xl border shadow-sm', className)}>
       {children}
     </div>
   )
@@ -130,7 +133,7 @@ export function Card({ children, className = '' }: CardProps) {
 
 export function CardHeader({ children, className = '' }: CardProps) {
   return (
-    <div className={`px-6 py-4 border-b ${className}`}>
+    <div className={cn('px-6 py-4 border-b', className)}>
       {children}
     </div>
   )
@@ -138,7 +141,7 @@ export function CardHeader({ children, className = '' }: CardProps) {
 
 export function CardContent({ children, className = '' }: CardProps) {
   return (
-    <div className={`px-6 py-4 ${className}`}>
+    <div className={cn('px-6 py-4', className)}>
       {children}
     </div>
   )
@@ -149,6 +152,7 @@ export function CardContent({ children, className = '' }: CardProps) {
 
 ```tsx
 import { InputHTMLAttributes, forwardRef } from 'react'
+import { cn } from '../../ui/utils/cn'
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string
@@ -166,9 +170,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <input
           ref={ref}
-          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-            error ? 'border-red-500' : 'border-gray-300'
-          } ${className}`}
+          className={cn(
+            'w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500',
+            error && 'border-red-500',
+            className
+          )}
           {...props}
         />
         {error && <p className="text-sm text-red-500">{error}</p>}

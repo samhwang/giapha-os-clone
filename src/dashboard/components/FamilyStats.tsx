@@ -2,6 +2,7 @@ import { Crown, Flower2, Heart, HeartOff, Mars, Skull, Users, Venus } from 'luci
 import { type ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Gender, type Person, type Relationship, RelationshipType } from '../../types';
+import { cn } from '../../ui/utils/cn';
 
 interface FamilyStatsProps {
   persons: Person[];
@@ -25,15 +26,18 @@ function StatCard({ label, value, total, icon, color, delay = 0 }: StatCardProps
       className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all group relative overflow-hidden animate-[fade-in-up_0.4s_ease-out_forwards]"
       style={{ animationDelay: `${delay}s`, animationFillMode: 'backwards' }}
     >
-      <div className={`absolute -top-6 -right-6 size-24 rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-opacity ${color}`} />
+      <div className={cn('absolute -top-6 -right-6 size-24 rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-opacity', color)} />
       <div className="flex items-start justify-between mb-3 relative z-10">
-        <div className={`p-2.5 rounded-xl ${color} bg-opacity-10`}>{icon}</div>
+        <div className={cn('p-2.5 rounded-xl', color, 'bg-opacity-10')}>{icon}</div>
         <span className="text-xs font-semibold text-stone-400 bg-stone-100 px-2 py-1 rounded-full">{pct}%</span>
       </div>
       <p className="text-3xl font-bold text-stone-800 relative z-10">{value}</p>
       <p className="text-sm font-medium text-stone-500 mt-0.5 relative z-10">{label}</p>
       <div className="mt-3 h-1.5 bg-stone-100 rounded-full overflow-hidden relative z-10">
-        <div className={`h-full rounded-full ${color} transition-all duration-700 ease-out`} style={{ width: `${pct}%`, transitionDelay: `${delay + 0.2}s` }} />
+        <div
+          className={cn('h-full rounded-full', color, 'transition-all duration-700 ease-out')}
+          style={{ width: `${pct}%`, transitionDelay: `${delay + 0.2}s` }}
+        />
       </div>
     </div>
   );
