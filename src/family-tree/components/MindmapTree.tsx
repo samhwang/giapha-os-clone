@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import type { Person, Relationship } from '../../types';
+import { cn } from '../../ui/utils/cn';
 import { buildAdjacencyLists } from '../utils/treeHelpers';
 import type { ExpandSignal, MindmapContextData } from './MindmapNode';
 import { MindmapNode } from './MindmapNode';
@@ -97,11 +98,12 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
           <button
             type="button"
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 h-10 rounded-full font-semibold text-sm shadow-sm border transition-all ${
+            className={cn(
+              'flex items-center gap-2 px-4 h-10 rounded-full font-semibold text-sm shadow-sm border transition-all',
               showFilters
                 ? 'bg-amber-100/90 text-amber-800 border-amber-200'
                 : 'bg-white/80 text-stone-600 border-stone-200/60 hover:bg-white hover:text-stone-900 hover:shadow-md backdrop-blur-md'
-            }`}
+            )}
           >
             <Filter className="size-4" />
             <span className="hidden sm:inline">{t('tree.filter')}</span>
