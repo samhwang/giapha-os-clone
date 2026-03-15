@@ -4,6 +4,7 @@ import { Lunar, Solar } from 'lunar-javascript';
 import { type SubmitEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Gender, type Person } from '../../types';
+import { cn } from '../../ui/utils/cn';
 import { createPerson, updatePerson, uploadPersonAvatar } from '../server/member';
 
 interface MemberFormData extends Person {
@@ -206,8 +207,9 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
     }
   };
 
-  const inputClasses =
-    'bg-white text-stone-900 placeholder-stone-500 block w-full rounded-xl border border-stone-300 shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:bg-white text-sm px-4 py-3 transition-all outline-none';
+  const inputClasses = cn(
+    'bg-white text-stone-900 placeholder-stone-500 block w-full rounded-xl border border-stone-300 shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:bg-white text-sm px-4 py-3 transition-all outline-none'
+  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
@@ -251,7 +253,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               {t('member.gender')} <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <select id="gender" value={gender} onChange={(e) => setGender(e.target.value as Gender)} className={`${inputClasses} appearance-none`}>
+              <select id="gender" value={gender} onChange={(e) => setGender(e.target.value as Gender)} className={cn(inputClasses, 'appearance-none')}>
                 <option value={Gender.enum.male}>{t('common.male')}</option>
                 <option value={Gender.enum.female}>{t('common.female')}</option>
                 <option value={Gender.enum.other}>{t('common.other')}</option>
@@ -530,7 +532,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder={t('member.notePlaceholder')}
-              className={`${inputClasses} resize-none`}
+              className={cn(inputClasses, 'resize-none')}
             />
           </div>
         </div>
@@ -563,7 +565,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 disabled={isDeceased}
                 placeholder={t('member.phonePlaceholder')}
-                className={`${inputClasses} disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed`}
+                className={cn(inputClasses, 'disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed')}
               />
               {isDeceased && (
                 <p className="text-xs-plus font-medium text-rose-500 mt-1.5 flex items-center gap-1">
