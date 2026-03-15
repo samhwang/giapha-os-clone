@@ -1,6 +1,7 @@
 import { type SubmitEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type UserProfile, UserRole } from '../../types';
+import { cn } from '../../ui/utils/cn';
 import { changeRole, createUser, deleteUser, toggleStatus } from '../server/user';
 
 interface AdminUserListProps {
@@ -98,13 +99,12 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
     <div className="space-y-6 relative">
       {notification && (
         <div
-          className={`fixed top-1/2 left-1/2 z-100 px-6 py-3 rounded-xl shadow-lg border backdrop-blur-md flex items-center gap-3 min-w-[320px] max-w-[90vw] animate-[fade-in-up_0.3s_ease-out_forwards] ${
-            notification.type === 'success'
-              ? 'bg-emerald-50/90 border-emerald-200 text-emerald-800'
-              : notification.type === 'error'
-                ? 'bg-red-50/90 border-red-200 text-red-800'
-                : 'bg-amber-50/90 border-amber-200 text-amber-800'
-          }`}
+          className={cn(
+            'fixed top-1/2 left-1/2 z-100 px-6 py-3 rounded-xl shadow-lg border backdrop-blur-md flex items-center gap-3 min-w-[320px] max-w-[90vw] animate-[fade-in-up_0.3s_ease-out_forwards]',
+            notification.type === 'success' && 'bg-emerald-50/90 border-emerald-200 text-emerald-800',
+            notification.type === 'error' && 'bg-red-50/90 border-red-200 text-red-800',
+            notification.type === 'info' && 'bg-amber-50/90 border-amber-200 text-amber-800'
+          )}
         >
           <p className="text-sm font-medium">{notification.message}</p>
         </div>
@@ -138,22 +138,22 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                   <td className="px-6 py-4 font-medium text-stone-900">{user.email}</td>
                   <td className="px-6 py-4">
                     <span
-                      className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
-                        user.role === UserRole.enum.admin
-                          ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                          : user.role === UserRole.enum.editor
-                            ? 'bg-sky-100 text-sky-800 border border-sky-200'
-                            : 'bg-stone-100 text-stone-600 border border-stone-200'
-                      }`}
+                      className={cn(
+                        'inline-flex items-center px-2 py-1 rounded-md text-xs font-medium',
+                        user.role === UserRole.enum.admin && 'bg-amber-100 text-amber-800 border border-amber-200',
+                        user.role === UserRole.enum.editor && 'bg-sky-100 text-sky-800 border border-sky-200',
+                        user.role === UserRole.enum.member && 'bg-stone-100 text-stone-600 border border-stone-200'
+                      )}
                     >
                       {t(`role.${user.role}`)}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <span
-                      className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
+                      className={cn(
+                        'inline-flex items-center px-2 py-1 rounded-md text-xs font-medium',
                         user.isActive ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200'
-                      }`}
+                      )}
                     >
                       {user.isActive ? t('admin.active') : t('admin.pending')}
                     </span>
