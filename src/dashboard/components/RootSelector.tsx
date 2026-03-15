@@ -40,8 +40,12 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center gap-3 bg-white/60 backdrop-blur-md border rounded-xl px-3 py-2 text-sm shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 group
-          ${isOpen ? 'border-amber-300 bg-white shadow-md ring-2 ring-amber-500/10' : 'border-stone-200/60 hover:border-amber-300 hover:bg-white/90 hover:shadow-md'}`}
+        className={cn(
+          'w-full flex items-center gap-3 bg-white/60 backdrop-blur-md border rounded-xl px-3 py-2 text-sm shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 group',
+          isOpen
+            ? 'border-amber-300 bg-white shadow-md ring-2 ring-amber-500/10'
+            : 'border-stone-200/60 hover:border-amber-300 hover:bg-white/90 hover:shadow-md'
+        )}
       >
         <div className="relative shrink-0">
           <div
@@ -147,7 +151,7 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
                       </div>
 
                       <div className="flex-1 min-w-0 text-left">
-                        <p className={`truncate ${isSelected ? 'font-bold' : 'font-medium group-hover/item:text-stone-900'}`}>{person.fullName}</p>
+                        <p className={cn('truncate', isSelected ? 'font-bold' : 'font-medium group-hover/item:text-stone-900')}>{person.fullName}</p>
                         {person.generation != null && <p className="text-2xs text-stone-400 font-medium">{t('nav.generationN', { gen: person.generation })}</p>}
                       </div>
 

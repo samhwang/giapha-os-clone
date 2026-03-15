@@ -3,6 +3,7 @@ import { BarChart2, CalendarClock, ChevronDown, Database, GitMerge, Info, Networ
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../common/LanguageSwitcher';
+import { cn } from '../utils/cn';
 import LogoutButton from './LogoutButton';
 
 interface HeaderMenuProps {
@@ -50,7 +51,7 @@ export default function HeaderMenu({ isAdmin, userEmail }: HeaderMenuProps) {
         <div className="size-8 rounded-full bg-linear-to-br from-amber-200 to-amber-100 text-amber-800 flex items-center justify-center font-bold shadow-sm ring-1 ring-amber-300/50">
           {userEmail ? userEmail.charAt(0).toUpperCase() : <UserCircle className="size-5" />}
         </div>
-        <ChevronDown className={`size-4 text-stone-500 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={cn('size-4 text-stone-500 transition-transform duration-300', isOpen && 'rotate-180')} />
       </button>
 
       {isOpen && (

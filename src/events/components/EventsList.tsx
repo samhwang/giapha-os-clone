@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import type { CustomEventRecord, EventType, FamilyEvent } from '../../types';
+import { cn } from '../../ui/utils/cn';
 import { getTodayLunar, getZodiacSign } from '../utils/dateHelpers';
 import { computeEvents } from '../utils/eventHelpers';
 import CustomEventModal from './CustomEventModal';
@@ -218,7 +219,7 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
             {t('events.addCustomEvent')}
           </button>
         )}
-        <span className={`${isAdmin ? '' : 'ml-auto'} text-xs text-stone-400 self-center`}>{t('events.yearCount', { count: filtered.length })}</span>
+        <span className={cn('text-xs text-stone-400 self-center', !isAdmin && 'ml-auto')}>{t('events.yearCount', { count: filtered.length })}</span>
       </div>
 
       {/* Deceased birthday toggle */}

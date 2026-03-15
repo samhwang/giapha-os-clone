@@ -270,7 +270,10 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               <div className="relative flex items-center">
                 <input type="checkbox" checked={isInLaw} onChange={(e) => setIsInLaw(e.target.checked)} className="peer sr-only" />
                 <div
-                  className={`size-5 border-2 border-stone-300 rounded transition-colors flex items-center justify-center ${isInLaw ? 'bg-amber-500 border-amber-500' : ''}`}
+                  className={cn(
+                    'size-5 border-2 border-stone-300 rounded transition-colors flex items-center justify-center',
+                    isInLaw && 'bg-amber-500 border-amber-500'
+                  )}
                 >
                   {isInLaw && (
                     <svg className="size-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4} aria-hidden="true">
@@ -435,7 +438,10 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                     className="peer sr-only"
                   />
                   <div
-                    className={`size-5 border-2 border-stone-300 rounded transition-colors flex items-center justify-center ${isDeceased ? 'bg-stone-600 border-stone-600' : ''}`}
+                    className={cn(
+                      'size-5 border-2 border-stone-300 rounded transition-colors flex items-center justify-center',
+                      isDeceased && 'bg-stone-600 border-stone-600'
+                    )}
                   >
                     {isDeceased && (
                       <svg className="size-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4} aria-hidden="true">

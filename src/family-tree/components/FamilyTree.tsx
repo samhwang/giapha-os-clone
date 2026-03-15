@@ -3,6 +3,7 @@ import { Fragment, type ReactNode, useEffect, useMemo, useRef, useState } from '
 import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { Gender, type Person, type Relationship } from '../../types';
+import { cn } from '../../ui/utils/cn';
 import { usePanZoom } from '../hooks/usePanZoom';
 import { buildAdjacencyLists, getFilteredTreeData } from '../utils/treeHelpers';
 import FamilyNodeCard from './FamilyNodeCard';
@@ -58,7 +59,10 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
       <li key={personId}>
         <div className="node-container inline-flex flex-col items-center">
           <div
-            className={`flex relative z-10 items-stretch h-full${showAvatar ? ' bg-white rounded-2xl shadow-md border border-stone-200/80 transition-opacity' : ''}`}
+            className={cn(
+              'flex relative z-10 items-stretch h-full',
+              showAvatar && 'bg-white rounded-2xl shadow-md border border-stone-200/80 transition-opacity'
+            )}
           >
             <FamilyNodeCard person={data.person} />
             {data.spouses.length > 0 &&
@@ -98,11 +102,12 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
           <button
             type="button"
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 h-10 rounded-full font-semibold text-sm shadow-sm border transition-all ${
+            className={cn(
+              'flex items-center gap-2 px-4 h-10 rounded-full font-semibold text-sm shadow-sm border transition-all',
               showFilters
                 ? 'bg-amber-100/90 text-amber-800 border-amber-200'
                 : 'bg-white/80 text-stone-600 border-stone-200/60 hover:bg-white hover:text-stone-900 hover:shadow-md backdrop-blur-md'
-            }`}
+            )}
           >
             <Filter className="size-4" />
             <span className="hidden sm:inline">{t('tree.filter')}</span>
@@ -175,7 +180,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
       {/* biome-ignore lint/a11y/noStaticElementInteractions: drag-to-pan container */}
       <div
         ref={containerRef}
-        className={`w-full overflow-auto bg-stone-50 ${isPressed ? 'cursor-grabbing' : 'cursor-grab'}`}
+        className={cn('w-full overflow-auto bg-stone-50', isPressed ? 'cursor-grabbing' : 'cursor-grab')}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUpOrLeave}
@@ -185,7 +190,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
       >
         <div
           id="export-container"
-          className={`w-max min-w-full mx-auto p-4 ${styles.tree} transition-all duration-200 ${isDragging ? 'opacity-90' : ''}`}
+          className={cn('w-max min-w-full mx-auto p-4', styles.tree, 'transition-all duration-200', isDragging && 'opacity-90')}
           style={{ transform: `scale(${scale})`, transformOrigin: 'top center' }}
         >
           <ul>

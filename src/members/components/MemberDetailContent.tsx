@@ -191,7 +191,10 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                     <Leaf className="absolute -bottom-4 -right-4 w-20 h-20 text-amber-500/10 rotate-12" />
                     <div className="flex items-center gap-2 mb-1.5 relative z-10">
                       <span
-                        className={`size-2 rounded-full ${ageData.isDeceased ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]' : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]'}`}
+                        className={cn(
+                          'size-2 rounded-full',
+                          ageData.isDeceased ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]' : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]'
+                        )}
                       />
                       <p className="text-xs-plus font-bold text-amber-800/60 uppercase tracking-widest">
                         {ageData.isDeceased ? (ageData.age >= 60 ? t('member.longevity') : t('member.lifespan')) : t('member.age')}
@@ -221,7 +224,10 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                 {person.note ? (
                   <div className="relative">
                     <p
-                      className={`text-stone-600 whitespace-pre-wrap text-sm sm:text-base leading-relaxed transition-all duration-300 ${isNoteLong && !isNoteExpanded ? 'max-h-28 overflow-hidden' : ''}`}
+                      className={cn(
+                        'text-stone-600 whitespace-pre-wrap text-sm sm:text-base leading-relaxed transition-all duration-300',
+                        isNoteLong && !isNoteExpanded && 'max-h-28 overflow-hidden'
+                      )}
                     >
                       {person.note}
                     </p>
@@ -235,7 +241,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                         className="relative z-10 mt-2 text-sm font-medium text-amber-700 hover:text-amber-800 flex items-center gap-1 transition-colors"
                       >
                         {isNoteExpanded ? t('member.noteCollapse') : t('member.noteExpand')}
-                        <ChevronDown className={`size-4 transition-transform duration-200 ${isNoteExpanded ? 'rotate-180' : ''}`} />
+                        <ChevronDown className={cn('size-4 transition-transform duration-200', isNoteExpanded && 'rotate-180')} />
                       </button>
                     )}
                   </div>

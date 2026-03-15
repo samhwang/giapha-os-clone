@@ -1,5 +1,6 @@
 import { List, ListTree, Network } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { cn } from '../../ui/utils/cn';
 import { useDashboardStore } from '../store/dashboardStore';
 
 export type ViewMode = 'list' | 'tree' | 'mindmap';
@@ -23,12 +24,13 @@ export default function ViewToggle() {
             type="button"
             key={tab.id}
             onClick={() => setView(tab.id)}
-            className={`relative px-4 sm:px-6 py-1.5 sm:py-2.5 text-sm font-semibold rounded-full transition-colors duration-300 ease-in-out z-10 flex items-center gap-2 ${
+            className={cn(
+              'relative px-4 sm:px-6 py-1.5 sm:py-2.5 text-sm font-semibold rounded-full transition-colors duration-300 ease-in-out z-10 flex items-center gap-2',
               isActive ? 'text-stone-900' : 'text-stone-500 hover:text-stone-800'
-            }`}
+            )}
           >
             {isActive && <div className="absolute inset-0 bg-white rounded-full shadow-sm border border-stone-200/60 z-[-1] animate-scale-in" />}
-            <span className={`transition-colors duration-300 ${isActive ? 'text-amber-700' : 'text-stone-400'}`}>{tab.icon}</span>
+            <span className={cn('transition-colors duration-300', isActive ? 'text-amber-700' : 'text-stone-400')}>{tab.icon}</span>
             <span className="tracking-wide">{tab.label}</span>
           </button>
         );

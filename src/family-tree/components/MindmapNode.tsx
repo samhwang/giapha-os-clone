@@ -58,7 +58,7 @@ export const MindmapNode = memo(function MindmapNode({
   const hasChildren = data.children.length > 0;
 
   return (
-    <div className={`relative py-1.5 ${level > 0 ? 'pl-6' : 'pl-0'}`}>
+    <div className={cn('relative py-1.5', level > 0 ? 'pl-6' : 'pl-0')}>
       {level > 0 && (
         <>
           <div
@@ -147,13 +147,12 @@ export const MindmapNode = memo(function MindmapNode({
                 {data.person.isInLaw && (
                   <div className="flex flex-wrap items-center gap-1 mt-1.5 shrink-0">
                     <span
-                      className={`inline-flex items-center px-1.5 py-0.5 rounded text-3xs font-bold uppercase tracking-widest shadow-xs border ${
-                        data.person.gender === Gender.enum.male
-                          ? 'bg-sky-50 text-sky-700 border-sky-200/60'
-                          : data.person.gender === Gender.enum.female
-                            ? 'bg-rose-50 text-rose-700 border-rose-200/60'
-                            : 'bg-stone-50 text-stone-700 border-stone-200/60'
-                      }`}
+                      className={cn(
+                        'inline-flex items-center px-1.5 py-0.5 rounded text-3xs font-bold uppercase tracking-widest shadow-xs border',
+                        data.person.gender === Gender.enum.male && 'bg-sky-50 text-sky-700 border-sky-200/60',
+                        data.person.gender === Gender.enum.female && 'bg-rose-50 text-rose-700 border-rose-200/60',
+                        data.person.gender === Gender.enum.other && 'bg-stone-50 text-stone-700 border-stone-200/60'
+                      )}
                     >
                       {data.person.gender === Gender.enum.male ? 'Rể' : data.person.gender === Gender.enum.female ? 'Dâu' : 'Khách'}
                     </span>
