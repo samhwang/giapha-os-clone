@@ -3,6 +3,8 @@ import { memo, useState } from 'react';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import { Gender, type Person, type Relationship } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
+import { cn } from '../../ui/utils/cn';
+import { getAvatarBg } from '../../ui/utils/styles';
 import type { AdjacencyLists } from '../utils/treeHelpers';
 import { getFilteredTreeData } from '../utils/treeHelpers';
 
@@ -110,8 +112,10 @@ export const MindmapNode = memo(function MindmapNode({
               {ctx.showAvatar && (
                 <div className="relative shrink-0">
                   <div
-                    className={`size-10 rounded-full overflow-hidden flex items-center justify-center text-white text-xs font-bold shadow-md ring-2 ring-white transition-transform duration-300 group-hover/card:scale-105
-                    ${data.person.gender === Gender.enum.male ? 'bg-linear-to-br from-sky-400 to-sky-700' : data.person.gender === Gender.enum.female ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
+                    className={cn(
+                      'size-10 rounded-full overflow-hidden flex items-center justify-center text-white text-xs font-bold shadow-md ring-2 ring-white transition-transform duration-300 group-hover/card:scale-105',
+                      getAvatarBg(data.person.gender)
+                    )}
                   >
                     {data.person.avatarUrl ? (
                       <img src={data.person.avatarUrl} alt={data.person.fullName} className="h-full w-full object-cover" />
@@ -168,14 +172,18 @@ export const MindmapNode = memo(function MindmapNode({
                       e.stopPropagation();
                       ctx.setMemberModalId(spouseData.person.id);
                     }}
-                    className={`flex flex-col items-center gap-1 bg-stone-50/50 hover:bg-white rounded-xl p-1.5 border border-stone-200/60 hover:border-amber-300 transition-all shadow-sm hover:shadow-md group/spouse cursor-pointer
-                      ${spouseData.person.isDeceased ? 'opacity-80 grayscale-[0.3]' : ''}`}
+                    className={cn(
+                      'flex flex-col items-center gap-1 bg-stone-50/50 hover:bg-white rounded-xl p-1.5 border border-stone-200/60 hover:border-amber-300 transition-all shadow-sm hover:shadow-md group/spouse cursor-pointer',
+                      spouseData.person.isDeceased && 'opacity-80 grayscale-[0.3]'
+                    )}
                     title={spouseData.note || (spouseData.person.gender === Gender.enum.male ? 'Chồng' : 'Vợ')}
                   >
                     {ctx.showAvatar && (
                       <div
-                        className={`size-8 rounded-full overflow-hidden flex items-center justify-center text-white text-2xs font-bold shadow-sm ring-2 ring-white transition-transform duration-300 group-hover/spouse:scale-105
-                        ${spouseData.person.gender === Gender.enum.male ? 'bg-linear-to-br from-sky-400 to-sky-700' : spouseData.person.gender === Gender.enum.female ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600'}`}
+                        className={cn(
+                          'size-8 rounded-full overflow-hidden flex items-center justify-center text-white text-2xs font-bold shadow-sm ring-2 ring-white transition-transform duration-300 group-hover/spouse:scale-105',
+                          getAvatarBg(spouseData.person.gender)
+                        )}
                       >
                         {spouseData.person.avatarUrl ? (
                           <img src={spouseData.person.avatarUrl} alt={spouseData.person.fullName} className="h-full w-full object-cover" />
