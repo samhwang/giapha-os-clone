@@ -4,19 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { Gender, type Person } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
+import { cn } from '../../ui/utils/cn';
+import { getAvatarBg, getGenderStyle } from '../../ui/utils/styles';
 import { useDashboardStore } from '../store/dashboardStore';
-
-const getGenderStyle = (gender: string) => {
-  if (gender === Gender.enum.male) return 'bg-sky-100 text-sky-600';
-  if (gender === Gender.enum.female) return 'bg-rose-100 text-rose-600';
-  return 'bg-stone-100 text-stone-600';
-};
-
-const getAvatarBg = (gender: string) => {
-  if (gender === Gender.enum.male) return 'bg-linear-to-br from-sky-400 to-sky-700';
-  if (gender === Gender.enum.female) return 'bg-linear-to-br from-rose-400 to-rose-700';
-  return 'bg-linear-to-br from-stone-400 to-stone-600';
-};
 
 export default function RootSelector({ persons, currentRootId }: { persons: Person[]; currentRootId: string }) {
   const { setRootId } = useDashboardStore();
@@ -55,8 +45,10 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
       >
         <div className="relative shrink-0">
           <div
-            className={`size-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden ring-2 ring-white shadow-xs
-            ${currentRootPerson ? getAvatarBg(currentRootPerson.gender) : 'bg-stone-100 text-stone-400'}`}
+            className={cn(
+              'size-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden ring-2 ring-white shadow-xs',
+              currentRootPerson ? getAvatarBg(currentRootPerson.gender) : 'bg-stone-100 text-stone-400'
+            )}
           >
             {currentRootPerson ? (
               currentRootPerson.avatarUrl ? (
@@ -70,7 +62,10 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
           </div>
           {currentRootPerson && (
             <div
-              className={`absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full ring-2 ring-white shadow-xs flex items-center justify-center ${getGenderStyle(currentRootPerson.gender)}`}
+              className={cn(
+                'absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full ring-2 ring-white shadow-xs flex items-center justify-center',
+                getGenderStyle(currentRootPerson.gender)
+              )}
             >
               {currentRootPerson.gender === Gender.enum.male ? (
                 <MaleIcon className="size-2.5" />
@@ -88,8 +83,8 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
           </p>
         </div>
 
-        <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
-          <ChevronDown className={`size-4 shrink-0 ${isOpen ? 'text-amber-600' : 'text-stone-400 group-hover:text-stone-600'}`} />
+        <div className={cn('transition-transform duration-300', isOpen && 'rotate-180')}>
+          <ChevronDown className={cn('size-4 shrink-0', isOpen ? 'text-amber-600' : 'text-stone-400 group-hover:text-stone-600')} />
         </div>
       </button>
 
@@ -117,12 +112,19 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
                       type="button"
                       key={person.id}
                       onClick={() => handleSelect(person.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-all duration-200 group/item
-                        ${isSelected ? 'bg-amber-50 text-amber-900 border border-amber-200/50 shadow-sm' : 'text-stone-700 hover:bg-stone-100/80 border border-transparent'}`}
+                      className={cn(
+                        'w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-all duration-200 group/item',
+                        isSelected
+                          ? 'bg-amber-50 text-amber-900 border border-amber-200/50 shadow-sm'
+                          : 'text-stone-700 hover:bg-stone-100/80 border border-transparent'
+                      )}
                     >
                       <div className="relative shrink-0">
                         <div
-                          className={`size-8 rounded-full flex items-center justify-center text-2xs font-bold text-white overflow-hidden ring-1 ring-white shadow-xs ${getAvatarBg(person.gender)}`}
+                          className={cn(
+                            'size-8 rounded-full flex items-center justify-center text-2xs font-bold text-white overflow-hidden ring-1 ring-white shadow-xs',
+                            getAvatarBg(person.gender)
+                          )}
                         >
                           {person.avatarUrl ? (
                             <img src={person.avatarUrl} alt={person.fullName} className="h-full w-full object-cover" />
@@ -131,7 +133,10 @@ export default function RootSelector({ persons, currentRootId }: { persons: Pers
                           )}
                         </div>
                         <div
-                          className={`absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full ring-1 ring-white shadow-xs flex items-center justify-center ${getGenderStyle(person.gender)}`}
+                          className={cn(
+                            'absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full ring-1 ring-white shadow-xs flex items-center justify-center',
+                            getGenderStyle(person.gender)
+                          )}
                         >
                           {person.gender === Gender.enum.male ? (
                             <MaleIcon className="size-2.5" />
