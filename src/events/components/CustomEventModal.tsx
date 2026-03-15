@@ -2,6 +2,7 @@ import { AlertCircle, AlignLeft, Calendar as CalendarIcon, Loader2, MapPin, X } 
 import { type SubmitEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { CustomEventRecord } from '../../types';
+import { cn } from '../../ui/utils/cn';
 import { createCustomEvent, deleteCustomEvent, updateCustomEvent } from '../server/customEvent';
 
 interface CustomEventModalProps {
@@ -94,8 +95,9 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
 
   if (!isOpen) return null;
 
-  const inputClasses =
-    'bg-white text-stone-900 placeholder-stone-500 block w-full rounded-xl border border-stone-300 shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:bg-white text-sm px-4 py-3 transition-all outline-none';
+  const inputClasses = cn(
+    'bg-white text-stone-900 placeholder-stone-500 block w-full rounded-xl border border-stone-300 shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:bg-white text-sm px-4 py-3 transition-all outline-none'
+  );
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 bg-stone-900/40 backdrop-blur-sm animate-[fade-in_0.2s_ease-out_forwards]">
@@ -149,7 +151,7 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
                     id="ce-date"
                     required
                     type="date"
-                    className={`${inputClasses} pl-11`}
+                    className={cn(inputClasses, 'pl-11')}
                     value={eventDate}
                     onChange={(e) => setEventDate(e.target.value)}
                   />
@@ -165,7 +167,7 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
                   <input
                     id="ce-location"
                     type="text"
-                    className={`${inputClasses} pl-11`}
+                    className={cn(inputClasses, 'pl-11')}
                     placeholder={t('customEvent.locationPlaceholder')}
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
@@ -182,7 +184,7 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
                   <textarea
                     id="ce-content"
                     rows={3}
-                    className={`${inputClasses} pl-11 resize-none`}
+                    className={cn(inputClasses, 'pl-11 resize-none')}
                     placeholder={t('customEvent.contentPlaceholder')}
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
