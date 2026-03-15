@@ -6,6 +6,8 @@ import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import { createPerson, getPersons } from '../../members/server/member';
 import { Gender, type Person, RelationshipType } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
+import { cn } from '../../ui/utils/cn';
+import { getAvatarBg } from '../../ui/utils/styles';
 import { createRelationship, deleteRelationship, getRelationshipsForPerson } from '../server/relationship';
 
 interface RelationshipManagerProps {
@@ -352,8 +354,10 @@ export default function RelationshipManager({ personId, canEdit = false, personG
                       className="flex items-center gap-3 hover:bg-stone-100 p-2.5 -mx-2.5 rounded-xl transition-all duration-200 flex-1 text-left"
                     >
                       <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center text-xs text-white overflow-hidden
-                            ${rel.targetPerson.gender === Gender.enum.male ? 'bg-sky-700' : rel.targetPerson.gender === Gender.enum.female ? 'bg-rose-700' : 'bg-stone-500'}`}
+                        className={cn(
+                          'h-8 w-8 rounded-full flex items-center justify-center text-xs text-white overflow-hidden',
+                          getAvatarBg(rel.targetPerson.gender)
+                        )}
                       >
                         {rel.targetPerson.avatarUrl ? (
                           <img src={rel.targetPerson.avatarUrl} alt={rel.targetPerson.fullName} className="h-full w-full object-cover" />
@@ -498,8 +502,12 @@ export default function RelationshipManager({ personId, canEdit = false, personG
                     >
                       <div className="flex items-center gap-2">
                         <span
-                          className={`flex items-center justify-center text-[8px] font-bold size-3 rounded-full text-white shrink-0
-                               ${p.gender === Gender.enum.male ? 'bg-sky-500' : p.gender === Gender.enum.female ? 'bg-rose-500' : 'bg-stone-400'}`}
+                          className={cn(
+                            'flex items-center justify-center text-[8px] font-bold size-3 rounded-full text-white shrink-0',
+                            p.gender === Gender.enum.male && 'bg-sky-500',
+                            p.gender === Gender.enum.female && 'bg-rose-500',
+                            p.gender === Gender.enum.other && 'bg-stone-400'
+                          )}
                         >
                           {p.gender === Gender.enum.male ? '♂' : p.gender === Gender.enum.female ? '♀' : '?'}
                         </span>
