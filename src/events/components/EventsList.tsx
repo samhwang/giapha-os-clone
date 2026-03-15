@@ -203,11 +203,12 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
             type="button"
             key={tab.key}
             onClick={() => setFilter(tab.key)}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+            className={cn(
+              'px-4 py-2 rounded-xl text-sm font-semibold transition-all',
               filter === tab.key
                 ? 'bg-amber-500 text-white shadow-sm'
                 : 'bg-white/80 text-stone-600 border border-stone-200/60 hover:border-amber-200 hover:text-amber-700'
-            }`}
+            )}
           >
             {tab.label}
           </button>
