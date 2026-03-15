@@ -5,6 +5,7 @@ import { type SubmitEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Gender, type Person } from '../../types';
 import { cn } from '../../ui/utils/cn';
+import { getAvatarBg } from '../../ui/utils/styles';
 import { createPerson, updatePerson, uploadPersonAvatar } from '../server/member';
 
 interface MemberFormData extends Person {
@@ -324,8 +325,10 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             </label>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 bg-stone-50/50 p-4 rounded-xl border border-stone-100">
               <div
-                className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center text-xl font-bold text-white overflow-hidden shrink-0 shadow-md border-4 border-white
-                  ${!avatarPreview ? (gender === Gender.enum.male ? 'bg-linear-to-br from-sky-400 to-sky-700' : gender === Gender.enum.female ? 'bg-linear-to-br from-rose-400 to-rose-700' : 'bg-linear-to-br from-stone-400 to-stone-600') : ''}`}
+                className={cn(
+                  'w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center text-xl font-bold text-white overflow-hidden shrink-0 shadow-md border-4 border-white',
+                  !avatarPreview && getAvatarBg(gender)
+                )}
               >
                 {avatarPreview ? (
                   <img src={avatarPreview} alt="Avatar preview" className="w-full h-full object-cover" />
