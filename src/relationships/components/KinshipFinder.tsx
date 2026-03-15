@@ -4,24 +4,14 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Gender, type PersonNode, type RelEdge } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
+import { cn } from '../../ui/utils/cn';
+import { getAvatarBg, getGenderStyle } from '../../ui/utils/styles';
 import { computeKinship } from '../utils/kinshipHelpers';
 
 interface Props {
   persons: PersonNode[];
   relationships: RelEdge[];
 }
-
-const getGenderStyle = (gender: string) => {
-  if (gender === Gender.enum.male) return 'bg-sky-100 text-sky-600';
-  if (gender === Gender.enum.female) return 'bg-rose-100 text-rose-600';
-  return 'bg-stone-100 text-stone-600';
-};
-
-const getAvatarBg = (gender: string) => {
-  if (gender === Gender.enum.male) return 'bg-linear-to-br from-sky-400 to-sky-700';
-  if (gender === Gender.enum.female) return 'bg-linear-to-br from-rose-400 to-rose-700';
-  return 'bg-linear-to-br from-stone-400 to-stone-600';
-};
 
 function PersonSelector({
   label,
@@ -51,20 +41,26 @@ function PersonSelector({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl border text-left transition-all ${
+        className={cn(
+          'w-full flex items-center gap-3 px-4 py-3 rounded-2xl border text-left transition-all',
           selected ? 'bg-amber-50 border-amber-300 text-stone-800' : 'bg-white/80 border-stone-200 text-stone-400 hover:border-amber-200'
-        }`}
+        )}
       >
         <div className="relative shrink-0">
           <div
-            className={`size-10 rounded-full flex items-center justify-center text-sm font-bold text-white overflow-hidden ring-2 ring-white shadow-sm
-            ${selected ? getAvatarBg(selected.gender) : 'bg-stone-100 text-stone-400'}`}
+            className={cn(
+              'size-10 rounded-full flex items-center justify-center text-sm font-bold text-white overflow-hidden ring-2 ring-white shadow-sm',
+              selected ? getAvatarBg(selected.gender) : 'bg-stone-100 text-stone-400'
+            )}
           >
             {selected ? <DefaultAvatar gender={selected.gender} /> : '?'}
           </div>
           {selected && (
             <div
-              className={`absolute -bottom-1 -right-1 size-4 rounded-full ring-2 ring-white shadow-xs flex items-center justify-center ${getGenderStyle(selected.gender)}`}
+              className={cn(
+                'absolute -bottom-1 -right-1 size-4 rounded-full ring-2 ring-white shadow-xs flex items-center justify-center',
+                getGenderStyle(selected.gender)
+              )}
             >
               {selected.gender === Gender.enum.male ? (
                 <MaleIcon className="size-3" />
@@ -109,13 +105,18 @@ function PersonSelector({
                 >
                   <div className="relative shrink-0">
                     <div
-                      className={`size-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden ring-1 ring-white shadow-xs
-                      ${getAvatarBg(p.gender)}`}
+                      className={cn(
+                        'size-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden ring-1 ring-white shadow-xs',
+                        getAvatarBg(p.gender)
+                      )}
                     >
                       <DefaultAvatar gender={p.gender} />
                     </div>
                     <div
-                      className={`absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full ring-1 ring-white shadow-xs flex items-center justify-center ${getGenderStyle(p.gender)}`}
+                      className={cn(
+                        'absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full ring-1 ring-white shadow-xs flex items-center justify-center',
+                        getGenderStyle(p.gender)
+                      )}
                     >
                       {p.gender === Gender.enum.male ? (
                         <MaleIcon className="size-2.5" />
