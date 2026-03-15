@@ -21,7 +21,6 @@ This guide covers self-hosting Gia Pha OS in production using Docker Compose.
 ```bash
 git clone https://github.com/your-repo/giapha-os-clone.git
 cd giapha-os-clone
-cp .env.sample .env
 ```
 
 ### 2. Generate Secrets
@@ -36,20 +35,7 @@ openssl rand -hex 32
 openssl rand -hex 16
 ```
 
-Update your `.env` file:
-
-```env
-# Database
-DB_PASSWORD=your-secure-password-here
-DATABASE_URL=postgresql://giapha:${DB_PASSWORD}@postgres:5432/giapha
-
-# Auth
-BETTER_AUTH_SECRET=your-auth-secret-here
-BETTER_AUTH_URL=https://your-domain.com
-
-# File uploads (default: ./uploads, in Docker: /app/uploads)
-UPLOAD_DIR=./uploads
-```
+Update your `docker-compose.production.yaml` file. The fields need to be changed all starts with `change-me`.
 
 ## Infrastructure Setup
 
@@ -103,13 +89,7 @@ mkdir -p data/postgres data/uploads
 ### Run Migrations
 
 ```bash
-docker compose -f docker-compose.production.yml exec app pnpm prisma:migrate deploy
-```
-
-### Seed Data (Optional)
-
-```bash
-docker compose -f docker-compose.production.yml exec app pnpm prisma:seed
+docker compose -f docker-compose.production.yml up db-migrate
 ```
 
 ## First User Setup
@@ -244,12 +224,12 @@ sudo ufw enable
 # Pull latest code
 git pull origin main
 
-# Rebuild and restart
-docker compose -f docker-compose.production.yml build app
+# Repull and restart
+docker compose -f docker-compose.production.yml pull
 docker compose -f docker-compose.production.yml up -d
 
-# Run migrations if needed
-docker compose -f docker-compose.production.yml exec app pnpm prisma:migrate deploy
+# Run DB migrations if needed
+docker compose -f docker-compose.production.yml up db-migrate
 ```
 
 ## Backup & Restore
@@ -316,6 +296,7 @@ docker stats
 ```bash
 # Check logs
 docker compose -f docker-compose.production.yml logs postgres
+docker compose -f docker-compose.production.yml logs db-migrate
 docker compose -f docker-compose.production.yml logs app
 ```
 
@@ -369,7 +350,7 @@ The docker-compose files already reference the GHCR image. Use `--pull` to alway
 
 ```bash
 # Production
-docker compose -f docker-compose.production.yml pull app
+docker compose -f docker-compose.production.yml pull app db-migrate
 docker compose -f docker-compose.production.yml up -d
 
 # Development

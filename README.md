@@ -32,22 +32,25 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
    ```bash
    git clone https://github.com/your-repo/giapha-os-clone.git
    cd giapha-os-clone
-   cp .env.sample .env
    ```
 
 2. **Generate secrets**
 
    ```bash
    openssl rand -hex 32  # For BETTER_AUTH_SECRET
+   openssl rand -hex 32  # For DB_PASSWORD
    ```
 
-3. **Start services**
+3. Update service environment variables in `docker-compose.production.yml`. These fields will be marked with `change-me`.
+
+4. **Start services**
 
    ```bash
    docker compose -f docker-compose.production.yml up -d
    ```
 
-   The `db-migrate` service automatically runs database migrations on startup.
+   This will start the database container `postgres`, then when that's ready `db-migrate` will run and initiate the database.
+   When it's finished, then the `app` service will boot up.
 
 5. **Access the app**
 

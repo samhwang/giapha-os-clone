@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: giapha
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: change-me
       POSTGRES_DB: giapha
     volumes:
       # Option 1: Named volume (default, portable)
@@ -25,10 +25,9 @@ services:
     volumes:
       - ./prisma:/src/prisma
       - ./prisma.config.ts:/src/prisma.config.ts
-    env_file:
-      - .env
     environment:
-      - DATABASE_HOST=postgres
+      # change-me must be the same as POSTGRES_PASSWORD above
+      - DATABASE_URL=postgresql://giapha:change-me@postgres:5432/giapha
     depends_on:
       postgres:
         condition: service_healthy
@@ -41,11 +40,12 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
-    env_file:
-      - .env
     environment:
-      - DATABASE_HOST=postgres
+      # change-me must be the same as POSTGRES_PASSWORD above
+      - DATABASE_URL=postgresql://giapha:change-me@postgres:5432/giapha
       - UPLOAD_DIR=/app/uploads
+      - BETTER_AUTH_SECRET=change-me-to-a-random-secret-at-least-32-chars
+      - BETTER_AUTH_URL=http://localhost:3000
     volumes:
       # Option 1: Named volume (default, portable)
       - uploads_data:/app/uploads
