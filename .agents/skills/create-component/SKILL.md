@@ -74,35 +74,48 @@ Create co-located test: `src/components/[ComponentName].test.tsx`
 
 ## Patterns
 
-### Button Component
+For components with variants (e.g., Button, Input), use `cva` from `class-variance-authority` with `cn()`:
+
+### Button Component (with cva)
 
 ```tsx
-import { ButtonHTMLAttributes, forwardRef } from 'react'
+import { cva } from 'class-variance-authority'
 import { cn } from '../../ui/utils/cn'
 
+const buttonVariants = cva(
+  'inline-flex items-center justify-center font-medium rounded-lg transition-colors',
+  {
+    variants: {
+      variant: {
+        default: 'bg-emerald-600 text-white hover:bg-emerald-700',
+        secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200',
+        ghost: 'hover:bg-gray-100',
+        destructive: 'bg-red-600 text-white hover:bg-red-700',
+      },
+      size: {
+        default: 'px-4 py-2',
+        sm: 'px-3 py-1.5 text-sm',
+        lg: 'px-6 py-3 text-lg',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'default',
+    },
+  }
+)
+
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost'
-  size?: 'sm' | 'md' | 'lg'
+  variant?: 'default' | 'secondary' | 'ghost' | 'destructive'
+  size?: 'default' | 'sm' | 'lg'
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', className, children, ...props }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors'
-    const variants = {
-      primary: 'bg-emerald-600 text-white hover:bg-emerald-700',
-      secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200',
-      ghost: 'hover:bg-gray-100',
-    }
-    const sizes = {
-      sm: 'px-3 py-1.5 text-sm',
-      md: 'px-4 py-2',
-      lg: 'px-6 py-3 text-lg',
-    }
-    
+  ({ variant, size, className, children, ...props }, ref) => {
     return (
       <button
         ref={ref}
-        className={cn(baseStyles, variants[variant], sizes[size], className)}
+        className={cn(buttonVariants({ variant, size }), className)}
         {...props}
       >
         {children}
@@ -113,7 +126,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = 'Button'
 ```
 
-### Card Component
+### Card Component (simple)
 
 ```tsx
 import { cn } from '../../ui/utils/cn'
