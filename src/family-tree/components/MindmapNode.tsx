@@ -97,8 +97,10 @@ export const MindmapNode = memo(function MindmapNode({
         <div
           role="button"
           tabIndex={0}
-          className={`group/card relative flex flex-wrap items-center gap-2 bg-white/60 backdrop-blur-md rounded-2xl border border-stone-200/60 p-2 sm:p-2.5 shadow-sm hover:border-amber-300 hover:shadow-md hover:bg-white/90 transition-all duration-300 overflow-hidden cursor-pointer animate-[fade-in_0.3s_ease-out_forwards]
-            ${data.person.isDeceased ? 'opacity-80 grayscale-[0.3]' : ''}`}
+          className={cn(
+            'group/card relative flex flex-wrap items-center gap-2 bg-white/60 backdrop-blur-md rounded-2xl border border-stone-200/60 p-2 sm:p-2.5 shadow-sm hover:border-amber-300 hover:shadow-md hover:bg-white/90 transition-all duration-300 overflow-hidden cursor-pointer animate-[fade-in_0.3s_ease-out_forwards]',
+            data.person.isDeceased && 'opacity-80 grayscale-[0.3]'
+          )}
           onClick={() => ctx.setMemberModalId(data.person.id)}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
