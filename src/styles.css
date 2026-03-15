@@ -1,6 +1,7 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/playfair-display";
 @import "tailwindcss";
+@import "tw-animate-css";
 
 :root {
   --background: #ffffff;
