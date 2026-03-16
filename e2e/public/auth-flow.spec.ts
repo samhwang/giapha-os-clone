@@ -4,7 +4,7 @@ import { waitForHydration } from '../fixtures';
 test.describe('Authentication Flow', () => {
   test('should display login form', async ({ page }) => {
     await page.goto('/login');
-    await expect(page.locator('#email-address')).toBeVisible();
+    await expect(page.locator('#email')).toBeVisible();
     await expect(page.locator('#password')).toBeVisible();
     await expect(page.getByRole('button', { name: /đăng nhập/i })).toBeVisible();
   });
@@ -21,7 +21,7 @@ test.describe('Authentication Flow', () => {
   test('should show error for invalid credentials', async ({ page }) => {
     await page.goto('/login');
     await waitForHydration(page);
-    await page.locator('#email-address').fill('invalid@test.com');
+    await page.locator('#email').fill('invalid@test.com');
     await page.locator('#password').fill('wrongpassword');
     await page.getByRole('button', { name: /đăng nhập/i }).click();
 

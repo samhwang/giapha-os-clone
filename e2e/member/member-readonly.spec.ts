@@ -26,7 +26,11 @@ test.describe('Member Read-Only Access', () => {
     await waitForHydration(page);
 
     const firstMemberCard = page.getByRole('button', { name: /Vạn Công Gốc/ });
+    await expect(firstMemberCard).toBeVisible({ timeout: 15000 });
     await firstMemberCard.click();
+
+    // Wait for modal content to load (loading spinner disappears)
+    await expect(page.locator('.animate-spin')).toBeHidden({ timeout: 15000 });
 
     // Private details should show restricted message in modal
     await expect(page.getByText(/chỉ hiển thị với quản trị viên/i)).toBeVisible({ timeout: 15000 });

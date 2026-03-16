@@ -24,8 +24,8 @@ test.describe('User Management', () => {
     await waitForHydration(page);
     await page.getByText(/thêm người dùng/i).click();
     await expect(page.getByText(/tạo người dùng mới/i)).toBeVisible();
-    await expect(page.locator('#createEmail')).toBeVisible();
-    await expect(page.locator('#createPassword')).toBeVisible();
+    await expect(page.locator('#email')).toBeVisible();
+    await expect(page.locator('#password')).toBeVisible();
   });
 
   test('should show action buttons for non-self users', async ({ page }) => {

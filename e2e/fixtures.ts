@@ -39,7 +39,7 @@ export async function registerViaUI(page: Page, email: string, password: string)
   await page.goto('/login');
   await waitForHydration(page);
   await page.getByRole('button', { name: /chưa có tài khoản/i }).click();
-  await page.locator('#email-address').fill(email);
+  await page.locator('#email').fill(email);
   await page.locator('#password').fill(password);
   await page.locator('#confirmPassword').fill(password);
   await page.getByRole('button', { name: /tạo tài khoản/i }).click();
