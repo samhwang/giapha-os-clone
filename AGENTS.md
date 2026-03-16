@@ -18,7 +18,7 @@ The project focuses on:
 ## Role & Technical Context
 
 - **Domain**: Vietnamese genealogy/family tree management
-- **Tech Stack**: TanStack Start, React 19, TypeScript, Prisma, PostgreSQL, Better Auth, Local filesystem, Tailwind CSS v4
+- **Tech Stack**: TanStack Start, React 19, TypeScript, TanStack Form, Zustand, Prisma 7, PostgreSQL, Better Auth, Zod 4, CVA, Local filesystem, Tailwind CSS v4
 - **Architecture**: Full-stack app with server functions, file-based routing, Docker Compose infrastructure
 - **Deployment**: Self-hosted via Docker Compose
 - **Package Manager**: pnpm
@@ -51,15 +51,19 @@ All changes must be:
 prisma/                   # Database schema and seed data
 scripts/                  # Infrastructure setup scripts
 src/
-├── components/           # React components (30+ files)
-├── lib/                  # Core libraries (db, storage)
-├── auth/                 # Authentication
+├── admin/                # Admin features (user management, data import/export)
+├── auth/                 # Authentication (Better Auth)
+├── dashboard/            # Main dashboard (header, stats, store)
+├── events/               # Events management
+├── family-tree/          # Family tree visualization
+├── members/              # Member CRUD
+├── relationships/        # Kinship and relationships
 ├── routes/               # TanStack Start file-based routes
-├── server/functions/     # Server functions (API logic)
-├── styles/               # Global CSS styles
-├── test-utils/           # Test fixtures and helpers
-├── types/                # TypeScript type definitions
-└── utils/                # Pure utility functions
+├── ui/                   # Shared UI components (layout, icons, common)
+├── lib/                  # Core infrastructure (db, storage, env, config)
+├── types/                # Global TypeScript types and Zod enums
+├── i18n/                 # i18next setup and translations
+└── generated/            # Prisma generated types
 ```
 
 ## Execution Protocol
@@ -111,12 +115,17 @@ Load a skill when working on specific task types:
 - **TanStack Start** (full-stack React framework)
 - **React 19** with TypeScript (strict mode)
 - **TanStack Router** (file-based routing)
-- **Prisma** + PostgreSQL (database)
+- **TanStack Form** (type-safe form handling)
+- **Zustand** (state management)
+- **Prisma 7** + PostgreSQL (database)
 - **Better Auth** (authentication)
+- **Zod 4** (validation)
+- **CVA** (component variants)
 - **Local filesystem** (file uploads via `UPLOAD_DIR`)
 - **Tailwind CSS v4** (styling/animation)
 - **Biome** (linting + formatting)
-- **Vitest** + React Testing Library (testing)
+- **Vitest** + React Testing Library (unit/component tests)
+- **Playwright** (E2E tests)
 
 ### Essential Commands
 
@@ -182,8 +191,8 @@ pnpm prisma generate
 
 1. Create route file in `src/routes/` following TanStack Start conventions
 2. Add loader function for server-side data fetching
-3. Create component(s) in `src/components/`
-4. Add server functions in `src/server/functions/` if needed
+3. Create component(s) in `src/{domain}/components/`
+4. Add server functions in `src/{domain}/server/` if needed
 5. Write tests co-located with source files
 
 ## Extending the Manifest
@@ -198,7 +207,7 @@ pnpm prisma generate
 - **Reference code**: Available in `base/giapha-os/` directory
 - **Self-hosted**: Docker Compose for PostgreSQL + Local filesystem
 - **Vietnamese genealogy**: Kinship terms, lunar calendar, family tree visualization
-- **Core modules**: `src/utils/**` (kinship, dates, events), `src/server/functions/**` (business logic)
+- **Core modules**: `src/relationships/utils/` (kinship), `src/events/utils/` (dates, events), `src/members/server/` (member logic), `src/admin/server/` (admin logic)
 - **Code quality**: Biome for linting/formatting, TypeScript strict mode, comprehensive tests
 
 When in doubt, follow existing patterns in the codebase and refer to the relevant rules in `.agents/rules/`.

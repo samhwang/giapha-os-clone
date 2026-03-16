@@ -22,8 +22,10 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 - Lunar calendar integration for death anniversaries
 - Family statistics dashboard
 - Upcoming events (birthdays and death anniversaries)
-- Data import/export (JSON backup)
-- Role-based access control (admin/member)
+- Custom event management
+- Lineage order management
+- Data import/export (JSON, CSV, GEDCOM, PDF)
+- Role-based access control (admin/editor/member)
 - Admin user management (approve, block, create users)
 
 ## Quick Start (Self-Hosted)
@@ -108,15 +110,19 @@ See the [Deployment Guide](./docs/01-deployment.md) for detailed instructions.
 ├── scripts/              # Infrastructure setup scripts
 ├── public/               # Static assets (favicons, manifest)
 ├── src/
-│   ├── components/       # React components
-│   ├── lib/              # Core libraries (db, storage)
-│   ├── auth/            # Authentication
+│   ├── admin/            # Admin features (user management, data import/export)
+│   ├── auth/             # Authentication (Better Auth)
+│   ├── dashboard/        # Main dashboard (header, stats, store)
+│   ├── events/           # Events management
+│   ├── family-tree/      # Family tree visualization
+│   ├── members/          # Member CRUD
+│   ├── relationships/    # Kinship and relationships
 │   ├── routes/           # TanStack Start file-based routes
-│   ├── server/functions/ # Server functions (API logic)
-│   ├── styles/           # Global CSS styles
-│   ├── test-utils/       # Test fixtures and helpers
-│   ├── types/            # TypeScript type definitions
-│   └── utils/            # Pure utility functions
+│   ├── ui/               # Shared UI components
+│   ├── lib/              # Core infrastructure (db, storage, env)
+│   ├── types/            # Global TypeScript types
+│   ├── i18n/             # i18next translations
+│   └── generated/        # Prisma generated types
 ├── docker-compose.yml    # PostgreSQL
 └── biome.json            # Linter/formatter config
 ```

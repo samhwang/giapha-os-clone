@@ -9,7 +9,7 @@ Welcome to the Gia Pha OS documentation.
 
 ## Features
 
-- [03 - Features](./03-features.md) - Family tree, kinship, events, i18n
+- [03 - Features](./03-features.md) - Family tree, kinship, events, i18n, data export
 - [04 - Architecture](./04-architecture.md) - Tech stack and project structure
 - [05 - Database](./05-database.md) - Schema and Prisma
 
