@@ -69,7 +69,7 @@ Create co-located test: `src/routes/[route-name].test.tsx`
 ```tsx
 // src/routes/members.tsx
 import { createFileRoute } from '@tanstack/react-router'
-import { membersOptions } from '@/members/server/member'
+import { membersOptions } from '../../members/server/member'
 
 export const Route = createFileRoute('/members')({
   loader: async ({ context }) => {

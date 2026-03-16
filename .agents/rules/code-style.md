@@ -62,8 +62,8 @@ Follow this order within each component file:
 ```tsx
 // 1. Imports
 import { useState } from 'react';
-import { useSomething } from '@/lib/something';
-import type { Person } from '@/types';
+import { useSomething } from '../../lib/something';
+import type { Person } from '../../types';
 
 // 2. Types/interfaces (if component-specific)
 interface Props {
@@ -95,7 +95,7 @@ Biome auto-organizes imports:
 
 1. React / React DOM
 2. External packages (`@tanstack/*`, etc.)
-3. Internal aliases (`@/components/*`, `@/lib/*`, `@/utils/*`)
+3. Relative imports (project modules via `../` or `./`)
 4. Type imports (`import type { ... }`)
 5. Style imports
 

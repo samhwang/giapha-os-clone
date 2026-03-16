@@ -51,7 +51,7 @@ export const itemFns = {
 
 Add to `src/lib/get-server-context.tsx`:
 ```typescript
-import * as itemFns from '@/items/server/item'
+import * as itemFns from '../../items/server/item'
 
 export function getServerRouteHelpers() {
   return {

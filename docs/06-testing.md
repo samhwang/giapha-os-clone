@@ -58,7 +58,7 @@ Test business logic with a real PostgreSQL database using Testcontainers. Never 
 
 ```typescript
 // src/members/server/member.test.ts
-import { getDbClient } from '@/lib/db'
+import { getDbClient } from '../../lib/db'
 
 test('creates person with private details', async () => {
   const db = getDbClient()
@@ -220,7 +220,7 @@ pnpm test:coverage
 Use helpers from `src/test-utils/`:
 
 ```tsx
-import { renderWithProviders } from '@/test-utils/render-wrapper'
+import { renderWithProviders } from '../test-utils/render-wrapper'
 
 renderWithProviders(<Component />)
 ```
