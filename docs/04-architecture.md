@@ -9,42 +9,89 @@ TL;DR: TanStack Start + React 19 + TanStack Router for full-stack, Prisma + Post
 | Framework | TanStack Start | latest |
 | UI | React | 19 |
 | Routing | TanStack Router | latest |
+| Forms | TanStack Form | latest |
 | Database | PostgreSQL | 15+ |
-| ORM | Prisma | 6.x |
+| ORM | Prisma | 7.x |
 | Auth | Better Auth | latest |
 | Storage | Local filesystem | - |
 | Styling | Tailwind CSS | 4.x |
+| Component Variants | CVA (class-variance-authority) | latest |
+| State Management | Zustand | 5.x |
+| Validation | Zod | 4.x |
 | i18n | react-i18next | latest |
-| Testing | Vitest | 4.x |
-| Browser Testing | Vitest Browser + Playwright | latest |
+| Icons | lucide-react | latest |
+| Unit Testing | Vitest | 4.x |
+| E2E Testing | Playwright | latest |
 
 ## Project Structure
 
 ```
 src/
-├── components/           # Shared React components
-│   ├── ui/              # Base UI components (Button, Input, etc.)
-│   └── ...
-├── lib/                  # Core libraries
-│   ├── auth/            # Auth (Better Auth)
-│   │   ├── client.ts    # Auth client (browser)
-│   │   ├── server.ts   # Auth server (node)
-│   │   ├── server/     # Auth helpers & middleware
-│   │   └── components/ # Auth UI components
-│   ├── db.ts            # Prisma client
-│   └── storage.ts       # File storage utilities
-├── routes/              # TanStack Router file-based routing
-│   ├── index.tsx        # Landing page (/)
-│   ├── login.tsx        # Login page (/login)
-│   ├── dashboard/       # Dashboard routes (/dashboard/*)
-│   │   ├── index.tsx    # Dashboard home
-│   │   ├── members/     # Member management
-│   │   └── ...
-│   └── __root.tsx       # Root route with providers
-├── styles/              # Global CSS
-├── types/               # Shared TypeScript types
-├── utils/               # Pure utility functions
-└── test-utils/          # Test helpers and fixtures
+├── admin/              # Admin features (user management, data import/export)
+│   ├── components/     # AdminUserList, DataImportExport
+│   ├── hooks/          # useAdminForm (TanStack Form)
+│   ├── server/         # Server functions (user, data management)
+│   └── utils/          # CSV and GEDCOM export utilities
+├── auth/               # Authentication (Better Auth)
+│   ├── client.ts       # Auth client (browser)
+│   ├── server.ts       # Auth server (node)
+│   ├── components/     # LoginForm, RegisterForm, AuthField
+│   ├── hooks/          # useAuthForm (TanStack Form)
+│   └── server/         # Auth helpers and middleware
+├── dashboard/          # Main dashboard
+│   ├── components/     # DashboardHeader, ViewToggle, RootSelector, FamilyStats
+│   └── store/          # Zustand store (dashboardStore)
+├── events/             # Events management
+│   ├── components/     # CustomEventModal, EventsList, LineageManager
+│   ├── server/         # customEvent, lineage server functions
+│   └── utils/          # eventHelpers, dateHelpers
+├── family-tree/        # Family tree visualization
+│   ├── components/     # FamilyTree, MindmapTree, MindmapNode, FamilyNodeCard
+│   ├── hooks/          # usePanZoom
+│   └── utils/          # treeHelpers
+├── members/            # Member management
+│   ├── components/     # MemberForm, MemberDetailModal, PersonCard
+│   ├── hooks/          # useMemberForm (TanStack Form)
+│   └── server/         # member server functions
+├── relationships/      # Kinship and relationships
+│   ├── components/     # RelationshipManager, KinshipFinder
+│   ├── server/         # relationship server functions
+│   └── utils/          # kinshipHelpers (Vietnamese kinship logic)
+├── routes/             # TanStack Router file-based routes
+│   ├── __root.tsx      # Root route with providers
+│   ├── index.tsx       # Landing page (/)
+│   ├── login.tsx       # Login page (/login)
+│   ├── about.tsx       # About page (/about)
+│   ├── dashboard/      # Protected routes (/dashboard/*)
+│   └── api/            # API routes (auth, uploads)
+├── ui/                 # Shared UI components
+│   ├── common/         # LanguageSwitcher, ExportButton
+│   ├── icons/          # GenderIcons, DefaultAvatar
+│   ├── layout/         # Footer, HeaderMenu, LogoutButton, LandingHero
+│   └── utils/          # cn() utility, gender style helpers
+├── lib/                # Core infrastructure
+│   ├── db.ts           # Prisma client
+│   ├── storage.ts      # File upload handling
+│   ├── env.ts          # Client environment variables
+│   ├── env.server.ts   # Server environment variables
+│   ├── config.ts       # App configuration
+│   ├── date.ts         # Date/timezone utilities
+│   └── errors.ts       # Error constants
+├── types/              # Global TypeScript types and Zod enums
+├── i18n/               # i18next setup and translations (en, vi)
+└── generated/          # Prisma generated types
+```
+
+### Domain Module Convention
+
+Each domain module follows a consistent structure:
+
+```
+src/{domain}/
+├── components/     # React components for this domain
+├── hooks/          # TanStack Form hooks and custom hooks
+├── server/         # Server functions (createServerFn)
+└── utils/          # Pure utility functions
 ```
 
 ## Data Flow
@@ -58,7 +105,7 @@ TanStack Router (file-based routes)
     ↓
 Route Component (e.g., src/routes/dashboard/index.tsx)
     ↓
-Loader (server-side data fetching)
+Loader (server-side data fetching via createServerFn)
     ↓
 Database Query (Prisma → PostgreSQL)
     ↓
@@ -70,56 +117,57 @@ Render UI
 ### Form Submissions
 
 ```
-User submits form
+User fills TanStack Form
     ↓
-Action (server-side handler)
+Client-side validation (Zod, where applicable)
     ↓
-Validate Input
+form.onSubmit calls server function
+    ↓
+Server function validates input (Zod)
     ↓
 Database Operation (Prisma)
     ↓
-Redirect or Return Data
+Return result / Invalidate router
 ```
 
 ## Authentication Flow
 
 1. **Login**: User submits credentials → Better Auth validates → Session created
 2. **Session**: Stored in cookie, validated on each request
-3. **Protected Routes**: Loader checks session, redirects if not authenticated
-4. **Roles**: User roles (admin, user) stored in session for authorization
+3. **Protected Routes**: `beforeLoad` checks session, redirects if not authenticated
+4. **Roles**: Three roles (admin, editor, member) stored on the User model. Server function middleware (`isAdminMiddleware`, `isUserMiddleware`) enforces authorization.
 
 ## File Organization Conventions
 
 ### Routes
 
 - File-based routing: `src/routes/path.tsx` → `/path`
-- Nested routes: `src/routes/dashboard/members.tsx` → `/dashboard/members`
-- Dynamic segments: `src/routes/dashboard/members/$id.tsx` → `/dashboard/members/:id`
+- Nested routes: `src/routes/dashboard/members/index.tsx` → `/dashboard/members`
+- Dynamic segments: `src/routes/dashboard/members/$id/index.tsx` → `/dashboard/members/:id`
 
 ### Components
 
-- Shared components: `src/components/`
-- Feature components: co-located with routes
-- UI components: `src/components/ui/`
+- Domain components: `src/{domain}/components/` (co-located with their domain)
+- Shared UI components: `src/ui/` (layout, icons, common utilities)
 
 ### Server Functions
 
-- Load: `export const loader = async () => { ... }`
-- Actions: `export const action = async () => { ... }`
-- Located inline in route files
+- Domain server functions: `src/{domain}/server/` using `createServerFn` with middleware
+- Auth middleware applied via `.middleware()` chain
 
 ## Database Connection
 
-Prisma client is initialized in `src/lib/db.ts`:
+Prisma client is initialized in `src/lib/db.ts` using the PostgreSQL adapter:
 
 ```typescript
-import { PrismaClient } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from '../generated/prisma/client'
 
-const prisma = new PrismaClient()
-export { prisma }
+const adapter = new PrismaPg({ connectionString: serverEnv.DATABASE_URL })
+const prisma = new PrismaClient({ adapter })
 ```
 
-Used in loaders and actions for database operations.
+Used in server functions for database operations.
 
 ## Environment Variables
 
@@ -129,3 +177,4 @@ Used in loaders and actions for database operations.
 | `UPLOAD_DIR` | File upload directory (default `./uploads`) |
 | `BETTER_AUTH_SECRET` | Auth encryption key |
 | `BETTER_AUTH_URL` | Public URL for auth |
+| `VITE_SITE_NAME` | Site name (client-accessible) |
