@@ -9,12 +9,17 @@ TL;DR: This app manages family trees with genealogy features, kinship calculatio
 Members are added through the dashboard. Each person has:
 - Full name (required)
 - Gender (male/female/other)
-- Birth date & place
-- Death date & place (if deceased)
+- Other names (aliases)
+- Birth year, month, day (individual fields)
+- Death year, month, day (if deceased)
+- Lunar death date (year, month, day — for Vietnamese death anniversaries)
+- Is deceased flag
+- Is in-law flag
 - Avatar image
 - Generation number
 - Birth order (siblings order)
-- Private details (phone, address, job, notes)
+- Notes
+- Private details (phone number, occupation, current residence — admin/editor only)
 
 ### Managing Relationships
 
@@ -22,9 +27,11 @@ Relationships connect family members:
 
 | Type | Description |
 |------|-------------|
-| `parent` | Person A is parent of Person B |
-| `child` | Person A is child of Person B |
-| `spouse` | Person A is spouse of Person B |
+| `marriage` | Person A is married to Person B |
+| `biological_child` | Person A is biological parent of Person B |
+| `adopted_child` | Person A is adoptive parent of Person B |
+
+Each relationship can have an optional note.
 
 ### Generation Tracking
 
@@ -32,14 +39,21 @@ Each person has a `generation` number:
 - First generation: founders/ancestors
 - Each child typically has `generation + 1`
 
+### Family Tree Visualization
+
+Three view modes available on the dashboard:
+- **Tree view**: Hierarchical family tree with pan/zoom
+- **Mindmap view**: Mindmap-style tree layout
+- **List view**: Flat member list with search
+
 ## Kinship Calculation
 
-The app calculates family relationships dynamically.
+The app calculates family relationships dynamically using Vietnamese kinship terminology.
 
 ### How It Works
 
 ```typescript
-import { computeKinship } from '@/relationships/utils/kinshipHelpers'
+import { computeKinship } from '../relationships/utils/kinshipHelpers'
 
 const result = computeKinship(personA, personB, persons, relationships)
 // result: { aCallsB: "ông", bCallsA: "cháu" }
@@ -59,32 +73,52 @@ Vietnamese kinship terms based on generation difference:
 
 ### Finding Relatives
 
-Use the Kinship Finder tool to find how two people are related.
+Use the Kinship Finder tool at `/dashboard/kinship` to find how two people are related.
 
 ## Events
 
 ### Death Anniversaries (Giỗ)
 
 Death anniversaries follow the Vietnamese lunar calendar. Key features:
-- Store death date (solar)
+- Store death date (solar) and lunar death date
 - Calculate lunar anniversary date
 - Display upcoming anniversaries
-- Reminder system (future)
 
 ### Birthday Reminders
 
 Track birthdays with:
-- Solar birthday
-- Lunar birthday (calculated)
+- Solar birthday (year/month/day fields)
 - Upcoming birthday list
+
+### Custom Events
+
+Custom family events can be created at `/dashboard/events`:
+- Event name
+- Event date
+- Location
+- Content/description
+- Tracked by creator
+
+### Lineage Management
+
+Manage lineage order at `/dashboard/lineage` to organize the family hierarchy.
 
 ## Internationalization (i18n)
 
-The app supports Vietnamese and English.
+The app supports Vietnamese (default) and English.
 
 ### Switching Languages
 
-Language is managed via react-i18next. UI includes language switcher.
+Language is managed via react-i18next with cookie-based persistence:
+- Language preference stored in a `lang` cookie (`vi` or `en`)
+- Falls back to the browser's `Accept-Language` header
+- UI includes a language switcher component
+
+### Translation Files
+
+Translations are stored in `src/i18n/translations/`:
+- `vi.json` — Vietnamese (default)
+- `en.json` — English
 
 ### Translated Content
 
@@ -116,7 +150,7 @@ Members can upload avatars:
 ### Implementation
 
 ```typescript
-import { uploadAvatar, deleteAvatar } from '@/lib/storage'
+import { uploadAvatar, deleteAvatar } from '../../lib/storage'
 
 // Upload
 const url = await uploadAvatar(buffer, personId, filename, contentType)
@@ -131,19 +165,29 @@ await deleteAvatar(url)
 
 | Role | Permissions |
 |------|-------------|
-| `admin` | Full access, manage users, data import/export |
-| `user` | View family tree, add/edit family members |
+| `admin` | Full access, manage users, approve accounts, data import/export |
+| `editor` | Add/edit family members, view private details |
+| `member` | View family tree, limited editing |
 
 ### Authorization
 
-Role checks are done in loaders:
+Role checks are done via server function middleware:
 
 ```typescript
-loader: async ({ context }) => {
-  const session = await context.auth.api.getSession()
-  
-  if (session?.user.role !== 'admin') {
-    throw redirect({ to: '/dashboard' })
+// Admin-only server function
+const adminFn = createServerFn()
+  .middleware([isAdminMiddleware])
+  .handler(async ({ context }) => {
+    // context.user is available
+  })
+```
+
+Protected routes use `beforeLoad` to check session:
+
+```typescript
+beforeLoad: async ({ context }) => {
+  if (!context.user) {
+    throw redirect({ to: '/login' })
   }
 }
 ```
@@ -152,10 +196,14 @@ loader: async ({ context }) => {
 
 ### Export
 
-Export family data as JSON or GEDCOM format (future).
+Export family data in multiple formats at `/dashboard/data`:
+- **JSON** — Full family data backup
+- **CSV** — Spreadsheet-compatible export
+- **GEDCOM** — Genealogy standard format
+- **PDF** — Printable family tree
+- **ZIP** — Compressed archive of exported data
 
 ### Import
 
 Import from:
-- JSON format
-- GEDCOM (future)
+- **JSON** — Restore from backup
