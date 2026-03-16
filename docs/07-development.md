@@ -1,6 +1,25 @@
 # Development
 
-TL;DR: Create routes in `src/routes/`, add loaders for data fetching, actions for form submissions. Use TanStack Router file-based routing.
+TL;DR: Create routes in `src/routes/`, add loaders for data fetching. Use TanStack Form for submissions and server functions for backend logic. Code is organized by domain module.
+
+## Route Map
+
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page |
+| `/about` | About page |
+| `/login` | Login/register |
+| `/dashboard` | Main dashboard (family tree, stats) |
+| `/dashboard/members` | Member list |
+| `/dashboard/members/new` | Create member |
+| `/dashboard/members/$id` | Member detail |
+| `/dashboard/members/$id/edit` | Edit member |
+| `/dashboard/events` | Events management |
+| `/dashboard/kinship` | Kinship finder |
+| `/dashboard/lineage` | Lineage order |
+| `/dashboard/stats` | Family statistics |
+| `/dashboard/data` | Data import/export |
+| `/dashboard/users` | Admin user management |
 
 ## Creating Routes
 
@@ -25,16 +44,16 @@ function AboutPage() {
 
 ```typescript
 // src/routes/dashboard/index.tsx → /dashboard
-// src/routes/dashboard/settings.tsx → /dashboard/settings
+// src/routes/dashboard/events.tsx → /dashboard/events
 ```
 
 ### Dynamic Segments
 
 ```tsx
-// src/routes/dashboard/members/$id.tsx → /dashboard/members/:id
+// src/routes/dashboard/members/$id/index.tsx → /dashboard/members/:id
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/dashboard/members/$id')({
+export const Route = createFileRoute('/dashboard/members/$id/')({
   component: MemberDetailPage,
 })
 
@@ -46,19 +65,14 @@ function MemberDetailPage() {
 
 ## Loaders (Data Fetching)
 
-Loaders run on the server to fetch data before rendering.
+Loaders run on the server to fetch data before rendering. Data fetching is done via server functions:
 
 ```tsx
-import { getDbClient } from '@/lib/db'
+import { createFileRoute } from '@tanstack/react-router'
+import * as memberFns from '../../members/server/member'
 
-export const Route = createFileRoute('/dashboard/members')({
-  loader: async () => {
-    const db = getDbClient()
-    const persons = await db.person.findMany({
-      include: { details: true },
-    })
-    return { persons }
-  },
+export const Route = createFileRoute('/dashboard/members/')({
+  loader: () => memberFns.getMembers(),
   component: MembersPage,
 })
 
@@ -74,7 +88,26 @@ function MembersPage() {
 }
 ```
 
-## Actions (Form Submissions)
+## Server Functions
+
+Server functions use `createServerFn` with middleware for auth:
+
+```typescript
+import { createServerFn } from '@tanstack/react-start'
+import { getDbClient } from '../../lib/db'
+import { isUserMiddleware } from '../../auth/server/middleware'
+
+export const getMembers = createServerFn()
+  .middleware([isUserMiddleware])
+  .handler(async () => {
+    const db = getDbClient()
+    return db.person.findMany({
+      include: { relationsA: true, relationsB: true },
+    })
+  })
+```
+
+## Forms (TanStack Form)
 
 This project uses TanStack Form for type-safe form handling.
 
@@ -85,7 +118,7 @@ This project uses TanStack Form for type-safe form handling.
 
 ### Creating a Form Hook
 
-Create a form hook in your feature's hooks directory:
+Create a form hook in your domain's hooks directory:
 
 ```tsx
 // src/admin/hooks/useAdminForm.ts
@@ -194,14 +227,10 @@ function LoginForm() {
 
 ```typescript
 export const Route = createFileRoute('/dashboard')({
-  loader: async ({ context }) => {
-    const session = await context.auth.api.getSession()
-    
-    if (!session) {
+  beforeLoad: async ({ context }) => {
+    if (!context.user) {
       throw redirect({ to: '/login' })
     }
-    
-    return { user: session.user }
   },
 })
 ```
@@ -220,11 +249,9 @@ function DashboardPage() {
 ### Role-Based Access
 
 ```typescript
-export const Route = createFileRoute('/admin')({
-  loader: async ({ context }) => {
-    const session = await context.auth.api.getSession()
-    
-    if (session?.user.role !== 'admin') {
+export const Route = createFileRoute('/dashboard/users')({
+  beforeLoad: async ({ context }) => {
+    if (context.user?.role !== 'admin') {
       throw redirect({ to: '/dashboard' })
     }
   },
@@ -233,44 +260,44 @@ export const Route = createFileRoute('/admin')({
 
 ## Using the Database
 
-Import the Prisma client from `@/lib/db`:
+Import the Prisma client via relative path:
 
 ```typescript
-import { getDbClient } from '@/lib/db'
+import { getDbClient } from '../../lib/db'
 
 const db = getDbClient()
 
 // Query examples
 const persons = await db.person.findMany()
 const person = await db.person.findUnique({ where: { id: 'xxx' } })
-const created = await db.person.create({ data: { ... } })
-const updated = await db.person.update({ where: { id: 'xxx' }, data: { ... } })
+const created = await db.person.create({ data: { fullName: 'Name', gender: 'male' } })
+const updated = await db.person.update({ where: { id: 'xxx' }, data: { fullName: 'New' } })
 const deleted = await db.person.delete({ where: { id: 'xxx' } })
 ```
 
 ## Component Organization
 
-### Shared Components
+### Domain Components
 
-Put reusable components in `src/components/`:
-
-```
-src/components/
-├── ui/           # Base UI (Button, Input, Card)
-├── layout/       # Layout components
-└── ...
-```
-
-### Feature Components
-
-Co-locate with routes or in `src/features/`:
+Components live in their domain module:
 
 ```
-src/features/
-├── members/
-│   ├── components/
-│   └── utils/
-└── events/
+src/{domain}/components/    # Domain-specific components
+src/{domain}/hooks/         # TanStack Form hooks, custom hooks
+src/{domain}/server/        # Server functions
+src/{domain}/utils/         # Pure utility functions
+```
+
+### Shared UI Components
+
+Reusable non-domain components live in `src/ui/`:
+
+```
+src/ui/
+├── common/       # LanguageSwitcher, ExportButton
+├── icons/        # GenderIcons, DefaultAvatar
+├── layout/       # Footer, HeaderMenu, LogoutButton, LandingHero
+└── utils/        # cn() class merge utility, gender style helpers
 ```
 
 ## Running Development Server
