@@ -6,6 +6,12 @@ export default defineConfig({
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
       exclude: ['src/routeTree.gen.ts', 'test/**', 'src/**/*.test.{ts,tsx}', 'src/**/*.browser-test.{ts,tsx}'],
+      thresholds: {
+        statements: 55,
+        branches: 50,
+        functions: 50,
+        lines: 55,
+      },
     },
     projects: [
       {
