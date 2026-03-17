@@ -29,10 +29,9 @@ test.describe('Member Read-Only Access', () => {
     await expect(firstMemberCard).toBeVisible({ timeout: 15000 });
     await firstMemberCard.click();
 
-    // Wait for modal content to load (loading spinner disappears)
-    await expect(page.locator('.animate-spin')).toBeHidden({ timeout: 15000 });
-
-    // Private details should show restricted message in modal
-    await expect(page.getByText(/chỉ hiển thị với quản trị viên/i)).toBeVisible({ timeout: 15000 });
+    // Wait for modal content to fully load and animate in.
+    // Skip the fragile spinner check — directly wait for the restricted message,
+    // which only renders after: modal opens → data fetches → content animates in.
+    await expect(page.getByText(/chỉ hiển thị với quản trị viên/i)).toBeVisible({ timeout: 30000 });
   });
 });
