@@ -109,7 +109,7 @@ describe('buildAdjacencyLists', () => {
 describe('getFilteredTreeData', () => {
   const personsMap = toPersonsMap(mockPersons as Person[]);
   const adj = buildAdjacencyLists(mockRelationships as Relationship[], personsMap);
-  const noFilters = { hideSpouses: false, hideMales: false, hideFemales: false };
+  const noFilters = { hideDaughtersInLaw: false, hideSonsInLaw: false, hideDaughters: false, hideSons: false, hideMales: false, hideFemales: false };
 
   it('returns person, spouses, and children for a given personId', () => {
     const data = getFilteredTreeData(vanCongGoc.id, personsMap, adj, noFilters);
@@ -120,9 +120,24 @@ describe('getFilteredTreeData', () => {
     expect(data.children.length).toBeGreaterThan(0);
   });
 
-  it('hides all spouses when hideSpouses is true', () => {
-    const data = getFilteredTreeData(vanCongGoc.id, personsMap, adj, { ...noFilters, hideSpouses: true });
-    expect(data.spouses).toHaveLength(0);
+  it('hides daughters-in-law when hideDaughtersInLaw is true', () => {
+    const data = getFilteredTreeData(vanCongGoc.id, personsMap, adj, { ...noFilters, hideDaughtersInLaw: true });
+    expect(data.spouses.every((s) => s.person.gender !== Gender.enum.female)).toBe(true);
+  });
+
+  it('hides sons-in-law when hideSonsInLaw is true', () => {
+    const data = getFilteredTreeData(dinhThiMyDuyen.id, personsMap, adj, { ...noFilters, hideSonsInLaw: true });
+    expect(data.spouses.every((s) => s.person.gender !== Gender.enum.male)).toBe(true);
+  });
+
+  it('hides daughters when hideDaughters is true', () => {
+    const data = getFilteredTreeData(vanCongGoc.id, personsMap, adj, { ...noFilters, hideDaughters: true });
+    expect(data.children.every((c) => c.gender !== Gender.enum.female)).toBe(true);
+  });
+
+  it('hides sons when hideSons is true', () => {
+    const data = getFilteredTreeData(vanCongGoc.id, personsMap, adj, { ...noFilters, hideSons: true });
+    expect(data.children.every((c) => c.gender !== Gender.enum.male)).toBe(true);
   });
 
   it('hides male spouses when hideMales is true', () => {

@@ -11,7 +11,10 @@ export interface AdjacencyLists {
 }
 
 export interface TreeFilterOptions {
-  hideSpouses: boolean;
+  hideDaughtersInLaw: boolean;
+  hideSonsInLaw: boolean;
+  hideDaughters: boolean;
+  hideSons: boolean;
   hideMales: boolean;
   hideFemales: boolean;
 }
@@ -61,21 +64,21 @@ export function buildAdjacencyLists(relationships: Relationship[], personsMap: M
  * pre-computed adjacency lists.
  */
 export function getFilteredTreeData(personId: string, personsMap: Map<string, Person>, adj: AdjacencyLists, filters: TreeFilterOptions) {
-  const { hideSpouses, hideMales, hideFemales } = filters;
+  const { hideDaughtersInLaw, hideSonsInLaw, hideDaughters, hideSons, hideMales, hideFemales } = filters;
 
   let spousesList = adj.spousesByPersonId.get(personId) || [];
-  if (hideSpouses) {
-    spousesList = [];
-  } else {
-    spousesList = spousesList.filter((s) => {
-      if (hideMales && s.person.gender === Gender.enum.male) return false;
-      if (hideFemales && s.person.gender === Gender.enum.female) return false;
-      return true;
-    });
-  }
+  spousesList = spousesList.filter((s) => {
+    if (hideDaughtersInLaw && s.person.gender === Gender.enum.female) return false;
+    if (hideSonsInLaw && s.person.gender === Gender.enum.male) return false;
+    if (hideMales && s.person.gender === Gender.enum.male) return false;
+    if (hideFemales && s.person.gender === Gender.enum.female) return false;
+    return true;
+  });
 
   let childrenList = adj.childrenByPersonId.get(personId) || [];
   childrenList = childrenList.filter((c) => {
+    if (hideDaughters && c.gender === Gender.enum.female) return false;
+    if (hideSons && c.gender === Gender.enum.male) return false;
     if (hideMales && c.gender === Gender.enum.male) return false;
     if (hideFemales && c.gender === Gender.enum.female) return false;
     return true;

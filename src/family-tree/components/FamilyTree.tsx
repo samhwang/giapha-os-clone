@@ -14,7 +14,10 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
   const { showAvatar } = useDashboardStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const [hideSpouses, setHideSpouses] = useState(false);
+  const [hideDaughtersInLaw, setHideDaughtersInLaw] = useState(false);
+  const [hideSonsInLaw, setHideSonsInLaw] = useState(false);
+  const [hideDaughters, setHideDaughters] = useState(false);
+  const [hideSons, setHideSons] = useState(false);
   const [hideMales, setHideMales] = useState(false);
   const [hideFemales, setHideFemales] = useState(false);
   const filtersRef = useRef<HTMLDivElement>(null);
@@ -46,7 +49,8 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
 
   const adj = useMemo(() => buildAdjacencyLists(relationships, personsMap), [relationships, personsMap]);
 
-  const getTreeData = (personId: string) => getFilteredTreeData(personId, personsMap, adj, { hideSpouses, hideMales, hideFemales });
+  const getTreeData = (personId: string) =>
+    getFilteredTreeData(personId, personsMap, adj, { hideDaughtersInLaw, hideSonsInLaw, hideDaughters, hideSons, hideMales, hideFemales });
 
   const renderTreeNode = (personId: string, visited: Set<string> = new Set()): ReactNode => {
     if (visited.has(personId)) return null;
@@ -114,15 +118,42 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
           </button>
 
           {showFilters && (
-            <div className="absolute top-full right-0 mt-2 w-48 bg-white/95 backdrop-blur-xl shadow-xl border border-stone-200/60 rounded-2xl p-4 flex flex-col gap-3 z-50 animate-[fade-in_0.15s_ease-out_forwards]">
+            <div className="absolute top-full right-0 mt-2 w-52 bg-white/95 backdrop-blur-xl shadow-xl border border-stone-200/60 rounded-2xl p-4 flex flex-col gap-3 z-50 animate-[fade-in_0.15s_ease-out_forwards]">
               <label className="flex items-center gap-2.5 text-sm font-medium text-stone-700 cursor-pointer select-none">
                 <input
                   type="checkbox"
-                  checked={hideSpouses}
-                  onChange={(e) => setHideSpouses(e.target.checked)}
+                  checked={hideDaughtersInLaw}
+                  onChange={(e) => setHideDaughtersInLaw(e.target.checked)}
                   className="rounded text-amber-600 focus:ring-amber-500 cursor-pointer size-4"
                 />
-                {t('tree.hideSpouses')}
+                {t('tree.hideDaughtersInLaw')}
+              </label>
+              <label className="flex items-center gap-2.5 text-sm font-medium text-stone-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={hideSonsInLaw}
+                  onChange={(e) => setHideSonsInLaw(e.target.checked)}
+                  className="rounded text-amber-600 focus:ring-amber-500 cursor-pointer size-4"
+                />
+                {t('tree.hideSonsInLaw')}
+              </label>
+              <label className="flex items-center gap-2.5 text-sm font-medium text-stone-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={hideDaughters}
+                  onChange={(e) => setHideDaughters(e.target.checked)}
+                  className="rounded text-amber-600 focus:ring-amber-500 cursor-pointer size-4"
+                />
+                {t('tree.hideDaughters')}
+              </label>
+              <label className="flex items-center gap-2.5 text-sm font-medium text-stone-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={hideSons}
+                  onChange={(e) => setHideSons(e.target.checked)}
+                  className="rounded text-amber-600 focus:ring-amber-500 cursor-pointer size-4"
+                />
+                {t('tree.hideSons')}
               </label>
               <label className="flex items-center gap-2.5 text-sm font-medium text-stone-700 cursor-pointer select-none">
                 <input
