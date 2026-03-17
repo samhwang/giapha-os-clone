@@ -32,7 +32,11 @@ export const Route = createFileRoute('/api/uploads/$')({
         try {
           const buffer = await fs.readFile(filePath);
           const ext = path.extname(filePath).toLowerCase();
-          const contentType = CONTENT_TYPES[ext] ?? 'application/octet-stream';
+          const contentType = CONTENT_TYPES[ext];
+
+          if (!contentType) {
+            return new Response('Not found', { status: 404 });
+          }
 
           return new Response(buffer, {
             headers: {
