@@ -16,7 +16,6 @@ const Login = z.object({
 type Login = z.infer<typeof Login>;
 
 export default function LoginForm({ onSuccess }: LoginFormProps) {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
 
@@ -29,7 +28,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       onSubmit: Login,
     },
     onSubmit: async ({ value }) => {
-      setLoading(true);
       setError(null);
 
       try {
@@ -41,8 +39,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         onSuccess();
       } catch {
         setError(t('auth.unexpectedError'));
-      } finally {
-        setLoading(false);
       }
     },
   });
@@ -89,10 +85,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       <div className="flex flex-col gap-4 pt-4">
         <button
           type="submit"
-          disabled={loading}
+          disabled={form.state.isSubmitting}
           className="group relative w-full flex justify-center items-center gap-2 py-4 px-4 text-base-plus font-bold rounded-xl text-white bg-stone-900 hover:bg-stone-800 border border-stone-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-900 disabled:opacity-70 disabled:cursor-wait transition-all duration-300 shadow-xl shadow-stone-900/10 hover:shadow-2xl hover:shadow-stone-900/20 hover:-translate-y-0.5"
         >
-          {loading ? (
+          {form.state.isSubmitting ? (
             <span className="flex items-center gap-2.5">
               <svg className="animate-spin -ml-1 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" role="img" aria-label="Loading">
                 <title>Loading</title>

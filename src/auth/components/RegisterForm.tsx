@@ -29,7 +29,6 @@ const Register = z
 type Register = z.infer<typeof Register>;
 
 export default function RegisterForm({ onSuccess }: RegisterFormProps) {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const { t } = useTranslation();
@@ -44,7 +43,6 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       onSubmit: Register,
     },
     onSubmit: async ({ value }) => {
-      setLoading(true);
       setError(null);
       setSuccessMessage(null);
 
@@ -58,8 +56,6 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
         onSuccess();
       } catch {
         setError(t('auth.unexpectedError'));
-      } finally {
-        setLoading(false);
       }
     },
   });
@@ -123,10 +119,10 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       <div className="flex flex-col gap-4 pt-4">
         <button
           type="submit"
-          disabled={loading}
+          disabled={form.state.isSubmitting}
           className="group relative w-full flex justify-center items-center gap-2 py-4 px-4 text-base-plus font-bold rounded-xl text-white bg-stone-900 hover:bg-stone-800 border border-stone-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-900 disabled:opacity-70 disabled:cursor-wait transition-all duration-300 shadow-xl shadow-stone-900/10 hover:shadow-2xl hover:shadow-stone-900/20 hover:-translate-y-0.5"
         >
-          {loading ? (
+          {form.state.isSubmitting ? (
             <span className="flex items-center gap-2.5">
               <svg className="animate-spin -ml-1 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" role="img" aria-label="Loading">
                 <title>Loading</title>

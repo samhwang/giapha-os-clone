@@ -15,7 +15,7 @@ interface CustomEventModalProps {
 
 export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEdit }: CustomEventModalProps) {
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const form = useCustomEventForm({
@@ -44,10 +44,8 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
       },
     },
     onSubmit: async ({ value }) => {
-      setLoading(true);
       setError(null);
       try {
-        console.log();
         if (eventToEdit) {
           await updateCustomEvent({
             data: {
@@ -76,8 +74,6 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
       } catch (err) {
         console.error(err);
         setError(err instanceof Error ? err.message : 'An unknown error occurred');
-      } finally {
-        setLoading(false);
       }
     },
   });
@@ -97,7 +93,7 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
     if (!eventToEdit) return;
     if (!window.confirm(t('customEvent.deleteConfirm'))) return;
 
-    setLoading(true);
+    setDeleting(true);
     setError(null);
     try {
       await deleteCustomEvent({ data: { id: eventToEdit.id } });
@@ -107,7 +103,7 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
       console.error(err);
       setError(err instanceof Error ? err.message : t('customEvent.deleteError'));
     } finally {
-      setLoading(false);
+      setDeleting(false);
     }
   };
 
@@ -202,7 +198,7 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
                 <button
                   type="button"
                   onClick={handleDelete}
-                  disabled={loading}
+                  disabled={form.state.isSubmitting || deleting}
                   className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl transition-colors disabled:opacity-50 border border-rose-200/50"
                 >
                   {t('customEvent.delete')}
@@ -215,18 +211,18 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
                 <button
                   type="button"
                   onClick={onClose}
-                  disabled={loading}
+                  disabled={form.state.isSubmitting || deleting}
                   className="px-4 py-2.5 text-sm font-medium text-stone-600 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors disabled:opacity-50"
                 >
                   {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={form.state.isSubmitting || deleting}
                   className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 rounded-xl shadow-sm transition-colors disabled:opacity-50"
                 >
-                  {loading && <Loader2 className="size-4 animate-spin" />}
-                  {loading ? t('common.saving') : t('customEvent.save')}
+                  {form.state.isSubmitting && <Loader2 className="size-4 animate-spin" />}
+                  {form.state.isSubmitting ? t('common.saving') : t('customEvent.save')}
                 </button>
               </div>
             </div>
