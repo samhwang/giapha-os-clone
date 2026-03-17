@@ -1,14 +1,23 @@
 import JSZip from 'jszip';
 import Papa from 'papaparse';
-import type { Person, Relationship } from '../../types';
+import type { CustomEventExport, Person, PersonDetailsPrivateExport, Relationship } from '../../types';
 
-export async function exportToCsvZip(data: { persons: Person[]; relationships: Relationship[] }): Promise<Blob> {
-  const personsCsv = Papa.unparse(data.persons);
-  const relationshipsCsv = Papa.unparse(data.relationships);
-
+export async function exportToCsvZip(data: {
+  persons: Person[];
+  relationships: Relationship[];
+  personDetailsPrivate?: PersonDetailsPrivateExport[];
+  customEvents?: CustomEventExport[];
+}): Promise<Blob> {
   const zip = new JSZip();
-  zip.file('persons.csv', personsCsv);
-  zip.file('relationships.csv', relationshipsCsv);
+  zip.file('persons.csv', Papa.unparse(data.persons));
+  zip.file('relationships.csv', Papa.unparse(data.relationships));
+
+  if (data.personDetailsPrivate?.length) {
+    zip.file('person_details_private.csv', Papa.unparse(data.personDetailsPrivate));
+  }
+  if (data.customEvents?.length) {
+    zip.file('custom_events.csv', Papa.unparse(data.customEvents));
+  }
 
   return zip.generateAsync({ type: 'blob' });
 }
@@ -16,6 +25,8 @@ export async function exportToCsvZip(data: { persons: Person[]; relationships: R
 export async function parseCsvZip(zipBlob: Blob): Promise<{
   persons: Partial<Person>[];
   relationships: Partial<Relationship>[];
+  personDetailsPrivate?: Partial<PersonDetailsPrivateExport>[];
+  customEvents?: Partial<CustomEventExport>[];
 }> {
   const zip = new JSZip();
   const loadedZip = await zip.loadAsync(zipBlob);
@@ -27,23 +38,47 @@ export async function parseCsvZip(zipBlob: Blob): Promise<{
     throw new Error('Invalid ZIP: missing persons.csv or relationships.csv');
   }
 
-  const personsCsvStr = await personsFile.async('text');
-  const relationshipsCsvStr = await relationshipsFile.async('text');
-
-  const personsParsed = Papa.parse<Partial<Person>>(personsCsvStr, {
+  const personsParsed = Papa.parse<Partial<Person>>(await personsFile.async('text'), {
     header: true,
     skipEmptyLines: true,
     dynamicTyping: true,
   });
 
-  const relationshipsParsed = Papa.parse<Partial<Relationship>>(relationshipsCsvStr, {
+  const relationshipsParsed = Papa.parse<Partial<Relationship>>(await relationshipsFile.async('text'), {
     header: true,
     skipEmptyLines: true,
     dynamicTyping: true,
   });
 
-  return {
+  const result: {
+    persons: Partial<Person>[];
+    relationships: Partial<Relationship>[];
+    personDetailsPrivate?: Partial<PersonDetailsPrivateExport>[];
+    customEvents?: Partial<CustomEventExport>[];
+  } = {
     persons: personsParsed.data,
     relationships: relationshipsParsed.data,
   };
+
+  const privateFile = loadedZip.file('person_details_private.csv');
+  if (privateFile) {
+    const parsed = Papa.parse<Partial<PersonDetailsPrivateExport>>(await privateFile.async('text'), {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+    });
+    result.personDetailsPrivate = parsed.data;
+  }
+
+  const eventsFile = loadedZip.file('custom_events.csv');
+  if (eventsFile) {
+    const parsed = Papa.parse<Partial<CustomEventExport>>(await eventsFile.async('text'), {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+    });
+    result.customEvents = parsed.data;
+  }
+
+  return result;
 }

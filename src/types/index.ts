@@ -124,9 +124,27 @@ export interface CustomEventRecord {
 // Data import/export
 // ============================================================
 
+export interface PersonDetailsPrivateExport {
+  personId: string;
+  phoneNumber: string | null;
+  occupation: string | null;
+  currentResidence: string | null;
+}
+
+export interface CustomEventExport {
+  id: string;
+  name: string;
+  eventDate: string;
+  location: string | null;
+  content: string | null;
+  createdBy: string | null;
+}
+
 export interface BackupPayload {
   version: number;
   timestamp: string;
   persons: Person[];
   relationships: Relationship[];
+  personDetailsPrivate?: PersonDetailsPrivateExport[];
+  customEvents?: CustomEventExport[];
 }
