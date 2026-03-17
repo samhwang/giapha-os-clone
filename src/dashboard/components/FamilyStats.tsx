@@ -44,7 +44,14 @@ function StatCard({ label, value, total, icon, color, delay = 0 }: StatCardProps
   );
 }
 
-function GenerationRow({ gen, count, max, delay }: { gen: number; count: number; max: number; delay: number }) {
+interface GenerationRowProps {
+  gen: number;
+  count: number;
+  max: number;
+  delay: number;
+}
+
+function GenerationRow({ gen, count, max, delay }: GenerationRowProps) {
   const { t } = useTranslation();
   const pct = max > 0 ? (count / max) * 100 : 0;
   return (

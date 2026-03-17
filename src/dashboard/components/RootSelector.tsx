@@ -8,7 +8,12 @@ import { cn } from '../../ui/utils/cn';
 import { getAvatarBg, getGenderStyle } from '../../ui/utils/styles';
 import { useDashboardStore } from '../store/dashboardStore';
 
-export default function RootSelector({ persons, currentRootId }: { persons: Person[]; currentRootId: string }) {
+interface RootSelectorProps {
+  persons: Person[];
+  currentRootId: string;
+}
+
+export default function RootSelector({ persons, currentRootId }: RootSelectorProps) {
   const { setRootId } = useDashboardStore();
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);

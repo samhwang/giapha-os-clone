@@ -1,4 +1,8 @@
-export function MaleIcon({ className = '' }: { className?: string }) {
+interface IconProps {
+  className?: string;
+}
+
+export function MaleIcon({ className = '' }: IconProps) {
   return (
     <svg
       className={className}
@@ -19,7 +23,7 @@ export function MaleIcon({ className = '' }: { className?: string }) {
   );
 }
 
-export function FemaleIcon({ className = '' }: { className?: string }) {
+export function FemaleIcon({ className = '' }: IconProps) {
   return (
     <svg
       className={className}

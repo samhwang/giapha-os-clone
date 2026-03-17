@@ -44,7 +44,13 @@ function computeYearsInfo(event: FamilyEvent, t: (key: string, opts?: Record<str
   return null;
 }
 
-function EventCard({ event, index, onCustomEventClick }: { event: FamilyEvent; index: number; onCustomEventClick?: (event: FamilyEvent) => void }) {
+interface EventCardProps {
+  event: FamilyEvent;
+  index: number;
+  onCustomEventClick?: (event: FamilyEvent) => void;
+}
+
+function EventCard({ event, index, onCustomEventClick }: EventCardProps) {
   const { t } = useTranslation();
   const isBirthday = event.type === 'birthday';
   const isCustom = event.type === 'custom_event';

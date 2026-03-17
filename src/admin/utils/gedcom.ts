@@ -25,7 +25,12 @@ function generateUUID(): string {
   });
 }
 
-export function exportToGedcom(data: { persons: Person[]; relationships: Relationship[] }): string {
+interface ExportToGedcomInput {
+  persons: Person[];
+  relationships: Relationship[];
+}
+
+export function exportToGedcom(data: ExportToGedcomInput): string {
   let gedcom = '';
 
   // Header (GEDCOM 7.0)

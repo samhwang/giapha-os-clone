@@ -5,7 +5,11 @@ import PersonCard from '../../members/components/PersonCard';
 import { Gender, type Person } from '../../members/types';
 import { useDashboardStore } from '../store/dashboardStore';
 
-export default function DashboardMemberList({ initialPersons }: { initialPersons: Person[] }) {
+interface DashboardMemberListProps {
+  initialPersons: Person[];
+}
+
+export default function DashboardMemberList({ initialPersons }: DashboardMemberListProps) {
   const { t } = useTranslation();
   const { setShowCreateModal } = useDashboardStore();
   const [searchTerm, setSearchTerm] = useState('');

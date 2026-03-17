@@ -5,7 +5,11 @@ import { cn } from '../utils/cn';
 
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 
-export default function LanguageSwitcher({ className = '' }: { className?: string }) {
+interface LanguageSwitcherProps {
+  className?: string;
+}
+
+export default function LanguageSwitcher({ className = '' }: LanguageSwitcherProps) {
   const { i18n, t } = useTranslation();
 
   const switchLanguage = (lang: Language) => {

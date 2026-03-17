@@ -10,7 +10,13 @@ import { buildAdjacencyLists, getFilteredTreeData } from '../utils/treeHelpers';
 import FamilyNodeCard from './FamilyNodeCard';
 import styles from './family-tree.module.css';
 
-export default function FamilyTree({ personsMap, relationships, roots }: { personsMap: Map<string, Person>; relationships: Relationship[]; roots: Person[] }) {
+interface FamilyTreeProps {
+  personsMap: Map<string, Person>;
+  relationships: Relationship[];
+  roots: Person[];
+}
+
+export default function FamilyTree({ personsMap, relationships, roots }: FamilyTreeProps) {
   const { t } = useTranslation();
   const { showAvatar } = useDashboardStore();
   const containerRef = useRef<HTMLDivElement>(null);

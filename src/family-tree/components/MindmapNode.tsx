@@ -47,17 +47,14 @@ function getTreeData(personId: string, ctx: MindmapContextData) {
   });
 }
 
-export const MindmapNode = memo(function MindmapNode({
-  personId,
-  level = 0,
-  isLast = false,
-  ctx,
-}: {
+interface MindmapNodeProps {
   personId: string;
   level?: number;
   isLast?: boolean;
   ctx: MindmapContextData;
-}) {
+}
+
+export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLast = false, ctx }: MindmapNodeProps) {
   const data = getTreeData(personId, ctx);
   const [isExpanded, setIsExpanded] = useState(level < 2);
   const [lastSignalTs, setLastSignalTs] = useState(0);

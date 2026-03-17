@@ -9,7 +9,12 @@ import type { Person } from '../types';
 import MemberDetailContent from './MemberDetailContent';
 import MemberForm from './MemberForm';
 
-export default function MemberDetailModal({ isAdmin, canEdit = false }: { isAdmin: boolean; canEdit?: boolean }) {
+interface MemberDetailModalProps {
+  isAdmin: boolean;
+  canEdit?: boolean;
+}
+
+export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDetailModalProps) {
   const { t } = useTranslation();
   const { memberModalId: memberId, setMemberModalId, showCreateModal, setShowCreateModal } = useDashboardStore();
   const [isOpen, setIsOpen] = useState(false);

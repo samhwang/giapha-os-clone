@@ -1,6 +1,10 @@
 import { Gender } from '../../members/types';
 
-export default function DefaultAvatar({ gender }: { gender?: string }) {
+interface DefaultAvatarProps {
+  gender?: string;
+}
+
+export default function DefaultAvatar({ gender }: DefaultAvatarProps) {
   if (gender === Gender.enum.male) {
     return (
       <svg
