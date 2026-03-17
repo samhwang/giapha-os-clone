@@ -3,7 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
-import { Gender, RelationshipType } from '../../types';
+import { Gender } from '../../members/types';
+import { RelationshipType } from '../types';
 import RelationshipManager from './RelationshipManager';
 
 vi.mock('@tanstack/react-router', () => ({

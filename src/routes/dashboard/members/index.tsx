@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { UserRole } from '../../../auth/types';
 import DashboardViews from '../../../dashboard/components/DashboardViews';
 import ViewToggle from '../../../dashboard/components/ViewToggle';
 import MemberDetailModal from '../../../members/components/MemberDetailModal';
 import { getPersons } from '../../../members/server/member';
 import { getRelationships } from '../../../relationships/server/relationship';
-import { UserRole } from '../../../types';
 
 export const Route = createFileRoute('/dashboard/members/')({
   loader: async () => {

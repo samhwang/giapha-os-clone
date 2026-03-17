@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { createPerson, createRelationship } from '../../../test/fixtures';
-import type { Person, Relationship } from '../../types';
-import { Gender, RelationshipType } from '../../types';
+import type { Person } from '../../members/types';
+import { Gender } from '../../members/types';
+import type { Relationship } from '../../relationships/types';
+import { RelationshipType } from '../../relationships/types';
 import { exportToGedcom, parseGedcom } from './gedcom';
 
 const makePerson = (overrides: Partial<Person> = {}) => createPerson(overrides) as Person;

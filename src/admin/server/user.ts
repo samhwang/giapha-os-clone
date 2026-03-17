@@ -3,29 +3,28 @@ import { getRequestHeaders } from '@tanstack/react-start/server';
 import * as z from 'zod';
 import { auth } from '../../auth/server';
 import { isAdminMiddleware } from '../../auth/server/middleware';
-import { UserRole } from '../../types';
+import { UserRole } from '../../auth/types';
 import { deleteUser as deleteUserRepo, findAllUsers, findUserByEmail, updateUser } from '../repository/user';
+import type { UserProfile } from '../types';
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
-const roleEnum = UserRole;
-
-const changeRoleSchema = z.object({
+const ChangeRolePayload = z.object({
   userId: z.uuid(),
-  newRole: roleEnum,
+  newRole: UserRole,
 });
 
-const userIdSchema = z.object({ userId: z.uuid() });
+const UserIdPayload = z.object({ userId: z.uuid() });
 
-const createUserSchema = z.object({
+const CreateUserPayload = z.object({
   email: z.email('error.user.invalidEmail'),
   password: z.string().min(8, 'error.user.passwordMin'),
   name: z.string().optional(),
-  role: roleEnum.optional(),
+  role: UserRole.optional(),
   isActive: z.boolean().optional(),
 });
 
-const toggleStatusSchema = z.object({
+const ToggleStatusPayload = z.object({
   userId: z.uuid(),
   isActive: z.boolean(),
 });
@@ -33,7 +32,7 @@ const toggleStatusSchema = z.object({
 // ─── Server Functions ───────────────────────────────────────────────────────
 
 export const changeRole = createServerFn({ method: 'POST' })
-  .inputValidator(changeRoleSchema)
+  .inputValidator(ChangeRolePayload)
   .middleware([isAdminMiddleware])
   .handler(async ({ data, context }) => {
     if (data.userId === context.user.id) {
@@ -46,7 +45,7 @@ export const changeRole = createServerFn({ method: 'POST' })
   });
 
 export const deleteUser = createServerFn({ method: 'POST' })
-  .inputValidator(userIdSchema)
+  .inputValidator(UserIdPayload)
   .middleware([isAdminMiddleware])
   .handler(async ({ data, context }) => {
     if (data.userId === context.user.id) {
@@ -59,7 +58,7 @@ export const deleteUser = createServerFn({ method: 'POST' })
   });
 
 export const createUser = createServerFn({ method: 'POST' })
-  .inputValidator(createUserSchema)
+  .inputValidator(CreateUserPayload)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
     const existing = await findUserByEmail(data.email);
@@ -79,33 +78,16 @@ export const createUser = createServerFn({ method: 'POST' })
       },
     });
 
-    const user = result.user as unknown as {
-      id: string;
-      email: string;
-      name: string;
-      role: string;
-      isActive: boolean;
-      createdAt: Date;
-      updatedAt: Date;
-    };
+    const rawUser = result.user as unknown as Omit<UserProfile, 'timeZone'>;
 
     return {
       success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        isActive: user.isActive,
-        timeZone: null,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      },
+      user: { ...rawUser, timeZone: null } satisfies UserProfile,
     };
   });
 
 export const toggleStatus = createServerFn({ method: 'POST' })
-  .inputValidator(toggleStatusSchema)
+  .inputValidator(ToggleStatusPayload)
   .middleware([isAdminMiddleware])
   .handler(async ({ data, context }) => {
     if (data.userId === context.user.id) {

@@ -1,4 +1,5 @@
-import { Gender, type Person, type Relationship, RelationshipType } from '../../types';
+import { Gender, type Person } from '../../members/types';
+import { type Relationship, RelationshipType } from '../../relationships/types';
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 

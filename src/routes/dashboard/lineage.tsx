@@ -1,9 +1,9 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
+import { UserRole } from '../../auth/types';
 import LineageManager from '../../events/components/LineageManager';
 import { getPersons } from '../../members/server/member';
 import { getRelationships } from '../../relationships/server/relationship';
-import { UserRole } from '../../types';
 
 export const Route = createFileRoute('/dashboard/lineage')({
   beforeLoad: ({ context }) => {

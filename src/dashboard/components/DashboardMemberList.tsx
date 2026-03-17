@@ -2,7 +2,7 @@ import { ArrowUpDown, Filter, Plus, Search } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PersonCard from '../../members/components/PersonCard';
-import { Gender, type Person } from '../../types';
+import { Gender, type Person } from '../../members/types';
 import { useDashboardStore } from '../store/dashboardStore';
 
 export default function DashboardMemberList({ initialPersons }: { initialPersons: Person[] }) {

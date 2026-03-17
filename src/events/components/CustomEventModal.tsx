@@ -1,10 +1,10 @@
 import { AlertCircle, Loader2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { CustomEventRecord } from '../../types';
 import { cn } from '../../ui/utils/cn';
 import { useCustomEventForm } from '../hooks/useCustomEventForm';
 import { createCustomEvent, deleteCustomEvent, updateCustomEvent } from '../server/customEvent';
+import type { CustomEventRecord } from '../types';
 
 interface CustomEventModalProps {
   isOpen: boolean;

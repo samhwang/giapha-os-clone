@@ -2,7 +2,8 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { createPerson, createRelationship } from '../../../test/fixtures';
-import { Gender, RelationshipType } from '../../types';
+import { Gender } from '../../members/types';
+import { RelationshipType } from '../types';
 import KinshipFinder from './KinshipFinder';
 
 const father = createPerson({ id: 'father', fullName: 'Nguyễn Văn Cha', gender: Gender.enum.male, generation: 1 });

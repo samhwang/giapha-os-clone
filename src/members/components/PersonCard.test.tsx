@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
-import { Gender } from '../../types';
+import { Gender } from '../types';
 import PersonCard from './PersonCard';
 
 describe('PersonCard', () => {

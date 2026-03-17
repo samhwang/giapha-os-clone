@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createUser } from '../../../test/fixtures';
-import { UserRole } from '../../types';
+import { UserRole } from '../../auth/types';
 import AdminUserList from './AdminUserList';
 
 const mockChangeRole = vi.fn();

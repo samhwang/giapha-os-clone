@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { vanCongGoc, vanCongThuan, vanThiBinh } from '../../../test/fixtures';
 import { renderWithProviders } from '../../../test/render-wrapper';
-import type { Person } from '../../types';
+import type { Person } from '../../members/types';
 import { useDashboardStore } from '../store/dashboardStore';
 import RootSelector from './RootSelector';
 

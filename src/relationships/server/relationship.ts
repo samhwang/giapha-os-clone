@@ -2,7 +2,6 @@ import { createServerFn } from '@tanstack/react-start';
 import * as z from 'zod';
 import { isEditorMiddleware } from '../../auth/server/middleware';
 import { ERRORS } from '../../lib/errors';
-import { RelationshipType } from '../../types';
 import {
   createRelationship as createRelationshipRepo,
   deleteRelationship as deleteRelationshipRepo,
@@ -10,21 +9,20 @@ import {
   findRelationshipByParticipants,
   findRelationshipsForPerson,
 } from '../repository/relationship';
+import { RelationshipType } from '../types';
 
-const relationshipTypeEnum = RelationshipType;
-
-const createRelationshipSchema = z.object({
-  type: relationshipTypeEnum,
+const CreateRelationshipPayload = z.object({
+  type: RelationshipType,
   personAId: z.uuid(),
   personBId: z.uuid(),
   note: z.string().nullish(),
 });
 
-const idSchema = z.object({ id: z.uuid() });
-const personIdSchema = z.object({ personId: z.uuid() });
+const IdPayload = z.object({ id: z.uuid() });
+const PersonIdPayload = z.object({ personId: z.uuid() });
 
 export const createRelationship = createServerFn({ method: 'POST' })
-  .inputValidator(createRelationshipSchema)
+  .inputValidator(CreateRelationshipPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
     if (data.personAId === data.personBId) {
@@ -40,7 +38,7 @@ export const createRelationship = createServerFn({ method: 'POST' })
   });
 
 export const deleteRelationship = createServerFn({ method: 'POST' })
-  .inputValidator(idSchema)
+  .inputValidator(IdPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
     await deleteRelationshipRepo(data.id);
@@ -52,7 +50,7 @@ export const getRelationships = createServerFn({ method: 'GET' }).handler(async 
 });
 
 export const getRelationshipsForPerson = createServerFn({ method: 'GET' })
-  .inputValidator(personIdSchema)
+  .inputValidator(PersonIdPayload)
   .handler(async ({ data }) => {
     return findRelationshipsForPerson(data.personId);
   });

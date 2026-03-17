@@ -2,11 +2,13 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowRight, BarChart2, Cake, CalendarDays, Database, Flower2, GitMerge, Network, Star, Users } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { UserRole } from '../../auth/types';
 import { getCustomEvents } from '../../events/server/customEvent';
+import type { CustomEventRecord } from '../../events/types';
 import { getTodayLunar } from '../../events/utils/dateHelpers';
 import { computeEvents } from '../../events/utils/eventHelpers';
 import { getPersons } from '../../members/server/member';
-import { type CustomEventRecord, type Person, UserRole } from '../../types';
+import type { Person } from '../../members/types';
 import { cn } from '../../ui/utils/cn';
 
 export const Route = createFileRoute('/dashboard/')({

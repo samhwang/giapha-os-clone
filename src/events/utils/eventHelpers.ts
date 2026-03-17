@@ -1,5 +1,6 @@
 import { Lunar, Solar } from 'lunar-javascript';
-import type { CustomEventRecord, EventType, FamilyEvent, Person } from '../../types';
+import type { Person } from '../../members/types';
+import type { CustomEventRecord, EventType, FamilyEvent } from '../types';
 
 /**
  * Finds the next solar Date on which a given lunar (month, day) falls,

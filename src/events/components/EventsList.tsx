@@ -2,8 +2,9 @@ import { AlignLeft, Cake, CalendarDays, Clock, Flower, MapPin, Plus, Star } from
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
-import type { CustomEventRecord, EventType, FamilyEvent, Person } from '../../types';
+import type { Person } from '../../members/types';
 import { cn } from '../../ui/utils/cn';
+import type { CustomEventRecord, EventType, FamilyEvent } from '../types';
 import { getTodayLunar, getZodiacSign } from '../utils/dateHelpers';
 import { computeEvents } from '../utils/eventHelpers';
 import CustomEventModal from './CustomEventModal';

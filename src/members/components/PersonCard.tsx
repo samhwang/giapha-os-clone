@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
-import { Gender, type Person } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 import { cn } from '../../ui/utils/cn';
 import { getAvatarBg, getGenderStyle } from '../../ui/utils/styles';
+import { Gender, type Person } from '../types';
 
 interface PersonCardProps {
   person: Person;

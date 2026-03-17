@@ -1,7 +1,7 @@
 import { Check, ChevronDown, Search } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Gender, type Person } from '../../types';
+import { Gender, type Person } from '../../members/types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 import { cn } from '../../ui/utils/cn';

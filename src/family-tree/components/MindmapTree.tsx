@@ -2,7 +2,8 @@ import { ChevronsDownUp, ChevronsUpDown, Filter, Minus, Plus, Share2 } from 'luc
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
-import type { Person, Relationship } from '../../types';
+import type { Person } from '../../members/types';
+import type { Relationship } from '../../relationships/types';
 import { cn } from '../../ui/utils/cn';
 import { buildAdjacencyLists } from '../utils/treeHelpers';
 import type { ExpandSignal, MindmapContextData } from './MindmapNode';

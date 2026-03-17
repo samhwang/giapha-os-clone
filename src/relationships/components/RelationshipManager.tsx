@@ -4,11 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import { createPerson, getPersons } from '../../members/server/member';
-import { Gender, type Person, RelationshipType } from '../../types';
+import { Gender, type Person } from '../../members/types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { cn } from '../../ui/utils/cn';
 import { getAvatarBg } from '../../ui/utils/styles';
 import { createRelationship, deleteRelationship, getRelationshipsForPerson } from '../server/relationship';
+import { RelationshipType } from '../types';
 
 interface RelationshipManagerProps {
   personId: string;

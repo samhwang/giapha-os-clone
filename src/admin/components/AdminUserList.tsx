@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { type UserProfile, UserRole } from '../../types';
+import { UserRole } from '../../auth/types';
 import { cn } from '../../ui/utils/cn';
 import { useAdminForm } from '../hooks/useAdminForm';
 import { changeRole, createUser, deleteUser, toggleStatus } from '../server/user';
+import type { UserProfile } from '../types';
 
 interface AdminUserListProps {
   initialUsers: UserProfile[];

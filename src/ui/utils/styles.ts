@@ -1,4 +1,4 @@
-import { Gender } from '../../types';
+import { Gender } from '../../members/types';
 import { cn } from './cn';
 
 export function getGenderStyle(gender: string) {

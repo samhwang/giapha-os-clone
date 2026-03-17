@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { Gender } from '../../src/types';
+import { Gender } from '../../src/members/types';
 import { waitForHydration } from '../fixtures';
 
 const TEST_MEMBER_NAME = `E2E Nguyễn Văn Test ${Date.now()}`;

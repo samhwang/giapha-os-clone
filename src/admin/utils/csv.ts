@@ -1,6 +1,8 @@
 import JSZip from 'jszip';
 import Papa from 'papaparse';
-import type { CustomEventExport, Person, PersonDetailsPrivateExport, Relationship } from '../../types';
+import type { Person } from '../../members/types';
+import type { Relationship } from '../../relationships/types';
+import type { CustomEventExport, PersonDetailsPrivateExport } from '../types';
 
 export async function exportToCsvZip(data: {
   persons: Person[];

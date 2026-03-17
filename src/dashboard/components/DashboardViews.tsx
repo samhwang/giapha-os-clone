@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import FamilyTree from '../../family-tree/components/FamilyTree';
 import MindmapTree from '../../family-tree/components/MindmapTree';
-import { type Person, type Relationship, RelationshipType } from '../../types';
+import type { Person } from '../../members/types';
+import { type Relationship, RelationshipType } from '../../relationships/types';
 import ExportButton from '../../ui/common/ExportButton';
 import { useDashboardStore } from '../store/dashboardStore';
 import AvatarToggle from './AvatarToggle';

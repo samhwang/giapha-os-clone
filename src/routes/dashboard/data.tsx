@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import DataImportExport from '../../admin/components/DataImportExport';
-import { UserRole } from '../../types';
+import { UserRole } from '../../auth/types';
 
 export const Route = createFileRoute('/dashboard/data')({
   beforeLoad: ({ context }) => {

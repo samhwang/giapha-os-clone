@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { batchUpdatePersons, createPerson, deleteAllPersons, updatePerson } from '../../members/repository/person';
-import { Gender } from '../../types';
+import { Gender } from '../../members/types';
 
 describe('updateBatch (inner logic)', () => {
   beforeEach(async () => {

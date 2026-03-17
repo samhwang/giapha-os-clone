@@ -1,4 +1,4 @@
-import { type KinshipResult, type PersonNode, RelationshipType, type RelEdge } from '../../types';
+import { type KinshipResult, type PersonNode, RelationshipType, type RelEdge } from '../types';
 
 const DEPTH_SIBLING = 1;
 const DEPTH_GREAT_AUNT = 3;

@@ -100,7 +100,7 @@ describe('formatVietnameseDate', () => {
 // src/members/server/member.test.ts
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createPerson, deleteAllPersons, findPersonById } from '../repository/person'
-import { Gender } from '../../types'
+import { Gender } from '../types'
 
 describe('createPerson (inner logic)', () => {
   beforeEach(async () => {

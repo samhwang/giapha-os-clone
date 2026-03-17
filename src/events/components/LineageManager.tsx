@@ -1,7 +1,8 @@
 import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, RefreshCw, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { type Person, type Relationship, RelationshipType } from '../../types';
+import type { Person } from '../../members/types';
+import { type Relationship, RelationshipType } from '../../relationships/types';
 import { cn } from '../../ui/utils/cn';
 import { updateBatch } from '../server/lineage';
 

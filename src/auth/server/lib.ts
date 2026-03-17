@@ -1,6 +1,6 @@
 import { getRequestHeaders } from '@tanstack/react-start/server';
-import { UserRole } from '../../types';
 import { auth } from '../server';
+import { UserRole } from '../types';
 
 export async function getSessionFromRequest() {
   const headers = getRequestHeaders();

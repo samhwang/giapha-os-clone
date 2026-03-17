@@ -1,7 +1,7 @@
 import { Minus, Plus } from 'lucide-react';
 import type { MouseEvent } from 'react';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
-import type { Person } from '../../types';
+import type { Person } from '../../members/types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { cn } from '../../ui/utils/cn';
 import { getAvatarBg } from '../../ui/utils/styles';

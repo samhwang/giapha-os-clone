@@ -11,12 +11,14 @@ import {
   findAllPersonDetailsPrivate,
   findAllPersons,
 } from '../../members/repository/person';
+import { Gender } from '../../members/types';
 import { createManyRelationships, deleteAllRelationships, findAllRelationships } from '../../relationships/repository/relationship';
-import { type BackupPayload, Gender, RelationshipType } from '../../types';
+import { RelationshipType } from '../../relationships/types';
+import type { BackupPayload } from '../types';
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
-const importPersonSchema = z.object({
+const ImportPersonPayload = z.object({
   id: z.uuid(),
   fullName: z.string().min(1),
   gender: Gender,
@@ -38,21 +40,21 @@ const importPersonSchema = z.object({
   note: z.string().nullish(),
 });
 
-const importRelationshipSchema = z.object({
+const ImportRelationshipPayload = z.object({
   type: RelationshipType,
   personAId: z.uuid(),
   personBId: z.uuid(),
   note: z.string().nullish(),
 });
 
-const importPersonDetailsPrivateSchema = z.object({
+const ImportPersonDetailsPrivatePayload = z.object({
   personId: z.uuid(),
   phoneNumber: z.string().nullish(),
   occupation: z.string().nullish(),
   currentResidence: z.string().nullish(),
 });
 
-const importCustomEventSchema = z.object({
+const ImportCustomEventPayload = z.object({
   id: z.uuid(),
   name: z.string().min(1),
   eventDate: z.string(),
@@ -61,13 +63,13 @@ const importCustomEventSchema = z.object({
   createdBy: z.string().nullish(),
 });
 
-const importDataSchema = z.object({
+const ImportDataPayload = z.object({
   version: z.number().optional(),
   timestamp: z.string().optional(),
-  persons: z.array(importPersonSchema).min(1, 'error.data.emptyBackup'),
-  relationships: z.array(importRelationshipSchema),
-  personDetailsPrivate: z.array(importPersonDetailsPrivateSchema).optional(),
-  customEvents: z.array(importCustomEventSchema).optional(),
+  persons: z.array(ImportPersonPayload).min(1, 'error.data.emptyBackup'),
+  relationships: z.array(ImportRelationshipPayload),
+  personDetailsPrivate: z.array(ImportPersonDetailsPrivatePayload).optional(),
+  customEvents: z.array(ImportCustomEventPayload).optional(),
 });
 
 // ─── Server Functions ───────────────────────────────────────────────────────
@@ -109,7 +111,7 @@ export const exportData = createServerFn({ method: 'GET' })
   });
 
 export const importData = createServerFn({ method: 'POST' })
-  .inputValidator(importDataSchema)
+  .inputValidator(ImportDataPayload)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
     await withTransaction(async (tx) => {

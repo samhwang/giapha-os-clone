@@ -4,11 +4,11 @@ import { AlertCircle, Briefcase, Image as ImageIcon, Loader2, Lock, MapPin, Phon
 import { Lunar, Solar } from 'lunar-javascript';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Gender, type Person } from '../../types';
 import { cn } from '../../ui/utils/cn';
 import { getAvatarBg } from '../../ui/utils/styles';
 import { useMemberForm } from '../hooks/useMemberForm';
 import { createPerson, updatePerson, uploadPersonAvatar } from '../server/member';
+import { Gender, type Person } from '../types';
 
 interface MemberFormData extends Person {
   phoneNumber?: string | null;

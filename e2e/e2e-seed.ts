@@ -3,8 +3,8 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { test as setup } from '@playwright/test';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { hashPassword } from 'better-auth/crypto';
+import { UserRole } from '../src/auth/types';
 import { PrismaClient } from '../src/database/generated/prisma/client';
-import { UserRole } from '../src/types';
 import { SEED_DATA_PATH, type SeedData } from './e2e-seed-data';
 import { TEST_ADMIN, TEST_MEMBER } from './fixtures';
 

@@ -5,7 +5,7 @@ import { batchUpdatePersons } from '../../members/repository/person';
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
-const updateBatchSchema = z.object({
+const UpdateBatchPayload = z.object({
   updates: z.array(
     z.object({
       id: z.uuid(),
@@ -18,7 +18,7 @@ const updateBatchSchema = z.object({
 // ─── Server Functions ───────────────────────────────────────────────────────
 
 export const updateBatch = createServerFn({ method: 'POST' })
-  .inputValidator(updateBatchSchema)
+  .inputValidator(UpdateBatchPayload)
   .middleware([isAuthenticatedMiddleware])
   .handler(async ({ data }) => {
     if (data.updates.length === 0) return { success: true, updated: 0 };

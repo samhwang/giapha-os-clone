@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
+import { UserRole } from '../../../auth/types';
 import MemberForm from '../../../members/components/MemberForm';
-import { UserRole } from '../../../types';
 
 export const Route = createFileRoute('/dashboard/members/new')({
   component: NewMemberPage,

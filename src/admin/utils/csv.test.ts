@@ -2,7 +2,8 @@ import JSZip from 'jszip';
 import Papa from 'papaparse';
 import { describe, expect, it } from 'vitest';
 import { createPerson, mockPersons, mockRelationships } from '../../../test/fixtures';
-import type { Person, Relationship } from '../../types';
+import type { Person } from '../../members/types';
+import type { Relationship } from '../../relationships/types';
 
 // JSZip in Node doesn't support Blob round-trips, so we test the CSV logic
 // (Papa.unparse → zip → extract → Papa.parse) using ArrayBuffer instead.

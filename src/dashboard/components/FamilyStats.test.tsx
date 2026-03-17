@@ -1,7 +1,8 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { createPerson, createRelationship } from '../../../test/fixtures';
-import { Gender, RelationshipType } from '../../types';
+import { Gender } from '../../members/types';
+import { RelationshipType } from '../../relationships/types';
 import FamilyStats from './FamilyStats';
 
 describe('FamilyStats', () => {

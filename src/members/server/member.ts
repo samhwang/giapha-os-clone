@@ -4,7 +4,6 @@ import { isEditorMiddleware } from '../../auth/server/middleware';
 import { ERRORS } from '../../lib/errors';
 import { deleteAvatar, uploadAvatar } from '../../lib/storage';
 import { countRelationshipsForPerson } from '../../relationships/repository/relationship';
-import { Gender } from '../../types';
 import {
   createPerson as createPersonRepo,
   deletePerson as deletePersonRepo,
@@ -14,12 +13,11 @@ import {
   updatePerson as updatePersonRepo,
   upsertPersonDetailsPrivate,
 } from '../repository/person';
-
-const genderEnum = Gender;
+import { Gender } from '../types';
 
 const basePersonFields = {
   fullName: z.string().min(1),
-  gender: genderEnum,
+  gender: Gender,
   birthYear: z.number().int().nullish(),
   birthMonth: z.number().int().min(1).max(12).nullish(),
   birthDay: z.number().int().min(1).max(31).nullish(),
@@ -37,12 +35,12 @@ const basePersonFields = {
   currentResidence: z.string().nullish(),
 };
 
-const createPersonSchema = z.object(basePersonFields);
+const CreatePersonPayload = z.object(basePersonFields);
 
-const updatePersonSchema = z.object({
+const UpdatePersonPayload = z.object({
   id: z.uuid(),
   fullName: z.string().min(1).optional(),
-  gender: genderEnum.optional(),
+  gender: Gender.optional(),
   birthYear: z.number().int().nullish(),
   birthMonth: z.number().int().min(1).max(12).nullish(),
   birthDay: z.number().int().min(1).max(31).nullish(),
@@ -61,9 +59,9 @@ const updatePersonSchema = z.object({
   currentResidence: z.string().nullish(),
 });
 
-const idSchema = z.object({ id: z.uuid() });
+const IdPayload = z.object({ id: z.uuid() });
 
-const uploadAvatarSchema = z.object({
+const UploadAvatarPayload = z.object({
   personId: z.uuid(),
   filename: z.string().min(1),
   contentType: z.string().min(1),
@@ -71,7 +69,7 @@ const uploadAvatarSchema = z.object({
 });
 
 export const createPerson = createServerFn({ method: 'POST' })
-  .inputValidator(createPersonSchema)
+  .inputValidator(CreatePersonPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
     const { phoneNumber, occupation, currentResidence, ...personData } = data;
@@ -92,7 +90,7 @@ export const createPerson = createServerFn({ method: 'POST' })
   });
 
 export const updatePerson = createServerFn({ method: 'POST' })
-  .inputValidator(updatePersonSchema)
+  .inputValidator(UpdatePersonPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
     const { id, phoneNumber, occupation, currentResidence, ...personData } = data;
@@ -120,7 +118,7 @@ export const updatePerson = createServerFn({ method: 'POST' })
   });
 
 export const deleteMember = createServerFn({ method: 'POST' })
-  .inputValidator(idSchema)
+  .inputValidator(IdPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
     const person = await findPersonById(data.id);
@@ -141,7 +139,7 @@ export const deleteMember = createServerFn({ method: 'POST' })
   });
 
 export const uploadPersonAvatar = createServerFn({ method: 'POST' })
-  .inputValidator(uploadAvatarSchema)
+  .inputValidator(UploadAvatarPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
     const existing = await findPersonById(data.personId);
@@ -162,7 +160,7 @@ export const getPersons = createServerFn({ method: 'GET' }).handler(async () => 
 });
 
 export const getPersonById = createServerFn({ method: 'GET' })
-  .inputValidator(idSchema)
+  .inputValidator(IdPayload)
   .handler(async ({ data }) => {
     return findPersonById(data.id);
   });

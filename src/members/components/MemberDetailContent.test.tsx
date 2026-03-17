@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
-import { Gender } from '../../types';
+import { Gender } from '../types';
 import MemberDetailContent from './MemberDetailContent';
 
 vi.mock('../../relationships/components/RelationshipManager', () => ({

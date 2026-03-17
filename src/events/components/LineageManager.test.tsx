@@ -2,7 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson, createRelationship } from '../../../test/fixtures';
-import { Gender, RelationshipType } from '../../types';
+import { Gender } from '../../members/types';
+import { RelationshipType } from '../../relationships/types';
 import LineageManager from './LineageManager';
 
 const mockUpdateBatch = vi.fn();

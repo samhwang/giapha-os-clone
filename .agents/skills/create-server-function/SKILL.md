@@ -32,7 +32,7 @@ import { isEditorMiddleware } from '../../auth/server/middleware'
 // Import repository functions for the relevant entity
 import { findAllItems, createItem } from '../repository/item'
 
-const createItemSchema = z.object({
+const CreateItemPayload = z.object({
   name: z.string().min(1),
 })
 
@@ -42,7 +42,7 @@ export const getItems = createServerFn({ method: 'GET' })
   })
 
 export const createItemFn = createServerFn({ method: 'POST' })
-  .inputValidator(createItemSchema)
+  .inputValidator(CreateItemPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
     return createItem({ data })
@@ -84,10 +84,10 @@ import { createServerFn } from '@tanstack/react-start'
 import * as z from 'zod'
 import { findPersonById } from '../repository/person'
 
-const idSchema = z.object({ id: z.uuid() })
+const IdPayload = z.object({ id: z.uuid() })
 
 export const getPersonById = createServerFn({ method: 'GET' })
-  .inputValidator(idSchema)
+  .inputValidator(IdPayload)
   .handler(async ({ data }) => {
     return findPersonById(data.id)
   })
@@ -101,13 +101,13 @@ import * as z from 'zod'
 import { isEditorMiddleware } from '../../auth/server/middleware'
 import { createPerson } from '../repository/person'
 
-const createPersonSchema = z.object({
+const CreatePersonPayload = z.object({
   fullName: z.string().min(1),
   gender: z.enum(['male', 'female', 'other']),
 })
 
 export const createPersonFn = createServerFn({ method: 'POST' })
-  .inputValidator(createPersonSchema)
+  .inputValidator(CreatePersonPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
     return createPerson({ data })

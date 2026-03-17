@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Person } from '../../types';
+import type { Person } from '../../members/types';
 import { computeEvents } from './eventHelpers';
 
 function makePerson(overrides: Partial<Person> & { id: string; fullName: string }): Person {

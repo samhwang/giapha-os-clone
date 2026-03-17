@@ -90,7 +90,7 @@ export default function MembersPage() {
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 
-const memberParamsSchema = z.object({
+const MemberParams = z.object({
   memberId: z.string(),
 })
 
@@ -99,7 +99,7 @@ export const Route = createFileRoute('/members/$memberId')({
     tab: z.enum(['overview', 'family', 'events']).default('overview'),
   }),
   loader: async ({ params, context }) => {
-    const { memberId } = memberParamsSchema.parse(params)
+    const { memberId } = MemberParams.parse(params)
     return await context.members.getMemberById(memberId)
   },
 })

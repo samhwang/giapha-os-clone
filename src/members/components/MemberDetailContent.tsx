@@ -3,11 +3,11 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { calculateAge, formatDisplayDate, getLunarDateString, getZodiacAnimal, getZodiacSign } from '../../events/utils/dateHelpers';
 import RelationshipManager from '../../relationships/components/RelationshipManager';
-import { Gender, type Person } from '../../types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 import { cn } from '../../ui/utils/cn';
 import { getAvatarBg, getGenderStyle } from '../../ui/utils/styles';
+import { Gender, type Person } from '../types';
 
 interface MemberDetailContentProps {
   person: Person;

@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
+import { UserRole } from '../../../../auth/types';
 import MemberForm from '../../../../members/components/MemberForm';
 import { getPersonById } from '../../../../members/server/member';
-import { UserRole } from '../../../../types';
 
 export const Route = createFileRoute('/dashboard/members/$id/edit')({
   loader: async ({ params }) => {

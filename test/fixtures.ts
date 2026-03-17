@@ -1,53 +1,7 @@
-import { Gender, RelationshipType, UserRole } from '../src/types';
-
-// ============================================================
-// Type definitions for test fixtures
-// ============================================================
-
-interface MockPerson {
-  id: string;
-  fullName: string;
-  gender: Gender;
-  birthYear: number | null;
-  birthMonth: number | null;
-  birthDay: number | null;
-  deathYear: number | null;
-  deathMonth: number | null;
-  deathDay: number | null;
-  deathLunarYear: number | null;
-  deathLunarMonth: number | null;
-  deathLunarDay: number | null;
-  isDeceased: boolean;
-  isInLaw: boolean;
-  generation: number | null;
-  birthOrder: number | null;
-  otherNames: string | null;
-  avatarUrl: string | null;
-  note: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-interface MockRelationship {
-  id: string;
-  type: RelationshipType;
-  personAId: string;
-  personBId: string;
-  note: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-interface MockUser {
-  id: string;
-  email: string;
-  name: string | null;
-  role: UserRole;
-  isActive: boolean;
-  timeZone: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import type { UserProfile } from '../src/admin/types';
+import { UserRole } from '../src/auth/types';
+import { Gender, type Person } from '../src/members/types';
+import { type Relationship, RelationshipType } from '../src/relationships/types';
 
 // ============================================================
 // Builder functions
@@ -55,7 +9,7 @@ interface MockUser {
 
 const now = new Date('2025-01-01T00:00:00Z');
 
-export function createPerson(overrides: Partial<MockPerson> = {}): MockPerson {
+export function createPerson(overrides: Partial<Person> = {}): Person {
   return {
     id: crypto.randomUUID(),
     fullName: 'Test Person',
@@ -82,7 +36,7 @@ export function createPerson(overrides: Partial<MockPerson> = {}): MockPerson {
   };
 }
 
-export function createRelationship(overrides: Partial<MockRelationship> = {}): MockRelationship {
+export function createRelationship(overrides: Partial<Relationship> = {}): Relationship {
   return {
     id: crypto.randomUUID(),
     type: RelationshipType.enum.biological_child,
@@ -95,7 +49,7 @@ export function createRelationship(overrides: Partial<MockRelationship> = {}): M
   };
 }
 
-export function createUser(overrides: Partial<MockUser> = {}): MockUser {
+export function createUser(overrides: Partial<UserProfile> = {}): UserProfile {
   return {
     id: crypto.randomUUID(),
     email: 'test@example.com',
@@ -282,7 +236,7 @@ export const dinhThiMyDuyen = createPerson({
 // Collections
 // ============================================================
 
-export const mockPersons: MockPerson[] = [
+export const mockPersons: Person[] = [
   vanCongGoc,
   binhThiMoc,
   vanCongThuan,
@@ -298,7 +252,7 @@ export const mockPersons: MockPerson[] = [
   dinhThiMyDuyen,
 ];
 
-export const mockRelationships: MockRelationship[] = [
+export const mockRelationships: Relationship[] = [
   // Gen 1 marriage
   createRelationship({ id: 'rel-001', type: RelationshipType.enum.marriage, personAId: vanCongGoc.id, personBId: binhThiMoc.id }),
   // Gen 1 → Gen 2

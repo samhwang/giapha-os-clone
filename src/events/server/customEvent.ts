@@ -8,14 +8,14 @@ import {
   updateCustomEvent as updateCustomEventRepo,
 } from '../repository/custom-event';
 
-const createCustomEventSchema = z.object({
+const CreateCustomEventPayload = z.object({
   name: z.string().min(1),
   eventDate: z.string().min(1),
   location: z.string().nullish(),
   content: z.string().nullish(),
 });
 
-const updateCustomEventSchema = z.object({
+const UpdateCustomEventPayload = z.object({
   id: z.uuid(),
   name: z.string().min(1).optional(),
   eventDate: z.string().min(1).optional(),
@@ -23,14 +23,14 @@ const updateCustomEventSchema = z.object({
   content: z.string().nullish(),
 });
 
-const idSchema = z.object({ id: z.uuid() });
+const IdPayload = z.object({ id: z.uuid() });
 
 export const getCustomEvents = createServerFn({ method: 'GET' }).handler(async () => {
   return findAllCustomEvents();
 });
 
 export const createCustomEvent = createServerFn({ method: 'POST' })
-  .inputValidator(createCustomEventSchema)
+  .inputValidator(CreateCustomEventPayload)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
     return createCustomEventRepo({
@@ -42,7 +42,7 @@ export const createCustomEvent = createServerFn({ method: 'POST' })
   });
 
 export const updateCustomEvent = createServerFn({ method: 'POST' })
-  .inputValidator(updateCustomEventSchema)
+  .inputValidator(UpdateCustomEventPayload)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
     const { id, ...updateData } = data;
@@ -50,7 +50,7 @@ export const updateCustomEvent = createServerFn({ method: 'POST' })
   });
 
 export const deleteCustomEvent = createServerFn({ method: 'POST' })
-  .inputValidator(idSchema)
+  .inputValidator(IdPayload)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
     await deleteCustomEventRepo(data.id);

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import type { PersonNode, RelEdge } from '../../types';
-import { Gender, RelationshipType } from '../../types';
+import { Gender } from '../../members/types';
+import type { PersonNode, RelEdge } from '../types';
+import { RelationshipType } from '../types';
 import { computeKinship } from './kinshipHelpers';
 
 // ── Test data builders ──────────────────────────────────────────────────────

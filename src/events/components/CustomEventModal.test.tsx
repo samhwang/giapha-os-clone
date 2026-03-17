@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { renderWithProviders } from '../../../test/render-wrapper';
-import type { CustomEventRecord } from '../../types';
+import type { CustomEventRecord } from '../types';
 
 vi.mock('../server/customEvent', () => ({
   createCustomEvent: vi.fn().mockResolvedValue({}),

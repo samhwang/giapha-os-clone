@@ -1,7 +1,7 @@
-import type { RelationshipType } from '../../database/generated/prisma/enums';
 import type { RelationshipCreateManyInput, RelationshipUncheckedCreateInput } from '../../database/generated/prisma/models';
 import { getDbClient } from '../../database/lib/client';
 import type { DbClient } from '../../database/transaction';
+import type { RelationshipType } from '../types';
 
 export function findRelationshipByParticipants(personAId: string, personBId: string, type: RelationshipType, client: DbClient = getDbClient()) {
   return client.relationship.findFirst({

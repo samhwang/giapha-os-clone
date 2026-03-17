@@ -1,7 +1,8 @@
 import { Crown, Flower2, Heart, HeartOff, Mars, Skull, Users, Venus } from 'lucide-react';
 import { type ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Gender, type Person, type Relationship, RelationshipType } from '../../types';
+import { Gender, type Person } from '../../members/types';
+import { type Relationship, RelationshipType } from '../../relationships/types';
 import { cn } from '../../ui/utils/cn';
 
 interface FamilyStatsProps {

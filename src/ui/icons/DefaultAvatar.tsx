@@ -1,4 +1,4 @@
-import { Gender } from '../../types';
+import { Gender } from '../../members/types';
 
 export default function DefaultAvatar({ gender }: { gender?: string }) {
   if (gender === Gender.enum.male) {

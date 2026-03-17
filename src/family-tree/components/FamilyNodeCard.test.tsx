@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
-import type { Person } from '../../types';
+import type { Person } from '../../members/types';
 import FamilyNodeCard from './FamilyNodeCard';
 
 const makePerson = (overrides: Partial<Person> = {}) => createPerson(overrides) as Person;

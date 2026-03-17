@@ -1,11 +1,11 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { UserRole } from '../../auth/types';
 import EventsList from '../../events/components/EventsList';
 import { getCustomEvents } from '../../events/server/customEvent';
 import MemberDetailModal from '../../members/components/MemberDetailModal';
 import { getPersons } from '../../members/server/member';
-import { UserRole } from '../../types';
 
 export const Route = createFileRoute('/dashboard/events')({
   loader: async () => {

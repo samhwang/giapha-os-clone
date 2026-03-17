@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createPerson, deleteAllPersons } from '../../members/repository/person';
-import { Gender, RelationshipType } from '../../types';
+import { Gender } from '../../members/types';
 import {
   createManyRelationships,
   createRelationship,
@@ -10,6 +10,7 @@ import {
   findRelationshipByParticipants,
   findRelationshipsForPerson,
 } from '../repository/relationship';
+import { RelationshipType } from '../types';
 
 describe('createRelationship (inner logic)', () => {
   beforeEach(async () => {

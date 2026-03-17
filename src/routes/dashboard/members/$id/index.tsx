@@ -1,8 +1,9 @@
 import { createFileRoute, getRouteApi, Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
+import { UserRole } from '../../../../auth/types';
 import DeleteMemberButton from '../../../../members/components/DeleteMemberButton';
 import MemberDetailContent from '../../../../members/components/MemberDetailContent';
-import { type Person, UserRole } from '../../../../types';
+import type { Person } from '../../../../members/types';
 
 const parentRoute = getRouteApi('/dashboard/members/$id');
 

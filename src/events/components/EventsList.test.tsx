@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
-import type { Person } from '../../types';
+import type { Person } from '../../members/types';
 import EventsList from './EventsList';
 
 function makePerson(overrides: Partial<Person> & { id: string; fullName: string }): Person {

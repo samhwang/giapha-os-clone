@@ -3,10 +3,10 @@ import { createServerFn } from '@tanstack/react-start';
 import { getRequestHeaders } from '@tanstack/react-start/server';
 import { useTranslation } from 'react-i18next';
 import { auth } from '../../auth/server';
+import { UserRole } from '../../auth/types';
 import DashboardHeader from '../../dashboard/components/DashboardHeader';
 import { DashboardProvider } from '../../dashboard/components/DashboardProvider';
 import config from '../../lib/config';
-import { UserRole } from '../../types';
 import Footer from '../../ui/layout/Footer';
 import LogoutButton from '../../ui/layout/LogoutButton';
 

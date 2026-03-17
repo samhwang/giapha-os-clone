@@ -63,7 +63,7 @@ Follow this order within each component file:
 // 1. Imports
 import { useState } from 'react';
 import { useSomething } from '../../lib/something';
-import type { Person } from '../../types';
+import type { Person } from '../../members/types';
 
 // 2. Types/interfaces (if component-specific)
 interface Props {

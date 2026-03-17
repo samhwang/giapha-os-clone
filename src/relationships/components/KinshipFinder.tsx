@@ -1,11 +1,12 @@
 import { ArrowLeftRight, BookOpen, GitMerge, Info, Search, Sparkles, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Gender, type PersonNode, type RelEdge } from '../../types';
+import { Gender } from '../../members/types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 import { cn } from '../../ui/utils/cn';
 import { getAvatarBg, getGenderStyle } from '../../ui/utils/styles';
+import type { PersonNode, RelEdge } from '../types';
 import { computeKinship } from '../utils/kinshipHelpers';
 
 interface Props {

@@ -4,7 +4,7 @@ import { admin } from 'better-auth/plugins/admin';
 import { tanstackStartCookies } from 'better-auth/tanstack-start';
 import { countUsers } from '../admin/repository/user';
 import { getDbClient } from '../database/lib/client';
-import { UserRole } from '../types';
+import { UserRole } from './types';
 
 const db = getDbClient();
 export const auth = betterAuth({

@@ -65,8 +65,7 @@ src/
 ├── routes/               # TanStack Start file-based routes
 ├── ui/                   # Shared UI components (layout, icons, common)
 ├── database/             # Database layer (client, repositories, generated types)
-├── lib/                  # Core infrastructure (storage, env, config)
-├── types/                # Global TypeScript types and Zod enums
+├── lib/                  # Core infrastructure (storage, env, config, type declarations)
 └── i18n/                 # i18next setup and translations
 ```
 

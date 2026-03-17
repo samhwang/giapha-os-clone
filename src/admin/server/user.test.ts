@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { UserRole } from '../../auth/types';
 import { getDbClient } from '../../database/lib/client';
-import { UserRole } from '../../types';
 import { deleteAllUsers, deleteUser, findAllUsers, findUserByEmail, updateUser } from '../repository/user';
 
 const db = getDbClient();

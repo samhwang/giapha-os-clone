@@ -14,8 +14,10 @@ import {
   vanThiBinh,
   vanThiCam,
 } from '../../../test/fixtures';
-import type { Person, Relationship } from '../../types';
-import { Gender, RelationshipType } from '../../types';
+import type { Person } from '../../members/types';
+import { Gender } from '../../members/types';
+import type { Relationship } from '../../relationships/types';
+import { RelationshipType } from '../../relationships/types';
 import { buildAdjacencyLists, getFilteredTreeData } from './treeHelpers';
 
 function toPersonsMap(persons: Person[]): Map<string, Person> {

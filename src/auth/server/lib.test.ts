@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { UserRole } from '../../types';
+import { UserRole } from '../types';
 import { ensureAdmin, ensureAuthenticated, ensureEditor, getSessionFromRequest } from './lib';
 
 vi.mock('@tanstack/react-start/server', () => ({

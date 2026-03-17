@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
-import { Gender } from '../../types';
+import { Gender } from '../../members/types';
 import { useDashboardStore } from '../store/dashboardStore';
 import DashboardMemberList from './DashboardMemberList';
 
