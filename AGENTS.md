@@ -110,6 +110,7 @@ Load a skill when working on specific task types:
 - **[create-test](.agents/skills/create-test/SKILL.md)** - Write unit and browser tests with Vitest and React Testing Library
 - **[create-server-function](.agents/skills/create-server-function/SKILL.md)** - Create server functions with Zod validation and Prisma
 - **[db-migration](.agents/skills/db-migration/SKILL.md)** - Manage Prisma schema changes and migrations
+- **[port-changes](.agents/skills/port-changes/SKILL.md)** - Analyze upstream base repo changes and create an integration plan for the fork
 
 ## Quick Reference
 
