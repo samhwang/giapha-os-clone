@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { admin } from 'better-auth/plugins/admin';
 import { tanstackStartCookies } from 'better-auth/tanstack-start';
 import { getDbClient } from '../lib/db';
 import { UserRole } from '../types';
@@ -41,5 +42,11 @@ export const auth = betterAuth({
       },
     },
   },
-  plugins: [tanstackStartCookies()],
+  plugins: [
+    tanstackStartCookies(),
+    admin({
+      defaultRole: UserRole.enum.member,
+      adminRoles: [UserRole.enum.admin],
+    }),
+  ],
 });
