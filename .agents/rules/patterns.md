@@ -298,7 +298,7 @@ await withTransaction(async (tx) => {
 
 ### Repository Function Pattern
 
-Each function accepts an optional `client` parameter (defaults to `getDbClient()`). Pass `tx` from a transaction for transactional operations.
+Each function accepts an optional `client` parameter (defaults to `getDbClient()`). Pass `tx` from a transaction for transactional operations. Functions with 3+ domain parameters (e.g. `updatePerson`, `upsertPersonDetailsPrivate`) use a single object parameter with a colocated `{FunctionName}Input` interface. The `client` parameter always stays as a separate positional argument — it is infrastructure, not domain data. Functions with 1-2 domain parameters keep positional args.
 
 ### Error Handling
 

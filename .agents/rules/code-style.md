@@ -27,7 +27,7 @@ Biome handles both linting and formatting. No ESLint, Prettier, or separate form
 - Use `import type { ... }` for type-only imports
 - Never use `any` — use `unknown` and narrow with type guards
 - Prefer Prisma generated types over manual type definitions where possible
-- Use explicit return types for exported functions
+- Use explicit return types for all functions (exported and internal)
 - Use `satisfies` operator for type-checked object literals
 - For Zod schemas, declare the schema and type together in one block, so they can both be imported in one go, depending on the context of work (e.g. either as a type or a value):
 
@@ -65,14 +65,14 @@ import { useState } from 'react';
 import { useSomething } from '../../lib/something';
 import type { Person } from '../../members/types';
 
-// 2. Types/interfaces (if component-specific)
-interface Props {
+// 2. Types/interfaces (if component-specific, named {Component}Props)
+interface PersonCardProps {
   person: Person;
   onSelect: (id: string) => void;
 }
 
-// 3. Component
-export function PersonCard({ person, onSelect }: Props) {
+// 3. Component (with explicit return type)
+export function PersonCard({ person, onSelect }: PersonCardProps): ReactNode {
   // a. Hooks
   const [isOpen, setIsOpen] = useState(false);
 
@@ -182,7 +182,7 @@ Reference: [clean-code-javascript](https://github.com/ryanmcdermott/clean-code-j
 ### Functions
 
 - **Do one thing**: If a function has sections separated by blank lines or comments, each section is likely a candidate for extraction.
-- **2 parameters or fewer**: Use a single object parameter for 3+ arguments.
+- **2 parameters or fewer**: Use a single object parameter for 3+ arguments. Declare a `{FunctionName}Input` interface immediately above the function. Never declare object types inline in the signature.
 - **Keep logic functions short**: Aim for < 30 lines of logic (excluding JSX).
 - **No flag arguments**: Avoid boolean parameters that make a function do two different things. Split into two functions instead when practical.
 

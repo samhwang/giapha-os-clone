@@ -266,7 +266,7 @@ import { findAllPersons, findPersonById, createPerson, updatePerson, deletePerso
 const persons = await findAllPersons()
 const person = await findPersonById('xxx')
 const created = await createPerson({ data: { fullName: 'Name', gender: 'male' } })
-const updated = await updatePerson('xxx', { fullName: 'New' })
+const updated = await updatePerson({ id: 'xxx', data: { fullName: 'New' } })
 const deleted = await deletePerson('xxx')
 ```
 

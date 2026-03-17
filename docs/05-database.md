@@ -273,14 +273,25 @@ await withTransaction(async (tx) => {
 
 ### Repository Function Pattern
 
-Each function accepts an optional `client` parameter that defaults to `getDbClient()`. Pass `tx` from a transaction for transactional operations:
+Each function accepts an optional `client` parameter that defaults to `getDbClient()`. Pass `tx` from a transaction for transactional operations. Functions with 3+ domain parameters use a single object parameter with a colocated `{FunctionName}Input` interface. The `client` parameter always stays as a separate positional argument — it is infrastructure, not domain data.
 
 ```typescript
 import { getDbClient } from '../../database/lib/client';
 import type { DbClient } from '../../database/transaction';
 
+// 2 domain params — positional is fine, client stays separate
 export function findPersonById(id: string, client: DbClient = getDbClient()) {
   return client.person.findUnique({ where: { id }, include: { privateDetails: true } });
+}
+
+// 3+ domain params — object parameter with colocated interface, client stays separate
+interface UpdatePersonInput {
+  id: string;
+  data: PersonUpdateInput;
+}
+
+export function updatePerson({ id, data }: UpdatePersonInput, client: DbClient = getDbClient()) {
+  return client.person.update({ where: { id }, data });
 }
 ```
 

@@ -153,7 +153,7 @@ Members can upload avatars:
 import { uploadAvatar, deleteAvatar } from '../../lib/storage'
 
 // Upload
-const url = await uploadAvatar(buffer, personId, filename, contentType)
+const url = await uploadAvatar({ buffer, personId, filename, contentType })
 
 // Delete
 await deleteAvatar(url)
