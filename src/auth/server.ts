@@ -4,9 +4,9 @@ import { tanstackStartCookies } from 'better-auth/tanstack-start';
 import { getDbClient } from '../lib/db';
 import { UserRole } from '../types';
 
-const prisma = getDbClient();
+const db = getDbClient();
 export const auth = betterAuth({
-  database: prismaAdapter(prisma, { provider: 'postgresql' }),
+  database: prismaAdapter(db, { provider: 'postgresql' }),
   emailAndPassword: { enabled: true },
   user: {
     additionalFields: {
@@ -25,7 +25,7 @@ export const auth = betterAuth({
       create: {
         before: async (user) => {
           // First user becomes admin and is auto-activated
-          const userCount = await prisma.user.count();
+          const userCount = await db.user.count();
           if (userCount === 0) {
             return {
               data: {

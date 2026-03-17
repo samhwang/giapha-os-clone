@@ -35,14 +35,14 @@ export const changeRole = createServerFn({ method: 'POST' })
   .inputValidator(changeRoleSchema)
   .middleware([isAdminMiddleware])
   .handler(async ({ data, context }) => {
-    const prisma = getDbClient();
+    const db = getDbClient();
     const admin = context.user;
 
     if (data.userId === admin.id) {
       throw new Error('error.user.selfRole');
     }
 
-    await prisma.user.update({
+    await db.user.update({
       where: { id: data.userId },
       data: { role: data.newRole },
     });
@@ -54,14 +54,14 @@ export const deleteUser = createServerFn({ method: 'POST' })
   .inputValidator(userIdSchema)
   .middleware([isAdminMiddleware])
   .handler(async ({ data, context }) => {
-    const prisma = getDbClient();
+    const db = getDbClient();
     const admin = context.user;
 
     if (data.userId === admin.id) {
       throw new Error('error.user.selfDelete');
     }
 
-    await prisma.user.delete({ where: { id: data.userId } });
+    await db.user.delete({ where: { id: data.userId } });
 
     return { success: true };
   });
@@ -70,8 +70,8 @@ export const createUser = createServerFn({ method: 'POST' })
   .inputValidator(createUserSchema)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
-    const prisma = getDbClient();
-    const existing = await prisma.user.findUnique({ where: { email: data.email } });
+    const db = getDbClient();
+    const existing = await db.user.findUnique({ where: { email: data.email } });
     if (existing) {
       throw new Error('error.user.emailTaken');
     }
@@ -85,7 +85,7 @@ export const createUser = createServerFn({ method: 'POST' })
     });
 
     if (ctx.user) {
-      await prisma.user.update({
+      await db.user.update({
         where: { id: ctx.user.id },
         data: {
           role: data.role ?? UserRole.enum.member,
@@ -101,14 +101,14 @@ export const toggleStatus = createServerFn({ method: 'POST' })
   .inputValidator(toggleStatusSchema)
   .middleware([isAdminMiddleware])
   .handler(async ({ data, context }) => {
-    const prisma = getDbClient();
+    const db = getDbClient();
     const admin = context.user;
 
     if (data.userId === admin.id) {
       throw new Error('error.user.selfStatus');
     }
 
-    await prisma.user.update({
+    await db.user.update({
       where: { id: data.userId },
       data: { isActive: data.isActive },
     });
@@ -119,8 +119,8 @@ export const toggleStatus = createServerFn({ method: 'POST' })
 export const getUsers = createServerFn({ method: 'GET' })
   .middleware([isAdminMiddleware])
   .handler(async () => {
-    const prisma = getDbClient();
-    return prisma.user.findMany({
+    const db = getDbClient();
+    return db.user.findMany({
       select: {
         id: true,
         email: true,

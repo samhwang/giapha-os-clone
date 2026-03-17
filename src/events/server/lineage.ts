@@ -23,10 +23,10 @@ export const updateBatch = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     if (data.updates.length === 0) return { success: true, updated: 0 };
 
-    const prisma = getDbClient();
-    await prisma.$transaction(
+    const db = getDbClient();
+    await db.$transaction(
       data.updates.map((u) =>
-        prisma.person.update({
+        db.person.update({
           where: { id: u.id },
           data: {
             generation: u.generation,

@@ -3,18 +3,18 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../src/generated/prisma/client';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
-const prisma = new PrismaClient({ adapter });
+const db = new PrismaClient({ adapter });
 
 async function main() {
   // Clear existing data
-  await prisma.relationship.deleteMany();
-  await prisma.personDetailsPrivate.deleteMany();
-  await prisma.person.deleteMany();
+  await db.relationship.deleteMany();
+  await db.personDetailsPrivate.deleteMany();
+  await db.person.deleteMany();
 
   // ============================================================
   // Generation 1 — Ancestors (born ~1900-1920)
   // ============================================================
-  await prisma.person.createMany({
+  await db.person.createMany({
     data: [
       {
         id: '10000000-0000-0000-0000-000000000001',
@@ -52,7 +52,7 @@ async function main() {
   // ============================================================
   // Generation 2 — Grandparents (born ~1930-1950)
   // ============================================================
-  await prisma.person.createMany({
+  await db.person.createMany({
     data: [
       {
         id: '20000000-0000-0000-0000-000000000001',
@@ -126,7 +126,7 @@ async function main() {
   // ============================================================
   // Generation 3 — Parents/uncles/aunts (born ~1955-1975)
   // ============================================================
-  await prisma.person.createMany({
+  await db.person.createMany({
     data: [
       {
         id: '30000000-0000-0000-0000-000000000001',
@@ -233,7 +233,7 @@ async function main() {
   // ============================================================
   // Generation 4 — Grandchildren (born ~1988-2010)
   // ============================================================
-  await prisma.person.createMany({
+  await db.person.createMany({
     data: [
       {
         id: '40000000-0000-0000-0000-000000000001',
@@ -362,7 +362,7 @@ async function main() {
   // ============================================================
   // Private details (admin only)
   // ============================================================
-  await prisma.personDetailsPrivate.createMany({
+  await db.personDetailsPrivate.createMany({
     data: [
       { personId: '30000000-0000-0000-0000-000000000001', phoneNumber: '09xx xxx 001', occupation: 'Kỹ sư xây dựng (đã nghỉ hưu)', currentResidence: 'Hà Đông, Hà Nội' },
       { personId: '30000000-0000-0000-0000-000000000002', phoneNumber: '09xx xxx 002', occupation: 'Giáo viên Văn (đã nghỉ hưu)', currentResidence: 'Hà Đông, Hà Nội' },
@@ -382,7 +382,7 @@ async function main() {
   // ============================================================
 
   // Generation 1 marriage
-  await prisma.relationship.create({
+  await db.relationship.create({
     data: { type: 'marriage', personAId: '10000000-0000-0000-0000-000000000001', personBId: '10000000-0000-0000-0000-000000000002' },
   });
 
@@ -395,12 +395,12 @@ async function main() {
     ['10000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000004'],
     ['10000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000004'],
   ];
-  await prisma.relationship.createMany({
+  await db.relationship.createMany({
     data: gen1to2.map(([a, b]) => ({ type: 'biological_child' as const, personAId: a, personBId: b })),
   });
 
   // Gen 2 marriages
-  await prisma.relationship.createMany({
+  await db.relationship.createMany({
     data: [
       { type: 'marriage', personAId: '20000000-0000-0000-0000-000000000001', personBId: '20000000-0000-0000-0000-000000000002' },
       { type: 'marriage', personAId: '20000000-0000-0000-0000-000000000004', personBId: '20000000-0000-0000-0000-000000000005' },
@@ -416,7 +416,7 @@ async function main() {
     ['20000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000005'],
     ['20000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000005'],
   ];
-  await prisma.relationship.createMany({
+  await db.relationship.createMany({
     data: gen2to3North.map(([a, b]) => ({ type: 'biological_child' as const, personAId: a, personBId: b })),
   });
 
@@ -427,12 +427,12 @@ async function main() {
     ['20000000-0000-0000-0000-000000000004', '30000000-0000-0000-0000-000000000008'],
     ['20000000-0000-0000-0000-000000000005', '30000000-0000-0000-0000-000000000008'],
   ];
-  await prisma.relationship.createMany({
+  await db.relationship.createMany({
     data: gen2to3South.map(([a, b]) => ({ type: 'biological_child' as const, personAId: a, personBId: b })),
   });
 
   // Gen 3 marriages
-  await prisma.relationship.createMany({
+  await db.relationship.createMany({
     data: [
       { type: 'marriage', personAId: '30000000-0000-0000-0000-000000000001', personBId: '30000000-0000-0000-0000-000000000002' },
       { type: 'marriage', personAId: '30000000-0000-0000-0000-000000000003', personBId: '30000000-0000-0000-0000-000000000004' },
@@ -450,7 +450,7 @@ async function main() {
     ['30000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000004'],
     ['30000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000004'],
   ];
-  await prisma.relationship.createMany({
+  await db.relationship.createMany({
     data: gen3to4Tri.map(([a, b]) => ({ type: 'biological_child' as const, personAId: a, personBId: b })),
   });
 
@@ -461,7 +461,7 @@ async function main() {
     ['30000000-0000-0000-0000-000000000003', '40000000-0000-0000-0000-000000000006'],
     ['30000000-0000-0000-0000-000000000004', '40000000-0000-0000-0000-000000000006'],
   ];
-  await prisma.relationship.createMany({
+  await db.relationship.createMany({
     data: gen3to4Cam.map(([a, b]) => ({ type: 'biological_child' as const, personAId: a, personBId: b })),
   });
 
@@ -472,12 +472,12 @@ async function main() {
     ['30000000-0000-0000-0000-000000000005', '40000000-0000-0000-0000-000000000008'],
     ['30000000-0000-0000-0000-000000000006', '40000000-0000-0000-0000-000000000008'],
   ];
-  await prisma.relationship.createMany({
+  await db.relationship.createMany({
     data: gen3to4Moc.map(([a, b]) => ({ type: 'biological_child' as const, personAId: a, personBId: b })),
   });
 
   // Gen 3 → Gen 4 (Tue - HCM)
-  await prisma.relationship.create({
+  await db.relationship.create({
     data: { type: 'biological_child', personAId: '30000000-0000-0000-0000-000000000007', personBId: '40000000-0000-0000-0000-000000000009' },
   });
 
@@ -488,12 +488,12 @@ async function main() {
     ['30000000-0000-0000-0000-000000000008', '40000000-0000-0000-0000-000000000011'],
     ['30000000-0000-0000-0000-000000000009', '40000000-0000-0000-0000-000000000011'],
   ];
-  await prisma.relationship.createMany({
+  await db.relationship.createMany({
     data: gen3to4Thanh.map(([a, b]) => ({ type: 'biological_child' as const, personAId: a, personBId: b })),
   });
 
   // Gen 4 marriage
-  await prisma.relationship.create({
+  await db.relationship.create({
     data: { type: 'marriage', personAId: '40000000-0000-0000-0000-000000000001', personBId: '40000000-0000-0000-0000-000000000002' },
   });
 
@@ -506,5 +506,5 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    await db.$disconnect();
   });

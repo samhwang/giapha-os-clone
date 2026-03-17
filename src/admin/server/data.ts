@@ -67,13 +67,13 @@ const CHUNK_SIZE = 200;
 export const exportData = createServerFn({ method: 'GET' })
   .middleware([isAdminMiddleware])
   .handler(async () => {
-    const prisma = getDbClient();
+    const db = getDbClient();
 
-    const [persons, relationships, personDetailsPrivate, customEvents] = await prisma.$transaction([
-      prisma.person.findMany({ orderBy: { createdAt: 'asc' } }),
-      prisma.relationship.findMany({ orderBy: { createdAt: 'asc' } }),
-      prisma.personDetailsPrivate.findMany({ orderBy: { createdAt: 'asc' } }),
-      prisma.customEvent.findMany({ orderBy: { createdAt: 'asc' } }),
+    const [persons, relationships, personDetailsPrivate, customEvents] = await db.$transaction([
+      db.person.findMany({ orderBy: { createdAt: 'asc' } }),
+      db.relationship.findMany({ orderBy: { createdAt: 'asc' } }),
+      db.personDetailsPrivate.findMany({ orderBy: { createdAt: 'asc' } }),
+      db.customEvent.findMany({ orderBy: { createdAt: 'asc' } }),
     ]);
 
     const payload: BackupPayload = {
@@ -104,9 +104,9 @@ export const importData = createServerFn({ method: 'POST' })
   .inputValidator(importDataSchema)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
-    const prisma = getDbClient();
+    const db = getDbClient();
 
-    await prisma.$transaction(async (tx) => {
+    await db.$transaction(async (tx) => {
       await tx.customEvent.deleteMany();
       await tx.personDetailsPrivate.deleteMany();
       await tx.relationship.deleteMany();

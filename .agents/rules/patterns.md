@@ -12,7 +12,7 @@ import { createFileRoute } from '@tanstack/react-router';
 export const Route = createFileRoute('/dashboard/')({
   loader: async () => {
     // Runs on server — fetch data with Prisma
-    const persons = await prisma.person.findMany();
+    const persons = await db.person.findMany();
     return { persons };
   },
   component: DashboardPage,
@@ -34,7 +34,7 @@ import { createServerFn } from '@tanstack/react-start';
 export const createPerson = createServerFn({ method: 'POST' })
   .validator((data: CreatePersonInput) => data)
   .handler(async ({ data }) => {
-    return prisma.person.create({ data });
+    return db.person.create({ data });
   });
 ```
 
@@ -275,15 +275,15 @@ export default function LoginForm() {
 
 ```tsx
 // Include relations
-const person = await prisma.person.findUnique({
+const person = await db.person.findUnique({
   where: { id },
   include: { privateDetails: true, relationsA: true, relationsB: true },
 });
 
 // Transactions for multi-step operations
-await prisma.$transaction([
-  prisma.person.delete({ where: { id } }),
-  prisma.personDetailsPrivate.deleteMany({ where: { personId: id } }),
+await db.$transaction([
+  db.person.delete({ where: { id } }),
+  db.personDetailsPrivate.deleteMany({ where: { personId: id } }),
 ]);
 ```
 
@@ -293,9 +293,9 @@ await prisma.$transaction([
 import { Prisma } from '../../generated/prisma';
 
 try {
-  await prisma.person.create({ data });
+  await db.person.create({ data });
 } catch (error) {
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+  if (error instanceof db.PrismaClientKnownRequestError) {
     if (error.code === 'P2002') {
       // Unique constraint violation
     }

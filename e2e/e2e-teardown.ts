@@ -14,17 +14,17 @@ teardown('cleanup e2e users', async () => {
   const seedData: SeedData = JSON.parse(readFileSync(SEED_DATA_PATH, 'utf-8'));
 
   const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-  const prisma = new PrismaClient({ adapter });
+  const db = new PrismaClient({ adapter });
 
   try {
     // Cascade delete handles accounts and sessions via onDelete: Cascade
-    const { count } = await prisma.user.deleteMany({
+    const { count } = await db.user.deleteMany({
       where: { id: { in: seedData.userIds } },
     });
 
     unlinkSync(SEED_DATA_PATH);
     console.log(`E2E teardown complete: deleted ${count} user(s)`);
   } finally {
-    await prisma.$disconnect();
+    await db.$disconnect();
   }
 });

@@ -1,15 +1,15 @@
 import { getDbClient } from '../src/lib/db';
 
 export async function cleanDatabase() {
-  const prisma = getDbClient();
-  await prisma.relationship.deleteMany();
-  await prisma.personDetailsPrivate.deleteMany();
-  await prisma.person.deleteMany();
+  const db = getDbClient();
+  await db.relationship.deleteMany();
+  await db.personDetailsPrivate.deleteMany();
+  await db.person.deleteMany();
 }
 
 export async function cleanUsers() {
-  const prisma = getDbClient();
-  await prisma.account.deleteMany();
-  await prisma.session.deleteMany();
-  await prisma.user.deleteMany();
+  const db = getDbClient();
+  await db.account.deleteMany();
+  await db.session.deleteMany();
+  await db.user.deleteMany();
 }
