@@ -341,7 +341,8 @@
     "dataReq2": "<strong>Giới tính</strong> chính xác để phân biệt Cô/Dì, Chú/Cậu.",
     "dataReq3": "<strong>Thứ tự sinh (Birth Order)</strong> là yếu tố then chốt để phân định thứ bậc Anh/Em trong dòng họ.",
     "referenceTable": "Bảng danh xưng tham khảo",
-    "generationShort": "Đ.{{gen}}"
+    "generationShort": "Đ.{{gen}}",
+    "noRelationFound": "Không tìm thấy quan hệ trong phạm vi dữ liệu"
   },
   "admin": {
     "roleUpdated": "Đã cập nhật vai trò người dùng thành công.",

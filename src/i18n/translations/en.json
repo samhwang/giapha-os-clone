@@ -341,7 +341,8 @@
     "dataReq2": "Accurate <strong>gender</strong> to distinguish between paternal/maternal aunts and uncles.",
     "dataReq3": "<strong>Birth Order</strong> is the key factor for determining elder/younger seniority in the lineage.",
     "referenceTable": "Kinship Reference Table",
-    "generationShort": "G.{{gen}}"
+    "generationShort": "G.{{gen}}",
+    "noRelationFound": "No relationship found within the available data"
   },
   "admin": {
     "roleUpdated": "User role updated successfully.",
