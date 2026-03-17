@@ -3,12 +3,22 @@ import path from 'node:path';
 import { serverEnv } from './env.server';
 
 const UPLOADS_PREFIX = '/api/uploads/';
+const MAX_AVATAR_SIZE_BYTES = 2 * 1024 * 1024; // 2 MB
+const ALLOWED_AVATAR_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
 export function getPublicUrl(key: string): string {
   return `${UPLOADS_PREFIX}${key}`;
 }
 
-export async function uploadAvatar(buffer: Buffer, personId: string, filename: string, _contentType: string): Promise<string> {
+export async function uploadAvatar(buffer: Buffer, personId: string, filename: string, contentType: string): Promise<string> {
+  if (buffer.length > MAX_AVATAR_SIZE_BYTES) {
+    throw new Error(`Avatar exceeds maximum size of 2 MB`);
+  }
+
+  if (!ALLOWED_AVATAR_TYPES.has(contentType)) {
+    throw new Error(`Invalid avatar type: ${contentType}. Allowed: ${[...ALLOWED_AVATAR_TYPES].join(', ')}`);
+  }
+
   const key = `avatars/${personId}/${filename}`;
   const dir = path.join(serverEnv.UPLOAD_DIR, 'avatars', personId);
 

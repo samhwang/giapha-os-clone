@@ -76,6 +76,23 @@ describe('uploadAvatar', () => {
     expect(url).toBe(`/api/uploads/avatars/${personId}/${filename}`);
     expect(fs.existsSync(path.join(tempDir, 'avatars', personId, filename))).toBe(true);
   });
+
+  it('should reject files exceeding 2 MB', async () => {
+    const oversizedBuffer = Buffer.alloc(2 * 1024 * 1024 + 1);
+    await expect(uploadAvatar(oversizedBuffer, 'p1', 'big.jpg', 'image/jpeg')).rejects.toThrow('Avatar exceeds maximum size of 2 MB');
+  });
+
+  it('should reject disallowed content types', async () => {
+    const buffer = Buffer.from('not-an-image');
+    await expect(uploadAvatar(buffer, 'p1', 'file.txt', 'text/plain')).rejects.toThrow('Invalid avatar type: text/plain');
+  });
+
+  it('should accept all allowed image types', async () => {
+    const buffer = Buffer.from('fake');
+    for (const type of ['image/jpeg', 'image/png', 'image/webp', 'image/gif']) {
+      await expect(uploadAvatar(buffer, 'p1', `img.${type.split('/')[1]}`, type)).resolves.toBeDefined();
+    }
+  });
 });
 
 describe('deleteAvatar', () => {
