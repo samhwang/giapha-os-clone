@@ -118,18 +118,19 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                 </div>
                 <div className="space-y-1.5 pl-4 border-l-2 border-stone-100">
                   <p className="text-stone-800 font-semibold text-sm sm:text-base">
-                    {formatDisplayDate(person.birthYear, person.birthMonth, person.birthDay, t('common.unknown'))}
+                    {formatDisplayDate({ year: person.birthYear, month: person.birthMonth, day: person.birthDay, unknownLabel: t('common.unknown') })}
                   </p>
                   {(person.birthYear || person.birthMonth || person.birthDay) && (
                     <p className="text-sm font-medium text-stone-500 flex items-center gap-1.5">
                       <span className="text-2xs border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
-                      {getLunarDateString(person.birthYear, person.birthMonth, person.birthDay, t('common.lunarLeap')) || t('common.unknown')}
+                      {getLunarDateString({ year: person.birthYear, month: person.birthMonth, day: person.birthDay, leapLabel: t('common.lunarLeap') }) ||
+                        t('common.unknown')}
                     </p>
                   )}
                   {person.birthMonth && person.birthDay && (
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       {(() => {
-                        const animal = getZodiacAnimal(person.birthYear, person.birthMonth, person.birthDay);
+                        const animal = getZodiacAnimal({ year: person.birthYear, month: person.birthMonth, day: person.birthDay });
                         if (!animal) return null;
                         return (
                           <span className="text-2xs font-bold text-rose-700 bg-rose-50/80 border border-rose-200/60 rounded px-1.5 py-0.5">
@@ -160,12 +161,13 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                   </div>
                   <div className="space-y-1.5 pl-4 border-l-2 border-stone-100">
                     <p className="text-stone-800 font-semibold text-sm sm:text-base">
-                      {formatDisplayDate(person.deathYear, person.deathMonth, person.deathDay, t('common.unknown'))}
+                      {formatDisplayDate({ year: person.deathYear, month: person.deathMonth, day: person.deathDay, unknownLabel: t('common.unknown') })}
                     </p>
                     {(person.deathYear || person.deathMonth || person.deathDay) && (
                       <p className="text-xs font-medium text-stone-500 flex items-center gap-1.5">
                         <span className="text-2xs border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
-                        {getLunarDateString(person.deathYear, person.deathMonth, person.deathDay, t('common.lunarLeap')) || t('common.unknown')}
+                        {getLunarDateString({ year: person.deathYear, month: person.deathMonth, day: person.deathDay, leapLabel: t('common.lunarLeap') }) ||
+                          t('common.unknown')}
                       </p>
                     )}
                   </div>
@@ -173,15 +175,15 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
               )}
 
               {(() => {
-                const ageData = calculateAge(
-                  person.birthYear,
-                  person.birthMonth,
-                  person.birthDay,
-                  person.deathYear,
-                  person.deathMonth,
-                  person.deathDay,
-                  person.isDeceased
-                );
+                const ageData = calculateAge({
+                  birthYear: person.birthYear,
+                  birthMonth: person.birthMonth,
+                  birthDay: person.birthDay,
+                  deathYear: person.deathYear,
+                  deathMonth: person.deathMonth,
+                  deathDay: person.deathDay,
+                  isDeceased: person.isDeceased,
+                });
                 if (!ageData) return null;
                 return (
                   <div

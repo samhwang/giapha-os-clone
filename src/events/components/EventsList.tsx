@@ -154,7 +154,7 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<CustomEventRecord | null>(null);
 
-  const allEvents = useMemo(() => computeEvents(persons, customEvents, t('common.lunarSuffix')), [persons, customEvents, t]);
+  const allEvents = useMemo(() => computeEvents({ persons, customEvents, lunarSuffix: t('common.lunarSuffix') }), [persons, customEvents, t]);
   const filtered = useMemo(() => {
     let result = allEvents;
 

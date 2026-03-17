@@ -2,11 +2,16 @@ import { Lunar, Solar } from 'lunar-javascript';
 import type { Person } from '../../members/types';
 import type { CustomEventRecord, EventType, FamilyEvent } from '../types';
 
-/**
- * Finds the next solar Date on which a given lunar (month, day) falls,
- * starting from `fromDate`.
- */
-function nextSolarForLunar(lunarMonth: number, lunarDay: number, fromDate: Date): Date | null {
+interface LunarDateLookupInput {
+  lunarMonth: number;
+  lunarDay: number;
+}
+
+interface NextSolarForLunarInput extends LunarDateLookupInput {
+  fromDate: Date;
+}
+
+function nextSolarForLunar({ lunarMonth, lunarDay, fromDate }: NextSolarForLunarInput): Date | null {
   const todaySolar = Solar.fromYmd(fromDate.getFullYear(), fromDate.getMonth() + 1, fromDate.getDate());
   const currentLunarYear = todaySolar.getLunar().getYear();
 
@@ -27,7 +32,11 @@ function nextSolarForLunar(lunarMonth: number, lunarDay: number, fromDate: Date)
  * Finds the most recent solar Date on which a given lunar (month, day) fell,
  * on or before `beforeDate`.
  */
-function prevSolarForLunar(lunarMonth: number, lunarDay: number, beforeDate: Date): Date | null {
+interface PrevSolarForLunarInput extends LunarDateLookupInput {
+  beforeDate: Date;
+}
+
+function prevSolarForLunar({ lunarMonth, lunarDay, beforeDate }: PrevSolarForLunarInput): Date | null {
   const todaySolar = Solar.fromYmd(beforeDate.getFullYear(), beforeDate.getMonth() + 1, beforeDate.getDate());
   const currentLunarYear = todaySolar.getLunar().getYear();
 
@@ -49,7 +58,13 @@ function prevSolarForLunar(lunarMonth: number, lunarDay: number, beforeDate: Dat
  * - Birthdays use the solar birthMonth / birthDay.
  * - Death anniversaries (ngày giỗ) are observed on the *lunar* date of death.
  */
-export function computeEvents(persons: Person[], customEvents: CustomEventRecord[] = [], lunarSuffix = 'ÂL'): FamilyEvent[] {
+interface ComputeEventsInput {
+  persons: Person[];
+  customEvents?: CustomEventRecord[];
+  lunarSuffix?: string;
+}
+
+export function computeEvents({ persons, customEvents = [], lunarSuffix = 'ÂL' }: ComputeEventsInput): FamilyEvent[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const events: FamilyEvent[] = [];
@@ -111,13 +126,13 @@ export function computeEvents(persons: Person[], customEvents: CustomEventRecord
           originYear: p.deathLunarYear ?? p.deathYear,
         };
 
-        const next = nextSolarForLunar(lMonth, lDay, today);
+        const next = nextSolarForLunar({ lunarMonth: lMonth, lunarDay: lDay, fromDate: today });
         if (next) {
           const daysUntil = Math.round((next.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
           events.push({ ...baseDeathEvent, nextOccurrence: next, daysUntil });
         }
 
-        const prev = prevSolarForLunar(lMonth, lDay, today);
+        const prev = prevSolarForLunar({ lunarMonth: lMonth, lunarDay: lDay, beforeDate: today });
         if (prev) {
           const pastDays = Math.round((prev.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
           events.push({ ...baseDeathEvent, nextOccurrence: prev, daysUntil: pastDays });

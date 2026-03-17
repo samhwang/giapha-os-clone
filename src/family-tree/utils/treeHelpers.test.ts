@@ -114,7 +114,7 @@ describe('getFilteredTreeData', () => {
   const noFilters = { hideDaughtersInLaw: false, hideSonsInLaw: false, hideDaughters: false, hideSons: false, hideMales: false, hideFemales: false };
 
   it('returns person, spouses, and children for a given personId', () => {
-    const data = getFilteredTreeData(vanCongGoc.id, personsMap, adj, noFilters);
+    const data = getFilteredTreeData({ personId: vanCongGoc.id, personsMap, adj, filters: noFilters });
 
     expect(data.person.id).toBe(vanCongGoc.id);
     expect(data.spouses).toHaveLength(1);
@@ -123,52 +123,52 @@ describe('getFilteredTreeData', () => {
   });
 
   it('hides daughters-in-law when hideDaughtersInLaw is true', () => {
-    const data = getFilteredTreeData(vanCongGoc.id, personsMap, adj, { ...noFilters, hideDaughtersInLaw: true });
+    const data = getFilteredTreeData({ personId: vanCongGoc.id, personsMap, adj, filters: { ...noFilters, hideDaughtersInLaw: true } });
     expect(data.spouses.every((s) => s.person.gender !== Gender.enum.female)).toBe(true);
   });
 
   it('hides sons-in-law when hideSonsInLaw is true', () => {
-    const data = getFilteredTreeData(dinhThiMyDuyen.id, personsMap, adj, { ...noFilters, hideSonsInLaw: true });
+    const data = getFilteredTreeData({ personId: dinhThiMyDuyen.id, personsMap, adj, filters: { ...noFilters, hideSonsInLaw: true } });
     expect(data.spouses.every((s) => s.person.gender !== Gender.enum.male)).toBe(true);
   });
 
   it('hides daughters when hideDaughters is true', () => {
-    const data = getFilteredTreeData(vanCongGoc.id, personsMap, adj, { ...noFilters, hideDaughters: true });
+    const data = getFilteredTreeData({ personId: vanCongGoc.id, personsMap, adj, filters: { ...noFilters, hideDaughters: true } });
     expect(data.children.every((c) => c.gender !== Gender.enum.female)).toBe(true);
   });
 
   it('hides sons when hideSons is true', () => {
-    const data = getFilteredTreeData(vanCongGoc.id, personsMap, adj, { ...noFilters, hideSons: true });
+    const data = getFilteredTreeData({ personId: vanCongGoc.id, personsMap, adj, filters: { ...noFilters, hideSons: true } });
     expect(data.children.every((c) => c.gender !== Gender.enum.male)).toBe(true);
   });
 
   it('hides male spouses when hideMales is true', () => {
     // vanTriMinh is male, married to dinhThiMyDuyen (female)
-    const data = getFilteredTreeData(dinhThiMyDuyen.id, personsMap, adj, { ...noFilters, hideMales: true });
+    const data = getFilteredTreeData({ personId: dinhThiMyDuyen.id, personsMap, adj, filters: { ...noFilters, hideMales: true } });
     expect(data.spouses.every((s) => s.person.gender !== Gender.enum.male)).toBe(true);
   });
 
   it('hides female spouses when hideFemales is true', () => {
-    const data = getFilteredTreeData(vanCongGoc.id, personsMap, adj, { ...noFilters, hideFemales: true });
+    const data = getFilteredTreeData({ personId: vanCongGoc.id, personsMap, adj, filters: { ...noFilters, hideFemales: true } });
     expect(data.spouses.every((s) => s.person.gender !== Gender.enum.female)).toBe(true);
   });
 
   it('hides male children when hideMales is true', () => {
-    const data = getFilteredTreeData(vanCongGoc.id, personsMap, adj, { ...noFilters, hideMales: true });
+    const data = getFilteredTreeData({ personId: vanCongGoc.id, personsMap, adj, filters: { ...noFilters, hideMales: true } });
     expect(data.children.every((c) => c.gender !== Gender.enum.male)).toBe(true);
   });
 
   it('hides female children when hideFemales is true', () => {
-    const data = getFilteredTreeData(vanCongGoc.id, personsMap, adj, { ...noFilters, hideFemales: true });
+    const data = getFilteredTreeData({ personId: vanCongGoc.id, personsMap, adj, filters: { ...noFilters, hideFemales: true } });
     expect(data.children.every((c) => c.gender !== Gender.enum.female)).toBe(true);
   });
 
   it('throws when personId is not found in personsMap', () => {
-    expect(() => getFilteredTreeData('non-existent', personsMap, adj, noFilters)).toThrow('Person with id non-existent not found');
+    expect(() => getFilteredTreeData({ personId: 'non-existent', personsMap, adj, filters: noFilters })).toThrow('Person with id non-existent not found');
   });
 
   it('returns empty children/spouses for a leaf node', () => {
-    const data = getFilteredTreeData(vanThiCam.id, personsMap, adj, noFilters);
+    const data = getFilteredTreeData({ personId: vanThiCam.id, personsMap, adj, filters: noFilters });
     expect(data.person.id).toBe(vanThiCam.id);
     expect(data.children).toHaveLength(0);
     expect(data.spouses).toHaveLength(0);

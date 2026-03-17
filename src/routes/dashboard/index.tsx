@@ -34,7 +34,7 @@ function DashboardLaunchpad() {
   const lunar = useMemo(() => getTodayLunar(undefined, t('common.month')), [t]);
 
   const upcomingEvents = useMemo(() => {
-    const all = computeEvents(persons, customEvents);
+    const all = computeEvents({ persons, customEvents });
     return all.filter((e) => e.daysUntil >= 0 && e.daysUntil <= 30);
   }, [persons, customEvents]);
 

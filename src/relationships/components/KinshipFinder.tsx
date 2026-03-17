@@ -163,7 +163,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
 
   const result = useMemo(() => {
     if (!personA || !personB) return null;
-    return computeKinship(personA, personB, persons, relationships);
+    return computeKinship({ personA, personB, persons, relationships });
   }, [personA, personB, persons, relationships]);
 
   const swap = () => {

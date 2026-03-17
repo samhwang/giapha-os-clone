@@ -77,20 +77,20 @@ const allRelationships: RelEdge[] = [
 describe('computeKinship', () => {
   describe('when both persons are the same', () => {
     it('should return null', () => {
-      expect(computeKinship(father, father, allPersons, allRelationships)).toBeNull();
+      expect(computeKinship({ personA: father, personB: father, persons: allPersons, relationships: allRelationships })).toBeNull();
     });
   });
 
   describe('marriage relationships', () => {
     it('should return "Vợ" and "Chồng" for a married couple', () => {
-      const result = computeKinship(father, mother, allPersons, allRelationships);
+      const result = computeKinship({ personA: father, personB: mother, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Vợ');
       expect(result?.bCallsA).toBe('Chồng');
     });
 
     it('should return "Chồng" and "Vợ" when reversed', () => {
-      const result = computeKinship(mother, father, allPersons, allRelationships);
+      const result = computeKinship({ personA: mother, personB: father, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Chồng');
       expect(result?.bCallsA).toBe('Vợ');
@@ -99,25 +99,25 @@ describe('computeKinship', () => {
 
   describe('parent-child relationships', () => {
     it('should return "Cha" for father-son', () => {
-      const result = computeKinship(son, father, allPersons, allRelationships);
+      const result = computeKinship({ personA: son, personB: father, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Cha');
     });
 
     it('should return "Mẹ" for mother-daughter', () => {
-      const result = computeKinship(daughter, mother, allPersons, allRelationships);
+      const result = computeKinship({ personA: daughter, personB: mother, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Mẹ');
     });
 
     it('should return "Con trai" when father calls son', () => {
-      const result = computeKinship(father, son, allPersons, allRelationships);
+      const result = computeKinship({ personA: father, personB: son, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Con trai');
     });
 
     it('should return "Con gái" when father calls daughter', () => {
-      const result = computeKinship(father, daughter, allPersons, allRelationships);
+      const result = computeKinship({ personA: father, personB: daughter, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Con gái');
     });
@@ -125,31 +125,31 @@ describe('computeKinship', () => {
 
   describe('grandparent relationships', () => {
     it('should return "Ông nội" for paternal grandfather', () => {
-      const result = computeKinship(son, grandpa, allPersons, allRelationships);
+      const result = computeKinship({ personA: son, personB: grandpa, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Ông nội');
     });
 
     it('should return "Bà nội" for paternal grandmother', () => {
-      const result = computeKinship(son, grandma, allPersons, allRelationships);
+      const result = computeKinship({ personA: son, personB: grandma, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Bà nội');
     });
 
     it('should return "Cháu trai" when grandfather calls grandson', () => {
-      const result = computeKinship(grandpa, son, allPersons, allRelationships);
+      const result = computeKinship({ personA: grandpa, personB: son, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Cháu trai');
     });
 
     it('should return "Ông ngoại" for maternal grandfather', () => {
-      const result = computeKinship(son, maternalGrandpa, allPersons, allRelationships);
+      const result = computeKinship({ personA: son, personB: maternalGrandpa, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Ông ngoại');
     });
 
     it('should return "Bà ngoại" for maternal grandmother', () => {
-      const result = computeKinship(son, maternalGrandma, allPersons, allRelationships);
+      const result = computeKinship({ personA: son, personB: maternalGrandma, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Bà ngoại');
     });
@@ -157,14 +157,14 @@ describe('computeKinship', () => {
 
   describe('sibling relationships', () => {
     it('should return "Em gái" for older brother calling younger sister', () => {
-      const result = computeKinship(son, daughter, allPersons, allRelationships);
+      const result = computeKinship({ personA: son, personB: daughter, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Em gái');
       expect(result?.bCallsA).toBe('Anh trai');
     });
 
     it('should return "Anh trai" for younger sister calling older brother', () => {
-      const result = computeKinship(daughter, son, allPersons, allRelationships);
+      const result = computeKinship({ personA: daughter, personB: son, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Anh trai');
       expect(result?.bCallsA).toBe('Em gái');
@@ -173,13 +173,13 @@ describe('computeKinship', () => {
 
   describe('uncle/aunt relationships (paternal)', () => {
     it('should return "Cô" for paternal aunt (father\'s sister)', () => {
-      const result = computeKinship(son, aunt, allPersons, allRelationships);
+      const result = computeKinship({ personA: son, personB: aunt, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Cô');
     });
 
     it('should return "Chú" for paternal uncle (father\'s younger brother)', () => {
-      const result = computeKinship(son, uncle, allPersons, allRelationships);
+      const result = computeKinship({ personA: son, personB: uncle, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Chú');
     });
@@ -187,7 +187,7 @@ describe('computeKinship', () => {
 
   describe('uncle/aunt relationships (maternal)', () => {
     it('should return "Cậu" for maternal uncle (mother\'s brother)', () => {
-      const result = computeKinship(son, maternalUncle, allPersons, allRelationships);
+      const result = computeKinship({ personA: son, personB: maternalUncle, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Cậu');
     });
@@ -200,7 +200,7 @@ describe('computeKinship', () => {
       const personsWithWife = [...allPersons, wife];
       const relsWithWife = [...allRelationships, marriage('son', 'wife')];
 
-      const result = computeKinship(father, wife, personsWithWife, relsWithWife);
+      const result = computeKinship({ personA: father, personB: wife, persons: personsWithWife, relationships: relsWithWife });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Con dâu');
     });
@@ -215,7 +215,7 @@ describe('computeKinship', () => {
       const relsExt = [...allRelationships, marriage('uncle', 'thu-wife')];
 
       // son calls uncle's wife
-      const result = computeKinship(son, thuWife, personsExt, relsExt);
+      const result = computeKinship({ personA: son, personB: thuWife, persons: personsExt, relationships: relsExt });
       expect(result).not.toBeNull();
       // son → uncle = Chú, uncle's wife = Cô (reverse of Chú)
       expect(result?.aCallsB).toBe('Cô');
@@ -228,7 +228,7 @@ describe('computeKinship', () => {
       const relsExt = [...allRelationships, marriage('mat-uncle', 'cau-wife')];
 
       // son calls maternalUncle's wife
-      const result = computeKinship(son, cauWife, personsExt, relsExt);
+      const result = computeKinship({ personA: son, personB: cauWife, persons: personsExt, relationships: relsExt });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Dì');
     });
@@ -257,7 +257,7 @@ describe('computeKinship', () => {
     ];
 
     it('should return "Anh em cột chèo" for two brothers-in-law married to sisters', () => {
-      const result = computeKinship(son, son2, extPersons, extRels);
+      const result = computeKinship({ personA: son, personB: son2, persons: extPersons, relationships: extRels });
       // son and son2 are brothers (blood), so this should resolve via blood first
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Em trai');
@@ -283,7 +283,7 @@ describe('computeKinship', () => {
         marriage('man2', 'sis2'),
       ];
 
-      const result = computeKinship(man1, man2, p, r);
+      const result = computeKinship({ personA: man1, personB: man2, persons: p, relationships: r });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Anh em cột chèo');
       expect(result?.bCallsA).toBe('Anh em cột chèo');
@@ -308,7 +308,7 @@ describe('computeKinship', () => {
         marriage('bro2', 'w2'),
       ];
 
-      const result = computeKinship(woman1, woman2, p, r);
+      const result = computeKinship({ personA: woman1, personB: woman2, persons: p, relationships: r });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Chị em dâu');
       expect(result?.bCallsA).toBe('Chị em dâu');
@@ -318,7 +318,7 @@ describe('computeKinship', () => {
   describe('unrelated persons', () => {
     it('should return "Người dưng" for unrelated persons', () => {
       const stranger = person({ id: 'stranger', fullName: 'Người Lạ', gender: Gender.enum.male });
-      const result = computeKinship(son, stranger, [...allPersons, stranger], allRelationships);
+      const result = computeKinship({ personA: son, personB: stranger, persons: [...allPersons, stranger], relationships: allRelationships });
       expect(result).not.toBeNull();
       expect(result?.aCallsB).toBe('Người dưng');
       expect(result?.bCallsA).toBe('Người dưng');

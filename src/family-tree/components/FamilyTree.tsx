@@ -51,7 +51,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: { perso
   const adj = useMemo(() => buildAdjacencyLists(relationships, personsMap), [relationships, personsMap]);
 
   const getTreeData = (personId: string) =>
-    getFilteredTreeData(personId, personsMap, adj, { hideDaughtersInLaw, hideSonsInLaw, hideDaughters, hideSons, hideMales, hideFemales });
+    getFilteredTreeData({ personId, personsMap, adj, filters: { hideDaughtersInLaw, hideSonsInLaw, hideDaughters, hideSons, hideMales, hideFemales } });
 
   const renderTreeNode = (personId: string, visited: Set<string> = new Set()): ReactNode => {
     if (visited.has(personId)) return null;

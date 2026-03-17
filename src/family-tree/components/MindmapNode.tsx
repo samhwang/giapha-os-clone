@@ -32,13 +32,18 @@ export interface MindmapContextData {
 }
 
 function getTreeData(personId: string, ctx: MindmapContextData) {
-  return getFilteredTreeData(personId, ctx.personsMap, ctx.adj, {
-    hideDaughtersInLaw: ctx.hideDaughtersInLaw,
-    hideSonsInLaw: ctx.hideSonsInLaw,
-    hideDaughters: ctx.hideDaughters,
-    hideSons: ctx.hideSons,
-    hideMales: ctx.hideMales,
-    hideFemales: ctx.hideFemales,
+  return getFilteredTreeData({
+    personId,
+    personsMap: ctx.personsMap,
+    adj: ctx.adj,
+    filters: {
+      hideDaughtersInLaw: ctx.hideDaughtersInLaw,
+      hideSonsInLaw: ctx.hideSonsInLaw,
+      hideDaughters: ctx.hideDaughters,
+      hideSons: ctx.hideSons,
+      hideMales: ctx.hideMales,
+      hideFemales: ctx.hideFemales,
+    },
   });
 }
 
@@ -158,9 +163,14 @@ export const MindmapNode = memo(function MindmapNode({
                     />
                   </svg>
                   <span className="truncate">
-                    {formatDisplayDate(data.person.birthYear, data.person.birthMonth, data.person.birthDay, ctx.t('common.unknown'))}
+                    {formatDisplayDate({
+                      year: data.person.birthYear,
+                      month: data.person.birthMonth,
+                      day: data.person.birthDay,
+                      unknownLabel: ctx.t('common.unknown'),
+                    })}
                     {data.person.isDeceased &&
-                      ` → ${formatDisplayDate(data.person.deathYear, data.person.deathMonth, data.person.deathDay, ctx.t('common.unknown'))}`}
+                      ` → ${formatDisplayDate({ year: data.person.deathYear, month: data.person.deathMonth, day: data.person.deathDay, unknownLabel: ctx.t('common.unknown') })}`}
                   </span>
                 </span>
                 {data.person.isInLaw && (

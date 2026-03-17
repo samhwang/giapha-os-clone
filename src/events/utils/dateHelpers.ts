@@ -2,7 +2,14 @@ import { Lunar, Solar } from 'lunar-javascript';
 import { getUserTimeZone, nowInTimeZone } from '../../lib/date';
 import { logger } from '../../lib/logger';
 
-export function formatDisplayDate(year: number | null, month: number | null, day: number | null, unknownLabel = ''): string {
+interface FormatDisplayDateInput {
+  year: number | null;
+  month: number | null;
+  day: number | null;
+  unknownLabel?: string;
+}
+
+export function formatDisplayDate({ year, month, day, unknownLabel = '' }: FormatDisplayDateInput): string {
   if (!year && !month && !day) return unknownLabel;
 
   const parts = [];
@@ -13,7 +20,14 @@ export function formatDisplayDate(year: number | null, month: number | null, day
   return parts.join('/');
 }
 
-export function getLunarDateString(year: number | null, month: number | null, day: number | null, leapLabel = ''): string | null {
+interface GetLunarDateStringInput {
+  year: number | null;
+  month: number | null;
+  day: number | null;
+  leapLabel?: string;
+}
+
+export function getLunarDateString({ year, month, day, leapLabel = '' }: GetLunarDateStringInput): string | null {
   if (!year || !month || !day) return null;
 
   try {
@@ -33,7 +47,13 @@ export function getLunarDateString(year: number | null, month: number | null, da
   }
 }
 
-export function getSolarDateString(year: number | null, month: number | null, day: number | null): string | null {
+interface GetSolarDateStringInput {
+  year: number | null;
+  month: number | null;
+  day: number | null;
+}
+
+export function getSolarDateString({ year, month, day }: GetSolarDateStringInput): string | null {
   if (!year || !month || !day) return null;
 
   try {
@@ -52,16 +72,27 @@ export function getSolarDateString(year: number | null, month: number | null, da
   }
 }
 
-export function calculateAge(
-  birthYear: number | null,
-  birthMonth: number | null,
-  birthDay: number | null,
-  deathYear: number | null,
-  deathMonth: number | null,
-  deathDay: number | null,
-  isDeceased: boolean = false,
-  timeZone?: string
-): { age: number; isDeceased: boolean } | null {
+interface CalculateAgeInput {
+  birthYear: number | null;
+  birthMonth: number | null;
+  birthDay: number | null;
+  deathYear: number | null;
+  deathMonth: number | null;
+  deathDay: number | null;
+  isDeceased?: boolean;
+  timeZone?: string;
+}
+
+export function calculateAge({
+  birthYear,
+  birthMonth,
+  birthDay,
+  deathYear,
+  deathMonth,
+  deathDay,
+  isDeceased = false,
+  timeZone,
+}: CalculateAgeInput): { age: number; isDeceased: boolean } | null {
   if (!birthYear) return null;
 
   if (!isDeceased && !deathYear) {
@@ -109,7 +140,13 @@ export function getZodiacSign(day: number | null, month: number | null): string 
   return null;
 }
 
-export function getZodiacAnimal(year: number | null, month: number | null = null, day: number | null = null): string | null {
+interface GetZodiacAnimalInput {
+  year: number | null;
+  month?: number | null;
+  day?: number | null;
+}
+
+export function getZodiacAnimal({ year, month = null, day = null }: GetZodiacAnimalInput): string | null {
   if (!year) return null;
 
   const animals = ['Thân', 'Dậu', 'Tuất', 'Hợi', 'Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi'];
@@ -163,7 +200,15 @@ function ganZhiToVietnamese(ganZhi: string): string {
   return `${can} ${chi}`;
 }
 
-export function getTodayLunar(timeZone?: string, monthLabel = '') {
+interface TodayLunarInfo {
+  solarStr: string;
+  lunarDay: number;
+  lunarMonth: number;
+  lunarYear: string;
+  lunarDayStr: string;
+}
+
+export function getTodayLunar(timeZone?: string, monthLabel = ''): TodayLunarInfo {
   const tz = timeZone || getUserTimeZone();
   const now = nowInTimeZone(tz);
 

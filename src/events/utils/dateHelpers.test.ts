@@ -4,35 +4,35 @@ import { calculateAge, formatDisplayDate, getLunarDateString, getTodayLunar, get
 describe('formatDisplayDate', () => {
   describe('when all date components are provided', () => {
     it('should return DD/MM/YYYY format', () => {
-      expect(formatDisplayDate(1990, 3, 15)).toBe('15/03/1990');
+      expect(formatDisplayDate({ year: 1990, month: 3, day: 15 })).toBe('15/03/1990');
     });
 
     it('should pad single-digit day and month', () => {
-      expect(formatDisplayDate(2000, 1, 5)).toBe('05/01/2000');
+      expect(formatDisplayDate({ year: 2000, month: 1, day: 5 })).toBe('05/01/2000');
     });
   });
 
   describe('when only partial date is provided', () => {
     it('should return only year when month and day are null', () => {
-      expect(formatDisplayDate(1990, null, null)).toBe('1990');
+      expect(formatDisplayDate({ year: 1990, month: null, day: null })).toBe('1990');
     });
 
     it('should return MM/YYYY when only day is null', () => {
-      expect(formatDisplayDate(1990, 6, null)).toBe('06/1990');
+      expect(formatDisplayDate({ year: 1990, month: 6, day: null })).toBe('06/1990');
     });
 
     it('should return DD/MM when only year is null', () => {
-      expect(formatDisplayDate(null, 3, 15)).toBe('15/03');
+      expect(formatDisplayDate({ year: null, month: 3, day: 15 })).toBe('15/03');
     });
   });
 
   describe('when all date components are null', () => {
     it('should return empty string by default', () => {
-      expect(formatDisplayDate(null, null, null)).toBe('');
+      expect(formatDisplayDate({ year: null, month: null, day: null })).toBe('');
     });
 
     it('should return custom unknown label when provided', () => {
-      expect(formatDisplayDate(null, null, null, 'Unknown')).toBe('Unknown');
+      expect(formatDisplayDate({ year: null, month: null, day: null, unknownLabel: 'Unknown' })).toBe('Unknown');
     });
   });
 });
@@ -41,29 +41,29 @@ describe('getLunarDateString', () => {
   describe('when valid solar date is provided', () => {
     it('should return lunar date string', () => {
       // 15/03/1902 solar → should return a lunar date
-      const result = getLunarDateString(1902, 3, 15);
+      const result = getLunarDateString({ year: 1902, month: 3, day: 15 });
       expect(result).not.toBeNull();
       expect(result).toMatch(/^\d{2}\/\d{2}\/\d{4}$/);
     });
 
     it('should return correct lunar conversion for known date', () => {
       // 2024-02-10 solar = Lunar New Year 2024 (1st day, 1st month)
-      const result = getLunarDateString(2024, 2, 10);
+      const result = getLunarDateString({ year: 2024, month: 2, day: 10 });
       expect(result).toBe('01/01/2024');
     });
   });
 
   describe('when any input is null', () => {
     it('should return null when year is null', () => {
-      expect(getLunarDateString(null, 3, 15)).toBeNull();
+      expect(getLunarDateString({ year: null, month: 3, day: 15 })).toBeNull();
     });
 
     it('should return null when month is null', () => {
-      expect(getLunarDateString(1990, null, 15)).toBeNull();
+      expect(getLunarDateString({ year: 1990, month: null, day: 15 })).toBeNull();
     });
 
     it('should return null when day is null', () => {
-      expect(getLunarDateString(1990, 3, null)).toBeNull();
+      expect(getLunarDateString({ year: 1990, month: 3, day: null })).toBeNull();
     });
   });
 });
@@ -81,25 +81,27 @@ describe('calculateAge', () => {
 
   describe('when person is living', () => {
     it('should calculate age from birth year to current year', () => {
-      const result = calculateAge(1990, null, null, null, null, null);
+      const result = calculateAge({ birthYear: 1990, birthMonth: null, birthDay: null, deathYear: null, deathMonth: null, deathDay: null });
       expect(result).toEqual({ age: 35, isDeceased: false });
     });
   });
 
   describe('when person is deceased', () => {
     it('should calculate age at death', () => {
-      const result = calculateAge(1902, null, null, 1975, null, null, true);
+      const result = calculateAge({ birthYear: 1902, birthMonth: null, birthDay: null, deathYear: 1975, deathMonth: null, deathDay: null, isDeceased: true });
       expect(result).toEqual({ age: 73, isDeceased: true });
     });
   });
 
   describe('when birth year is null', () => {
     it('should return null', () => {
-      expect(calculateAge(null, null, null, null, null, null)).toBeNull();
+      expect(calculateAge({ birthYear: null, birthMonth: null, birthDay: null, deathYear: null, deathMonth: null, deathDay: null })).toBeNull();
     });
 
     it('should return null even if death year is provided', () => {
-      expect(calculateAge(null, null, null, 2020, null, null, true)).toBeNull();
+      expect(
+        calculateAge({ birthYear: null, birthMonth: null, birthDay: null, deathYear: 2020, deathMonth: null, deathDay: null, isDeceased: true })
+      ).toBeNull();
     });
   });
 });
@@ -122,19 +124,19 @@ describe('getZodiacSign', () => {
 describe('getZodiacAnimal', () => {
   it('should return correct animal for known years', () => {
     // 2000 % 12 = 8 → Thìn
-    expect(getZodiacAnimal(2000)).toBe('Thìn');
+    expect(getZodiacAnimal({ year: 2000 })).toBe('Thìn');
     // 1990 % 12 = 10 → Ngọ
-    expect(getZodiacAnimal(1990)).toBe('Ngọ');
+    expect(getZodiacAnimal({ year: 1990 })).toBe('Ngọ');
   });
 
   it('should use lunar year when month and day are provided', () => {
     // Jan 15 2000 solar → lunar year might still be 1999 (before Tet)
-    const result = getZodiacAnimal(2000, 1, 15);
+    const result = getZodiacAnimal({ year: 2000, month: 1, day: 15 });
     expect(result).not.toBeNull();
   });
 
   it('should return null when year is null', () => {
-    expect(getZodiacAnimal(null)).toBeNull();
+    expect(getZodiacAnimal({ year: null })).toBeNull();
   });
 });
 

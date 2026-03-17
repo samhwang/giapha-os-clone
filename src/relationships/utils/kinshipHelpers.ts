@@ -23,7 +23,13 @@ function compareSeniority(a: PersonNode, b: PersonNode): 'senior' | 'junior' | '
   return 'equal';
 }
 
-function getDirectAncestorTerm(depth: number, gender: 'male' | 'female' | 'other', isPaternal: boolean): string {
+interface GetDirectAncestorTermInput {
+  depth: number;
+  gender: 'male' | 'female' | 'other';
+  isPaternal: boolean;
+}
+
+function getDirectAncestorTerm({ depth, gender, isPaternal }: GetDirectAncestorTermInput): string {
   if (depth === 1) return gender === 'female' ? 'Mẹ' : 'Cha';
   if (depth === 2) {
     const base = gender === 'female' ? 'Bà' : 'Ông';
@@ -43,14 +49,16 @@ function getDirectDescendantTerm(depth: number, gender: 'male' | 'female' | 'oth
   return base + suffix;
 }
 
-function resolveBloodTerms(
-  depthA: number,
-  depthB: number,
-  personA: PersonNode,
-  personB: PersonNode,
-  pathA: PersonNode[],
-  pathB: PersonNode[]
-): [string, string, string] {
+interface ResolveBloodTermsInput {
+  depthA: number;
+  depthB: number;
+  personA: PersonNode;
+  personB: PersonNode;
+  pathA: PersonNode[];
+  pathB: PersonNode[];
+}
+
+function resolveBloodTerms({ depthA, depthB, personA, personB, pathA, pathB }: ResolveBloodTermsInput): [string, string, string] {
   const genderA = personA.gender;
   const genderB = personB.gender;
 
@@ -58,7 +66,7 @@ function resolveBloodTerms(
     const firstChildOfA = pathB[pathB.length - 1];
     if (!firstChildOfA) return ['Hậu duệ', 'Tiền bối', 'Quan hệ Trực hệ'];
     const isPaternal = firstChildOfA.gender === 'male';
-    const bCallsA = getDirectAncestorTerm(depthB, genderA, isPaternal);
+    const bCallsA = getDirectAncestorTerm({ depth: depthB, gender: genderA, isPaternal });
     const aCallsB = getDirectDescendantTerm(depthB, genderB);
     return [aCallsB, bCallsA, 'Quan hệ Trực hệ'];
   }
@@ -67,7 +75,7 @@ function resolveBloodTerms(
     const firstChildOfB = pathA[pathA.length - 1];
     if (!firstChildOfB) return ['Tiền bối', 'Hậu duệ', 'Quan hệ Trực hệ'];
     const isPaternal = firstChildOfB.gender === 'male';
-    const aCallsB = getDirectAncestorTerm(depthA, genderB, isPaternal);
+    const aCallsB = getDirectAncestorTerm({ depth: depthA, gender: genderB, isPaternal });
     const bCallsA = getDirectDescendantTerm(depthA, genderA);
     return [aCallsB, bCallsA, 'Quan hệ Trực hệ'];
   }
@@ -110,7 +118,7 @@ function resolveBloodTerms(
   }
 
   if (depthA === DEPTH_SIBLING && depthB > DEPTH_SIBLING) {
-    const [bCallsA, aCallsB, desc] = resolveBloodTerms(depthB, depthA, personB, personA, pathB, pathA);
+    const [bCallsA, aCallsB, desc] = resolveBloodTerms({ depthA: depthB, depthB: depthA, personA: personB, personB: personA, pathA: pathB, pathB: pathA });
     return [aCallsB, bCallsA, desc];
   }
 
@@ -141,7 +149,7 @@ function resolveBloodTerms(
       return [termForB, 'Cháu họ', `Họ hàng ${side}`];
     }
 
-    const [bCallsA, aCallsB, desc] = resolveBloodTerms(depthB, depthA, personB, personA, pathB, pathA);
+    const [bCallsA, aCallsB, desc] = resolveBloodTerms({ depthA: depthB, depthB: depthA, personA: personB, personB: personA, pathA: pathB, pathB: pathA });
     return [aCallsB, bCallsA, desc];
   }
 
@@ -150,11 +158,13 @@ function resolveBloodTerms(
 
 const ancestryCache = new WeakMap<Map<string, PersonNode>, Map<string, Map<string, { depth: number; path: PersonNode[] }>>>();
 
-function getAncestryData(
-  id: string,
-  parentMap: Map<string, string[]>,
-  personsMap: Map<string, PersonNode>
-): Map<string, { depth: number; path: PersonNode[] }> {
+interface GetAncestryDataInput {
+  id: string;
+  parentMap: Map<string, string[]>;
+  personsMap: Map<string, PersonNode>;
+}
+
+function getAncestryData({ id, parentMap, personsMap }: GetAncestryDataInput): Map<string, { depth: number; path: PersonNode[] }> {
   const idCache = ancestryCache.get(personsMap);
   const cached = idCache?.get(id);
   if (cached) {
@@ -192,14 +202,16 @@ function getAncestryData(
   return depths;
 }
 
-function findBloodKinship(
-  personA: PersonNode,
-  personB: PersonNode,
-  personsMap: Map<string, PersonNode>,
-  parentMap: Map<string, string[]>
-): KinshipResult | null {
-  const ancA = getAncestryData(personA.id, parentMap, personsMap);
-  const ancB = getAncestryData(personB.id, parentMap, personsMap);
+interface FindBloodKinshipInput {
+  personA: PersonNode;
+  personB: PersonNode;
+  personsMap: Map<string, PersonNode>;
+  parentMap: Map<string, string[]>;
+}
+
+function findBloodKinship({ personA, personB, personsMap, parentMap }: FindBloodKinshipInput): KinshipResult | null {
+  const ancA = getAncestryData({ id: personA.id, parentMap, personsMap });
+  const ancB = getAncestryData({ id: personB.id, parentMap, personsMap });
 
   let lcaId: string | null = null;
   let minDistance = Number.POSITIVE_INFINITY;
@@ -219,7 +231,14 @@ function findBloodKinship(
   const dataB = ancB.get(lcaId);
   if (!dataA || !dataB) return null;
 
-  const [aCallsB, bCallsA, description] = resolveBloodTerms(dataA.depth, dataB.depth, personA, personB, dataA.path, dataB.path);
+  const [aCallsB, bCallsA, description] = resolveBloodTerms({
+    depthA: dataA.depth,
+    depthB: dataB.depth,
+    personA,
+    personB,
+    pathA: dataA.path,
+    pathB: dataB.path,
+  });
 
   const lcaName = personsMap.get(lcaId)?.fullName ?? 'Tổ tiên chung';
   const pathParts: string[] = [];
@@ -235,7 +254,14 @@ function findBloodKinship(
   };
 }
 
-export function computeKinship(personA: PersonNode, personB: PersonNode, persons: PersonNode[], relationships: RelEdge[]): KinshipResult | null {
+interface ComputeKinshipInput {
+  personA: PersonNode;
+  personB: PersonNode;
+  persons: PersonNode[];
+  relationships: RelEdge[];
+}
+
+export function computeKinship({ personA, personB, persons, relationships }: ComputeKinshipInput): KinshipResult | null {
   if (personA.id === personB.id) return null;
 
   const personsMap = new Map(persons.map((p) => [p.id, p]));
@@ -270,7 +296,7 @@ export function computeKinship(personA: PersonNode, personB: PersonNode, persons
   }
 
   // 1. Blood kinship
-  const blood = findBloodKinship(personA, personB, personsMap, parentMap);
+  const blood = findBloodKinship({ personA, personB, personsMap, parentMap });
   if (blood) return blood;
 
   // 2. Through marriage of A (A's spouse is blood-related to B)
@@ -278,7 +304,7 @@ export function computeKinship(personA: PersonNode, personB: PersonNode, persons
     if (sId === personB.id) continue;
     const spouseA = personsMap.get(sId);
     if (!spouseA) continue;
-    const res = findBloodKinship(spouseA, personB, personsMap, parentMap);
+    const res = findBloodKinship({ personA: spouseA, personB, personsMap, parentMap });
     if (res) {
       let aCallsB = res.aCallsB;
       let bCallsA = res.bCallsA;
@@ -354,7 +380,7 @@ export function computeKinship(personA: PersonNode, personB: PersonNode, persons
   for (const sId of spousesB) {
     const spouseB = personsMap.get(sId);
     if (!spouseB) continue;
-    const res = findBloodKinship(personA, spouseB, personsMap, parentMap);
+    const res = findBloodKinship({ personA, personB: spouseB, personsMap, parentMap });
     if (res) {
       let aCallsB = res.aCallsB;
       let bCallsA = res.bCallsA;
@@ -433,7 +459,7 @@ export function computeKinship(personA: PersonNode, personB: PersonNode, persons
       const spouseB = personsMap.get(sIdB);
       if (!spouseB) continue;
 
-      const res = findBloodKinship(spouseA, spouseB, personsMap, parentMap);
+      const res = findBloodKinship({ personA: spouseA, personB: spouseB, personsMap, parentMap });
       if (res) {
         const prefixA = personA.gender === 'male' ? 'Chồng' : 'Vợ';
         const prefixB = personB.gender === 'male' ? 'Chồng' : 'Vợ';

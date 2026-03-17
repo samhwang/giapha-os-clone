@@ -42,7 +42,7 @@ describe('computeEvents', () => {
     it('should create a birthday event when birthMonth and birthDay are provided', () => {
       const persons = [makePerson({ id: 'p1', fullName: 'Test Person', birthYear: 1990, birthMonth: 3, birthDay: 14 })];
 
-      const events = computeEvents(persons);
+      const events = computeEvents({ persons });
       const birthdays = events.filter((e) => e.type === 'birthday');
 
       expect(birthdays).toHaveLength(1);
@@ -55,7 +55,7 @@ describe('computeEvents', () => {
     it('should emit both past and upcoming events if birthday already passed this year', () => {
       const persons = [makePerson({ id: 'p1', fullName: 'January Baby', birthYear: 2000, birthMonth: 1, birthDay: 1 })];
 
-      const events = computeEvents(persons);
+      const events = computeEvents({ persons });
       const birthdays = events.filter((e) => e.type === 'birthday');
 
       // Should have 2 entries: past (Jan 1, 2025) and upcoming (Jan 1, 2026)
@@ -69,7 +69,7 @@ describe('computeEvents', () => {
     it('should skip birthday when birthMonth or birthDay is null', () => {
       const persons = [makePerson({ id: 'p1', fullName: 'Year Only', birthYear: 1990 })];
 
-      const events = computeEvents(persons);
+      const events = computeEvents({ persons });
       expect(events.filter((e) => e.type === 'birthday')).toHaveLength(0);
     });
   });
@@ -90,7 +90,7 @@ describe('computeEvents', () => {
         }),
       ];
 
-      const events = computeEvents(persons);
+      const events = computeEvents({ persons });
       const anniversaries = events.filter((e) => e.type === 'death_anniversary');
 
       expect(anniversaries.length).toBeGreaterThanOrEqual(1);
@@ -101,14 +101,14 @@ describe('computeEvents', () => {
     it('should skip death anniversary for living person', () => {
       const persons = [makePerson({ id: 'p1', fullName: 'Living Person', birthYear: 1990, birthMonth: 3, birthDay: 14, deathMonth: 8, deathDay: 22 })];
 
-      const events = computeEvents(persons);
+      const events = computeEvents({ persons });
       expect(events.filter((e) => e.type === 'death_anniversary')).toHaveLength(0);
     });
 
     it('should skip death anniversary when deathMonth or deathDay is null', () => {
       const persons = [makePerson({ id: 'p1', fullName: 'Deceased No Date', deathYear: 1975, isDeceased: true })];
 
-      const events = computeEvents(persons);
+      const events = computeEvents({ persons });
       expect(events.filter((e) => e.type === 'death_anniversary')).toHaveLength(0);
     });
 
@@ -130,7 +130,7 @@ describe('computeEvents', () => {
         }),
       ];
 
-      const events = computeEvents(persons);
+      const events = computeEvents({ persons });
       const anniversary = events.find((e) => e.type === 'death_anniversary');
 
       expect(anniversary).toBeDefined();
@@ -153,7 +153,7 @@ describe('computeEvents', () => {
         }),
       ];
 
-      const events = computeEvents(persons);
+      const events = computeEvents({ persons });
       const anniversary = events.find((e) => e.type === 'death_anniversary');
 
       expect(anniversary).toBeDefined();
@@ -169,7 +169,7 @@ describe('computeEvents', () => {
         makePerson({ id: 'p2', fullName: 'February Birthday', birthYear: 1990, birthMonth: 2, birthDay: 1 }),
       ];
 
-      const events = computeEvents(persons);
+      const events = computeEvents({ persons });
       const upcoming = events.filter((e) => e.daysUntil >= 0);
       expect(upcoming[0].personName).toBe('February Birthday');
       expect(upcoming[1].personName).toBe('March Birthday');
@@ -183,7 +183,7 @@ describe('computeEvents', () => {
         { id: 'ce-2', name: 'Lễ Tảo Mộ', eventDate: '2025-06-01', location: null, content: null, createdBy: null },
       ];
 
-      const events = computeEvents([], customEvents);
+      const events = computeEvents({ persons: [], customEvents });
       const custom = events.filter((e) => e.type === 'custom_event');
 
       expect(custom).toHaveLength(2);
@@ -194,7 +194,7 @@ describe('computeEvents', () => {
     it('should skip custom events with null eventDate', () => {
       const customEvents = [{ id: 'ce-1', name: 'No Date', eventDate: null as unknown as string, location: null, content: null, createdBy: null }];
 
-      const events = computeEvents([], customEvents);
+      const events = computeEvents({ persons: [], customEvents });
       expect(events.filter((e) => e.type === 'custom_event')).toHaveLength(0);
     });
   });
@@ -215,7 +215,7 @@ describe('computeEvents', () => {
         }),
       ];
 
-      const events = computeEvents(persons);
+      const events = computeEvents({ persons });
       const birthdays = events.filter((e) => e.type === 'birthday');
 
       expect(birthdays).toHaveLength(1);
@@ -240,7 +240,7 @@ describe('computeEvents', () => {
         }),
       ];
 
-      const events = computeEvents(persons);
+      const events = computeEvents({ persons });
       const types = events.map((e) => e.type);
 
       expect(types).toContain('birthday');

@@ -517,7 +517,9 @@ export default function RelationshipManager({ personId, canEdit = false, personG
                         </span>
                         <span className="font-medium text-stone-800">{p.fullName}</span>
                       </div>
-                      <span className="text-2xs text-stone-400">{formatDisplayDate(p.birthYear, p.birthMonth, p.birthDay, t('common.unknown'))}</span>
+                      <span className="text-2xs text-stone-400">
+                        {formatDisplayDate({ year: p.birthYear, month: p.birthMonth, day: p.birthDay, unknownLabel: t('common.unknown') })}
+                      </span>
                     </button>
                   ))}
                 </div>

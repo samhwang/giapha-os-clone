@@ -60,11 +60,20 @@ export function buildAdjacencyLists(relationships: Relationship[], personsMap: M
   return { spousesByPersonId: spouses, childrenByPersonId: children };
 }
 
-/**
- * Gets filtered tree data for a single node (spouses + children) using
- * pre-computed adjacency lists.
- */
-export function getFilteredTreeData(personId: string, personsMap: Map<string, Person>, adj: AdjacencyLists, filters: TreeFilterOptions) {
+interface GetFilteredTreeDataInput {
+  personId: string;
+  personsMap: Map<string, Person>;
+  adj: AdjacencyLists;
+  filters: TreeFilterOptions;
+}
+
+interface FilteredTreeData {
+  person: Person;
+  spouses: SpouseData[];
+  children: Person[];
+}
+
+export function getFilteredTreeData({ personId, personsMap, adj, filters }: GetFilteredTreeDataInput): FilteredTreeData {
   const { hideDaughtersInLaw, hideSonsInLaw, hideDaughters, hideSons, hideMales, hideFemales } = filters;
 
   let spousesList = adj.spousesByPersonId.get(personId) || [];
