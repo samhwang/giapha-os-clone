@@ -75,6 +75,7 @@ function InactiveAccountPage() {
 
 function DashboardLayout() {
   const { session } = Route.useRouteContext();
+  if (!session) return null;
   const isAdmin = session.role === UserRole.enum.admin;
 
   if (!session.isActive) {

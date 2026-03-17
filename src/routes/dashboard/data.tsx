@@ -5,7 +5,7 @@ import { UserRole } from '../../types';
 
 export const Route = createFileRoute('/dashboard/data')({
   beforeLoad: ({ context }) => {
-    if (context.session.role !== UserRole.enum.admin) {
+    if (!context.session || context.session.role !== UserRole.enum.admin) {
       throw redirect({ to: '/dashboard' });
     }
   },
