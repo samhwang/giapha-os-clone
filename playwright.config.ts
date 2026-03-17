@@ -57,6 +57,16 @@ export default defineConfig({
         storageState: '.playwright/auth/member.json',
       },
     },
+    {
+      name: 'mobile-android',
+      testDir: './e2e/public',
+      use: { ...devices['Pixel 7'] },
+    },
+    {
+      name: 'mobile-ios',
+      testDir: './e2e/public',
+      use: { ...devices['iPhone 15 Pro'] },
+    },
   ],
   webServer: {
     command: 'pnpm dev',
