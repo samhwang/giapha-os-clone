@@ -45,8 +45,12 @@ All changes must be:
 │   ├── testing.md        # Vitest, React Testing Library, TDD/BDD
 │   ├── deployment.md     # Docker Compose, self-hosting
 │   └── communication.md  # Commit messages, docs, writing style
-└── skills/               # Task-specific toolkits (future)
-    └── .gitkeep
+└── skills/               # Task-specific toolkits
+    ├── create-component/
+    ├── create-route/
+    ├── create-server-function/
+    ├── create-test/
+    └── db-migration/
 
 prisma/                   # Database schema and seed data
 scripts/                  # Infrastructure setup scripts
@@ -76,7 +80,7 @@ src/
    - Located in `.agents/rules/[rule-name].md`
    - Treat these as required context: preload them before drafting any response
 
-3. **Skills** (future):
+3. **Skills**:
    - Skills are task-specific toolkits with proven workflows
    - Load a skill only if its trigger condition matches the task
    - Once loaded, follow the process and output format defined in the skill

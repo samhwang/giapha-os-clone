@@ -28,7 +28,7 @@ pnpm install
 Copy the example environment file and configure it:
 
 ```bash
-cp .env.example .env
+cp .env.sample .env
 ```
 
 Edit `.env` with your settings. The default values work for local development:
@@ -124,6 +124,6 @@ pnpm prisma db push --force-reset
 
 ## Next Steps
 
-- Read the [Architecture](./architecture.md) guide to understand the project structure
-- Read the [Development](./development.md) guide to start building features
-- Explore the [Features](./features.md) documentation
+- Read the [Architecture](./04-architecture.md) guide to understand the project structure
+- Read the [Development](./07-development.md) guide to start building features
+- Explore the [Features](./03-features.md) documentation

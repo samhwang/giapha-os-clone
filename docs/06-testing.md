@@ -217,10 +217,10 @@ pnpm test:coverage
 
 ## Test Utilities
 
-Use helpers from `src/test-utils/`:
+Use helpers from `test/`:
 
 ```tsx
-import { renderWithProviders } from '../test-utils/render-wrapper'
+import { renderWithProviders } from '../../test/render-wrapper'
 
 renderWithProviders(<Component />)
 ```
