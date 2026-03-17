@@ -26,7 +26,13 @@ interface MemberFormProps {
   onCancel?: () => void;
 }
 
-const isValidDate = (day: number | '', month: number | '', year: number | '') => {
+interface IsValidDateInput {
+  day: number | '';
+  month: number | '';
+  year: number | '';
+}
+
+const isValidDate = ({ day, month, year }: IsValidDateInput): boolean => {
   if (day !== '' && (day < 1 || day > 31)) return false;
   if (month !== '' && (month < 1 || month > 12)) return false;
   if (year !== '' && year < 1) return false;
@@ -71,10 +77,10 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
     },
     validators: {
       onSubmit: ({ value }) => {
-        if (!isValidDate(value.birthDay, value.birthMonth, value.birthYear)) {
+        if (!isValidDate({ day: value.birthDay, month: value.birthMonth, year: value.birthYear })) {
           return t('member.invalidBirthDate');
         }
-        if (value.isDeceased && !isValidDate(value.deathDay, value.deathMonth, value.deathYear)) {
+        if (value.isDeceased && !isValidDate({ day: value.deathDay, month: value.deathMonth, year: value.deathYear })) {
           return t('member.invalidDeathDate');
         }
         if (value.isDeceased && value.birthYear !== '' && value.deathYear !== '' && value.deathYear < value.birthYear) {
