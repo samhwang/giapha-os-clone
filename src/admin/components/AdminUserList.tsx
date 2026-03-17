@@ -31,7 +31,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
     },
     onSubmit: async ({ value }) => {
       try {
-        await createUser({
+        const result = await createUser({
           data: {
             email: value.email,
             password: value.password,
@@ -39,9 +39,12 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
             isActive: value.isActive,
           },
         });
+        if (result.user) {
+          setUsers((prev) => [...prev, result.user as UserProfile]);
+        }
         showNotification(t('admin.createSuccess'), 'success');
         setIsCreateModalOpen(false);
-        setTimeout(() => window.location.reload(), 1500);
+        form.reset();
       } catch (error: unknown) {
         showNotification(error instanceof Error ? error.message : t('admin.createError'), 'error');
       }

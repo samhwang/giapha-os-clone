@@ -1,4 +1,5 @@
 import { createServerFn } from '@tanstack/react-start';
+import { getRequestHeaders } from '@tanstack/react-start/server';
 import * as z from 'zod';
 import { auth } from '../../auth/server';
 import { isAdminMiddleware } from '../../auth/server/middleware';
@@ -76,25 +77,41 @@ export const createUser = createServerFn({ method: 'POST' })
       throw new Error('error.user.emailTaken');
     }
 
-    const ctx = await auth.api.signUpEmail({
+    const headers = getRequestHeaders();
+    const result = await auth.api.createUser({
+      headers,
       body: {
         email: data.email,
         password: data.password,
         name: data.name || data.email,
+        role: (data.role ?? UserRole.enum.member) as 'admin',
+        data: { isActive: data.isActive ?? true },
       },
     });
 
-    if (ctx.user) {
-      await db.user.update({
-        where: { id: ctx.user.id },
-        data: {
-          role: data.role ?? UserRole.enum.member,
-          isActive: data.isActive ?? true,
-        },
-      });
-    }
+    const user = result.user as unknown as {
+      id: string;
+      email: string;
+      name: string;
+      role: string;
+      isActive: boolean;
+      createdAt: Date;
+      updatedAt: Date;
+    };
 
-    return { success: true };
+    return {
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        isActive: user.isActive,
+        timeZone: null,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+    };
   });
 
 export const toggleStatus = createServerFn({ method: 'POST' })
