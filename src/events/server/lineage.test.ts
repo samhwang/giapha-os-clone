@@ -15,7 +15,7 @@ describe('updateBatch (inner logic)', () => {
   it('should update person generation and birthOrder', async () => {
     const person = await createPerson({ fullName: 'Test Person', gender: Gender.enum.male });
 
-    const result = await updatePerson(person.id, { generation: 2, birthOrder: 1 });
+    const result = await updatePerson({ id: person.id, data: { generation: 2, birthOrder: 1 } });
 
     expect(result.generation).toBe(2);
     expect(result.birthOrder).toBe(1);

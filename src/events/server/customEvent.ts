@@ -46,7 +46,7 @@ export const updateCustomEvent = createServerFn({ method: 'POST' })
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
     const { id, ...updateData } = data;
-    return updateCustomEventRepo(id, updateData);
+    return updateCustomEventRepo({ id, data: updateData });
   });
 
 export const deleteCustomEvent = createServerFn({ method: 'POST' })

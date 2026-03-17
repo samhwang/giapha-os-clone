@@ -3,7 +3,14 @@ import { getDbClient } from '../../database/lib/client';
 import type { DbClient } from '../../database/transaction';
 import type { RelationshipType } from '../types';
 
-export function findRelationshipByParticipants(personAId: string, personBId: string, type: RelationshipType, client: DbClient = getDbClient()) {
+interface FindRelationshipByParticipantsInput {
+  personAId: string;
+  personBId: string;
+  type: RelationshipType;
+  client?: DbClient;
+}
+
+export function findRelationshipByParticipants({ personAId, personBId, type, client = getDbClient() }: FindRelationshipByParticipantsInput) {
   return client.relationship.findFirst({
     where: {
       OR: [

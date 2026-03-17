@@ -45,7 +45,7 @@ describe('createRelationship (inner logic)', () => {
 
     await createRelationship({ type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personB.id });
 
-    const existing = await findRelationshipByParticipants(personA.id, personB.id, RelationshipType.enum.biological_child);
+    const existing = await findRelationshipByParticipants({ personAId: personA.id, personBId: personB.id, type: RelationshipType.enum.biological_child });
 
     expect(existing).not.toBeNull();
   });
@@ -56,7 +56,7 @@ describe('createRelationship (inner logic)', () => {
 
     await createRelationship({ type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personB.id });
 
-    const reversed = await findRelationshipByParticipants(personB.id, personA.id, RelationshipType.enum.biological_child);
+    const reversed = await findRelationshipByParticipants({ personAId: personB.id, personBId: personA.id, type: RelationshipType.enum.biological_child });
 
     expect(reversed).not.toBeNull();
   });
@@ -76,7 +76,7 @@ describe('deleteRelationship (inner logic)', () => {
 
     await deleteRelationship(rel.id);
 
-    const found = await findRelationshipByParticipants(personA.id, personB.id, RelationshipType.enum.marriage);
+    const found = await findRelationshipByParticipants({ personAId: personA.id, personBId: personB.id, type: RelationshipType.enum.marriage });
     expect(found).toBeNull();
   });
 });

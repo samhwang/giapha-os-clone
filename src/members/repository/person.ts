@@ -13,7 +13,13 @@ export function createPerson(data: PersonCreateInput, client: DbClient = getDbCl
   return client.person.create({ data, include: { privateDetails: true } });
 }
 
-export function updatePerson(id: string, data: PersonUpdateInput, client: DbClient = getDbClient()) {
+interface UpdatePersonInput {
+  id: string;
+  data: PersonUpdateInput;
+  client?: DbClient;
+}
+
+export function updatePerson({ id, data, client = getDbClient() }: UpdatePersonInput) {
   return client.person.update({ where: { id }, data });
 }
 
@@ -41,12 +47,14 @@ export function createManyPersons(data: PersonCreateManyInput | PersonCreateMany
   return client.person.createMany({ data });
 }
 
-export function upsertPersonDetailsPrivate(
-  personId: string,
-  create: PersonDetailsPrivateUncheckedCreateWithoutPersonInput,
-  update: PersonDetailsPrivateUpdateInput,
-  client: DbClient = getDbClient()
-) {
+interface UpsertPersonDetailsPrivateInput {
+  personId: string;
+  create: PersonDetailsPrivateUncheckedCreateWithoutPersonInput;
+  update: PersonDetailsPrivateUpdateInput;
+  client?: DbClient;
+}
+
+export function upsertPersonDetailsPrivate({ personId, create, update, client = getDbClient() }: UpsertPersonDetailsPrivateInput) {
   return client.personDetailsPrivate.upsert({
     where: { personId },
     create: { personId, ...create },

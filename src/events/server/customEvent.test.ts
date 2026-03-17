@@ -18,7 +18,7 @@ describe('customEvent (inner logic)', () => {
   it('should update a custom event', async () => {
     const event = await createCustomEvent({ name: 'Giỗ', eventDate: '2025-03-15' });
 
-    const updated = await updateCustomEvent(event.id, { name: 'Giỗ Ông Bà', location: 'HCM' });
+    const updated = await updateCustomEvent({ id: event.id, data: { name: 'Giỗ Ông Bà', location: 'HCM' } });
 
     expect(updated.name).toBe('Giỗ Ông Bà');
     expect(updated.location).toBe('HCM');

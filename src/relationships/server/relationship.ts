@@ -29,7 +29,7 @@ export const createRelationship = createServerFn({ method: 'POST' })
       throw new Error(ERRORS.RELATIONSHIP.SELF_RELATION);
     }
 
-    const existing = await findRelationshipByParticipants(data.personAId, data.personBId, data.type);
+    const existing = await findRelationshipByParticipants({ personAId: data.personAId, personBId: data.personBId, type: data.type });
     if (existing) {
       throw new Error(ERRORS.RELATIONSHIP.DUPLICATE);
     }

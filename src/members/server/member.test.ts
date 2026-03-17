@@ -47,7 +47,7 @@ describe('updatePerson (inner logic)', () => {
   it('should update person fields', async () => {
     const person = await createPerson({ fullName: 'Original Name', gender: Gender.enum.male });
 
-    const result = await updatePerson(person.id, { fullName: 'Updated Name' });
+    const result = await updatePerson({ id: person.id, data: { fullName: 'Updated Name' } });
 
     expect(result.fullName).toBe('Updated Name');
   });
@@ -55,7 +55,11 @@ describe('updatePerson (inner logic)', () => {
   it('should upsert private details when provided', async () => {
     const person = await createPerson({ fullName: 'Test Person', gender: Gender.enum.female });
 
-    await upsertPersonDetailsPrivate(person.id, { phoneNumber: '0909999999', occupation: null, currentResidence: null }, { phoneNumber: '0909999999' });
+    await upsertPersonDetailsPrivate({
+      personId: person.id,
+      create: { phoneNumber: '0909999999', occupation: null, currentResidence: null },
+      update: { phoneNumber: '0909999999' },
+    });
 
     const result = await findPersonById(person.id);
 
@@ -99,7 +103,7 @@ describe('uploadPersonAvatar (inner logic)', () => {
 
     const url = await uploadAvatar({ buffer: Buffer.from('fake-image'), personId: person.id, filename: 'photo.jpg', contentType: 'image/jpeg' });
 
-    const result = await updatePerson(person.id, { avatarUrl: url });
+    const result = await updatePerson({ id: person.id, data: { avatarUrl: url } });
 
     expect(result.avatarUrl).toBe(url);
   });

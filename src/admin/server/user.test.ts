@@ -25,7 +25,7 @@ describe('changeRole (inner logic)', () => {
   it('should update user role', async () => {
     const user = await seedUser({ role: UserRole.enum.member });
 
-    const updated = await updateUser(user.id, { role: UserRole.enum.editor });
+    const updated = await updateUser({ id: user.id, data: { role: UserRole.enum.editor } });
 
     expect(updated.role).toBe(UserRole.enum.editor);
   });
@@ -46,7 +46,7 @@ describe('toggleStatus (inner logic)', () => {
   it('should toggle user status to inactive', async () => {
     const user = await seedUser({ isActive: true });
 
-    const updated = await updateUser(user.id, { isActive: false });
+    const updated = await updateUser({ id: user.id, data: { isActive: false } });
 
     expect(updated.isActive).toBe(false);
   });
@@ -54,7 +54,7 @@ describe('toggleStatus (inner logic)', () => {
   it('should toggle user status to active', async () => {
     const user = await seedUser({ isActive: false });
 
-    const updated = await updateUser(user.id, { isActive: true });
+    const updated = await updateUser({ id: user.id, data: { isActive: true } });
 
     expect(updated.isActive).toBe(true);
   });

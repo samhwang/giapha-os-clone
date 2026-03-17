@@ -39,7 +39,7 @@ export const changeRole = createServerFn({ method: 'POST' })
       throw new Error('error.user.selfRole');
     }
 
-    await updateUser(data.userId, { role: data.newRole });
+    await updateUser({ id: data.userId, data: { role: data.newRole } });
 
     return { success: true };
   });
@@ -94,7 +94,7 @@ export const toggleStatus = createServerFn({ method: 'POST' })
       throw new Error('error.user.selfStatus');
     }
 
-    await updateUser(data.userId, { isActive: data.isActive });
+    await updateUser({ id: data.userId, data: { isActive: data.isActive } });
 
     return { success: true };
   });

@@ -95,23 +95,23 @@ export const updatePerson = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const { id, phoneNumber, occupation, currentResidence, ...personData } = data;
 
-    await updatePersonRepo(id, personData);
+    await updatePersonRepo({ id, data: personData });
 
     const hasPrivateDetailsToUpdate = phoneNumber !== undefined || occupation !== undefined || currentResidence !== undefined;
     if (hasPrivateDetailsToUpdate) {
-      await upsertPersonDetailsPrivate(
-        id,
-        {
+      await upsertPersonDetailsPrivate({
+        personId: id,
+        create: {
           phoneNumber: phoneNumber ?? null,
           occupation: occupation ?? null,
           currentResidence: currentResidence ?? null,
         },
-        {
+        update: {
           ...(phoneNumber !== undefined && { phoneNumber }),
           ...(occupation !== undefined && { occupation }),
           ...(currentResidence !== undefined && { currentResidence }),
-        }
-      );
+        },
+      });
     }
 
     return findPersonByIdOrThrow(id);
@@ -152,7 +152,7 @@ export const uploadPersonAvatar = createServerFn({ method: 'POST' })
     const buffer = Buffer.from(data.base64, 'base64');
     const url = await uploadAvatar({ buffer, personId: data.personId, filename: data.filename, contentType: data.contentType });
 
-    return updatePersonRepo(data.personId, { avatarUrl: url });
+    return updatePersonRepo({ id: data.personId, data: { avatarUrl: url } });
   });
 
 export const getPersons = createServerFn({ method: 'GET' }).handler(async () => {

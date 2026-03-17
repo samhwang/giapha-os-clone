@@ -26,7 +26,13 @@ export function findAllUsers(client: DbClient = getDbClient()) {
   });
 }
 
-export function updateUser(id: string, data: UserUpdateInput, client: DbClient = getDbClient()) {
+interface UpdateUserInput {
+  id: string;
+  data: UserUpdateInput;
+  client?: DbClient;
+}
+
+export function updateUser({ id, data, client = getDbClient() }: UpdateUserInput) {
   return client.user.update({ where: { id }, data });
 }
 
