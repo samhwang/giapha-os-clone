@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../../ui/utils/cn';
 import { getAvatarBg } from '../../ui/utils/styles';
+import { useAvatarUpload } from '../hooks/useAvatarUpload';
 import { useMemberForm } from '../hooks/useMemberForm';
 import { createPerson, updatePerson, uploadPersonAvatar } from '../server/member';
 import { Gender, type Person } from '../types';
@@ -41,8 +42,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
   const navigate = useNavigate();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(initialData?.avatarUrl || null);
+  const { avatarFile, avatarPreview, selectFile, clear: clearAvatar, toBase64 } = useAvatarUpload({ initialUrl: initialData?.avatarUrl });
 
   const form = useMemberForm({
     defaultValues: {
@@ -121,16 +121,12 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
 
         const shouldUploadAvatar = avatarFile && personId;
         if (shouldUploadAvatar) {
-          const reader = new FileReader();
-          const base64 = await new Promise<string>((resolve) => {
-            reader.onload = () => resolve(reader.result as string);
-            reader.readAsDataURL(avatarFile);
-          });
+          const base64 = await toBase64();
           await uploadPersonAvatar({
             data: {
               personId,
               filename: avatarFile.name,
-              base64: base64,
+              base64,
               contentType: avatarFile.type,
             },
           });
@@ -368,8 +364,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          setAvatarFile(file);
-                          setAvatarPreview(URL.createObjectURL(file));
+                          selectFile(file);
                         }
                       }}
                       className="absolute inset-0 w-full h-full opacity-0"
@@ -387,8 +382,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                       type="button"
                       onClick={() => {
                         form.setFieldValue('avatarUrl', '');
-                        setAvatarFile(null);
-                        setAvatarPreview(null);
+                        clearAvatar();
                       }}
                       className="flex items-center gap-2 text-sm text-rose-600 hover:text-rose-700 font-medium px-4 py-2 border border-rose-200 rounded-lg bg-rose-50 hover:bg-rose-100 transition-colors"
                     >
