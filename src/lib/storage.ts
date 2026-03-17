@@ -11,7 +11,14 @@ export function getPublicUrl(key: string): string {
   return `${UPLOADS_PREFIX}${key}`;
 }
 
-export async function uploadAvatar(buffer: Buffer, personId: string, filename: string, contentType: string): Promise<string> {
+interface UploadAvatarInput {
+  buffer: Buffer;
+  personId: string;
+  filename: string;
+  contentType: string;
+}
+
+export async function uploadAvatar({ buffer, personId, filename, contentType }: UploadAvatarInput): Promise<string> {
   if (buffer.length > MAX_AVATAR_SIZE_BYTES) {
     throw new Error(`Avatar exceeds maximum size of 2 MB`);
   }

@@ -150,7 +150,7 @@ export const uploadPersonAvatar = createServerFn({ method: 'POST' })
     }
 
     const buffer = Buffer.from(data.base64, 'base64');
-    const url = await uploadAvatar(buffer, data.personId, data.filename, data.contentType);
+    const url = await uploadAvatar({ buffer, personId: data.personId, filename: data.filename, contentType: data.contentType });
 
     return updatePersonRepo(data.personId, { avatarUrl: url });
   });

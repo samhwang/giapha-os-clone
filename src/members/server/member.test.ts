@@ -97,7 +97,7 @@ describe('uploadPersonAvatar (inner logic)', () => {
   it('should upload avatar and update person', async () => {
     const person = await createPerson({ fullName: 'Avatar Test', gender: Gender.enum.male });
 
-    const url = await uploadAvatar(Buffer.from('fake-image'), person.id, 'photo.jpg', 'image/jpeg');
+    const url = await uploadAvatar({ buffer: Buffer.from('fake-image'), personId: person.id, filename: 'photo.jpg', contentType: 'image/jpeg' });
 
     const result = await updatePerson(person.id, { avatarUrl: url });
 

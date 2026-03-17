@@ -47,7 +47,7 @@ describe('uploadAvatar', () => {
     const personId = 'test-person-upload';
     const filename = 'photo.jpg';
 
-    const url = await uploadAvatar(buffer, personId, filename, 'image/jpeg');
+    const url = await uploadAvatar({ buffer, personId, filename, contentType: 'image/jpeg' });
 
     expect(url).toBe(`/api/uploads/avatars/${personId}/${filename}`);
 
@@ -60,7 +60,7 @@ describe('uploadAvatar', () => {
     const personId = 'test-person-special';
     const filename = 'ảnh đại diện (1).jpg';
 
-    const url = await uploadAvatar(buffer, personId, filename, 'image/jpeg');
+    const url = await uploadAvatar({ buffer, personId, filename, contentType: 'image/jpeg' });
 
     expect(url).toContain(`avatars/${personId}/`);
     expect(fs.existsSync(path.join(tempDir, 'avatars', personId, filename))).toBe(true);
@@ -71,7 +71,7 @@ describe('uploadAvatar', () => {
     const personId = 'test-person-png';
     const filename = 'avatar.png';
 
-    const url = await uploadAvatar(buffer, personId, filename, 'image/png');
+    const url = await uploadAvatar({ buffer, personId, filename, contentType: 'image/png' });
 
     expect(url).toBe(`/api/uploads/avatars/${personId}/${filename}`);
     expect(fs.existsSync(path.join(tempDir, 'avatars', personId, filename))).toBe(true);
@@ -79,18 +79,20 @@ describe('uploadAvatar', () => {
 
   it('should reject files exceeding 2 MB', async () => {
     const oversizedBuffer = Buffer.alloc(2 * 1024 * 1024 + 1);
-    await expect(uploadAvatar(oversizedBuffer, 'p1', 'big.jpg', 'image/jpeg')).rejects.toThrow('Avatar exceeds maximum size of 2 MB');
+    await expect(uploadAvatar({ buffer: oversizedBuffer, personId: 'p1', filename: 'big.jpg', contentType: 'image/jpeg' })).rejects.toThrow(
+      'Avatar exceeds maximum size of 2 MB'
+    );
   });
 
   it('should reject disallowed content types', async () => {
     const buffer = Buffer.from('not-an-image');
-    await expect(uploadAvatar(buffer, 'p1', 'file.txt', 'text/plain')).rejects.toThrow('Invalid avatar type: text/plain');
+    await expect(uploadAvatar({ buffer, personId: 'p1', filename: 'file.txt', contentType: 'text/plain' })).rejects.toThrow('Invalid avatar type: text/plain');
   });
 
   it('should accept all allowed image types', async () => {
     const buffer = Buffer.from('fake');
     for (const type of ['image/jpeg', 'image/png', 'image/webp', 'image/gif']) {
-      await expect(uploadAvatar(buffer, 'p1', `img.${type.split('/')[1]}`, type)).resolves.toBeDefined();
+      await expect(uploadAvatar({ buffer, personId: 'p1', filename: `img.${type.split('/')[1]}`, contentType: type })).resolves.toBeDefined();
     }
   });
 });
@@ -101,7 +103,7 @@ describe('deleteAvatar', () => {
     const personId = 'test-person-delete';
     const filename = 'delete-me.jpg';
 
-    const url = await uploadAvatar(buffer, personId, filename, 'image/jpeg');
+    const url = await uploadAvatar({ buffer, personId, filename, contentType: 'image/jpeg' });
     const filePath = path.join(tempDir, 'avatars', personId, filename);
     expect(fs.existsSync(filePath)).toBe(true);
 
