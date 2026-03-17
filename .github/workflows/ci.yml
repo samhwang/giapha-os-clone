@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-node-deps
       - run: cp .env.sample .env
-      - run: npx playwright install
+      - run: npx playwright install --with-deps
       - run: pnpm run prisma:migrate:dev
       - run: pnpm run prisma:seed
       - run: pnpm run test:e2e

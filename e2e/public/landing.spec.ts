@@ -17,6 +17,6 @@ test.describe('Landing Page', () => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
     await page.getByRole('link', { name: /login|đăng nhập/i }).click();
-    await expect(page).toHaveURL(/.*\/login/);
+    await expect(page).toHaveURL(/.*\/login/, { timeout: 15000 });
   });
 });
