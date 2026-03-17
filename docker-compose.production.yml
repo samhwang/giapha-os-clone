@@ -46,6 +46,7 @@ services:
       - UPLOAD_DIR=/app/uploads
       - BETTER_AUTH_SECRET=change-me-to-a-random-secret-at-least-32-chars
       - BETTER_AUTH_URL=http://localhost:3000
+      - VITE_SITE_NAME=Gia Phả OS
     volumes:
       # Option 1: Named volume (default, portable)
       - uploads_data:/app/uploads
