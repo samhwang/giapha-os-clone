@@ -49,4 +49,9 @@ export const auth = betterAuth({
       adminRoles: [UserRole.enum.admin],
     }),
   ],
+  advanced: {
+    database: {
+      generateId: false,
+    },
+  },
 });
