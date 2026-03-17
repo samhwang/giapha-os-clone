@@ -17,7 +17,7 @@ export interface DashboardState {
   reset: () => void;
 }
 
-const updateUrl = (key: string, value: string | null) => {
+const updateUrl = (key: string, value: string | null): void => {
   if (typeof window === 'undefined') return;
   const newUrl = new URL(window.location.href);
   if (value) {
@@ -28,7 +28,9 @@ const updateUrl = (key: string, value: string | null) => {
   window.history.replaceState(null, '', newUrl.toString());
 };
 
-const getInitialState = () => ({
+type DashboardInitialState = Pick<DashboardState, 'memberModalId' | 'showCreateModal' | 'showAvatar' | 'view' | 'rootId'>;
+
+const getInitialState = (): DashboardInitialState => ({
   memberModalId: null as string | null,
   showCreateModal: false,
   showAvatar: true,
@@ -36,7 +38,7 @@ const getInitialState = () => ({
   rootId: null as string | null,
 });
 
-const readUrlState = () => {
+const readUrlState = (): DashboardInitialState => {
   if (typeof window === 'undefined') return getInitialState();
 
   const sp = new URLSearchParams(window.location.search);
