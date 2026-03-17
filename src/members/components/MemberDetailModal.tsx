@@ -3,6 +3,7 @@ import { AlertCircle, ArrowLeft, ExternalLink, Pencil, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
+import { logger } from '../../lib/logger';
 import { getPersonById } from '../server/member';
 import type { Person } from '../types';
 import MemberDetailContent from './MemberDetailContent';
@@ -44,7 +45,7 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: { isAdmi
           setPrivateData(result.privateDetails);
         }
       } catch (err) {
-        console.error('Error fetching member details:', err);
+        logger.error('Error fetching member details:', err);
         setError(err instanceof Error ? err.message : t('member.systemError'));
       } finally {
         setLoading(false);

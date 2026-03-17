@@ -3,6 +3,7 @@ import { LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { authClient } from '../../auth/client';
+import { logger } from '../../lib/logger';
 
 export default function LogoutButton() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -15,7 +16,7 @@ export default function LogoutButton() {
       await authClient.signOut();
       navigate({ to: '/login' });
     } catch (err) {
-      console.error('Logout error:', err);
+      logger.error('Logout error:', err);
       setIsLoggingOut(false);
     }
   };

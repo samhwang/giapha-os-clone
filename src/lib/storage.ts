@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { serverEnv } from './env.server';
+import { logger } from './logger.server';
 
 const UPLOADS_PREFIX = '/api/uploads/';
 const MAX_AVATAR_SIZE_BYTES = 2 * 1024 * 1024; // 2 MB
@@ -25,6 +26,7 @@ export async function uploadAvatar(buffer: Buffer, personId: string, filename: s
   await fs.mkdir(dir, { recursive: true });
   await fs.writeFile(path.join(dir, filename), buffer);
 
+  logger.info('Avatar uploaded', { personId, key });
   return getPublicUrl(key);
 }
 
@@ -40,7 +42,9 @@ export async function deleteAvatar(url: string): Promise<void> {
 
   try {
     await fs.unlink(filePath);
+    logger.info('Avatar deleted', { key });
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
+    logger.error('Failed to delete avatar', { key, error: err });
   }
 }

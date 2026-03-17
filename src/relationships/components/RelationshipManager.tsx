@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
+import { logger } from '../../lib/logger';
 import { createPerson, getPersons } from '../../members/server/member';
 import { Gender, type Person } from '../../members/types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
@@ -130,7 +131,7 @@ export default function RelationshipManager({ personId, canEdit = false, personG
 
       setRelationships(formattedRels);
     } catch (err) {
-      console.error('Error fetching relationships:', err);
+      logger.error('Error fetching relationships:', err);
     } finally {
       setLoading(false);
     }

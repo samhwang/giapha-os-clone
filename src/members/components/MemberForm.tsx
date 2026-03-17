@@ -4,6 +4,7 @@ import { AlertCircle, Briefcase, Image as ImageIcon, Loader2, Lock, MapPin, Phon
 import { Lunar, Solar } from 'lunar-javascript';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { logger } from '../../lib/logger';
 import { cn } from '../../ui/utils/cn';
 import { getAvatarBg } from '../../ui/utils/styles';
 import { useAvatarUpload } from '../hooks/useAvatarUpload';
@@ -138,7 +139,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
         await router.invalidate();
         navigate({ to: '/dashboard/members/$id', params: { id: personId } });
       } catch (err) {
-        console.error('Error saving member:', err);
+        logger.error('Error saving member:', err);
         setError(err instanceof Error ? err.message : t('member.saveError'));
       }
     },

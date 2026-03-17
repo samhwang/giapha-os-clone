@@ -1,6 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { logger } from '../../lib/logger';
 import { deleteMember } from '../server/member';
 
 interface DeleteMemberButtonProps {
@@ -24,7 +25,7 @@ export default function DeleteMemberButton({ memberId }: DeleteMemberButtonProps
       await deleteMember({ data: { id: memberId } });
       navigate({ to: '/dashboard/members' });
     } catch (err) {
-      console.error('Delete failed:', err);
+      logger.error('Delete failed:', err);
       setError(err instanceof Error ? err.message : t('member.deleteError'));
       setIsDeleting(false);
     }

@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createFileRoute } from '@tanstack/react-router';
 import { serverEnv } from '../../../lib/env.server';
+import { logger } from '../../../lib/logger.server';
 
 const CONTENT_TYPES: Record<string, string> = {
   '.jpg': 'image/jpeg',
@@ -44,7 +45,8 @@ export const Route = createFileRoute('/api/uploads/$')({
               'Cache-Control': 'public, max-age=31536000, immutable',
             },
           });
-        } catch {
+        } catch (error) {
+          logger.error('Failed to serve upload', { path: relativePath, error });
           return new Response('Not found', { status: 404 });
         }
       },

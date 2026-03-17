@@ -1,5 +1,6 @@
 import { Lunar, Solar } from 'lunar-javascript';
 import { getUserTimeZone, nowInTimeZone } from '../../lib/date';
+import { logger } from '../../lib/logger';
 
 export function formatDisplayDate(year: number | null, month: number | null, day: number | null, unknownLabel = ''): string {
   if (!year && !month && !day) return unknownLabel;
@@ -27,7 +28,7 @@ export function getLunarDateString(year: number | null, month: number | null, da
 
     return `${lDay}/${lMonth}${isLeap ? ` ${leapLabel}` : ''}/${lYear}`;
   } catch (error) {
-    console.error('Lunar conversion error:', error);
+    logger.error('Lunar conversion error:', error);
     return null;
   }
 }
@@ -46,7 +47,7 @@ export function getSolarDateString(year: number | null, month: number | null, da
 
     return `${sDay}/${sMonth}/${sYear}`;
   } catch (error) {
-    console.error('Solar conversion error:', error);
+    logger.error('Solar conversion error:', error);
     return null;
   }
 }

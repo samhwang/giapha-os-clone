@@ -1,6 +1,7 @@
 import { AlertCircle, Loader2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { logger } from '../../lib/logger';
 import { cn } from '../../ui/utils/cn';
 import { useCustomEventForm } from '../hooks/useCustomEventForm';
 import { createCustomEvent, deleteCustomEvent, updateCustomEvent } from '../server/customEvent';
@@ -72,7 +73,7 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
         onSuccess();
         onClose();
       } catch (err) {
-        console.error(err);
+        logger.error(err);
         setError(err instanceof Error ? err.message : 'An unknown error occurred');
       }
     },
@@ -100,7 +101,7 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
       onSuccess();
       onClose();
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       setError(err instanceof Error ? err.message : t('customEvent.deleteError'));
     } finally {
       setDeleting(false);

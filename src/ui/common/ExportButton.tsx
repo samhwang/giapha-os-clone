@@ -3,6 +3,7 @@ import jsPDF from 'jspdf';
 import { Download, FileImage, FileText, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { logger } from '../../lib/logger';
 
 export default function ExportButton() {
   const { t } = useTranslation();
@@ -66,7 +67,7 @@ export default function ExportButton() {
         pdf.save(`giapha-sodo-${new Date().toISOString().split('T')[0]}.pdf`);
       }
     } catch (error) {
-      console.error('Export error:', error);
+      logger.error('Export error:', error);
       setExportError(t('export.exportError'));
     } finally {
       setIsExporting(false);

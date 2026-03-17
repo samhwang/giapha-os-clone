@@ -1,7 +1,11 @@
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
+import consola from 'consola';
 import { afterEach, vi } from 'vitest';
 import { createI18nInstance } from '../src/i18n';
+
+// Silence consola output during tests
+consola.mockTypes(() => vi.fn());
 
 vi.mock('@tanstack/react-start', async () => {
   const createMockHandler = () => {
