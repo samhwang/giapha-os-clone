@@ -37,6 +37,9 @@ export function computeEvents(
     deathYear: number | null;
     deathMonth: number | null;
     deathDay: number | null;
+    deathLunarYear: number | null;
+    deathLunarMonth: number | null;
+    deathLunarDay: number | null;
     isDeceased: boolean;
   }[],
   customEvents: CustomEventRecord[] = [],
@@ -69,14 +72,23 @@ export function computeEvents(
       });
     }
 
-    // Death anniversary (lunar)
-    if (p.isDeceased && p.deathMonth && p.deathDay) {
+    if (p.isDeceased && ((p.deathLunarMonth && p.deathLunarDay) || (p.deathMonth && p.deathDay))) {
       try {
-        const deathYear = p.deathYear ?? new Date().getFullYear();
-        const solar = Solar.fromYmd(deathYear, p.deathMonth, p.deathDay);
-        const lunar = solar.getLunar();
-        const lMonth = Math.abs(lunar.getMonth());
-        const lDay = lunar.getDay();
+        let lMonth: number;
+        let lDay: number;
+
+        if (p.deathLunarMonth && p.deathLunarDay) {
+          lMonth = p.deathLunarMonth;
+          lDay = p.deathLunarDay;
+        } else if (p.deathMonth && p.deathDay) {
+          const deathYear = p.deathYear ?? new Date().getFullYear();
+          const solar = Solar.fromYmd(deathYear, p.deathMonth, p.deathDay);
+          const lunar = solar.getLunar();
+          lMonth = Math.abs(lunar.getMonth());
+          lDay = lunar.getDay();
+        } else {
+          continue;
+        }
 
         const next = nextSolarForLunar(lMonth, lDay, today);
         if (!next) continue;
@@ -90,7 +102,7 @@ export function computeEvents(
           nextOccurrence: next,
           daysUntil,
           eventDateLabel: `${lDay.toString().padStart(2, '0')}/${lMonth.toString().padStart(2, '0')} ${lunarSuffix}`,
-          originYear: p.deathYear,
+          originYear: p.deathLunarYear ?? p.deathYear,
         });
       } catch {
         // Skip if lunar conversion fails

@@ -24,6 +24,9 @@ describe('EventsList', () => {
       deathYear: null,
       deathMonth: null,
       deathDay: null,
+      deathLunarYear: null,
+      deathLunarMonth: null,
+      deathLunarDay: null,
       isDeceased: false,
     },
     {
@@ -35,6 +38,9 @@ describe('EventsList', () => {
       deathYear: 2000,
       deathMonth: 7,
       deathDay: 20,
+      deathLunarYear: null,
+      deathLunarMonth: null,
+      deathLunarDay: null,
       isDeceased: true,
     },
   ];
@@ -76,6 +82,9 @@ describe('EventsList', () => {
         deathYear: null,
         deathMonth: null,
         deathDay: null,
+        deathLunarYear: null,
+        deathLunarMonth: null,
+        deathLunarDay: null,
         isDeceased: false,
       },
     ];

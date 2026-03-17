@@ -41,6 +41,9 @@ function DashboardLaunchpad() {
       deathYear: p.deathYear,
       deathMonth: p.deathMonth,
       deathDay: p.deathDay,
+      deathLunarYear: p.deathLunarYear,
+      deathLunarMonth: p.deathLunarMonth,
+      deathLunarDay: p.deathLunarDay,
       isDeceased: p.isDeceased,
     }));
     const all = computeEvents(personData, customEvents);

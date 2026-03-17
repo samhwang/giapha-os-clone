@@ -24,6 +24,9 @@ describe('computeEvents', () => {
           deathYear: null,
           deathMonth: null,
           deathDay: null,
+          deathLunarYear: null,
+          deathLunarMonth: null,
+          deathLunarDay: null,
           isDeceased: false,
         },
       ];
@@ -49,6 +52,9 @@ describe('computeEvents', () => {
           deathYear: null,
           deathMonth: null,
           deathDay: null,
+          deathLunarYear: null,
+          deathLunarMonth: null,
+          deathLunarDay: null,
           isDeceased: false,
         },
       ];
@@ -72,6 +78,9 @@ describe('computeEvents', () => {
           deathYear: null,
           deathMonth: null,
           deathDay: null,
+          deathLunarYear: null,
+          deathLunarMonth: null,
+          deathLunarDay: null,
           isDeceased: false,
         },
       ];
@@ -93,6 +102,9 @@ describe('computeEvents', () => {
           deathYear: 1975,
           deathMonth: 8,
           deathDay: 22,
+          deathLunarYear: null,
+          deathLunarMonth: null,
+          deathLunarDay: null,
           isDeceased: true,
         },
       ];
@@ -116,6 +128,9 @@ describe('computeEvents', () => {
           deathYear: null,
           deathMonth: 8,
           deathDay: 22,
+          deathLunarYear: null,
+          deathLunarMonth: null,
+          deathLunarDay: null,
           isDeceased: false,
         },
       ];
@@ -135,12 +150,67 @@ describe('computeEvents', () => {
           deathYear: 1975,
           deathMonth: null,
           deathDay: null,
+          deathLunarYear: null,
+          deathLunarMonth: null,
+          deathLunarDay: null,
           isDeceased: true,
         },
       ];
 
       const events = computeEvents(persons);
       expect(events.filter((e) => e.type === 'death_anniversary')).toHaveLength(0);
+    });
+
+    it('should prefer stored lunar death dates over solar-to-lunar conversion', () => {
+      const persons = [
+        {
+          id: 'p1',
+          fullName: 'Lunar Stored',
+          birthYear: 1920,
+          birthMonth: 1,
+          birthDay: 1,
+          deathYear: 1980,
+          deathMonth: 6,
+          deathDay: 15,
+          deathLunarYear: 1980,
+          deathLunarMonth: 5,
+          deathLunarDay: 3,
+          isDeceased: true,
+        },
+      ];
+
+      const events = computeEvents(persons);
+      const anniversary = events.find((e) => e.type === 'death_anniversary');
+
+      expect(anniversary).toBeDefined();
+      // Should use stored lunar month/day (05/03) not converted from solar
+      expect(anniversary?.eventDateLabel).toContain('03/05');
+    });
+
+    it('should create death anniversary from stored lunar dates even without solar death date', () => {
+      const persons = [
+        {
+          id: 'p1',
+          fullName: 'Lunar Only',
+          birthYear: 1920,
+          birthMonth: 1,
+          birthDay: 1,
+          deathYear: null,
+          deathMonth: null,
+          deathDay: null,
+          deathLunarYear: 1980,
+          deathLunarMonth: 7,
+          deathLunarDay: 15,
+          isDeceased: true,
+        },
+      ];
+
+      const events = computeEvents(persons);
+      const anniversary = events.find((e) => e.type === 'death_anniversary');
+
+      expect(anniversary).toBeDefined();
+      expect(anniversary?.eventDateLabel).toContain('15/07');
+      expect(anniversary?.originYear).toBe(1980);
     });
   });
 
@@ -156,6 +226,9 @@ describe('computeEvents', () => {
           deathYear: null,
           deathMonth: null,
           deathDay: null,
+          deathLunarYear: null,
+          deathLunarMonth: null,
+          deathLunarDay: null,
           isDeceased: false,
         },
         {
@@ -167,6 +240,9 @@ describe('computeEvents', () => {
           deathYear: null,
           deathMonth: null,
           deathDay: null,
+          deathLunarYear: null,
+          deathLunarMonth: null,
+          deathLunarDay: null,
           isDeceased: false,
         },
       ];
@@ -212,6 +288,9 @@ describe('computeEvents', () => {
           deathYear: 2000,
           deathMonth: 3,
           deathDay: 10,
+          deathLunarYear: null,
+          deathLunarMonth: null,
+          deathLunarDay: null,
           isDeceased: true,
         },
       ];
@@ -236,6 +315,9 @@ describe('computeEvents', () => {
           deathYear: null,
           deathMonth: null,
           deathDay: null,
+          deathLunarYear: null,
+          deathLunarMonth: null,
+          deathLunarDay: null,
           isDeceased: false,
         },
         {
@@ -247,6 +329,9 @@ describe('computeEvents', () => {
           deathYear: 2000,
           deathMonth: 5,
           deathDay: 20,
+          deathLunarYear: null,
+          deathLunarMonth: null,
+          deathLunarDay: null,
           isDeceased: true,
         },
       ];
