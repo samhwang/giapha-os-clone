@@ -1,7 +1,12 @@
 import { createServerFn } from '@tanstack/react-start';
 import * as z from 'zod';
 import { isAdminMiddleware } from '../../auth/server/middleware';
-import { getDbClient } from '../../lib/db';
+import {
+  createCustomEvent as createCustomEventRepo,
+  deleteCustomEvent as deleteCustomEventRepo,
+  findAllCustomEvents,
+  updateCustomEvent as updateCustomEventRepo,
+} from '../repository/custom-event';
 
 const createCustomEventSchema = z.object({
   name: z.string().min(1),
@@ -21,22 +26,18 @@ const updateCustomEventSchema = z.object({
 const idSchema = z.object({ id: z.uuid() });
 
 export const getCustomEvents = createServerFn({ method: 'GET' }).handler(async () => {
-  const db = getDbClient();
-  return db.customEvent.findMany({ orderBy: { eventDate: 'asc' } });
+  return findAllCustomEvents();
 });
 
 export const createCustomEvent = createServerFn({ method: 'POST' })
   .inputValidator(createCustomEventSchema)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
-    const db = getDbClient();
-    return db.customEvent.create({
-      data: {
-        name: data.name,
-        eventDate: data.eventDate,
-        location: data.location ?? null,
-        content: data.content ?? null,
-      },
+    return createCustomEventRepo({
+      name: data.name,
+      eventDate: data.eventDate,
+      location: data.location ?? null,
+      content: data.content ?? null,
     });
   });
 
@@ -44,19 +45,14 @@ export const updateCustomEvent = createServerFn({ method: 'POST' })
   .inputValidator(updateCustomEventSchema)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
-    const db = getDbClient();
     const { id, ...updateData } = data;
-    return db.customEvent.update({
-      where: { id },
-      data: updateData,
-    });
+    return updateCustomEventRepo(id, updateData);
   });
 
 export const deleteCustomEvent = createServerFn({ method: 'POST' })
   .inputValidator(idSchema)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
-    const db = getDbClient();
-    await db.customEvent.delete({ where: { id: data.id } });
+    await deleteCustomEventRepo(data.id);
     return { success: true };
   });

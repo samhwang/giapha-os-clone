@@ -1,10 +1,19 @@
 import { createServerFn } from '@tanstack/react-start';
 import * as z from 'zod';
 import { isEditorMiddleware } from '../../auth/server/middleware';
-import { getDbClient } from '../../lib/db';
 import { ERRORS } from '../../lib/errors';
 import { deleteAvatar, uploadAvatar } from '../../lib/storage';
+import { countRelationshipsForPerson } from '../../relationships/repository/relationship';
 import { Gender } from '../../types';
+import {
+  createPerson as createPersonRepo,
+  deletePerson as deletePersonRepo,
+  findAllPersons,
+  findPersonById,
+  findPersonByIdOrThrow,
+  updatePerson as updatePersonRepo,
+  upsertPersonDetailsPrivate,
+} from '../repository/person';
 
 const genderEnum = Gender;
 
@@ -65,25 +74,20 @@ export const createPerson = createServerFn({ method: 'POST' })
   .inputValidator(createPersonSchema)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    const db = getDbClient();
-
     const { phoneNumber, occupation, currentResidence, ...personData } = data;
     const hasPrivateDetails = phoneNumber || occupation || currentResidence;
 
-    return db.person.create({
-      data: {
-        ...personData,
-        ...(hasPrivateDetails && {
-          privateDetails: {
-            create: {
-              phoneNumber: phoneNumber ?? null,
-              occupation: occupation ?? null,
-              currentResidence: currentResidence ?? null,
-            },
+    return createPersonRepo({
+      ...personData,
+      ...(hasPrivateDetails && {
+        privateDetails: {
+          create: {
+            phoneNumber: phoneNumber ?? null,
+            occupation: occupation ?? null,
+            currentResidence: currentResidence ?? null,
           },
-        }),
-      },
-      include: { privateDetails: true },
+        },
+      }),
     });
   });
 
@@ -91,51 +95,38 @@ export const updatePerson = createServerFn({ method: 'POST' })
   .inputValidator(updatePersonSchema)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    const db = getDbClient();
-
     const { id, phoneNumber, occupation, currentResidence, ...personData } = data;
 
-    await db.person.update({
-      where: { id },
-      data: personData,
-    });
+    await updatePersonRepo(id, personData);
 
     const hasPrivateDetailsToUpdate = phoneNumber !== undefined || occupation !== undefined || currentResidence !== undefined;
     if (hasPrivateDetailsToUpdate) {
-      await db.personDetailsPrivate.upsert({
-        where: { personId: id },
-        create: {
-          personId: id,
+      await upsertPersonDetailsPrivate(
+        id,
+        {
           phoneNumber: phoneNumber ?? null,
           occupation: occupation ?? null,
           currentResidence: currentResidence ?? null,
         },
-        update: {
+        {
           ...(phoneNumber !== undefined && { phoneNumber }),
           ...(occupation !== undefined && { occupation }),
           ...(currentResidence !== undefined && { currentResidence }),
-        },
-      });
+        }
+      );
     }
 
-    return db.person.findUniqueOrThrow({
-      where: { id },
-      include: { privateDetails: true },
-    });
+    return findPersonByIdOrThrow(id);
   });
 
 export const deleteMember = createServerFn({ method: 'POST' })
   .inputValidator(idSchema)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    const db = getDbClient();
-
-    const person = await db.person.findUnique({ where: { id: data.id } });
+    const person = await findPersonById(data.id);
     if (!person) throw new Error(ERRORS.MEMBER.NOT_FOUND);
 
-    const relationshipCount = await db.relationship.count({
-      where: { OR: [{ personAId: data.id }, { personBId: data.id }] },
-    });
+    const relationshipCount = await countRelationshipsForPerson(data.id);
     if (relationshipCount > 0) {
       throw new Error(ERRORS.MEMBER.HAS_RELATIONSHIPS);
     }
@@ -144,7 +135,7 @@ export const deleteMember = createServerFn({ method: 'POST' })
       await deleteAvatar(person.avatarUrl);
     }
 
-    await db.person.delete({ where: { id: data.id } });
+    await deletePersonRepo(data.id);
 
     return { success: true };
   });
@@ -153,9 +144,7 @@ export const uploadPersonAvatar = createServerFn({ method: 'POST' })
   .inputValidator(uploadAvatarSchema)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    const db = getDbClient();
-
-    const existing = await db.person.findUnique({ where: { id: data.personId } });
+    const existing = await findPersonById(data.personId);
     if (!existing) throw new Error(ERRORS.MEMBER.NOT_FOUND);
 
     if (existing.avatarUrl) {
@@ -165,25 +154,15 @@ export const uploadPersonAvatar = createServerFn({ method: 'POST' })
     const buffer = Buffer.from(data.base64, 'base64');
     const url = await uploadAvatar(buffer, data.personId, data.filename, data.contentType);
 
-    return db.person.update({
-      where: { id: data.personId },
-      data: { avatarUrl: url },
-    });
+    return updatePersonRepo(data.personId, { avatarUrl: url });
   });
 
 export const getPersons = createServerFn({ method: 'GET' }).handler(async () => {
-  const db = getDbClient();
-  return db.person.findMany({
-    orderBy: { createdAt: 'asc' },
-  });
+  return findAllPersons();
 });
 
 export const getPersonById = createServerFn({ method: 'GET' })
   .inputValidator(idSchema)
   .handler(async ({ data }) => {
-    const db = getDbClient();
-    return db.person.findUnique({
-      where: { id: data.id },
-      include: { privateDetails: true },
-    });
+    return findPersonById(data.id);
   });

@@ -56,13 +56,13 @@ pnpm test:e2e:ui            # Playwright UI mode
 Example pattern:
 ```ts
 // ❌ DON'T: Test through TanStack Start wrapper (requires complex mocking)
+import { createPerson } from './member'; // the server function export
 const result = await createPerson({ data: { fullName: 'Test', gender: 'male' } });
 
-// ✅ DO: Test inner logic directly (uses real DB via Testcontainers)
-const db = getDbClient();
-const result = await db.person.create({
+// ✅ DO: Test inner logic directly via repository functions (uses real DB via Testcontainers)
+import { createPerson } from '../repository/person';
+const result = await createPerson({
   data: { fullName: 'Test', gender: 'male' },
-  include: { privateDetails: true },
 });
 ```
 

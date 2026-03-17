@@ -12,7 +12,7 @@ dist-ssr
 __unconfig*
 coverage
 .content-collections
-src/generated
+**/generated
 src/routeTree.gen.ts
 base
 .docker/**/data

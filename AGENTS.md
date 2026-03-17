@@ -64,10 +64,10 @@ src/
 ├── relationships/        # Kinship and relationships
 ├── routes/               # TanStack Start file-based routes
 ├── ui/                   # Shared UI components (layout, icons, common)
-├── lib/                  # Core infrastructure (db, storage, env, config)
+├── database/             # Database layer (client, repositories, generated types)
+├── lib/                  # Core infrastructure (storage, env, config)
 ├── types/                # Global TypeScript types and Zod enums
-├── i18n/                 # i18next setup and translations
-└── generated/            # Prisma generated types
+└── i18n/                 # i18next setup and translations
 ```
 
 ## Execution Protocol

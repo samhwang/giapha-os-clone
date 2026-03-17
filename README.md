@@ -119,10 +119,10 @@ See the [Deployment Guide](./docs/01-deployment.md) for detailed instructions.
 │   ├── relationships/    # Kinship and relationships
 │   ├── routes/           # TanStack Start file-based routes
 │   ├── ui/               # Shared UI components
-│   ├── lib/              # Core infrastructure (db, storage, env)
+│   ├── database/         # Database layer (client, repositories, generated types)
+│   ├── lib/              # Core infrastructure (storage, env, config)
 │   ├── types/            # Global TypeScript types
-│   ├── i18n/             # i18next translations
-│   └── generated/        # Prisma generated types
+│   └── i18n/             # i18next translations
 ├── docker-compose.yml    # PostgreSQL
 └── biome.json            # Linter/formatter config
 ```

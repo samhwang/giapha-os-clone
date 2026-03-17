@@ -1,6 +1,6 @@
 import { PrismaPg } from '@prisma/adapter-pg';
+import { serverEnv } from '../../lib/env.server';
 import { PrismaClient } from '../generated/prisma/client';
-import { serverEnv } from './env.server';
 
 let prisma: PrismaClient | undefined;
 

@@ -1,7 +1,17 @@
 import { createServerFn } from '@tanstack/react-start';
 import * as z from 'zod';
 import { isAdminMiddleware } from '../../auth/server/middleware';
-import { getDbClient } from '../../lib/db';
+import { withTransaction } from '../../database/transaction';
+import { createManyCustomEvents, deleteAllCustomEvents, findAllCustomEvents } from '../../events/repository/custom-event';
+import {
+  createManyPersonDetailsPrivate,
+  createManyPersons,
+  deleteAllPersonDetailsPrivate,
+  deleteAllPersons,
+  findAllPersonDetailsPrivate,
+  findAllPersons,
+} from '../../members/repository/person';
+import { createManyRelationships, deleteAllRelationships, findAllRelationships } from '../../relationships/repository/relationship';
 import { type BackupPayload, Gender, RelationshipType } from '../../types';
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
@@ -67,13 +77,11 @@ const CHUNK_SIZE = 200;
 export const exportData = createServerFn({ method: 'GET' })
   .middleware([isAdminMiddleware])
   .handler(async () => {
-    const db = getDbClient();
-
-    const [persons, relationships, personDetailsPrivate, customEvents] = await db.$transaction([
-      db.person.findMany({ orderBy: { createdAt: 'asc' } }),
-      db.relationship.findMany({ orderBy: { createdAt: 'asc' } }),
-      db.personDetailsPrivate.findMany({ orderBy: { createdAt: 'asc' } }),
-      db.customEvent.findMany({ orderBy: { createdAt: 'asc' } }),
+    const [persons, relationships, personDetailsPrivate, customEvents] = await Promise.all([
+      findAllPersons(),
+      findAllRelationships(),
+      findAllPersonDetailsPrivate(),
+      findAllCustomEvents(),
     ]);
 
     const payload: BackupPayload = {
@@ -104,18 +112,16 @@ export const importData = createServerFn({ method: 'POST' })
   .inputValidator(importDataSchema)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
-    const db = getDbClient();
-
-    await db.$transaction(async (tx) => {
-      await tx.customEvent.deleteMany();
-      await tx.personDetailsPrivate.deleteMany();
-      await tx.relationship.deleteMany();
-      await tx.person.deleteMany();
+    await withTransaction(async (tx) => {
+      await deleteAllCustomEvents(tx);
+      await deleteAllPersonDetailsPrivate(tx);
+      await deleteAllRelationships(tx);
+      await deleteAllPersons(tx);
 
       for (let i = 0; i < data.persons.length; i += CHUNK_SIZE) {
         const chunk = data.persons.slice(i, i + CHUNK_SIZE);
-        await tx.person.createMany({
-          data: chunk.map((p) => ({
+        await createManyPersons(
+          chunk.map((p) => ({
             id: p.id,
             fullName: p.fullName,
             gender: p.gender,
@@ -136,40 +142,43 @@ export const importData = createServerFn({ method: 'POST' })
             avatarUrl: p.avatarUrl ?? null,
             note: p.note ?? null,
           })),
-        });
+          tx
+        );
       }
 
       for (let i = 0; i < data.relationships.length; i += CHUNK_SIZE) {
         const chunk = data.relationships.slice(i, i + CHUNK_SIZE);
-        await tx.relationship.createMany({
-          data: chunk.map((r) => ({
+        await createManyRelationships(
+          chunk.map((r) => ({
             type: r.type,
             personAId: r.personAId,
             personBId: r.personBId,
             note: r.note ?? null,
           })),
-        });
+          tx
+        );
       }
 
       if (data.personDetailsPrivate?.length) {
         for (let i = 0; i < data.personDetailsPrivate.length; i += CHUNK_SIZE) {
           const chunk = data.personDetailsPrivate.slice(i, i + CHUNK_SIZE);
-          await tx.personDetailsPrivate.createMany({
-            data: chunk.map((pd) => ({
+          await createManyPersonDetailsPrivate(
+            chunk.map((pd) => ({
               personId: pd.personId,
               phoneNumber: pd.phoneNumber ?? null,
               occupation: pd.occupation ?? null,
               currentResidence: pd.currentResidence ?? null,
             })),
-          });
+            tx
+          );
         }
       }
 
       if (data.customEvents?.length) {
         for (let i = 0; i < data.customEvents.length; i += CHUNK_SIZE) {
           const chunk = data.customEvents.slice(i, i + CHUNK_SIZE);
-          await tx.customEvent.createMany({
-            data: chunk.map((ce) => ({
+          await createManyCustomEvents(
+            chunk.map((ce) => ({
               id: ce.id,
               name: ce.name,
               eventDate: ce.eventDate,
@@ -177,7 +186,8 @@ export const importData = createServerFn({ method: 'POST' })
               content: ce.content ?? null,
               createdBy: ce.createdBy ?? null,
             })),
-          });
+            tx
+          );
         }
       }
     });

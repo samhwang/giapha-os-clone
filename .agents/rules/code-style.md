@@ -119,7 +119,8 @@ Organize `src/` by domain functionality, not by technical layer:
 ```
 src/
 ├── routes/           # File-based routing (framework requirement)
-├── lib/              # Core infrastructure (db, storage, config)
+├── database/         # Database layer (client, repositories, generated types)
+├── lib/              # Core infrastructure (storage, env, config)
 ├── auth/             # Authentication (Better Auth)
 ├── i18n/             # Internationalization
 ├── types/            # Global types
@@ -140,7 +141,8 @@ src/
 Rules:
 - Each functional module should be self-contained
 - Types belong in the module that uses them; co-locate if only used by 1 file
-- Keep `lib/` for cross-cutting concerns only (db, auth, storage)
+- Keep `database/` for all database concerns (client, repositories, generated types)
+- Keep `lib/` for cross-cutting concerns only (storage, env, config)
 - Use `ui/` for generic components with no domain logic
 
 ## Clean Code
@@ -214,4 +216,4 @@ Biome skips these (configured in `biome.json`):
 - `node_modules/`
 - `dist/`
 - `coverage/`
-- `generated/` (Prisma client)
+- `**/generated/` (Prisma client)

@@ -4,7 +4,7 @@ TL;DR: Schema defined in Prisma, use `pnpm prisma:push` to sync, `pnpm prisma st
 
 ## Schema Overview
 
-The database schema is defined in `prisma/schema.prisma`. Prisma generates TypeScript types to `src/generated/prisma`. The schema uses `@@map` annotations to map camelCase Prisma field names to snake_case database column names.
+The database schema is defined in `prisma/schema.prisma`. Prisma generates TypeScript types to `src/database/generated/prisma`. The schema uses `@@map` annotations to map camelCase Prisma field names to snake_case database column names.
 
 ### Enums
 
@@ -189,7 +189,7 @@ Syncs the Prisma schema to the database. Use for development.
 pnpm prisma:generate
 ```
 
-Regenerates the TypeScript types to `src/generated/prisma` after schema changes.
+Regenerates the TypeScript types to `src/database/generated/prisma` after schema changes.
 
 ### Open Prisma Studio
 
@@ -223,65 +223,82 @@ pnpm prisma:seed
 
 Runs the seed script defined in `prisma/seed.ts` to populate sample data.
 
-## Working with Prisma
+## Repository Layer
 
-### In Server Functions
+All database operations go through repository functions co-located with their domain modules. Server functions import from these repositories instead of calling Prisma directly. This decouples business logic from the ORM — if the ORM is replaced, only the repository files need to change.
 
-```typescript
-import { getDbClient } from '../../lib/db'
+### Structure
 
-const db = getDbClient()
-const persons = await db.person.findMany({
-  include: {
-    relationsA: true,
-    relationsB: true,
-  },
-})
+Repository files live alongside their domain server functions:
+
+```
+src/database/
+├── generated/prisma/      # Prisma generated client (auto-generated)
+├── lib/
+│   └── client.ts          # getDbClient() singleton
+└── transaction.ts         # DbClient type + withTransaction helper
+
+src/members/server/
+└── repository/person.ts   # Person + PersonDetailsPrivate operations
+
+src/relationships/server/
+└── repository/relationship.ts  # Relationship operations
+
+src/events/server/
+└── repository/custom-event.ts  # CustomEvent operations
+
+src/admin/server/
+└── repository/user.ts     # User operations
 ```
 
-### Queries
+### Usage in Server Functions
 
 ```typescript
-import { getDbClient } from '../../lib/db'
+import { createPerson, findPersonById } from '../repository/person';
+import { withTransaction } from '../../database/transaction';
 
-const db = getDbClient()
+// Simple query
+const person = await findPersonById(id);
 
-// Find one
-const person = await db.person.findUnique({
-  where: { id: 'xxx' },
-})
+// Create
+const newPerson = await createPerson({ fullName: 'Nguyễn Văn A', gender: 'male' });
 
-// Find many with filter
-const persons = await db.person.findMany({
-  where: { gender: 'male' },
-  orderBy: { birthYear: 'asc' },
-})
-
-// Update
-await db.person.update({
-  where: { id: 'xxx' },
-  data: { fullName: 'New Name' },
-})
-
-// Delete
-await db.person.delete({
-  where: { id: 'xxx' },
-})
-
-// Relationships
-await db.relationship.create({
-  data: {
-    personAId: 'parent-id',
-    personBId: 'child-id',
-    type: 'biological_child',
-  },
-})
+// Transaction (pass tx client to repository functions)
+await withTransaction(async (tx) => {
+  await deleteAllRelationships(tx);
+  await deleteAllPersons(tx);
+  await createManyPersons(data, tx);
+});
 ```
+
+### Repository Function Pattern
+
+Each function accepts an optional `client` parameter that defaults to `getDbClient()`. Pass `tx` from a transaction for transactional operations:
+
+```typescript
+import { getDbClient } from '../../database/lib/client';
+import type { DbClient } from '../../database/transaction';
+
+export function findPersonById(id: string, client: DbClient = getDbClient()) {
+  return client.person.findUnique({ where: { id }, include: { privateDetails: true } });
+}
+```
+
+### Available Repositories
+
+| File | Entity | Operations |
+|------|--------|------------|
+| `members/server/repository/person.ts` | Person, PersonDetailsPrivate | create, update, find, delete, batch update, upsert private details |
+| `relationships/server/repository/relationship.ts` | Relationship | create, delete, find by participants, find for person, count |
+| `events/server/repository/custom-event.ts` | CustomEvent | create, update, delete, find all |
+| `admin/server/repository/user.ts` | User | count, find by email, find all, update, delete |
+| `database/transaction.ts` | — | `withTransaction` helper, `DbClient` type |
 
 ## Best Practices
 
-1. **Always use transactions** for multi-step operations
-2. **Validate input** before database operations
-3. **Use Prisma types** from `../../generated/prisma` instead of raw queries
-4. **Include relations** when needed, avoid over-fetching
-5. **Use `@@map`** to keep Prisma field names camelCase while database columns stay snake_case
+1. **Use repository functions** — never call `db.entity.operation()` directly in server files
+2. **Always use transactions** for multi-step operations via `withTransaction`
+3. **Validate input** before database operations
+4. **Use Prisma types** from `src/database/generated/prisma` instead of raw queries
+5. **Include relations** when needed, avoid over-fetching
+6. **Use `@@map`** to keep Prisma field names camelCase while database columns stay snake_case

@@ -2,7 +2,8 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { admin } from 'better-auth/plugins/admin';
 import { tanstackStartCookies } from 'better-auth/tanstack-start';
-import { getDbClient } from '../lib/db';
+import { countUsers } from '../admin/repository/user';
+import { getDbClient } from '../database/lib/client';
 import { UserRole } from '../types';
 
 const db = getDbClient();
@@ -26,7 +27,7 @@ export const auth = betterAuth({
       create: {
         before: async (user) => {
           // First user becomes admin and is auto-activated
-          const userCount = await db.user.count();
+          const userCount = await countUsers();
           if (userCount === 0) {
             return {
               data: {

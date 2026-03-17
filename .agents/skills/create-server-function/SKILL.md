@@ -27,24 +27,26 @@ Create `src/*/server/[feature].ts`:
 
 ```typescript
 import { createServerFn } from '@tanstack/react-start'
-import { z } from 'zod'
-import { db } from '../../lib/db'
-import { auth } from '../../auth/server'
+import * as z from 'zod'
+import { isEditorMiddleware } from '../../auth/server/middleware'
+// Import repository functions for the relevant entity
+import { findAllItems, createItem } from '../repository/item'
 
-const [getItems, createItem] = createServerFn({ method: 'GET' })
-  .validator((data: unknown) => {
-    return z.object({
-      // input schema
-    }).parse(data)
-  })
-  .handler(async ({ data, context }) => {
-    // implementation
+const createItemSchema = z.object({
+  name: z.string().min(1),
+})
+
+export const getItems = createServerFn({ method: 'GET' })
+  .handler(async () => {
+    return findAllItems()
   })
 
-export const itemFns = {
-  getItems,
-  createItem,
-}
+export const createItemFn = createServerFn({ method: 'POST' })
+  .inputValidator(createItemSchema)
+  .middleware([isEditorMiddleware])
+  .handler(async ({ data }) => {
+    return createItem({ data })
+  })
 ```
 
 ### Step 3: Register in Context (if new feature)
@@ -68,7 +70,7 @@ Create: `src/*/server/[feature].test.ts`
 
 - [ ] Uses `createServerFn` from `@tanstack/react-start`
 - [ ] Input validated with Zod `.validator()`
-- [ ] Uses Prisma for database operations
+- [ ] Uses repository functions from `src/{module}/repository/` for database operations
 - [ ] Includes proper error handling
 - [ ] Tests cover success and error paths
 - [ ] Passes `pnpm typecheck` and `pnpm lint`
@@ -79,19 +81,15 @@ Create: `src/*/server/[feature].test.ts`
 
 ```typescript
 import { createServerFn } from '@tanstack/react-start'
-import { z } from 'zod'
-import { db } from '../../lib/db'
+import * as z from 'zod'
+import { findPersonById } from '../repository/person'
 
-const getMemberById = createServerFn({ method: 'GET' })
-  .validator((data: unknown) => z.string().parse(data))
-  .handler(async ({ data: memberId }) => {
-    const member = await db.member.findUnique({
-      where: { id: memberId },
-    })
-    if (!member) {
-      throw new Error('Member not found')
-    }
-    return member
+const idSchema = z.object({ id: z.uuid() })
+
+export const getPersonById = createServerFn({ method: 'GET' })
+  .inputValidator(idSchema)
+  .handler(async ({ data }) => {
+    return findPersonById(data.id)
   })
 ```
 
@@ -99,69 +97,45 @@ const getMemberById = createServerFn({ method: 'GET' })
 
 ```typescript
 import { createServerFn } from '@tanstack/react-start'
-import { z } from 'zod'
-import { db } from '../../lib/db'
-import { auth } from '../../auth/server'
+import * as z from 'zod'
+import { isEditorMiddleware } from '../../auth/server/middleware'
+import { createPerson } from '../repository/person'
 
-const createMember = createServerFn({ method: 'POST' })
-  .validator((data: unknown) => {
-    return z.object({
-      firstName: z.string().min(1),
-      lastName: z.string().min(1),
-      birthDate: z.string().optional(),
-    }).parse(data)
-  })
+const createPersonSchema = z.object({
+  fullName: z.string().min(1),
+  gender: z.enum(['male', 'female', 'other']),
+})
+
+export const createPersonFn = createServerFn({ method: 'POST' })
+  .inputValidator(createPersonSchema)
+  .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    const session = await auth()
-    if (!session) {
-      throw new Error('Unauthorized')
-    }
-    return db.member.create({
-      data: {
-        ...data,
-        familyId: session.user.familyId,
-      },
-    })
+    return createPerson({ data })
   })
 ```
 
-### List with Pagination
+### Transaction Example
 
 ```typescript
-const listMembers = createServerFn({ method: 'GET' })
-  .validator((data: unknown) => {
-    return z.object({
-      page: z.number().default(1),
-      limit: z.number().default(20),
-      search: z.string().optional(),
-    }).parse(data)
-  })
-  .handler(async ({ data: { page, limit, search } }) => {
-    const where = search
-      ? { OR: [
-          { firstName: { contains: search } },
-          { lastName: { contains: search } },
-        ]}
-      : {}
-    
-    const [members, total] = await Promise.all([
-      db.member.findMany({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: { created' },
-      }),
-At: 'desc      db.member.count({ where }),
-    ])
-    
-    return { members, total, page, totalPages: Math.ceil(total / limit) }
+import { createServerFn } from '@tanstack/react-start'
+import { isAdminMiddleware } from '../../auth/server/middleware'
+import { deleteAllPersons, createManyPersons } from '../repository/person'
+import { withTransaction } from '../../database/transaction'
+
+export const importData = createServerFn({ method: 'POST' })
+  .middleware([isAdminMiddleware])
+  .handler(async ({ data }) => {
+    await withTransaction(async (tx) => {
+      await deleteAllPersons(tx)
+      await createManyPersons(data.persons, tx)
+    })
   })
 ```
 
 ## Notes
 
-- Always validate inputs with Zod
-- Use `auth()` from `../../auth/server` for protected routes
-- Use `db` from `../../lib/db` for Prisma operations
-- Export functions in a named object for clean imports
-- Follow naming: `getXxx`, `createXxx`, `updateXxx`, `deleteXxx`, `listXxx`
+- Always validate inputs with Zod via `.inputValidator()`
+- Use middleware from `../../auth/server/middleware` for protected routes
+- Use repository functions from `../repository/` for same-module or `../../{module}/repository/` for cross-module database operations
+- Never call `getDbClient()` directly in server functions
+- Follow naming: `getXxx`, `createXxx`, `updateXxx`, `deleteXxx`

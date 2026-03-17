@@ -1,15 +1,15 @@
-import { getDbClient } from '../src/lib/db';
+import { deleteAllAccounts, deleteAllSessions, deleteAllUsers } from '../src/admin/repository/user';
+import { deleteAllPersonDetailsPrivate, deleteAllPersons } from '../src/members/repository/person';
+import { deleteAllRelationships } from '../src/relationships/repository/relationship';
 
 export async function cleanDatabase() {
-  const db = getDbClient();
-  await db.relationship.deleteMany();
-  await db.personDetailsPrivate.deleteMany();
-  await db.person.deleteMany();
+  await deleteAllRelationships();
+  await deleteAllPersonDetailsPrivate();
+  await deleteAllPersons();
 }
 
 export async function cleanUsers() {
-  const db = getDbClient();
-  await db.account.deleteMany();
-  await db.session.deleteMany();
-  await db.user.deleteMany();
+  await deleteAllAccounts();
+  await deleteAllSessions();
+  await deleteAllUsers();
 }

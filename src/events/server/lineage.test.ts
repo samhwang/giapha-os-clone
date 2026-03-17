@@ -1,12 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { getDbClient } from '../../lib/db';
+import { batchUpdatePersons, createPerson, deleteAllPersons, updatePerson } from '../../members/repository/person';
 import { Gender } from '../../types';
-
-const db = getDbClient();
 
 describe('updateBatch (inner logic)', () => {
   beforeEach(async () => {
-    await db.person.deleteMany({});
+    await deleteAllPersons();
   });
 
   it('should return early for empty updates', async () => {
@@ -15,28 +13,25 @@ describe('updateBatch (inner logic)', () => {
   });
 
   it('should update person generation and birthOrder', async () => {
-    const person = await db.person.create({
-      data: { fullName: 'Test Person', gender: Gender.enum.male },
-    });
+    const person = await createPerson({ fullName: 'Test Person', gender: Gender.enum.male });
 
-    const result = await db.person.update({
-      where: { id: person.id },
-      data: { generation: 2, birthOrder: 1 },
-    });
+    const result = await updatePerson(person.id, { generation: 2, birthOrder: 1 });
 
     expect(result.generation).toBe(2);
     expect(result.birthOrder).toBe(1);
   });
 
   it('should update multiple persons in transaction', async () => {
-    const p1 = await db.person.create({ data: { fullName: 'P1', gender: Gender.enum.male } });
-    const p2 = await db.person.create({ data: { fullName: 'P2', gender: Gender.enum.female } });
+    const p1 = await createPerson({ fullName: 'P1', gender: Gender.enum.male });
+    const p2 = await createPerson({ fullName: 'P2', gender: Gender.enum.female });
 
-    await db.$transaction([
-      db.person.update({ where: { id: p1.id }, data: { generation: 1, birthOrder: 1 } }),
-      db.person.update({ where: { id: p2.id }, data: { generation: 1, birthOrder: 2 } }),
+    await batchUpdatePersons([
+      { id: p1.id, generation: 1, birthOrder: 1 },
+      { id: p2.id, generation: 1, birthOrder: 2 },
     ]);
 
+    const { getDbClient } = await import('../../database/lib/client');
+    const db = getDbClient();
     const result = await db.person.findMany({
       where: { id: { in: [p1.id, p2.id] } },
       orderBy: { birthOrder: 'asc' },

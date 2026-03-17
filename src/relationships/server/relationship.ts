@@ -1,9 +1,15 @@
 import { createServerFn } from '@tanstack/react-start';
 import * as z from 'zod';
 import { isEditorMiddleware } from '../../auth/server/middleware';
-import { getDbClient } from '../../lib/db';
 import { ERRORS } from '../../lib/errors';
 import { RelationshipType } from '../../types';
+import {
+  createRelationship as createRelationshipRepo,
+  deleteRelationship as deleteRelationshipRepo,
+  findAllRelationships,
+  findRelationshipByParticipants,
+  findRelationshipsForPerson,
+} from '../repository/relationship';
 
 const relationshipTypeEnum = RelationshipType;
 
@@ -21,54 +27,32 @@ export const createRelationship = createServerFn({ method: 'POST' })
   .inputValidator(createRelationshipSchema)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    const db = getDbClient();
-
     if (data.personAId === data.personBId) {
       throw new Error(ERRORS.RELATIONSHIP.SELF_RELATION);
     }
 
-    const existing = await db.relationship.findFirst({
-      where: {
-        OR: [
-          { personAId: data.personAId, personBId: data.personBId, type: data.type },
-          { personAId: data.personBId, personBId: data.personAId, type: data.type },
-        ],
-      },
-    });
-
+    const existing = await findRelationshipByParticipants(data.personAId, data.personBId, data.type);
     if (existing) {
       throw new Error(ERRORS.RELATIONSHIP.DUPLICATE);
     }
 
-    return db.relationship.create({ data });
+    return createRelationshipRepo(data);
   });
 
 export const deleteRelationship = createServerFn({ method: 'POST' })
   .inputValidator(idSchema)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    const db = getDbClient();
-
-    await db.relationship.delete({ where: { id: data.id } });
-
+    await deleteRelationshipRepo(data.id);
     return { success: true };
   });
 
 export const getRelationships = createServerFn({ method: 'GET' }).handler(async () => {
-  const db = getDbClient();
-  return db.relationship.findMany({
-    orderBy: { createdAt: 'asc' },
-  });
+  return findAllRelationships();
 });
 
 export const getRelationshipsForPerson = createServerFn({ method: 'GET' })
   .inputValidator(personIdSchema)
   .handler(async ({ data }) => {
-    const db = getDbClient();
-    return db.relationship.findMany({
-      where: {
-        OR: [{ personAId: data.personId }, { personBId: data.personId }],
-      },
-      orderBy: { createdAt: 'asc' },
-    });
+    return findRelationshipsForPerson(data.personId);
   });

@@ -1,24 +1,21 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { getDbClient } from '../../lib/db';
+import { createPerson, deleteAllPersons, findAllPersons } from '../../members/repository/person';
+import { createRelationship, deleteAllRelationships, findAllRelationships } from '../../relationships/repository/relationship';
 import { Gender, RelationshipType } from '../../types';
-
-const db = getDbClient();
 
 describe('exportData (inner logic)', () => {
   beforeEach(async () => {
-    await db.person.deleteMany({});
-    await db.relationship.deleteMany({});
+    await deleteAllRelationships();
+    await deleteAllPersons();
   });
 
   it('should return backup payload with persons and relationships', async () => {
-    const personA = await db.person.create({ data: { fullName: 'Nguyễn Vạn', gender: Gender.enum.male } });
-    const personB = await db.person.create({ data: { fullName: 'Trần Thị', gender: Gender.enum.female } });
-    await db.relationship.create({
-      data: { type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id },
-    });
+    const personA = await createPerson({ fullName: 'Nguyễn Vạn', gender: Gender.enum.male });
+    const personB = await createPerson({ fullName: 'Trần Thị', gender: Gender.enum.female });
+    await createRelationship({ type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id });
 
-    const persons = await db.person.findMany({ orderBy: { createdAt: 'asc' } });
-    const relationships = await db.relationship.findMany({ orderBy: { createdAt: 'asc' } });
+    const persons = await findAllPersons();
+    const relationships = await findAllRelationships();
 
     expect(persons).toHaveLength(2);
     expect(relationships).toHaveLength(1);
@@ -26,10 +23,10 @@ describe('exportData (inner logic)', () => {
   });
 
   it('should return backup payload with correct structure', async () => {
-    await db.person.create({ data: { fullName: 'Test', gender: Gender.enum.male } });
+    await createPerson({ fullName: 'Test', gender: Gender.enum.male });
 
-    const persons = await db.person.findMany();
-    const relationships = await db.relationship.findMany();
+    const persons = await findAllPersons();
+    const relationships = await findAllRelationships();
 
     expect(persons[0]).toHaveProperty('id');
     expect(persons[0]).toHaveProperty('fullName');
@@ -40,24 +37,24 @@ describe('exportData (inner logic)', () => {
 
 describe('importData (inner logic)', () => {
   beforeEach(async () => {
-    await db.person.deleteMany({});
-    await db.relationship.deleteMany({});
+    await deleteAllRelationships();
+    await deleteAllPersons();
   });
 
   it('should delete existing data and import new data', async () => {
-    await db.person.create({ data: { fullName: 'Old Person', gender: Gender.enum.male } });
+    await createPerson({ fullName: 'Old Person', gender: Gender.enum.male });
 
-    await db.person.deleteMany({});
+    await deleteAllPersons();
 
-    const personA = await db.person.create({ data: { fullName: 'Nguyễn Vạn', gender: Gender.enum.male } });
-    const personB = await db.person.create({ data: { fullName: 'Nguyễn Thị', gender: Gender.enum.female } });
-    await db.relationship.create({
-      data: { type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personB.id },
-    });
+    const personA = await createPerson({ fullName: 'Nguyễn Vạn', gender: Gender.enum.male });
+    const personB = await createPerson({ fullName: 'Nguyễn Thị', gender: Gender.enum.female });
+    await createRelationship({ type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personB.id });
 
-    const persons = await db.person.findMany();
-    const relationships = await db.relationship.findMany();
+    const persons = await findAllPersons();
+    const relationships = await findAllRelationships();
 
+    const { getDbClient } = await import('../../database/lib/client');
+    const db = getDbClient();
     const oldPerson = await db.person.findFirst({ where: { fullName: 'Old Person' } });
     expect(oldPerson).toBeNull();
 
@@ -66,21 +63,18 @@ describe('importData (inner logic)', () => {
   });
 
   it('should handle import with empty data as no-op', async () => {
-    await db.person.deleteMany({});
-    await db.relationship.deleteMany({});
-
-    const persons = await db.person.findMany();
-    const relationships = await db.relationship.findMany();
+    const persons = await findAllPersons();
+    const relationships = await findAllRelationships();
 
     expect(persons).toHaveLength(0);
     expect(relationships).toHaveLength(0);
   });
 
   it('should handle import with only persons (no relationships)', async () => {
-    await db.person.create({ data: { fullName: 'Solo', gender: Gender.enum.male } });
+    await createPerson({ fullName: 'Solo', gender: Gender.enum.male });
 
-    const persons = await db.person.findMany();
-    const relationships = await db.relationship.findMany();
+    const persons = await findAllPersons();
+    const relationships = await findAllRelationships();
 
     expect(persons).toHaveLength(1);
     expect(relationships).toHaveLength(0);

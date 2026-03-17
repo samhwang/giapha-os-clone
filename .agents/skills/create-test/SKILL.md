@@ -94,50 +94,31 @@ describe('formatVietnameseDate', () => {
 })
 ```
 
-### Server Function Test
+### Server Function Test (using repository functions + Testcontainers)
 
 ```typescript
 // src/members/server/member.test.ts
-import { describe, it, expect, beforeEach } from 'vitest'
-import { createMember } from './member'
-import { db } from '../../../lib/db'
-import { auth } from '../../../auth/server'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { createPerson, deleteAllPersons, findPersonById } from '../repository/person'
+import { Gender } from '../../types'
 
-vi.mock('../../../lib/db', () => ({
-  db: {
-    member: {
-      create: vi.fn(),
-    },
-  },
-}))
-
-vi.mock('../../../auth/server', () => ({
-  auth: vi.fn(),
-}))
-
-describe('createMember', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
+describe('createPerson (inner logic)', () => {
+  beforeEach(async () => {
+    await deleteAllPersons()
   })
-  
-  describe('given authenticated user', () => {
-    it('should create member', async () => {
-      const mockSession = { user: { familyId: 'family-1' } }
-      vi.mocked(auth).mockResolvedValue(mockSession as any)
-      vi.mocked(db.member.create).mockResolvedValue({ id: '1', firstName: 'Minh' })
-      
-      const result = await createMember({ data: { firstName: 'Minh', lastName: 'Nguyen' } })
-      
-      expect(result.firstName).toBe('Minh')
+
+  it('should create a person', async () => {
+    const result = await createPerson({
+      data: { fullName: 'Nguyễn Văn A', gender: Gender.enum.male },
     })
+
+    expect(result.fullName).toBe('Nguyễn Văn A')
+    expect(result.id).toBeDefined()
   })
-  
-  describe('given unauthenticated user', () => {
-    it('should throw error', async () => {
-      vi.mocked(auth).mockResolvedValue(null)
-      
-      await expect(createMember({ data: { firstName: 'Minh' } })).rejects.toThrow('Unauthorized')
-    })
+
+  it('should return null for non-existent person', async () => {
+    const result = await findPersonById(crypto.randomUUID())
+    expect(result).toBeNull()
   })
 })
 ```

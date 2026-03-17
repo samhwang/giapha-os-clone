@@ -269,33 +269,47 @@ export default function LoginForm() {
 - **Custom field components**: Extract reusable field logic (e.g., AuthField, CustomEventField) into custom components
 - **Complex forms**: For forms with complex logic (date conversion, file handling), consider keeping some state management separate
 
-## Prisma
+## Database Repository Layer
 
-### Query Patterns
+All database operations go through repository functions co-located with their domain modules. Server functions never call Prisma directly.
+
+### Repository Usage
 
 ```tsx
-// Include relations
-const person = await db.person.findUnique({
-  where: { id },
-  include: { privateDetails: true, relationsA: true, relationsB: true },
+import { findPersonById, createPerson } from '../repository/person';
+import { countRelationshipsForPerson } from '../../relationships/repository/relationship';
+import { withTransaction } from '../../database/transaction';
+
+// Simple queries
+const person = await findPersonById(id);
+const count = await countRelationshipsForPerson(id);
+
+// Create
+const newPerson = await createPerson({
+  data: { fullName: 'Test', gender: 'male' },
 });
 
-// Transactions for multi-step operations
-await db.$transaction([
-  db.person.delete({ where: { id } }),
-  db.personDetailsPrivate.deleteMany({ where: { personId: id } }),
-]);
+// Transactions (pass tx to repository functions)
+await withTransaction(async (tx) => {
+  await deleteAllPersons(tx);
+  await createManyPersons(data, tx);
+});
 ```
+
+### Repository Function Pattern
+
+Each function accepts an optional `client` parameter (defaults to `getDbClient()`). Pass `tx` from a transaction for transactional operations.
 
 ### Error Handling
 
 ```tsx
-import { Prisma } from '../../generated/prisma';
+import { Prisma } from '../../database/generated/prisma/client'
+
 
 try {
-  await db.person.create({ data });
+  await createPerson({ data });
 } catch (error) {
-  if (error instanceof db.PrismaClientKnownRequestError) {
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
     if (error.code === 'P2002') {
       // Unique constraint violation
     }

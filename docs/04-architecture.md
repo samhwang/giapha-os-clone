@@ -30,6 +30,7 @@ src/
 ├── admin/              # Admin features (user management, data import/export)
 │   ├── components/     # AdminUserList, DataImportExport
 │   ├── hooks/          # useAdminForm (TanStack Form)
+│   ├── repository/     # user.ts (database operations)
 │   ├── server/         # Server functions (user, data management)
 │   └── utils/          # CSV and GEDCOM export utilities
 ├── auth/               # Authentication (Better Auth)
@@ -43,6 +44,7 @@ src/
 │   └── store/          # Zustand store (dashboardStore)
 ├── events/             # Events management
 │   ├── components/     # CustomEventModal, EventsList, LineageManager
+│   ├── repository/     # custom-event.ts (database operations)
 │   ├── server/         # customEvent, lineage server functions
 │   └── utils/          # eventHelpers, dateHelpers
 ├── family-tree/        # Family tree visualization
@@ -52,6 +54,7 @@ src/
 ├── members/            # Member management
 │   ├── components/     # MemberForm, MemberDetailModal, PersonCard
 │   ├── hooks/          # useMemberForm (TanStack Form)
+│   ├── repository/     # person.ts (database operations)
 │   └── server/         # member server functions
 ├── relationships/      # Kinship and relationships
 │   ├── components/     # RelationshipManager, KinshipFinder
@@ -69,8 +72,17 @@ src/
 │   ├── icons/          # GenderIcons, DefaultAvatar
 │   ├── layout/         # Footer, HeaderMenu, LogoutButton, LandingHero
 │   └── utils/          # cn() utility, gender style helpers
+├── database/           # Database layer
+│   ├── generated/prisma/  # Prisma generated types (auto-generated)
+│   ├── lib/
+│   │   └── client.ts   # Prisma client singleton (getDbClient)
+│   └── repository/     # Repository functions (one per entity)
+│       ├── transaction.ts  # DbClient type + withTransaction
+│       ├── person.ts       # Person + PersonDetailsPrivate ops
+│       ├── relationship.ts # Relationship ops
+│       ├── custom-event.ts # CustomEvent ops
+│       └── user.ts         # User ops
 ├── lib/                # Core infrastructure
-│   ├── db.ts           # Prisma client
 │   ├── storage.ts      # File upload handling
 │   ├── env.ts          # Client environment variables
 │   ├── env.server.ts   # Server environment variables
@@ -78,8 +90,7 @@ src/
 │   ├── date.ts         # Date/timezone utilities
 │   └── errors.ts       # Error constants
 ├── types/              # Global TypeScript types and Zod enums
-├── i18n/               # i18next setup and translations (en, vi)
-└── generated/          # Prisma generated types
+└── i18n/               # i18next setup and translations (en, vi)
 ```
 
 ### Domain Module Convention
@@ -155,19 +166,21 @@ Return result / Invalidate router
 - Domain server functions: `src/{domain}/server/` using `createServerFn` with middleware
 - Auth middleware applied via `.middleware()` chain
 
-## Database Connection
+## Database Layer
 
-Prisma client is initialized in `src/lib/db.ts` using the PostgreSQL adapter:
+All database concerns live under `src/database/`:
+
+- **Client**: `src/database/lib/client.ts` initializes the Prisma client singleton using the PostgreSQL adapter
+- **Repositories**: Co-located with domain modules (e.g., `src/members/repository/person.ts`)
+- **Generated types**: `src/database/generated/prisma/` contains auto-generated Prisma types
+
+Server functions import repository functions instead of calling Prisma directly. This decouples business logic from the ORM.
 
 ```typescript
-import { PrismaPg } from '@prisma/adapter-pg'
-import { PrismaClient } from '../generated/prisma/client'
-
-const adapter = new PrismaPg({ connectionString: serverEnv.DATABASE_URL })
-const prisma = new PrismaClient({ adapter })
+// Server functions use repository functions
+import { findPersonById, createPerson } from '../repository/person';
+import { withTransaction } from '../../database/transaction';
 ```
-
-Used in server functions for database operations.
 
 ## Environment Variables
 

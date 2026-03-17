@@ -1,21 +1,16 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { getDbClient } from '../../lib/db';
 import { uploadAvatar } from '../../lib/storage';
-import { Gender } from '../../types';
-
-const db = getDbClient();
+import { countRelationshipsForPerson, createRelationship, deleteAllRelationships } from '../../relationships/repository/relationship';
+import { Gender, RelationshipType } from '../../types';
+import { createPerson, deleteAllPersons, deletePerson, findAllPersons, findPersonById, updatePerson, upsertPersonDetailsPrivate } from '../repository/person';
 
 describe('createPerson (inner logic)', () => {
   beforeEach(async () => {
-    await db.person.deleteMany({});
-    await db.personDetailsPrivate.deleteMany({});
+    await deleteAllPersons();
   });
 
   it('should create a person without private details', async () => {
-    const result = await db.person.create({
-      data: { fullName: 'Nguyễn Văn A', gender: Gender.enum.male },
-      include: { privateDetails: true },
-    });
+    const result = await createPerson({ fullName: 'Nguyễn Văn A', gender: Gender.enum.male });
 
     expect(result.fullName).toBe('Nguyễn Văn A');
     expect(result.gender).toBe('male');
@@ -24,18 +19,15 @@ describe('createPerson (inner logic)', () => {
   });
 
   it('should create a person with private details', async () => {
-    const result = await db.person.create({
-      data: {
-        fullName: 'Nguyễn Văn B',
-        gender: Gender.enum.male,
-        privateDetails: {
-          create: {
-            phoneNumber: '0901234567',
-            occupation: 'Kỹ sư',
-          },
+    const result = await createPerson({
+      fullName: 'Nguyễn Văn B',
+      gender: Gender.enum.male,
+      privateDetails: {
+        create: {
+          phoneNumber: '0901234567',
+          occupation: 'Kỹ sư',
         },
       },
-      include: { privateDetails: true },
     });
 
     expect(result.fullName).toBe('Nguyễn Văn B');
@@ -48,43 +40,23 @@ describe('createPerson (inner logic)', () => {
 
 describe('updatePerson (inner logic)', () => {
   beforeEach(async () => {
-    await db.person.deleteMany({});
-    await db.personDetailsPrivate.deleteMany({});
+    await deleteAllPersons();
   });
 
   it('should update person fields', async () => {
-    const person = await db.person.create({
-      data: { fullName: 'Original Name', gender: Gender.enum.male },
-    });
+    const person = await createPerson({ fullName: 'Original Name', gender: Gender.enum.male });
 
-    const result = await db.person.update({
-      where: { id: person.id },
-      data: { fullName: 'Updated Name' },
-    });
+    const result = await updatePerson(person.id, { fullName: 'Updated Name' });
 
     expect(result.fullName).toBe('Updated Name');
   });
 
   it('should upsert private details when provided', async () => {
-    const person = await db.person.create({
-      data: { fullName: 'Test Person', gender: Gender.enum.female },
-    });
+    const person = await createPerson({ fullName: 'Test Person', gender: Gender.enum.female });
 
-    await db.personDetailsPrivate.upsert({
-      where: { personId: person.id },
-      create: {
-        personId: person.id,
-        phoneNumber: '0909999999',
-      },
-      update: {
-        phoneNumber: '0909999999',
-      },
-    });
+    await upsertPersonDetailsPrivate(person.id, { phoneNumber: '0909999999', occupation: null, currentResidence: null }, { phoneNumber: '0909999999' });
 
-    const result = await db.person.findUnique({
-      where: { id: person.id },
-      include: { privateDetails: true },
-    });
+    const result = await findPersonById(person.id);
 
     expect(result?.privateDetails?.phoneNumber).toBe('0909999999');
   });
@@ -92,32 +64,25 @@ describe('updatePerson (inner logic)', () => {
 
 describe('deleteMember (inner logic)', () => {
   beforeEach(async () => {
-    await db.person.deleteMany({});
-    await db.personDetailsPrivate.deleteMany({});
-    await db.relationship.deleteMany({});
+    await deleteAllRelationships();
+    await deleteAllPersons();
   });
 
   it('should delete a member with no relationships', async () => {
-    const person = await db.person.create({
-      data: { fullName: 'To Delete', gender: Gender.enum.male },
-    });
+    const person = await createPerson({ fullName: 'To Delete', gender: Gender.enum.male });
 
-    await db.person.delete({ where: { id: person.id } });
+    await deletePerson(person.id);
 
-    const found = await db.person.findUnique({ where: { id: person.id } });
+    const found = await findPersonById(person.id);
     expect(found).toBeNull();
   });
 
   it('should not delete a member with relationships', async () => {
-    const personA = await db.person.create({ data: { fullName: 'Person A', gender: Gender.enum.male } });
-    const personB = await db.person.create({ data: { fullName: 'Person B', gender: Gender.enum.female } });
-    await db.relationship.create({
-      data: { type: 'marriage', personAId: personA.id, personBId: personB.id },
-    });
+    const personA = await createPerson({ fullName: 'Person A', gender: Gender.enum.male });
+    const personB = await createPerson({ fullName: 'Person B', gender: Gender.enum.female });
+    await createRelationship({ type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id });
 
-    const relationshipCount = await db.relationship.count({
-      where: { OR: [{ personAId: personA.id }, { personBId: personA.id }] },
-    });
+    const relationshipCount = await countRelationshipsForPerson(personA.id);
 
     expect(relationshipCount).toBe(1);
   });
@@ -125,21 +90,15 @@ describe('deleteMember (inner logic)', () => {
 
 describe('uploadPersonAvatar (inner logic)', () => {
   beforeEach(async () => {
-    await db.person.deleteMany({});
-    await db.personDetailsPrivate.deleteMany({});
+    await deleteAllPersons();
   });
 
   it('should upload avatar and update person', async () => {
-    const person = await db.person.create({
-      data: { fullName: 'Avatar Test', gender: Gender.enum.male },
-    });
+    const person = await createPerson({ fullName: 'Avatar Test', gender: Gender.enum.male });
 
     const url = await uploadAvatar(Buffer.from('fake-image'), person.id, 'photo.jpg', 'image/jpeg');
 
-    const result = await db.person.update({
-      where: { id: person.id },
-      data: { avatarUrl: url },
-    });
+    const result = await updatePerson(person.id, { avatarUrl: url });
 
     expect(result.avatarUrl).toBe(url);
   });
@@ -147,22 +106,21 @@ describe('uploadPersonAvatar (inner logic)', () => {
   it('should throw when person not found', async () => {
     const nonExistentId = crypto.randomUUID();
 
-    await expect(db.person.findUnique({ where: { id: nonExistentId } })).resolves.toBeNull();
+    await expect(findPersonById(nonExistentId)).resolves.toBeNull();
   });
 });
 
 describe('getPersons (inner logic)', () => {
   beforeEach(async () => {
-    await db.person.deleteMany({});
-    await db.personDetailsPrivate.deleteMany({});
+    await deleteAllPersons();
   });
 
   it('should return created persons', async () => {
-    const p1 = await db.person.create({ data: { fullName: 'Person 1', gender: Gender.enum.male } });
-    const p2 = await db.person.create({ data: { fullName: 'Person 2', gender: Gender.enum.female } });
+    const p1 = await createPerson({ fullName: 'Person 1', gender: Gender.enum.male });
+    const p2 = await createPerson({ fullName: 'Person 2', gender: Gender.enum.female });
 
-    const result = await db.person.findMany({ orderBy: { createdAt: 'asc' } });
-    const ids = result.map((p) => p.id);
+    const result = await findAllPersons();
+    const ids = result.map((p: { id: string }) => p.id);
 
     expect(ids).toContain(p1.id);
     expect(ids).toContain(p2.id);
@@ -171,33 +129,26 @@ describe('getPersons (inner logic)', () => {
 
 describe('getPersonById (inner logic)', () => {
   beforeEach(async () => {
-    await db.person.deleteMany({});
-    await db.personDetailsPrivate.deleteMany({});
+    await deleteAllPersons();
   });
 
   it('should return person with private details', async () => {
-    const person = await db.person.create({
-      data: {
-        fullName: 'Test Person',
-        gender: Gender.enum.male,
-        privateDetails: {
-          create: { phoneNumber: '0901234567' },
-        },
+    const person = await createPerson({
+      fullName: 'Test Person',
+      gender: Gender.enum.male,
+      privateDetails: {
+        create: { phoneNumber: '0901234567' },
       },
-      include: { privateDetails: true },
     });
 
-    const result = await db.person.findUnique({
-      where: { id: person.id },
-      include: { privateDetails: true },
-    });
+    const result = await findPersonById(person.id);
 
     expect(result?.fullName).toBe('Test Person');
     expect(result?.privateDetails?.phoneNumber).toBe('0901234567');
   });
 
   it('should return null for non-existent person', async () => {
-    const result = await db.person.findUnique({ where: { id: crypto.randomUUID() } });
+    const result = await findPersonById(crypto.randomUUID());
     expect(result).toBeNull();
   });
 });

@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
 import * as z from 'zod';
 import { isAuthenticatedMiddleware } from '../../auth/server/middleware';
-import { getDbClient } from '../../lib/db';
+import { batchUpdatePersons } from '../../members/repository/person';
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
@@ -23,18 +23,7 @@ export const updateBatch = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     if (data.updates.length === 0) return { success: true, updated: 0 };
 
-    const db = getDbClient();
-    await db.$transaction(
-      data.updates.map((u) =>
-        db.person.update({
-          where: { id: u.id },
-          data: {
-            generation: u.generation,
-            birthOrder: u.birthOrder,
-          },
-        })
-      )
-    );
+    await batchUpdatePersons(data.updates);
 
     return { success: true, updated: data.updates.length };
   });

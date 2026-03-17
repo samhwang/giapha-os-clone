@@ -58,12 +58,10 @@ Test business logic with a real PostgreSQL database using Testcontainers. Never 
 
 ```typescript
 // src/members/server/member.test.ts
-import { getDbClient } from '../../lib/db'
+import { createPerson, findPersonById } from '../repository/person'
 
 test('creates person with private details', async () => {
-  const db = getDbClient()
-
-  const person = await db.person.create({
+  const person = await createPerson({
     data: {
       fullName: 'Test User',
       gender: 'male',
@@ -71,7 +69,6 @@ test('creates person with private details', async () => {
         create: { phoneNumber: '0901234567' }
       }
     },
-    include: { privateDetails: true }
   })
 
   expect(person.privateDetails?.phoneNumber).toBe('0901234567')

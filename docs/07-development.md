@@ -94,16 +94,13 @@ Server functions use `createServerFn` with middleware for auth:
 
 ```typescript
 import { createServerFn } from '@tanstack/react-start'
-import { getDbClient } from '../../lib/db'
 import { isUserMiddleware } from '../../auth/server/middleware'
+import { findAllPersons } from '../repository/person'
 
 export const getMembers = createServerFn()
   .middleware([isUserMiddleware])
   .handler(async () => {
-    const db = getDbClient()
-    return db.person.findMany({
-      include: { relationsA: true, relationsB: true },
-    })
+    return findAllPersons()
   })
 ```
 
@@ -260,19 +257,17 @@ export const Route = createFileRoute('/dashboard/users')({
 
 ## Using the Database
 
-Import the Prisma client via relative path:
+Use repository functions co-located with domain modules instead of calling Prisma directly:
 
 ```typescript
-import { getDbClient } from '../../lib/db'
-
-const db = getDbClient()
+import { findAllPersons, findPersonById, createPerson, updatePerson, deletePerson } from '../repository/person'
 
 // Query examples
-const persons = await db.person.findMany()
-const person = await db.person.findUnique({ where: { id: 'xxx' } })
-const created = await db.person.create({ data: { fullName: 'Name', gender: 'male' } })
-const updated = await db.person.update({ where: { id: 'xxx' }, data: { fullName: 'New' } })
-const deleted = await db.person.delete({ where: { id: 'xxx' } })
+const persons = await findAllPersons()
+const person = await findPersonById('xxx')
+const created = await createPerson({ data: { fullName: 'Name', gender: 'male' } })
+const updated = await updatePerson('xxx', { fullName: 'New' })
+const deleted = await deletePerson('xxx')
 ```
 
 ## Component Organization

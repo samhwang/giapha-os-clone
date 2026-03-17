@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { getDbClient } from '../../lib/db';
+import { getDbClient } from '../../database/lib/client';
 import { UserRole } from '../../types';
+import { deleteAllUsers, deleteUser, findAllUsers, findUserByEmail, updateUser } from '../repository/user';
 
 const db = getDbClient();
 
@@ -24,10 +25,7 @@ describe('changeRole (inner logic)', () => {
   it('should update user role', async () => {
     const user = await seedUser({ role: UserRole.enum.member });
 
-    const updated = await db.user.update({
-      where: { id: user.id },
-      data: { role: UserRole.enum.editor },
-    });
+    const updated = await updateUser(user.id, { role: UserRole.enum.editor });
 
     expect(updated.role).toBe(UserRole.enum.editor);
   });
@@ -37,9 +35,9 @@ describe('deleteUser (inner logic)', () => {
   it('should delete user', async () => {
     const user = await seedUser();
 
-    await db.user.delete({ where: { id: user.id } });
+    await deleteUser(user.id);
 
-    const found = await db.user.findUnique({ where: { id: user.id } });
+    const found = await findUserByEmail(user.email);
     expect(found).toBeNull();
   });
 });
@@ -48,10 +46,7 @@ describe('toggleStatus (inner logic)', () => {
   it('should toggle user status to inactive', async () => {
     const user = await seedUser({ isActive: true });
 
-    const updated = await db.user.update({
-      where: { id: user.id },
-      data: { isActive: false },
-    });
+    const updated = await updateUser(user.id, { isActive: false });
 
     expect(updated.isActive).toBe(false);
   });
@@ -59,10 +54,7 @@ describe('toggleStatus (inner logic)', () => {
   it('should toggle user status to active', async () => {
     const user = await seedUser({ isActive: false });
 
-    const updated = await db.user.update({
-      where: { id: user.id },
-      data: { isActive: true },
-    });
+    const updated = await updateUser(user.id, { isActive: true });
 
     expect(updated.isActive).toBe(true);
   });
@@ -70,16 +62,14 @@ describe('toggleStatus (inner logic)', () => {
 
 describe('getUsers (inner logic)', () => {
   beforeEach(async () => {
-    await db.user.deleteMany({});
+    await deleteAllUsers();
   });
 
   it('should return all users', async () => {
     await seedUser({ email: 'user1@test.com' });
     await seedUser({ email: 'user2@test.com' });
 
-    const users = await db.user.findMany({
-      select: { id: true, email: true, role: true, isActive: true },
-    });
+    const users = await findAllUsers();
 
     expect(users).toHaveLength(2);
   });

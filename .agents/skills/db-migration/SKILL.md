@@ -143,10 +143,10 @@ enum RelationType {
 
 ```typescript
 // prisma/seed.ts
-import { PrismaClient } from '@prisma/client'
-import { db } from '../src/lib/db'
+import { PrismaClient } from '../src/database/generated/prisma/client'
 
 async function main() {
+  const db = new PrismaClient({ adapter })
   const family = await db.family.create({
     data: {
       name: 'Nguyen Family',

@@ -1,0 +1,82 @@
+import type {
+  PersonCreateInput,
+  PersonCreateManyInput,
+  PersonDetailsPrivateCreateManyInput,
+  PersonDetailsPrivateUncheckedCreateWithoutPersonInput,
+  PersonDetailsPrivateUpdateInput,
+  PersonUpdateInput,
+} from '../../database/generated/prisma/models';
+import { getDbClient } from '../../database/lib/client';
+import type { DbClient } from '../../database/transaction';
+
+export function createPerson(data: PersonCreateInput, client: DbClient = getDbClient()) {
+  return client.person.create({ data, include: { privateDetails: true } });
+}
+
+export function updatePerson(id: string, data: PersonUpdateInput, client: DbClient = getDbClient()) {
+  return client.person.update({ where: { id }, data });
+}
+
+export function findPersonById(id: string, client: DbClient = getDbClient()) {
+  return client.person.findUnique({ where: { id }, include: { privateDetails: true } });
+}
+
+export function findPersonByIdOrThrow(id: string, client: DbClient = getDbClient()) {
+  return client.person.findUniqueOrThrow({ where: { id }, include: { privateDetails: true } });
+}
+
+export function findAllPersons(client: DbClient = getDbClient()) {
+  return client.person.findMany({ orderBy: { createdAt: 'asc' } });
+}
+
+export function deletePerson(id: string, client: DbClient = getDbClient()) {
+  return client.person.delete({ where: { id } });
+}
+
+export function deleteAllPersons(client: DbClient = getDbClient()) {
+  return client.person.deleteMany();
+}
+
+export function createManyPersons(data: PersonCreateManyInput | PersonCreateManyInput[], client: DbClient = getDbClient()) {
+  return client.person.createMany({ data });
+}
+
+export function upsertPersonDetailsPrivate(
+  personId: string,
+  create: PersonDetailsPrivateUncheckedCreateWithoutPersonInput,
+  update: PersonDetailsPrivateUpdateInput,
+  client: DbClient = getDbClient()
+) {
+  return client.personDetailsPrivate.upsert({
+    where: { personId },
+    create: { personId, ...create },
+    update,
+  });
+}
+
+export function findAllPersonDetailsPrivate(client: DbClient = getDbClient()) {
+  return client.personDetailsPrivate.findMany({ orderBy: { createdAt: 'asc' } });
+}
+
+export function deleteAllPersonDetailsPrivate(client: DbClient = getDbClient()) {
+  return client.personDetailsPrivate.deleteMany();
+}
+
+export function createManyPersonDetailsPrivate(
+  data: PersonDetailsPrivateCreateManyInput | PersonDetailsPrivateCreateManyInput[],
+  client: DbClient = getDbClient()
+) {
+  return client.personDetailsPrivate.createMany({ data });
+}
+
+export function batchUpdatePersons(updates: Array<{ id: string; generation: number | null; birthOrder: number | null }>) {
+  const db = getDbClient();
+  return db.$transaction(
+    updates.map((u) =>
+      db.person.update({
+        where: { id: u.id },
+        data: { generation: u.generation, birthOrder: u.birthOrder },
+      })
+    )
+  );
+}
