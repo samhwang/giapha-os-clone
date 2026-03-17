@@ -257,6 +257,7 @@
     "fullNameRequired": "Full Name *",
     "birthYearOptional": "Birth year (Optional)",
     "birthYearPlaceholder": "E.g.: 1980",
+    "birthOrderPlaceholder": "#",
     "spouseNotePlaceholder": "Optional...",
     "spouseNoteLabel": "Relationship note (E.g.: First wife, Second husband...)",
     "spouseNameRequired": "Please enter the spouse's name.",

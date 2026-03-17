@@ -50,8 +50,8 @@ export default function RelationshipManager({ personId, canEdit = false, personG
   // Bulk Add State
   const [isAddingBulk, setIsAddingBulk] = useState(false);
   const [selectedSpouseId, setSelectedSpouseId] = useState<string>('');
-  const [bulkChildren, setBulkChildren] = useState<{ name: string; gender: Gender; birthYear: string; isProcessing: boolean }[]>([
-    { name: '', gender: Gender.enum.male, birthYear: '', isProcessing: false },
+  const [bulkChildren, setBulkChildren] = useState<{ name: string; gender: Gender; birthYear: string; birthOrder: string; isProcessing: boolean }[]>([
+    { name: '', gender: Gender.enum.male, birthYear: '', birthOrder: '1', isProcessing: false },
   ]);
 
   // Quick Add Spouse State
@@ -207,12 +207,14 @@ export default function RelationshipManager({ personId, canEdit = false, personG
     try {
       for (const child of validChildren) {
         const birthYear = child.birthYear.trim() !== '' ? Number.parseInt(child.birthYear, 10) : undefined;
+        const birthOrder = child.birthOrder.trim() !== '' ? Number.parseInt(child.birthOrder, 10) : undefined;
 
         const newPerson = await createPerson({
           data: {
             fullName: child.name.trim(),
             gender: child.gender,
             ...(birthYear && !Number.isNaN(birthYear) ? { birthYear } : {}),
+            ...(birthOrder && !Number.isNaN(birthOrder) ? { birthOrder } : {}),
           },
         });
 
@@ -239,7 +241,7 @@ export default function RelationshipManager({ personId, canEdit = false, personG
 
       if (successCount === validChildren.length) {
         setIsAddingBulk(false);
-        setBulkChildren([{ name: '', gender: Gender.enum.male, birthYear: '', isProcessing: false }]);
+        setBulkChildren([{ name: '', gender: Gender.enum.male, birthYear: '', birthOrder: '1', isProcessing: false }]);
         setSelectedSpouseId('');
         fetchRelationships();
       } else {
@@ -612,12 +614,23 @@ export default function RelationshipManager({ personId, canEdit = false, personG
                     }}
                     className="flex-1 bg-white text-stone-900 placeholder-stone-400 text-sm rounded-md border-stone-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2 border w-24"
                   />
+                  <input
+                    type="number"
+                    placeholder={t('relationship.birthOrderPlaceholder')}
+                    value={child.birthOrder}
+                    onChange={(e) => {
+                      const newBulk = [...bulkChildren];
+                      newBulk[index].birthOrder = e.target.value;
+                      setBulkChildren(newBulk);
+                    }}
+                    className="bg-white text-stone-900 placeholder-stone-400 text-sm rounded-md border-stone-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2 border w-16"
+                  />
                   <button
                     type="button"
                     onClick={() => {
                       const newBulk = bulkChildren.filter((_, i) => i !== index);
                       if (newBulk.length === 0) {
-                        newBulk.push({ name: '', gender: Gender.enum.male, birthYear: '', isProcessing: false });
+                        newBulk.push({ name: '', gender: Gender.enum.male, birthYear: '', birthOrder: '1', isProcessing: false });
                       }
                       setBulkChildren(newBulk);
                     }}
@@ -630,7 +643,8 @@ export default function RelationshipManager({ personId, canEdit = false, personG
               <button
                 type="button"
                 onClick={() => {
-                  setBulkChildren([...bulkChildren, { name: '', gender: Gender.enum.male, birthYear: '', isProcessing: false }]);
+                  const nextOrder = String(bulkChildren.length + 1);
+                  setBulkChildren([...bulkChildren, { name: '', gender: Gender.enum.male, birthYear: '', birthOrder: nextOrder, isProcessing: false }]);
                 }}
                 className="text-sky-600 text-xs font-semibold hover:text-sky-800 mt-2 px-6"
               >
@@ -651,7 +665,7 @@ export default function RelationshipManager({ personId, canEdit = false, personG
                 type="button"
                 onClick={() => {
                   setIsAddingBulk(false);
-                  setBulkChildren([{ name: '', gender: Gender.enum.male, birthYear: '', isProcessing: false }]);
+                  setBulkChildren([{ name: '', gender: Gender.enum.male, birthYear: '', birthOrder: '1', isProcessing: false }]);
                   setSelectedSpouseId('');
                 }}
                 className="px-4 py-2 sm:py-2.5 bg-white border border-stone-300 text-stone-700 rounded-md sm:rounded-lg text-sm hover:bg-stone-50 transition-colors"

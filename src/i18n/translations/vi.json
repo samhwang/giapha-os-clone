@@ -257,6 +257,7 @@
     "fullNameRequired": "Họ và Tên *",
     "birthYearOptional": "Năm sinh (Tuỳ chọn)",
     "birthYearPlaceholder": "VD: 1980",
+    "birthOrderPlaceholder": "Thứ",
     "spouseNotePlaceholder": "Tuỳ chọn...",
     "spouseNoteLabel": "Ghi chú mối quan hệ (Ví dụ: Vợ cả, Chồng thứ...)",
     "spouseNameRequired": "Vui lòng nhập tên Vợ/Chồng.",
