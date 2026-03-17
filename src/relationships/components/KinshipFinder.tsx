@@ -172,7 +172,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-6 shadow-sm">
+      <div className="relative z-10 bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-6 shadow-sm">
         <div className="flex items-end gap-3">
           <PersonSelector label={t('kinship.memberA')} selected={personA} onSelect={setPersonA} persons={persons} disabledId={personB?.id} />
           <button
