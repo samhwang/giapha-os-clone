@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { auth } from '../../auth/server';
 import { UserRole } from '../../auth/types';
 import DashboardHeader from '../../dashboard/components/DashboardHeader';
-import { DashboardProvider } from '../../dashboard/components/DashboardProvider';
 import config from '../../lib/config';
 import Footer from '../../ui/layout/Footer';
 import LogoutButton from '../../ui/layout/LogoutButton';
@@ -83,12 +82,10 @@ function DashboardLayout() {
   }
 
   return (
-    <DashboardProvider>
-      <div className="min-h-screen bg-stone-50 text-stone-900 flex flex-col font-sans">
-        <DashboardHeader isAdmin={isAdmin} userEmail={session.email} />
-        <Outlet />
-        <Footer className="mt-auto bg-white border-t border-stone-200" showDisclaimer />
-      </div>
-    </DashboardProvider>
+    <div className="min-h-screen bg-stone-50 text-stone-900 flex flex-col font-sans">
+      <DashboardHeader isAdmin={isAdmin} userEmail={session.email} />
+      <Outlet />
+      <Footer className="mt-auto bg-white border-t border-stone-200" showDisclaimer />
+    </div>
   );
 }
