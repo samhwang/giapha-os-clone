@@ -7,6 +7,7 @@ import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 import { cn } from '../../ui/utils/cn';
 import { getAvatarBg, getGenderStyle } from '../../ui/utils/styles';
 import type { PersonNode, RelEdge } from '../types';
+import { COLLATERAL, DESCENDANTS, DIRECT, IN_LAW, UNCLE_AUNT } from '../utils/kinship-dictionary';
 import { computeKinship } from '../utils/kinshipHelpers';
 
 interface Props {
@@ -145,14 +146,30 @@ function PersonSelector({
 }
 
 const KINSHIP_TERMS = [
-  { relation: 'Cha / Mẹ', desc: '1 bậc trên (dòng trực hệ)', example: 'Bố, ba, má...' },
-  { relation: 'Ông / Bà', desc: '2 bậc trên (dòng trực hệ)', example: 'Ông nội, bà ngoại...' },
+  { relation: `${DIRECT.FATHER} / ${DIRECT.MOTHER}`, desc: '1 bậc trên (dòng trực hệ)', example: 'Bố, ba, má...' },
+  { relation: `${DIRECT.GRANDFATHER} / ${DIRECT.GRANDMOTHER}`, desc: '2 bậc trên (dòng trực hệ)', example: 'Ông nội, bà ngoại...' },
   { relation: 'Cụ / Kỵ / Sơ...', desc: '3 bậc trên trở lên', example: 'Cụ cố, cụ kỵ...' },
-  { relation: 'Con / Cháu / Chắt...', desc: 'Các bậc dưới trực hệ', example: 'Con, cháu, chắt, chít...' },
-  { relation: 'Anh / Chị / Em họ', desc: 'Cùng thế hệ, khác nhánh', example: 'Dựa vào thứ bậc của nhánh cha/mẹ' },
-  { relation: 'Bác / Chú / Cô', desc: 'Anh/chị/em của cha (Bên Nội)', example: 'Bác (anh), Chú (em trai), Cô (chị em gái)' },
-  { relation: 'Cậu / Dì', desc: 'Anh/chị/em của mẹ (Bên Ngoại)', example: 'Cậu (anh em trai), Dì (chị em gái)' },
-  { relation: 'Thím / Mợ / Dượng', desc: 'Vợ/chồng của chú, cậu, cô, dì', example: 'Thím (vợ chú), Mợ (vợ cậu), Dượng (chồng cô/dì)' },
+  { relation: `${DESCENDANTS[1]} / ${DESCENDANTS[2]} / ${DESCENDANTS[3]}...`, desc: 'Các bậc dưới trực hệ', example: 'Con, cháu, chắt, chít...' },
+  {
+    relation: `${COLLATERAL.OLDER_BROTHER} / ${COLLATERAL.OLDER_SISTER} / ${COLLATERAL.YOUNGER}`,
+    desc: 'Cùng thế hệ, khác nhánh',
+    example: 'Dựa vào thứ bậc của nhánh cha/mẹ',
+  },
+  {
+    relation: `${UNCLE_AUNT.BAC} / ${UNCLE_AUNT.CHU} / ${UNCLE_AUNT.CO}`,
+    desc: 'Anh/chị/em của cha (Bên Nội)',
+    example: `${UNCLE_AUNT.BAC} (anh), ${UNCLE_AUNT.CHU} (em trai), ${UNCLE_AUNT.CO} (chị em gái)`,
+  },
+  {
+    relation: `${UNCLE_AUNT.CAU} / ${UNCLE_AUNT.DI}`,
+    desc: 'Anh/chị/em của mẹ (Bên Ngoại)',
+    example: `${UNCLE_AUNT.CAU} (anh em trai), ${UNCLE_AUNT.DI} (chị em gái)`,
+  },
+  {
+    relation: `${IN_LAW.THIM} / ${IN_LAW.MO} / ${IN_LAW.DUONG}`,
+    desc: 'Vợ/chồng của chú, cậu, cô, dì',
+    example: `${IN_LAW.THIM} (vợ chú), ${IN_LAW.MO} (vợ cậu), ${IN_LAW.DUONG} (chồng cô/dì)`,
+  },
 ];
 
 export default function KinshipFinder({ persons, relationships }: Props) {
@@ -199,7 +216,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
         <div className="space-y-4 animate-[fade-in-up_0.35s_ease-out_forwards]">
           <div className="bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 flex items-center gap-3">
             <Sparkles className="size-5 text-amber-500 shrink-0" />
-            <p className="text-amber-800 font-semibold">{result.description}</p>
+            <p className="text-amber-800 font-semibold">{result.distance === -1 ? t(result.description) : result.description}</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
