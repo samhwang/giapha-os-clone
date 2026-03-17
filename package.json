@@ -61,7 +61,7 @@
     "html-to-image": "^1.11.13",
     "i18next": "^25.8.18",
     "immer": "^11.1.4",
-    "jspdf": "^4.2.0",
+    "jspdf": "^4.2.1",
     "jszip": "^3.10.1",
     "lucide-react": "^0.577.0",
     "lunar-javascript": "^1.7.7",
