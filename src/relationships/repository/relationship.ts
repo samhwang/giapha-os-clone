@@ -7,10 +7,9 @@ interface FindRelationshipByParticipantsInput {
   personAId: string;
   personBId: string;
   type: RelationshipType;
-  client?: DbClient;
 }
 
-export function findRelationshipByParticipants({ personAId, personBId, type, client = getDbClient() }: FindRelationshipByParticipantsInput) {
+export function findRelationshipByParticipants({ personAId, personBId, type }: FindRelationshipByParticipantsInput, client: DbClient = getDbClient()) {
   return client.relationship.findFirst({
     where: {
       OR: [

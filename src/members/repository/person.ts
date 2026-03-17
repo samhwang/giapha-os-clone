@@ -16,10 +16,9 @@ export function createPerson(data: PersonCreateInput, client: DbClient = getDbCl
 interface UpdatePersonInput {
   id: string;
   data: PersonUpdateInput;
-  client?: DbClient;
 }
 
-export function updatePerson({ id, data, client = getDbClient() }: UpdatePersonInput) {
+export function updatePerson({ id, data }: UpdatePersonInput, client: DbClient = getDbClient()) {
   return client.person.update({ where: { id }, data });
 }
 
@@ -51,10 +50,9 @@ interface UpsertPersonDetailsPrivateInput {
   personId: string;
   create: PersonDetailsPrivateUncheckedCreateWithoutPersonInput;
   update: PersonDetailsPrivateUpdateInput;
-  client?: DbClient;
 }
 
-export function upsertPersonDetailsPrivate({ personId, create, update, client = getDbClient() }: UpsertPersonDetailsPrivateInput) {
+export function upsertPersonDetailsPrivate({ personId, create, update }: UpsertPersonDetailsPrivateInput, client: DbClient = getDbClient()) {
   return client.personDetailsPrivate.upsert({
     where: { personId },
     create: { personId, ...create },

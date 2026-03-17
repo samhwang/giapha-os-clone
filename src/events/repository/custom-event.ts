@@ -13,10 +13,9 @@ export function createCustomEvent(data: CustomEventCreateInput, client: DbClient
 interface UpdateCustomEventInput {
   id: string;
   data: CustomEventUpdateInput;
-  client?: DbClient;
 }
 
-export function updateCustomEvent({ id, data, client = getDbClient() }: UpdateCustomEventInput) {
+export function updateCustomEvent({ id, data }: UpdateCustomEventInput, client: DbClient = getDbClient()) {
   return client.customEvent.update({ where: { id }, data });
 }
 
