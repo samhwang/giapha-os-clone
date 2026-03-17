@@ -59,6 +59,15 @@ interface ResolveBloodTermsInput {
 }
 
 function resolveBloodTerms({ depthA, depthB, personA, personB, pathA, pathB }: ResolveBloodTermsInput): [string, string, string] {
+  // Normalize direction: when B is the "deeper" or "closer-to-LCA" side,
+  // swap perspectives, recurse, then flip the returned terms back.
+  const needsSwap = (depthA === DEPTH_SIBLING && depthB > DEPTH_SIBLING) || (depthA > DEPTH_SIBLING && depthB > DEPTH_SIBLING && depthA < depthB);
+
+  if (needsSwap) {
+    const [bCallsA, aCallsB, desc] = resolveBloodTerms({ depthA: depthB, depthB: depthA, personA: personB, personB: personA, pathA: pathB, pathB: pathA });
+    return [aCallsB, bCallsA, desc];
+  }
+
   const genderA = personA.gender;
   const genderB = personB.gender;
 
@@ -95,6 +104,8 @@ function resolveBloodTerms({ depthA, depthB, personA, personB, pathA, pathB }: R
     return [genderB === 'female' ? 'Chị gái' : 'Anh trai', genderA === 'female' ? 'Em gái' : 'Em trai', 'Anh chị em ruột'];
   }
 
+  // After normalization above, depthA >= depthB when both > DEPTH_SIBLING,
+  // and depthA > DEPTH_SIBLING when depthB === DEPTH_SIBLING.
   if (depthA > DEPTH_SIBLING && depthB === DEPTH_SIBLING) {
     let termForB = '';
     const isPaternalSide = branchA.gender === 'male';
@@ -117,11 +128,6 @@ function resolveBloodTerms({ depthA, depthB, personA, personB, pathA, pathB }: R
     return [(prefix + termForB).trim(), getDirectDescendantTerm(depthA, genderA), isPaternalSide ? 'Bên Nội (Vế trên)' : 'Bên Ngoại (Vế trên)'];
   }
 
-  if (depthA === DEPTH_SIBLING && depthB > DEPTH_SIBLING) {
-    const [bCallsA, aCallsB, desc] = resolveBloodTerms({ depthA: depthB, depthB: depthA, personA: personB, personB: personA, pathA: pathB, pathB: pathA });
-    return [aCallsB, bCallsA, desc];
-  }
-
   if (depthA > DEPTH_SIBLING && depthB > DEPTH_SIBLING) {
     const side = isPaternalA ? 'Nội' : 'Ngoại';
 
@@ -132,25 +138,21 @@ function resolveBloodTerms({ depthA, depthB, personA, personB, pathA, pathB }: R
       return [genderB === 'female' ? 'Chị họ' : 'Anh họ', 'Em họ', `Anh em họ ${side}`];
     }
 
+    // After normalization, depthA >= depthB, so genDiff is always > 0 here.
     const genDiff = depthA - depthB;
-    if (genDiff > 0) {
-      let termForB = 'Họ hàng';
-      if (genDiff === 1 && branchA.gender === 'male') {
-        if (genderB === 'female') {
-          termForB = seniority === 'junior' ? 'Bác họ' : 'Cô họ';
-        } else {
-          termForB = seniority === 'junior' ? 'Bác họ' : 'Chú họ';
-        }
-      } else if (genDiff === 1) {
-        termForB = genderB === 'female' ? 'Dì họ' : 'Cậu họ';
+    let termForB = 'Họ hàng';
+    if (genDiff === 1 && branchA.gender === 'male') {
+      if (genderB === 'female') {
+        termForB = seniority === 'junior' ? 'Bác họ' : 'Cô họ';
       } else {
-        termForB = genderB === 'female' ? 'Bà họ' : 'Ông họ';
+        termForB = seniority === 'junior' ? 'Bác họ' : 'Chú họ';
       }
-      return [termForB, 'Cháu họ', `Họ hàng ${side}`];
+    } else if (genDiff === 1) {
+      termForB = genderB === 'female' ? 'Dì họ' : 'Cậu họ';
+    } else {
+      termForB = genderB === 'female' ? 'Bà họ' : 'Ông họ';
     }
-
-    const [bCallsA, aCallsB, desc] = resolveBloodTerms({ depthA: depthB, depthB: depthA, personA: personB, personB: personA, pathA: pathB, pathB: pathA });
-    return [aCallsB, bCallsA, desc];
+    return [termForB, 'Cháu họ', `Họ hàng ${side}`];
   }
 
   return ['Người trong họ', 'Người trong họ', 'Quan hệ họ hàng'];
