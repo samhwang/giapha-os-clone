@@ -29,10 +29,14 @@
     "unknown": "Unknown",
     "lunarSuffix": "Lunar",
     "today": "Today",
+    "yesterday": "Yesterday",
     "tomorrow": "Tomorrow",
     "daysFromNow": "{{days}} days away",
+    "daysAgo": "{{days}} days ago",
     "weeksFromNow": "{{weeks}} weeks away",
+    "weeksAgo": "{{weeks}} weeks ago",
     "monthsFromNow": "{{months}} months away",
+    "monthsAgo": "{{months}} months ago",
     "homepage": "Home",
     "about": "About",
     "loadingFamilyData": "Loading family tree data...",
@@ -286,7 +290,10 @@
     "emptyTitle": "No events",
     "emptyDesc": "Add birth or death dates for family members",
     "showMore": "Show {{count}} more events…",
-    "showDeceasedBirthdays": "Show birthdays of deceased members"
+    "showDeceasedBirthdays": "Show birthdays of deceased members",
+    "pastTab": "Past",
+    "yearsOld": "{{years}} years old",
+    "yearsSince": "{{years}} years"
   },
   "customEvent": {
     "createTitle": "Add Custom Event",

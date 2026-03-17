@@ -29,10 +29,14 @@
     "unknown": "Chưa rõ",
     "lunarSuffix": "ÂL",
     "today": "Hôm nay",
+    "yesterday": "Hôm qua",
     "tomorrow": "Ngày mai",
     "daysFromNow": "{{days}} ngày nữa",
+    "daysAgo": "{{days}} ngày trước",
     "weeksFromNow": "{{weeks}} tuần nữa",
+    "weeksAgo": "{{weeks}} tuần trước",
     "monthsFromNow": "{{months}} tháng nữa",
+    "monthsAgo": "{{months}} tháng trước",
     "homepage": "Trang chủ",
     "about": "Giới thiệu",
     "loadingFamilyData": "Đang tải dữ liệu gia phả...",
@@ -286,7 +290,10 @@
     "emptyTitle": "Không có sự kiện nào",
     "emptyDesc": "Hãy bổ sung ngày sinh hoặc ngày mất cho thành viên",
     "showMore": "Xem thêm {{count}} sự kiện…",
-    "showDeceasedBirthdays": "Hiển thị sinh nhật của người đã mất"
+    "showDeceasedBirthdays": "Hiển thị sinh nhật của người đã mất",
+    "pastTab": "Đã qua",
+    "yearsOld": "{{years}} tuổi",
+    "yearsSince": "{{years}} năm"
   },
   "customEvent": {
     "createTitle": "Thêm Sự Kiện Tuỳ Chỉnh",

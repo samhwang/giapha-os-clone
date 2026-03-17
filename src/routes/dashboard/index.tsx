@@ -32,21 +32,7 @@ function DashboardLaunchpad() {
   const lunar = useMemo(() => getTodayLunar(undefined, t('common.month')), [t]);
 
   const upcomingEvents = useMemo(() => {
-    const personData = persons.map((p) => ({
-      id: p.id,
-      fullName: p.fullName,
-      birthYear: p.birthYear,
-      birthMonth: p.birthMonth,
-      birthDay: p.birthDay,
-      deathYear: p.deathYear,
-      deathMonth: p.deathMonth,
-      deathDay: p.deathDay,
-      deathLunarYear: p.deathLunarYear,
-      deathLunarMonth: p.deathLunarMonth,
-      deathLunarDay: p.deathLunarDay,
-      isDeceased: p.isDeceased,
-    }));
-    const all = computeEvents(personData, customEvents);
+    const all = computeEvents(persons, customEvents);
     return all.filter((e) => e.daysUntil >= 0 && e.daysUntil <= 30);
   }, [persons, customEvents]);
 

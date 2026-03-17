@@ -1,5 +1,31 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Person } from '../../types';
 import { computeEvents } from './eventHelpers';
+
+function makePerson(overrides: Partial<Person> & { id: string; fullName: string }): Person {
+  return {
+    gender: 'male',
+    birthYear: null,
+    birthMonth: null,
+    birthDay: null,
+    deathYear: null,
+    deathMonth: null,
+    deathDay: null,
+    deathLunarYear: null,
+    deathLunarMonth: null,
+    deathLunarDay: null,
+    isDeceased: false,
+    isInLaw: false,
+    birthOrder: null,
+    generation: null,
+    otherNames: null,
+    avatarUrl: null,
+    note: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  };
+}
 
 describe('computeEvents', () => {
   beforeEach(() => {
@@ -14,22 +40,7 @@ describe('computeEvents', () => {
 
   describe('birthday events (solar)', () => {
     it('should create a birthday event when birthMonth and birthDay are provided', () => {
-      const persons = [
-        {
-          id: 'p1',
-          fullName: 'Test Person',
-          birthYear: 1990,
-          birthMonth: 3,
-          birthDay: 14,
-          deathYear: null,
-          deathMonth: null,
-          deathDay: null,
-          deathLunarYear: null,
-          deathLunarMonth: null,
-          deathLunarDay: null,
-          isDeceased: false,
-        },
-      ];
+      const persons = [makePerson({ id: 'p1', fullName: 'Test Person', birthYear: 1990, birthMonth: 3, birthDay: 14 })];
 
       const events = computeEvents(persons);
       const birthdays = events.filter((e) => e.type === 'birthday');
@@ -41,49 +52,22 @@ describe('computeEvents', () => {
       expect(birthdays[0].daysUntil).toBeGreaterThan(0);
     });
 
-    it('should wrap to next year if birthday already passed this year', () => {
-      const persons = [
-        {
-          id: 'p1',
-          fullName: 'January Baby',
-          birthYear: 2000,
-          birthMonth: 1,
-          birthDay: 1,
-          deathYear: null,
-          deathMonth: null,
-          deathDay: null,
-          deathLunarYear: null,
-          deathLunarMonth: null,
-          deathLunarDay: null,
-          isDeceased: false,
-        },
-      ];
+    it('should emit both past and upcoming events if birthday already passed this year', () => {
+      const persons = [makePerson({ id: 'p1', fullName: 'January Baby', birthYear: 2000, birthMonth: 1, birthDay: 1 })];
 
       const events = computeEvents(persons);
-      const birthday = events.find((e) => e.type === 'birthday');
+      const birthdays = events.filter((e) => e.type === 'birthday');
 
-      expect(birthday).toBeDefined();
-      // Jan 1 already passed (today is Jan 15), so next occurrence is Jan 1, 2026
-      expect(birthday?.nextOccurrence.getFullYear()).toBe(2026);
+      // Should have 2 entries: past (Jan 1, 2025) and upcoming (Jan 1, 2026)
+      expect(birthdays).toHaveLength(2);
+      const past = birthdays.find((e) => e.daysUntil < 0);
+      const upcoming = birthdays.find((e) => e.daysUntil > 0);
+      expect(past).toBeDefined();
+      expect(upcoming?.nextOccurrence.getFullYear()).toBe(2026);
     });
 
     it('should skip birthday when birthMonth or birthDay is null', () => {
-      const persons = [
-        {
-          id: 'p1',
-          fullName: 'Year Only',
-          birthYear: 1990,
-          birthMonth: null,
-          birthDay: null,
-          deathYear: null,
-          deathMonth: null,
-          deathDay: null,
-          deathLunarYear: null,
-          deathLunarMonth: null,
-          deathLunarDay: null,
-          isDeceased: false,
-        },
-      ];
+      const persons = [makePerson({ id: 'p1', fullName: 'Year Only', birthYear: 1990 })];
 
       const events = computeEvents(persons);
       expect(events.filter((e) => e.type === 'birthday')).toHaveLength(0);
@@ -93,7 +77,7 @@ describe('computeEvents', () => {
   describe('death anniversary events (lunar)', () => {
     it('should create a death anniversary for deceased person with death date', () => {
       const persons = [
-        {
+        makePerson({
           id: 'p1',
           fullName: 'Deceased Person',
           birthYear: 1902,
@@ -102,60 +86,27 @@ describe('computeEvents', () => {
           deathYear: 1975,
           deathMonth: 8,
           deathDay: 22,
-          deathLunarYear: null,
-          deathLunarMonth: null,
-          deathLunarDay: null,
           isDeceased: true,
-        },
+        }),
       ];
 
       const events = computeEvents(persons);
       const anniversaries = events.filter((e) => e.type === 'death_anniversary');
 
-      expect(anniversaries).toHaveLength(1);
+      expect(anniversaries.length).toBeGreaterThanOrEqual(1);
       expect(anniversaries[0].personName).toBe('Deceased Person');
       expect(anniversaries[0].eventDateLabel).toMatch(/ÂL$/);
     });
 
     it('should skip death anniversary for living person', () => {
-      const persons = [
-        {
-          id: 'p1',
-          fullName: 'Living Person',
-          birthYear: 1990,
-          birthMonth: 3,
-          birthDay: 14,
-          deathYear: null,
-          deathMonth: 8,
-          deathDay: 22,
-          deathLunarYear: null,
-          deathLunarMonth: null,
-          deathLunarDay: null,
-          isDeceased: false,
-        },
-      ];
+      const persons = [makePerson({ id: 'p1', fullName: 'Living Person', birthYear: 1990, birthMonth: 3, birthDay: 14, deathMonth: 8, deathDay: 22 })];
 
       const events = computeEvents(persons);
       expect(events.filter((e) => e.type === 'death_anniversary')).toHaveLength(0);
     });
 
     it('should skip death anniversary when deathMonth or deathDay is null', () => {
-      const persons = [
-        {
-          id: 'p1',
-          fullName: 'Deceased No Date',
-          birthYear: 1900,
-          birthMonth: null,
-          birthDay: null,
-          deathYear: 1975,
-          deathMonth: null,
-          deathDay: null,
-          deathLunarYear: null,
-          deathLunarMonth: null,
-          deathLunarDay: null,
-          isDeceased: true,
-        },
-      ];
+      const persons = [makePerson({ id: 'p1', fullName: 'Deceased No Date', deathYear: 1975, isDeceased: true })];
 
       const events = computeEvents(persons);
       expect(events.filter((e) => e.type === 'death_anniversary')).toHaveLength(0);
@@ -163,7 +114,7 @@ describe('computeEvents', () => {
 
     it('should prefer stored lunar death dates over solar-to-lunar conversion', () => {
       const persons = [
-        {
+        makePerson({
           id: 'p1',
           fullName: 'Lunar Stored',
           birthYear: 1920,
@@ -176,7 +127,7 @@ describe('computeEvents', () => {
           deathLunarMonth: 5,
           deathLunarDay: 3,
           isDeceased: true,
-        },
+        }),
       ];
 
       const events = computeEvents(persons);
@@ -189,20 +140,17 @@ describe('computeEvents', () => {
 
     it('should create death anniversary from stored lunar dates even without solar death date', () => {
       const persons = [
-        {
+        makePerson({
           id: 'p1',
           fullName: 'Lunar Only',
           birthYear: 1920,
           birthMonth: 1,
           birthDay: 1,
-          deathYear: null,
-          deathMonth: null,
-          deathDay: null,
           deathLunarYear: 1980,
           deathLunarMonth: 7,
           deathLunarDay: 15,
           isDeceased: true,
-        },
+        }),
       ];
 
       const events = computeEvents(persons);
@@ -217,39 +165,14 @@ describe('computeEvents', () => {
   describe('sorting', () => {
     it('should sort events by daysUntil (soonest first)', () => {
       const persons = [
-        {
-          id: 'p1',
-          fullName: 'March Birthday',
-          birthYear: 1990,
-          birthMonth: 3,
-          birthDay: 1,
-          deathYear: null,
-          deathMonth: null,
-          deathDay: null,
-          deathLunarYear: null,
-          deathLunarMonth: null,
-          deathLunarDay: null,
-          isDeceased: false,
-        },
-        {
-          id: 'p2',
-          fullName: 'February Birthday',
-          birthYear: 1990,
-          birthMonth: 2,
-          birthDay: 1,
-          deathYear: null,
-          deathMonth: null,
-          deathDay: null,
-          deathLunarYear: null,
-          deathLunarMonth: null,
-          deathLunarDay: null,
-          isDeceased: false,
-        },
+        makePerson({ id: 'p1', fullName: 'March Birthday', birthYear: 1990, birthMonth: 3, birthDay: 1 }),
+        makePerson({ id: 'p2', fullName: 'February Birthday', birthYear: 1990, birthMonth: 2, birthDay: 1 }),
       ];
 
       const events = computeEvents(persons);
-      expect(events[0].personName).toBe('February Birthday');
-      expect(events[1].personName).toBe('March Birthday');
+      const upcoming = events.filter((e) => e.daysUntil >= 0);
+      expect(upcoming[0].personName).toBe('February Birthday');
+      expect(upcoming[1].personName).toBe('March Birthday');
     });
   });
 
@@ -279,7 +202,7 @@ describe('computeEvents', () => {
   describe('deceased birthday inclusion', () => {
     it('should include birthday for deceased person', () => {
       const persons = [
-        {
+        makePerson({
           id: 'p1',
           fullName: 'Deceased With Birthday',
           birthYear: 1920,
@@ -288,11 +211,8 @@ describe('computeEvents', () => {
           deathYear: 2000,
           deathMonth: 3,
           deathDay: 10,
-          deathLunarYear: null,
-          deathLunarMonth: null,
-          deathLunarDay: null,
           isDeceased: true,
-        },
+        }),
       ];
 
       const events = computeEvents(persons);
@@ -306,21 +226,8 @@ describe('computeEvents', () => {
   describe('with multiple persons', () => {
     it('should generate both birthday and anniversary events', () => {
       const persons = [
-        {
-          id: 'p1',
-          fullName: 'Living Person',
-          birthYear: 1990,
-          birthMonth: 6,
-          birthDay: 15,
-          deathYear: null,
-          deathMonth: null,
-          deathDay: null,
-          deathLunarYear: null,
-          deathLunarMonth: null,
-          deathLunarDay: null,
-          isDeceased: false,
-        },
-        {
+        makePerson({ id: 'p1', fullName: 'Living Person', birthYear: 1990, birthMonth: 6, birthDay: 15 }),
+        makePerson({
           id: 'p2',
           fullName: 'Deceased Person',
           birthYear: 1920,
@@ -329,11 +236,8 @@ describe('computeEvents', () => {
           deathYear: 2000,
           deathMonth: 5,
           deathDay: 20,
-          deathLunarYear: null,
-          deathLunarMonth: null,
-          deathLunarDay: null,
           isDeceased: true,
-        },
+        }),
       ];
 
       const events = computeEvents(persons);

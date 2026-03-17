@@ -2,27 +2,14 @@ import { AlignLeft, Cake, CalendarDays, Clock, Flower, MapPin, Plus, Star } from
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
-import type { CustomEventRecord, EventType, FamilyEvent } from '../../types';
+import type { CustomEventRecord, EventType, FamilyEvent, Person } from '../../types';
 import { cn } from '../../ui/utils/cn';
 import { getTodayLunar, getZodiacSign } from '../utils/dateHelpers';
 import { computeEvents } from '../utils/eventHelpers';
 import CustomEventModal from './CustomEventModal';
 
 interface EventsListProps {
-  persons: {
-    id: string;
-    fullName: string;
-    birthYear: number | null;
-    birthMonth: number | null;
-    birthDay: number | null;
-    deathYear: number | null;
-    deathMonth: number | null;
-    deathDay: number | null;
-    deathLunarYear: number | null;
-    deathLunarMonth: number | null;
-    deathLunarDay: number | null;
-    isDeceased: boolean;
-  }[];
+  persons: Person[];
   customEvents?: CustomEventRecord[];
   isAdmin?: boolean;
   onCustomEventChange?: () => void;
@@ -30,18 +17,40 @@ interface EventsListProps {
 
 function daysUntilLabel(days: number, t: (key: string, opts?: Record<string, unknown>) => string): string {
   if (days === 0) return t('common.today');
+  if (days === -1) return t('common.yesterday');
   if (days === 1) return t('common.tomorrow');
+
+  if (days < -60) return t('common.monthsAgo', { months: Math.ceil(Math.abs(days) / 30) });
+  if (days < -1) return t('common.daysAgo', { days: Math.abs(days) });
+
   if (days <= 30) return t('common.daysFromNow', { days });
   if (days <= 60) return t('common.weeksFromNow', { weeks: Math.ceil(days / 7) });
   return t('common.monthsFromNow', { months: Math.ceil(days / 30) });
+}
+
+function computeYearsInfo(event: FamilyEvent, t: (key: string, opts?: Record<string, unknown>) => string): string | null {
+  if (!event.originYear) return null;
+
+  const currentYear = new Date().getFullYear();
+  if (event.type === 'birthday') {
+    const age = currentYear - event.originYear;
+    if (age > 0) return t('events.yearsOld', { years: age });
+  }
+  if (event.type === 'death_anniversary') {
+    const years = currentYear - event.originYear;
+    if (years > 0) return t('events.yearsSince', { years });
+  }
+  return null;
 }
 
 function EventCard({ event, index, onCustomEventClick }: { event: FamilyEvent; index: number; onCustomEventClick?: (event: FamilyEvent) => void }) {
   const { t } = useTranslation();
   const isBirthday = event.type === 'birthday';
   const isCustom = event.type === 'custom_event';
+  const isPast = event.daysUntil < 0;
   const isToday = event.daysUntil === 0;
-  const isSoon = event.daysUntil <= 7;
+  const isSoon = event.daysUntil > 0 && event.daysUntil <= 7;
+  const yearsInfo = computeYearsInfo(event, t);
   const { setMemberModalId } = useDashboardStore();
 
   const handleClick = () => {
@@ -52,21 +61,25 @@ function EventCard({ event, index, onCustomEventClick }: { event: FamilyEvent; i
     }
   };
 
-  const iconBg = isToday
-    ? 'bg-amber-100 text-amber-600'
-    : isCustom
-      ? 'bg-purple-50 text-purple-500'
-      : isBirthday
-        ? 'bg-blue-50 text-blue-500'
-        : 'bg-rose-50 text-rose-500';
+  const iconBg = isPast
+    ? 'bg-stone-100 text-stone-400'
+    : isToday
+      ? 'bg-amber-100 text-amber-600'
+      : isCustom
+        ? 'bg-purple-50 text-purple-500'
+        : isBirthday
+          ? 'bg-blue-50 text-blue-500'
+          : 'bg-rose-50 text-rose-500';
 
-  const borderClass = isToday
-    ? 'bg-amber-50 border-amber-300 shadow-sm'
-    : isCustom
-      ? 'bg-white/80 border-stone-200/60 hover:border-purple-200'
-      : isBirthday
-        ? 'bg-white/80 border-stone-200/60 hover:border-blue-200'
-        : 'bg-white/80 border-stone-200/60 hover:border-rose-200';
+  const borderClass = isPast
+    ? 'bg-stone-50/60 border-stone-200/50 opacity-70'
+    : isToday
+      ? 'bg-amber-50 border-amber-300 shadow-sm'
+      : isCustom
+        ? 'bg-white/80 border-stone-200/60 hover:border-purple-200'
+        : isBirthday
+          ? 'bg-white/80 border-stone-200/60 hover:border-blue-200'
+          : 'bg-white/80 border-stone-200/60 hover:border-rose-200';
 
   return (
     <button
@@ -89,6 +102,9 @@ function EventCard({ event, index, onCustomEventClick }: { event: FamilyEvent; i
             <span className="shrink-0 text-2xs font-sans font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/60 rounded-md px-1.5 py-0.5 whitespace-nowrap shadow-xs tracking-wider">
               {getZodiacSign(event.originDay, event.originMonth)}
             </span>
+          )}
+          {yearsInfo && (
+            <span className="shrink-0 text-2xs font-semibold text-stone-500 bg-stone-100 rounded-md px-1.5 py-0.5 whitespace-nowrap">{yearsInfo}</span>
           )}
         </div>
         <div className="flex flex-col gap-1 mt-0.5">
@@ -116,9 +132,10 @@ function EventCard({ event, index, onCustomEventClick }: { event: FamilyEvent; i
       <div
         className={cn(
           'shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold',
+          isPast && 'bg-stone-100 text-stone-400',
           isToday && 'bg-amber-400 text-white',
-          isSoon && !isToday && 'bg-red-100 text-red-600',
-          !isToday && !isSoon && 'bg-stone-100 text-stone-500'
+          isSoon && 'bg-red-100 text-red-600',
+          !isPast && !isToday && !isSoon && 'bg-stone-100 text-stone-500'
         )}
       >
         <Clock className="size-3" />
@@ -130,7 +147,7 @@ function EventCard({ event, index, onCustomEventClick }: { event: FamilyEvent; i
 
 export default function EventsList({ persons, customEvents = [], isAdmin = false, onCustomEventChange }: EventsListProps) {
   const { t } = useTranslation();
-  const [filter, setFilter] = useState<'all' | EventType>('all');
+  const [filter, setFilter] = useState<'all' | EventType | 'past'>('all');
   const [showCount, setShowCount] = useState(20);
   const [showDeceasedBirthdays, setShowDeceasedBirthdays] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -139,6 +156,15 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
   const allEvents = useMemo(() => computeEvents(persons, customEvents, t('common.lunarSuffix')), [persons, customEvents, t]);
   const filtered = useMemo(() => {
     let result = allEvents;
+
+    if (filter === 'past') {
+      result = result.filter((e) => e.daysUntil < 0 && e.daysUntil >= -365);
+      result.sort((a, b) => b.daysUntil - a.daysUntil);
+      return result;
+    }
+
+    // For non-past tabs, show only upcoming events
+    result = result.filter((e) => e.daysUntil >= 0);
     if (filter !== 'all') {
       result = result.filter((e) => e.type === filter);
     }
@@ -148,7 +174,7 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
     return result;
   }, [allEvents, filter, showDeceasedBirthdays]);
 
-  const upcoming = filtered.filter((e) => e.daysUntil <= 365);
+  const upcoming = filtered.filter((e) => e.daysUntil <= 365 || filter === 'past');
   const visible = upcoming.slice(0, showCount);
 
   const todayCount = allEvents.filter((e) => e.daysUntil === 0).length;
@@ -172,11 +198,12 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
     onCustomEventChange?.();
   };
 
-  const tabs = [
-    { key: 'all' as const, label: t('events.allTab') },
-    { key: 'birthday' as const, label: t('events.birthdayTab') },
-    { key: 'death_anniversary' as const, label: t('events.deathAnniversaryTab') },
-    { key: 'custom_event' as const, label: t('events.customEventTab') },
+  const tabs: { key: 'all' | EventType | 'past'; label: string }[] = [
+    { key: 'all', label: t('events.allTab') },
+    { key: 'birthday', label: t('events.birthdayTab') },
+    { key: 'death_anniversary', label: t('events.deathAnniversaryTab') },
+    { key: 'custom_event', label: t('events.customEventTab') },
+    { key: 'past', label: t('events.pastTab') },
   ];
 
   return (
@@ -232,18 +259,20 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
         <span className={cn('text-xs text-stone-400 self-center', !isAdmin && 'ml-auto')}>{t('events.yearCount', { count: filtered.length })}</span>
       </div>
 
-      {/* Deceased birthday toggle */}
-      <div className="flex px-1">
-        <label className="flex items-center gap-2.5 text-sm font-medium text-stone-600 cursor-pointer hover:text-stone-900 transition-colors select-none">
-          <input
-            type="checkbox"
-            checked={showDeceasedBirthdays}
-            onChange={(e) => setShowDeceasedBirthdays(e.target.checked)}
-            className="rounded-md border-stone-300 text-amber-500 focus:ring-amber-500 size-4 transition-all"
-          />
-          {t('events.showDeceasedBirthdays')}
-        </label>
-      </div>
+      {/* Deceased birthday toggle — hidden on past tab */}
+      {filter !== 'past' && (
+        <div className="flex px-1">
+          <label className="flex items-center gap-2.5 text-sm font-medium text-stone-600 cursor-pointer hover:text-stone-900 transition-colors select-none">
+            <input
+              type="checkbox"
+              checked={showDeceasedBirthdays}
+              onChange={(e) => setShowDeceasedBirthdays(e.target.checked)}
+              className="rounded-md border-stone-300 text-amber-500 focus:ring-amber-500 size-4 transition-all"
+            />
+            {t('events.showDeceasedBirthdays')}
+          </label>
+        </div>
+      )}
 
       {visible.length === 0 ? (
         <div className="text-center py-16 text-stone-400 animate-[fade-in_0.3s_ease-out_forwards]">

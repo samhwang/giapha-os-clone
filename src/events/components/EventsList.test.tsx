@@ -1,7 +1,33 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
+import type { Person } from '../../types';
 import EventsList from './EventsList';
+
+function makePerson(overrides: Partial<Person> & { id: string; fullName: string }): Person {
+  return {
+    gender: 'male',
+    birthYear: null,
+    birthMonth: null,
+    birthDay: null,
+    deathYear: null,
+    deathMonth: null,
+    deathDay: null,
+    deathLunarYear: null,
+    deathLunarMonth: null,
+    deathLunarDay: null,
+    isDeceased: false,
+    isInLaw: false,
+    birthOrder: null,
+    generation: null,
+    otherNames: null,
+    avatarUrl: null,
+    note: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  };
+}
 
 describe('EventsList', () => {
   beforeEach(() => {
@@ -15,21 +41,8 @@ describe('EventsList', () => {
   });
 
   const persons = [
-    {
-      id: 'p1',
-      fullName: 'Nguyễn Văn A',
-      birthYear: 1990,
-      birthMonth: 3,
-      birthDay: 14,
-      deathYear: null,
-      deathMonth: null,
-      deathDay: null,
-      deathLunarYear: null,
-      deathLunarMonth: null,
-      deathLunarDay: null,
-      isDeceased: false,
-    },
-    {
+    makePerson({ id: 'p1', fullName: 'Nguyễn Văn A', birthYear: 1990, birthMonth: 3, birthDay: 14 }),
+    makePerson({
       id: 'p2',
       fullName: 'Trần Thị B',
       birthYear: 1920,
@@ -38,11 +51,8 @@ describe('EventsList', () => {
       deathYear: 2000,
       deathMonth: 7,
       deathDay: 20,
-      deathLunarYear: null,
-      deathLunarMonth: null,
-      deathLunarDay: null,
       isDeceased: true,
-    },
+    }),
   ];
 
   it('renders filter tabs', () => {
@@ -72,22 +82,7 @@ describe('EventsList', () => {
   });
 
   it('shows empty state for persons without dates', () => {
-    const noDates = [
-      {
-        id: 'p1',
-        fullName: 'No Dates',
-        birthYear: 1990,
-        birthMonth: null,
-        birthDay: null,
-        deathYear: null,
-        deathMonth: null,
-        deathDay: null,
-        deathLunarYear: null,
-        deathLunarMonth: null,
-        deathLunarDay: null,
-        isDeceased: false,
-      },
-    ];
+    const noDates = [makePerson({ id: 'p1', fullName: 'No Dates', birthYear: 1990 })];
     render(<EventsList persons={noDates} />);
     expect(screen.getByText('Không có sự kiện nào')).toBeInTheDocument();
   });
@@ -126,5 +121,10 @@ describe('EventsList', () => {
     expect(screen.getByText('Nguyễn Văn A')).toBeInTheDocument();
     const bElements = screen.getAllByText('Trần Thị B');
     expect(bElements.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('renders past events tab', () => {
+    render(<EventsList persons={persons} />);
+    expect(screen.getByRole('button', { name: 'Đã qua' })).toBeInTheDocument();
   });
 });
