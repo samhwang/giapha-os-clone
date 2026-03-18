@@ -74,9 +74,6 @@ importers:
       i18next:
         specifier: ^25.8.18
         version: 25.8.18(typescript@5.9.3)
-      immer:
-        specifier: ^11.1.4
-        version: 11.1.4
       jspdf:
         specifier: ^4.2.1
         version: 4.2.1
@@ -6871,7 +6868,8 @@ snapshots:
 
   immediate@3.0.6: {}
 
-  immer@11.1.4: {}
+  immer@11.1.4:
+    optional: true
 
   indent-string@4.0.0: {}
 
