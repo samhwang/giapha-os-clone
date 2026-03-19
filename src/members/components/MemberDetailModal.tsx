@@ -73,13 +73,14 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
       setIsEditing(false);
     } else {
       setIsOpen(false);
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         setPerson(null);
         setPrivateData(null);
         setError(null);
         setIsEditing(false);
         setIsCreating(false);
       }, 300);
+      return () => clearTimeout(timeoutId);
     }
   }, [memberId, showCreateModal, fetchData]);
 
