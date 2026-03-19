@@ -55,4 +55,8 @@ export const auth = betterAuth({
       generateId: false,
     },
   },
+  rateLimit: {
+    storage: 'database',
+    modelName: 'rateLimit',
+  },
 });
