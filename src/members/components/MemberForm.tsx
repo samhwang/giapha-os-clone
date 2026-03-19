@@ -12,6 +12,18 @@ import { useMemberForm } from '../hooks/useMemberForm';
 import { createPerson, updatePerson, uploadPersonAvatar } from '../server/member';
 import { Gender, type Person } from '../types';
 
+function slugify(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[đĐ]/g, 'd')
+    .replace(/[^0-9a-z\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 interface MemberFormData extends Person {
   phoneNumber?: string | null;
   occupation?: string | null;
@@ -129,10 +141,13 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
         const shouldUploadAvatar = avatarFile && personId;
         if (shouldUploadAvatar) {
           const base64 = await toBase64();
+          const ext = avatarFile.name.split('.').pop() || 'jpg';
+          const slugName = slugify(form.getFieldValue('fullName') || 'avatar');
+          const filename = `${personId}_${slugName}.${ext}`;
           await uploadPersonAvatar({
             data: {
               personId,
-              filename: avatarFile.name,
+              filename,
               base64,
               contentType: avatarFile.type,
             },
