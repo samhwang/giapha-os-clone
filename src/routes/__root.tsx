@@ -3,22 +3,23 @@ import { formDevtoolsPlugin } from '@tanstack/react-form-devtools';
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import { createI18nInstance, type Language } from '../i18n';
-import { getLanguage } from '../i18n/getLanguage';
-import config from '../lib/config';
+import type { ClientRuntimeEnv } from '../config/lib/env.server';
+import { getSiteName } from '../config/server/getSiteName';
+import { createI18nInstance, type Language } from '../i18n/lib';
+import { getLanguage } from '../i18n/server/getLanguage';
 import appCss from '../styles.css?url';
 
 export const Route = createRootRoute({
   beforeLoad: async () => {
-    const language = await getLanguage();
-    return { language };
+    const [language, clientEnv] = await Promise.all([getLanguage(), getSiteName()]);
+    return { language, clientEnv };
   },
-  head: () => ({
+  head: ({ match }) => ({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: config.siteName },
-      { name: 'description', content: config.siteName },
+      { title: match.context.clientEnv.SITE_NAME },
+      { name: 'description', content: match.context.clientEnv.SITE_NAME },
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
@@ -47,7 +48,7 @@ function NotFoundComponent() {
 }
 
 function RootComponent() {
-  const { language } = Route.useRouteContext() as { language: Language };
+  const { language } = Route.useRouteContext() as { language: Language; clientEnv: ClientRuntimeEnv };
   const i18n = createI18nInstance(language);
 
   return (

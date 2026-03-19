@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { auth } from '../../auth/server';
 import { UserRole } from '../../auth/types';
 import DashboardHeader from '../../dashboard/components/DashboardHeader';
-import config from '../../lib/config';
 import Footer from '../../ui/layout/Footer';
 import LogoutButton from '../../ui/layout/LogoutButton';
 
@@ -34,6 +33,7 @@ export const Route = createFileRoute('/dashboard')({
 
 function InactiveAccountPage() {
   const { t } = useTranslation();
+  const { clientEnv } = Route.useRouteContext();
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 flex flex-col font-sans">
@@ -41,7 +41,7 @@ function InactiveAccountPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/" className="group flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-serif font-bold text-stone-800 group-hover:text-amber-700 transition-colors">{config.siteName}</h1>
+              <h1 className="text-xl sm:text-2xl font-serif font-bold text-stone-800 group-hover:text-amber-700 transition-colors">{clientEnv.SITE_NAME}</h1>
             </Link>
           </div>
           <div className="w-32">
@@ -73,7 +73,7 @@ function InactiveAccountPage() {
 }
 
 function DashboardLayout() {
-  const { session } = Route.useRouteContext();
+  const { session, clientEnv } = Route.useRouteContext();
   if (!session) return null;
   const isAdmin = session.role === UserRole.enum.admin;
 
@@ -83,7 +83,7 @@ function DashboardLayout() {
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 flex flex-col font-sans">
-      <DashboardHeader isAdmin={isAdmin} userEmail={session.email} />
+      <DashboardHeader isAdmin={isAdmin} userEmail={session.email} siteName={clientEnv.SITE_NAME} />
       <Outlet />
       <Footer className="mt-auto bg-white border-t border-stone-200" showDisclaimer />
     </div>

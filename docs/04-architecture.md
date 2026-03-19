@@ -82,15 +82,19 @@ src/
 │       ├── relationship.ts # Relationship ops
 │       ├── custom-event.ts # CustomEvent ops
 │       └── user.ts         # User ops
+├── config/             # App configuration
+│   ├── lib/
+│   │   └── env.server.ts   # Server environment variables (Zod-validated)
+│   └── server/
+│       └── getSiteName.ts  # Server function for runtime site name
 ├── lib/                # Core infrastructure
 │   ├── storage.ts      # File upload handling
-│   ├── env.ts          # Client environment variables
-│   ├── env.server.ts   # Server environment variables
-│   ├── config.ts       # App configuration
 │   ├── date.ts         # Date/timezone utilities
 │   └── errors.ts       # Error constants
 ├── types/              # Global TypeScript types and Zod enums
-└── i18n/               # i18next setup and translations (en, vi)
+└── i18n/               # Internationalization
+    ├── lib/            # i18next setup and translations (en, vi)
+    └── server/         # getLanguage server function
 ```
 
 ### Domain Module Convention
@@ -190,4 +194,4 @@ import { withTransaction } from '../../database/transaction';
 | `UPLOAD_DIR` | File upload directory (default `./uploads`) |
 | `BETTER_AUTH_SECRET` | Auth encryption key |
 | `BETTER_AUTH_URL` | Public URL for auth |
-| `VITE_SITE_NAME` | Site name (client-accessible) |
+| `SITE_NAME` | Site display name (runtime, server-side) |

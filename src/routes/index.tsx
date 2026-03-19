@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router';
-import config from '../lib/config';
 import Footer from '../ui/layout/Footer';
 import LandingHero from '../ui/layout/LandingHero';
 
@@ -8,6 +7,7 @@ export const Route = createFileRoute('/')({
 });
 
 function LandingPage() {
+  const { clientEnv } = Route.useRouteContext();
   return (
     <div className="min-h-screen relative">
       {/* Decorative background */}
@@ -18,7 +18,7 @@ function LandingPage() {
       </div>
 
       <main className="flex flex-col items-center justify-center min-h-screen px-4 py-12 sm:py-20 relative z-10">
-        <LandingHero siteName={config.siteName} />
+        <LandingHero siteName={clientEnv.SITE_NAME} />
       </main>
 
       <Footer className="bg-transparent relative z-10 border-none" />

@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import { getRequestHeaders } from '@tanstack/react-start/server';
-import { defaultLanguage, type Language, supportedLanguages } from './index';
+import { defaultLanguage, type Language, supportedLanguages } from '../lib/index';
 
 export const getLanguage = createServerFn({ method: 'GET' }).handler(async (): Promise<Language> => {
   const headers = getRequestHeaders();

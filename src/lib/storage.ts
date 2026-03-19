@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { serverEnv } from './env.server';
+import { serverEnv } from '../config/lib/env.server';
 import { logger } from './logger.server';
 
 const UPLOADS_PREFIX = '/api/uploads/';

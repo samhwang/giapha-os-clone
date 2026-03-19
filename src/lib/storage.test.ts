@@ -9,7 +9,7 @@ vi.unmock('./storage');
 
 // Mock env.server to use a temp directory
 const mockEnv = { UPLOAD_DIR: '' };
-vi.mock('./env.server', () => ({
+vi.mock('../config/lib/env.server', () => ({
   get serverEnv() {
     return mockEnv;
   },

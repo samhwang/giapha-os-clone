@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createFileRoute } from '@tanstack/react-router';
-import { serverEnv } from '../../../lib/env.server';
+import { serverEnv } from '../../../config/lib/env.server';
 import { logger } from '../../../lib/logger.server';
 
 const CONTENT_TYPES: Record<string, string> = {

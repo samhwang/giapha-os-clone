@@ -116,7 +116,7 @@ Language is managed via react-i18next with cookie-based persistence:
 
 ### Translation Files
 
-Translations are stored in `src/i18n/translations/`:
+Translations are stored in `src/i18n/lib/translations/`:
 - `vi.json` — Vietnamese (default)
 - `en.json` — English
 
