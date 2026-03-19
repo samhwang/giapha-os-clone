@@ -159,12 +159,12 @@ function computeInLaws(persons: Person[], relationships: Relationship[]): Map<st
   for (const r of relationships) {
     if (r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child) {
       if (!childParents.has(r.personBId)) childParents.set(r.personBId, []);
-      childParents.get(r.personBId)!.push(r.personAId);
+      childParents.get(r.personBId)?.push(r.personAId);
     } else if (r.type === RelationshipType.enum.marriage) {
       if (!spouseMap.has(r.personAId)) spouseMap.set(r.personAId, []);
-      spouseMap.get(r.personAId)!.push(r.personBId);
+      spouseMap.get(r.personAId)?.push(r.personBId);
       if (!spouseMap.has(r.personBId)) spouseMap.set(r.personBId, []);
-      spouseMap.get(r.personBId)!.push(r.personAId);
+      spouseMap.get(r.personBId)?.push(r.personAId);
     }
   }
 
