@@ -29,8 +29,11 @@ export default function DashboardViews({ persons, relationships }: DashboardView
 
     if (!finalRootId || !pMap.has(finalRootId)) {
       const rootsFallback = persons.filter((p) => !childIds.has(p.id));
+      const sortByBirthYear = (a: Person, b: Person) => (a.birthYear ?? Infinity) - (b.birthYear ?? Infinity);
+
       if (rootsFallback.length > 0) {
-        finalRootId = rootsFallback[0].id;
+        const gen1 = rootsFallback.filter((p) => p.generation === 1);
+        finalRootId = gen1.length > 0 ? gen1.sort(sortByBirthYear)[0].id : rootsFallback.sort(sortByBirthYear)[0].id;
       } else if (persons.length > 0) {
         finalRootId = persons[0].id;
       }

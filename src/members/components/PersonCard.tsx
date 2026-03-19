@@ -74,11 +74,6 @@ export default function PersonCard({ person }: PersonCardProps) {
           </p>
           {(person.isDeceased || person.isInLaw || person.birthOrder != null || person.generation != null) && (
             <div className="flex flex-wrap items-center gap-1.5 shrink-0 mt-2">
-              {person.isDeceased && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-2xs sm:text-xs-plus font-bold bg-stone-100 text-stone-500 uppercase tracking-widest border border-stone-200/60 shadow-xs">
-                  {t('member.filterDeceased')}
-                </span>
-              )}
               {person.isInLaw && (
                 <span
                   className={cn(
@@ -103,6 +98,11 @@ export default function PersonCard({ person }: PersonCardProps) {
               {person.generation != null && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-md text-2xs sm:text-xs-plus font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 uppercase tracking-widest shadow-xs">
                   {t('stats.generationLabel', { gen: person.generation })}
+                </span>
+              )}
+              {person.isDeceased && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-2xs sm:text-xs-plus font-bold bg-stone-100 text-stone-500 uppercase tracking-widest border border-stone-200/60 shadow-xs">
+                  {t('member.filterDeceased')}
                 </span>
               )}
             </div>
