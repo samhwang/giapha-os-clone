@@ -26,6 +26,12 @@ export const TEST_MEMBER = {
   password: 'testpassword123',
 };
 
+export const TEST_PERSON = {
+  fullName: 'E2E Nguyễn Văn Test',
+  gender: 'male' as const,
+  birthYear: 1960,
+};
+
 export async function loginViaUI(page: Page, email: string, password: string) {
   await page.goto('/login');
   await waitForHydration(page);

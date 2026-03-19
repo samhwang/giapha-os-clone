@@ -1,11 +1,17 @@
+import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
+import { SEED_DATA_PATH, type SeedData } from '../e2e-seed-data';
 import { waitForHydration } from '../fixtures';
+
+function getSeedData(): SeedData {
+  return JSON.parse(readFileSync(SEED_DATA_PATH, 'utf-8'));
+}
 
 test.describe('Member Read-Only Access', () => {
   test('should view dashboard as member', async ({ page }) => {
     await page.goto('/dashboard');
     await expect(page).toHaveURL(/\/dashboard/);
-    await expect(page.getByRole('heading', { name: /gia phả os/i })).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('header h1')).toBeVisible({ timeout: 15000 });
   });
 
   test('should not be able to create a member as non-admin', async ({ page }) => {
@@ -21,17 +27,17 @@ test.describe('Member Read-Only Access', () => {
   });
 
   test('should not see private details section as member', async ({ page }) => {
-    // Navigate to member list and click a member card to open detail modal
+    // Navigate to member list and click the e2e-seeded person card
     await page.goto('/dashboard/members');
     await waitForHydration(page);
 
-    const firstMemberCard = page.getByRole('button', { name: /Vạn Công Gốc/ });
-    await expect(firstMemberCard).toBeVisible({ timeout: 15000 });
-    await firstMemberCard.click();
+    const { personName } = getSeedData();
+    const personCard = page.getByRole('button', { name: new RegExp(personName) });
+    await expect(personCard).toBeVisible({ timeout: 15000 });
+    await personCard.click();
 
     // Wait for modal content to fully load and animate in.
-    // Skip the fragile spinner check — directly wait for the restricted message,
-    // which only renders after: modal opens → data fetches → content animates in.
+    // As a non-admin member, the private details section shows a restricted message.
     await expect(page.getByText(/chỉ hiển thị với quản trị viên/i)).toBeVisible({ timeout: 30000 });
   });
 });

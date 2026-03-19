@@ -17,13 +17,19 @@ teardown('cleanup e2e users', async () => {
   const db = new PrismaClient({ adapter });
 
   try {
+    // Delete all E2E-prefixed persons (seeded + created during tests).
+    // Cascade handles relationships and private details.
+    const { count: personCount } = await db.person.deleteMany({
+      where: { fullName: { startsWith: 'E2E' } },
+    });
+
     // Cascade delete handles accounts and sessions via onDelete: Cascade
-    const { count } = await db.user.deleteMany({
+    const { count: userCount } = await db.user.deleteMany({
       where: { id: { in: seedData.userIds } },
     });
 
     unlinkSync(SEED_DATA_PATH);
-    console.log(`E2E teardown complete: deleted ${count} user(s)`);
+    console.log(`E2E teardown complete: deleted ${userCount} user(s) and ${personCount} person(s)`);
   } finally {
     await db.$disconnect();
   }

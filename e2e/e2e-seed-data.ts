@@ -3,4 +3,7 @@ export const SEED_DATA_PATH = '.playwright/e2e-seed-data.json';
 
 export interface SeedData {
   userIds: string[];
+  adminUserId: string;
+  memberUserId: string;
+  personName: string;
 }
