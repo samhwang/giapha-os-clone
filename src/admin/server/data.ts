@@ -148,10 +148,8 @@ export const importData = createServerFn({ method: 'POST' })
         );
       }
 
-      const safeRelationships = data.relationships.filter((r) => r.personAId !== r.personBId);
-
-      for (let i = 0; i < safeRelationships.length; i += CHUNK_SIZE) {
-        const chunk = safeRelationships.slice(i, i + CHUNK_SIZE);
+      for (let i = 0; i < data.relationships.length; i += CHUNK_SIZE) {
+        const chunk = data.relationships.slice(i, i + CHUNK_SIZE);
         await createManyRelationships(
           chunk.map((r) => ({
             type: r.type,

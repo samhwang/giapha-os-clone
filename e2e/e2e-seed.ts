@@ -1,42 +1,53 @@
 import '@dotenvx/dotenvx/config';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { test as setup } from '@playwright/test';
-import type { TestHelpers } from 'better-auth/plugins';
-import { auth } from '../src/auth/server';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { hashPassword } from 'better-auth/crypto';
 import { UserRole } from '../src/auth/types';
+import { PrismaClient } from '../src/database/generated/prisma/client';
 import { SEED_DATA_PATH, type SeedData } from './e2e-seed-data';
 import { TEST_ADMIN, TEST_MEMBER } from './fixtures';
 
+async function seedUser(db: PrismaClient, email: string, password: string, role: UserRole) {
+  const hashed = await hashPassword(password);
+
+  const user = await db.user.upsert({
+    where: { email },
+    update: { role, isActive: true },
+    create: { email, name: email, role, isActive: true, emailVerified: true },
+  });
+
+  // Replace credential account with fresh password hash
+  await db.account.deleteMany({
+    where: { userId: user.id, providerId: 'credential' },
+  });
+  await db.account.create({
+    data: {
+      userId: user.id,
+      accountId: user.id,
+      providerId: 'credential',
+      password: hashed,
+    },
+  });
+
+  return user;
+}
+
 setup('seed e2e users', async () => {
-  const ctx = await auth.$context;
-  const test = (ctx as unknown as { test: TestHelpers }).test;
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+  const db = new PrismaClient({ adapter });
 
-  // Seed admin first — databaseHook promotes the first user to admin
-  const adminUser = test.createUser({
-    email: TEST_ADMIN.email,
-    name: 'Admin',
-    role: UserRole.enum.admin,
-    isActive: true,
-    emailVerified: true,
-  });
-  const savedAdmin = await test.saveUser(adminUser);
+  try {
+    const admin = await seedUser(db, TEST_ADMIN.email, TEST_ADMIN.password, UserRole.enum.admin);
+    const member = await seedUser(db, TEST_MEMBER.email, TEST_MEMBER.password, UserRole.enum.member);
 
-  const memberUser = test.createUser({
-    email: TEST_MEMBER.email,
-    name: 'Member',
-    role: UserRole.enum.member,
-    isActive: true,
-    emailVerified: true,
-  });
-  const savedMember = await test.saveUser(memberUser);
+    // Write seeded user IDs so teardown can clean them up
+    const seedData: SeedData = { userIds: [admin.id, member.id] };
+    mkdirSync('.playwright', { recursive: true });
+    writeFileSync(SEED_DATA_PATH, JSON.stringify(seedData, null, 2));
 
-  const seedData: SeedData = {
-    userIds: [savedAdmin.id, savedMember.id],
-    adminUserId: savedAdmin.id,
-    memberUserId: savedMember.id,
-  };
-  mkdirSync('.playwright', { recursive: true });
-  writeFileSync(SEED_DATA_PATH, JSON.stringify(seedData, null, 2));
-
-  console.log(`E2E seed complete: admin (${savedAdmin.email}), member (${savedMember.email})`);
+    console.log(`E2E seed complete: admin (${admin.email}), member (${member.email})`);
+  } finally {
+    await db.$disconnect();
+  }
 });

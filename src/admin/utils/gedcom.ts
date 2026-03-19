@@ -267,14 +267,13 @@ export function parseGedcom(gedcom: string): {
       else if (match[1] === 'CHIL') children.push(uuid);
     }
 
-    if (husb && wife && husb !== wife) {
+    if (husb && wife) {
       relationships.push({ type: RelationshipType.enum.marriage, personAId: husb, personBId: wife });
     }
 
     const parentA = husb || wife;
     if (parentA) {
       for (const childId of children) {
-        if (parentA === childId) continue;
         relationships.push({ type: RelationshipType.enum.biological_child, personAId: parentA, personBId: childId });
       }
     }
