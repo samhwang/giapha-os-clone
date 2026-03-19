@@ -287,7 +287,11 @@
     "generationNote": "* Chỉ tính các thành viên đã được gán số thế hệ",
     "genderRatio": "Tỉ lệ giới tính",
     "maleCount": "Nam — {{count}} người ({{percentage}}%)",
-    "femaleCount": "Nữ — {{count}} người ({{percentage}}%)"
+    "femaleCount": "Nữ — {{count}} người ({{percentage}}%)",
+    "westernZodiac": "Cung hoàng đạo",
+    "chineseZodiac": "Con giáp",
+    "zodiacNote": "* Dự toán dựa trên ngày/tháng sinh dương lịch",
+    "chineseZodiacNote": "* Dự toán dựa trên năm sinh âm lịch"
   },
   "events": {
     "birthday": "Sinh nhật",

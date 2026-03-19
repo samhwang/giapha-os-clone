@@ -287,7 +287,11 @@
     "generationNote": "* Only counts members with assigned generation numbers",
     "genderRatio": "Gender Ratio",
     "maleCount": "Male — {{count}} people ({{percentage}}%)",
-    "femaleCount": "Female — {{count}} people ({{percentage}}%)"
+    "femaleCount": "Female — {{count}} people ({{percentage}}%)",
+    "westernZodiac": "Western Zodiac",
+    "chineseZodiac": "Chinese Zodiac",
+    "zodiacNote": "* Estimated based on solar birth date",
+    "chineseZodiacNote": "* Estimated based on lunar birth year"
   },
   "events": {
     "birthday": "Birthday",

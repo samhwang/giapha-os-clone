@@ -1,6 +1,7 @@
-import { Crown, Flower2, Heart, HeartOff, Mars, Skull, Users, Venus } from 'lucide-react';
+import { Crown, Flower2, Heart, HeartOff, Mars, Moon, Skull, Star, Users, Venus } from 'lucide-react';
 import { type ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getZodiacAnimal, getZodiacSign } from '../../events/utils/dateHelpers';
 import { Gender, type Person } from '../../members/types';
 import { type Relationship, RelationshipType } from '../../relationships/types';
 import { cn } from '../../ui/utils/cn';
@@ -87,16 +88,46 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
     const unmarried = total - married;
 
     const genMap = new Map<number, number>();
+    const zodiacMap = new Map<string, number>();
+    const chineseZodiacMap = new Map<string, number>();
+
     for (const p of persons) {
       if (p.generation != null) {
         genMap.set(p.generation, (genMap.get(p.generation) ?? 0) + 1);
       }
+      const zodiac = getZodiacSign(p.birthDay, p.birthMonth);
+      if (zodiac) zodiacMap.set(zodiac, (zodiacMap.get(zodiac) ?? 0) + 1);
+
+      const chineseZodiac = getZodiacAnimal({ year: p.birthYear, month: p.birthMonth, day: p.birthDay });
+      if (chineseZodiac) chineseZodiacMap.set(chineseZodiac, (chineseZodiacMap.get(chineseZodiac) ?? 0) + 1);
     }
+
     const generationBreakdown = Array.from(genMap.entries())
       .sort(([a], [b]) => a - b)
       .map(([gen, count]) => ({ gen, count }));
 
-    return { total, male, female, daughtersInLaw, sonsInLaw, deceased, firstBorn, married, unmarried, generationBreakdown };
+    const zodiacBreakdown = Array.from(zodiacMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, count]) => ({ name, count }));
+
+    const chineseZodiacBreakdown = Array.from(chineseZodiacMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, count]) => ({ name, count }));
+
+    return {
+      total,
+      male,
+      female,
+      daughtersInLaw,
+      sonsInLaw,
+      deceased,
+      firstBorn,
+      married,
+      unmarried,
+      generationBreakdown,
+      zodiacBreakdown,
+      chineseZodiacBreakdown,
+    };
   }, [persons, relationships]);
 
   const cards = [
@@ -172,6 +203,79 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
           </span>
         </div>
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {stats.zodiacBreakdown.length > 0 && (
+          <ZodiacSection
+            title={t('stats.westernZodiac')}
+            icon={<Star className="size-4 text-purple-500" />}
+            items={stats.zodiacBreakdown}
+            total={stats.total}
+            barColor="bg-purple-400"
+            note={t('stats.zodiacNote')}
+            baseDelay={0.8}
+          />
+        )}
+        {stats.chineseZodiacBreakdown.length > 0 && (
+          <ZodiacSection
+            title={t('stats.chineseZodiac')}
+            icon={<Moon className="size-4 text-orange-500" />}
+            items={stats.chineseZodiacBreakdown}
+            total={stats.total}
+            barColor="bg-orange-400"
+            note={t('stats.chineseZodiacNote')}
+            baseDelay={0.95}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ZodiacSection({
+  title,
+  icon,
+  items,
+  total,
+  barColor,
+  note,
+  baseDelay,
+}: {
+  title: string;
+  icon: ReactNode;
+  items: { name: string; count: number }[];
+  total: number;
+  barColor: string;
+  note: string;
+  baseDelay: number;
+}) {
+  return (
+    <div
+      className="bg-white/80 border border-stone-200/60 rounded-2xl p-6 shadow-sm animate-[fade-in-up_0.4s_ease-out_forwards]"
+      style={{ animationDelay: `${baseDelay}s`, animationFillMode: 'backwards' }}
+    >
+      <h2 className="text-base font-bold text-stone-700 mb-5 flex items-center gap-2">
+        {icon}
+        {title}
+      </h2>
+      <div className="space-y-3">
+        {items.map(({ name, count }, i) => {
+          const pct = total > 0 ? (count / total) * 100 : 0;
+          return (
+            <div key={name} className="flex items-center gap-3">
+              <span className="text-sm font-bold text-stone-500 w-24 shrink-0">{name}</span>
+              <div className="flex-1 h-2 bg-stone-100 rounded-full overflow-hidden">
+                <div
+                  className={cn('h-full rounded-full transition-all duration-600 ease-out', barColor)}
+                  style={{ width: `${pct}%`, transitionDelay: `${baseDelay + 0.05 + i * 0.07}s` }}
+                />
+              </div>
+              <span className="text-sm font-bold text-stone-700 w-8 text-right shrink-0">{count}</span>
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-xs text-stone-400 mt-4 italic">{note}</p>
     </div>
   );
 }
