@@ -11,6 +11,7 @@ const UpdateBatchPayload = z.object({
       id: z.uuid(),
       generation: z.number().int().nullable(),
       birthOrder: z.number().int().nullable(),
+      isInLaw: z.boolean().optional(),
     })
   ),
 });

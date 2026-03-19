@@ -75,13 +75,17 @@ export function createManyPersonDetailsPrivate(
   return client.personDetailsPrivate.createMany({ data });
 }
 
-export function batchUpdatePersons(updates: Array<{ id: string; generation: number | null; birthOrder: number | null }>) {
+export function batchUpdatePersons(updates: Array<{ id: string; generation: number | null; birthOrder: number | null; isInLaw?: boolean }>) {
   const db = getDbClient();
   return db.$transaction(
     updates.map((u) =>
       db.person.update({
         where: { id: u.id },
-        data: { generation: u.generation, birthOrder: u.birthOrder },
+        data: {
+          generation: u.generation,
+          birthOrder: u.birthOrder,
+          ...(u.isInLaw !== undefined && { isInLaw: u.isInLaw }),
+        },
       })
     )
   );

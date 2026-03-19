@@ -18,6 +18,9 @@ interface ComputedUpdate {
   newGeneration: number | null;
   oldBirthOrder: number | null;
   newBirthOrder: number | null;
+  oldIsInLaw: boolean;
+  newIsInLaw: boolean;
+  gender: string;
   changed: boolean;
 }
 
@@ -149,6 +152,75 @@ function computeBirthOrders(persons: Person[], relationships: Relationship[]): M
   return orderMap;
 }
 
+function computeInLaws(persons: Person[], relationships: Relationship[]): Map<string, boolean> {
+  const childParents = new Map<string, string[]>();
+  const spouseMap = new Map<string, string[]>();
+
+  for (const r of relationships) {
+    if (r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child) {
+      if (!childParents.has(r.personBId)) childParents.set(r.personBId, []);
+      childParents.get(r.personBId)!.push(r.personAId);
+    } else if (r.type === RelationshipType.enum.marriage) {
+      if (!spouseMap.has(r.personAId)) spouseMap.set(r.personAId, []);
+      spouseMap.get(r.personAId)!.push(r.personBId);
+      if (!spouseMap.has(r.personBId)) spouseMap.set(r.personBId, []);
+      spouseMap.get(r.personBId)!.push(r.personAId);
+    }
+  }
+
+  const inLawMap = new Map<string, boolean>();
+
+  for (const p of persons) {
+    const hasParents = childParents.has(p.id);
+    const hasSpouse = spouseMap.has(p.id);
+
+    if (hasParents) {
+      inLawMap.set(p.id, false);
+      continue;
+    }
+
+    if (hasSpouse) {
+      const spouses = spouseMap.get(p.id) || [];
+      const anySpouseHasParents = spouses.some((sId) => childParents.has(sId));
+
+      if (anySpouseHasParents) {
+        inLawMap.set(p.id, true);
+      } else {
+        const spousesData = spouses.map((sId) => persons.find((per) => per.id === sId));
+        const shouldBeBloodline = !p.isInLaw || (p.gender === 'male' && spousesData.every((s) => s?.gender !== 'male'));
+        inLawMap.set(p.id, !shouldBeBloodline);
+      }
+    } else {
+      inLawMap.set(p.id, false);
+    }
+  }
+
+  return inLawMap;
+}
+
+function getInLawLabel(isInLaw: boolean, gender: string, t: (key: string) => string): string {
+  if (!isInLaw) return '—';
+  return gender === 'male' ? t('lineage.sonInLaw') : t('lineage.daughterInLaw');
+}
+
+function InLawCell({ update, t }: { update: ComputedUpdate; t: (key: string) => string }) {
+  const isChanged = update.oldIsInLaw !== update.newIsInLaw;
+  const oldLabel = getInLawLabel(update.oldIsInLaw, update.gender, t);
+  const newLabel = isChanged ? (update.newIsInLaw ? getInLawLabel(true, update.gender, t) : t('lineage.bloodline')) : null;
+
+  return (
+    <>
+      <span className={isChanged ? 'text-stone-400' : ''}>{oldLabel}</span>
+      {newLabel && (
+        <>
+          <span className="mx-2 text-stone-300">→</span>
+          <span className="font-bold text-amber-700">{newLabel}</span>
+        </>
+      )}
+    </>
+  );
+}
+
 export default function LineageManager({ persons, relationships }: LineageManagerProps) {
   const { t } = useTranslation();
   const [updates, setUpdates] = useState<ComputedUpdate[] | null>(null);
@@ -166,10 +238,12 @@ export default function LineageManager({ persons, relationships }: LineageManage
     try {
       const genMap = computeGenerations(persons, relationships);
       const orderMap = computeBirthOrders(persons, relationships);
+      const inLawMap = computeInLaws(persons, relationships);
 
       const result: ComputedUpdate[] = persons.map((p) => {
         const newGen = genMap.get(p.id) ?? null;
         const newOrder = orderMap.get(p.id) ?? null;
+        const newInLaw = inLawMap.get(p.id) ?? false;
         return {
           id: p.id,
           fullName: p.fullName,
@@ -177,7 +251,10 @@ export default function LineageManager({ persons, relationships }: LineageManage
           newGeneration: newGen,
           oldBirthOrder: p.birthOrder,
           newBirthOrder: newOrder,
-          changed: newGen !== p.generation || newOrder !== p.birthOrder,
+          oldIsInLaw: p.isInLaw,
+          newIsInLaw: newInLaw,
+          gender: p.gender,
+          changed: newGen !== p.generation || newOrder !== p.birthOrder || newInLaw !== p.isInLaw,
         };
       });
 
@@ -212,6 +289,7 @@ export default function LineageManager({ persons, relationships }: LineageManage
             id: u.id,
             generation: u.newGeneration,
             birthOrder: u.newBirthOrder,
+            isInLaw: u.newIsInLaw,
           })),
         },
       });
@@ -280,6 +358,7 @@ export default function LineageManager({ persons, relationships }: LineageManage
                     <th className="text-left px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.nameHeader')}</th>
                     <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.generationHeader')}</th>
                     <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.birthOrderHeader')}</th>
+                    <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.inLawHeader')}</th>
                     <th className="text-center px-4 py-3 font-semibold text-stone-600">{t('lineage.statusHeader')}</th>
                   </tr>
                 </thead>
@@ -312,6 +391,9 @@ export default function LineageManager({ persons, relationships }: LineageManage
                             <span className="font-bold text-amber-700">{u.newBirthOrder ?? '—'}</span>
                           </>
                         )}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <InLawCell update={u} t={t} />
                       </td>
                       <td className="px-4 py-3 text-center">
                         {u.changed ? (
