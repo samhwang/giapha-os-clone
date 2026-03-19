@@ -20,6 +20,15 @@ const ServerEnv = z.object({
   BETTER_AUTH_SECRET: z.string().min(32),
   BETTER_AUTH_URL: z.url(),
   UPLOAD_DIR: z.string().min(1).default('./uploads'),
+  TRUSTED_ORIGINS: z
+    .string()
+    .optional()
+    .transform((v) =>
+      v
+        ?.split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    ),
 });
 type ServerEnv = z.infer<typeof ServerEnv>;
 
