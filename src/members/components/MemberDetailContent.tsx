@@ -1,5 +1,5 @@
-import { Briefcase, ChevronDown, Info, Leaf, MapPin, Phone, Users } from 'lucide-react';
-import { useState } from 'react';
+import { Baby, Briefcase, ChevronDown, Info, Leaf, MapPin, Phone, UserPlus, Users } from 'lucide-react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { calculateAge, formatDisplayDate, getLunarDateString, getZodiacAnimal, getZodiacSign } from '../../events/utils/dateHelpers';
 import RelationshipManager from '../../relationships/components/RelationshipManager';
@@ -16,12 +16,27 @@ interface MemberDetailContentProps {
   canEdit?: boolean;
 }
 
+interface DescendantStats {
+  biologicalChildren: number;
+  maleBiologicalChildren: number;
+  femaleBiologicalChildren: number;
+  paternalGrandchildren: number;
+  maternalGrandchildren: number;
+  sonInLaw: number;
+  daughterInLaw: number;
+}
+
 export default function MemberDetailContent({ person, privateData, isAdmin, canEdit = false }: MemberDetailContentProps) {
   const { t } = useTranslation();
   const isDeceased = person.isDeceased;
   const [isNoteExpanded, setIsNoteExpanded] = useState(false);
+  const [relStats, setRelStats] = useState<DescendantStats | null>(null);
   const NOTE_TRUNCATE_LENGTH = 300;
   const isNoteLong = !!person.note && person.note.length > NOTE_TRUNCATE_LENGTH;
+
+  const handleStatsLoaded = useCallback((stats: DescendantStats) => {
+    setRelStats(stats);
+  }, []);
 
   return (
     <div className="bg-stone-50/50">
@@ -211,6 +226,8 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                   </div>
                 );
               })()}
+
+              {relStats && <DescendantStatsCard stats={relStats} t={t} />}
             </div>
           </div>
         </div>
@@ -259,7 +276,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                 {t('member.family')}
               </h2>
               <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-6 rounded-2xl border border-stone-200/60 shadow-sm relative z-0">
-                <RelationshipManager personId={person.id} canEdit={canEdit} personGender={person.gender} />
+                <RelationshipManager personId={person.id} canEdit={canEdit} personGender={person.gender} onStatsLoaded={handleStatsLoaded} />
               </div>
             </section>
           </div>
@@ -308,6 +325,101 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function DescendantStatsCard({ stats, t }: { stats: DescendantStats; t: (key: string, opts?: Record<string, unknown>) => string }) {
+  const hasData =
+    stats.biologicalChildren > 0 || stats.sonInLaw > 0 || stats.daughterInLaw > 0 || stats.paternalGrandchildren > 0 || stats.maternalGrandchildren > 0;
+  if (!hasData) return null;
+
+  return (
+    <div
+      className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-stone-200/60 shadow-sm transition-all hover:shadow-md hover:border-amber-200/60 sm:col-span-2 md:col-span-3 animate-[fade-in-up_0.4s_ease-out_forwards]"
+      style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}
+    >
+      <div className="flex items-center gap-2 mb-3">
+        <span className="size-2 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.5)]" />
+        <h3 className="text-xs-plus font-bold text-stone-400 uppercase tracking-widest">{t('member.descendants')}</h3>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {stats.biologicalChildren > 0 && (
+          <div className="bg-stone-50/80 rounded-xl p-3 border border-stone-100 flex flex-col justify-between group hover:bg-stone-100/80 transition-colors">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-blue-100/50 text-blue-600 rounded-lg group-hover:bg-blue-100 transition-colors">
+                <Users className="size-4" />
+              </div>
+              <div className="flex-1">
+                <p className="text-2xs font-bold text-stone-500 uppercase tracking-widest leading-tight">{t('member.biologicalChildren')}</p>
+                <p className="text-xl font-black text-stone-700 leading-none mt-0.5">{stats.biologicalChildren}</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-1.5 mt-auto pt-1 border-t border-stone-200/50">
+              {stats.maleBiologicalChildren > 0 && (
+                <span className="text-xs-plus font-medium text-sky-700 bg-sky-100/50 px-1.5 py-0.5 rounded flex items-center gap-1">
+                  <MaleIcon className="size-3 shrink-0" /> {stats.maleBiologicalChildren}
+                </span>
+              )}
+              {stats.femaleBiologicalChildren > 0 && (
+                <span className="text-xs-plus font-medium text-rose-700 bg-rose-100/50 px-1.5 py-0.5 rounded flex items-center gap-1">
+                  <FemaleIcon className="size-3 shrink-0" /> {stats.femaleBiologicalChildren}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {(stats.sonInLaw > 0 || stats.daughterInLaw > 0) && (
+          <div className="bg-stone-50/80 rounded-xl p-3 border border-stone-100 flex flex-col group hover:bg-stone-100/80 transition-colors">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-stone-200/50 text-stone-600 rounded-lg group-hover:bg-stone-200 transition-colors">
+                <UserPlus className="size-4" />
+              </div>
+              <p className="text-2xs font-bold text-stone-500 uppercase tracking-widest">{t('member.inLawLabel')}</p>
+            </div>
+            <div className="space-y-1 mt-auto w-full pt-1 border-t border-stone-200/50">
+              {stats.daughterInLaw > 0 && (
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-stone-500 font-medium">{t('member.daughterInLaw')}</span>
+                  <span className="font-bold text-stone-700">{stats.daughterInLaw}</span>
+                </div>
+              )}
+              {stats.sonInLaw > 0 && (
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-stone-500 font-medium">{t('member.sonInLaw')}</span>
+                  <span className="font-bold text-stone-700">{stats.sonInLaw}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {(stats.paternalGrandchildren > 0 || stats.maternalGrandchildren > 0) && (
+          <div className="bg-stone-50/80 rounded-xl p-3 border border-stone-100 flex flex-col group hover:bg-stone-100/80 transition-colors">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-emerald-100/50 text-emerald-600 rounded-lg group-hover:bg-emerald-100 transition-colors">
+                <Baby className="size-4" />
+              </div>
+              <p className="text-2xs font-bold text-stone-500 uppercase tracking-widest">{t('member.grandchildren')}</p>
+            </div>
+            <div className="space-y-1 mt-auto w-full pt-1 border-t border-stone-200/50">
+              {stats.paternalGrandchildren > 0 && (
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-stone-500 font-medium">{t('member.paternalGrandchildren')}</span>
+                  <span className="font-bold text-stone-700">{stats.paternalGrandchildren}</span>
+                </div>
+              )}
+              {stats.maternalGrandchildren > 0 && (
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-stone-500 font-medium">{t('member.maternalGrandchildren')}</span>
+                  <span className="font-bold text-stone-700">{stats.maternalGrandchildren}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

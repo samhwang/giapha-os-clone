@@ -216,7 +216,15 @@
     "notUpdated": "Chưa cập nhật",
     "contactAdminOnly": "Thông tin liên hệ chỉ hiển thị với Quản trị viên.",
     "inLawOther": "Khách",
-    "editMember": "Chỉnh Sửa Thành Viên"
+    "editMember": "Chỉnh Sửa Thành Viên",
+    "descendants": "Hậu duệ",
+    "biologicalChildren": "Con ruột",
+    "inLawLabel": "Dâu / Rể",
+    "daughterInLaw": "Con dâu",
+    "sonInLaw": "Con rể",
+    "grandchildren": "Cháu",
+    "paternalGrandchildren": "Cháu nội",
+    "maternalGrandchildren": "Cháu ngoại"
   },
   "relationship": {
     "loadingFamily": "Đang tải thông tin gia đình...",

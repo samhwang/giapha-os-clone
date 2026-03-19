@@ -216,7 +216,15 @@
     "notUpdated": "Not updated",
     "contactAdminOnly": "Contact information is only visible to administrators.",
     "inLawOther": "Guest",
-    "editMember": "Edit Member"
+    "editMember": "Edit Member",
+    "descendants": "Descendants",
+    "biologicalChildren": "Biological children",
+    "inLawLabel": "In-Laws",
+    "daughterInLaw": "Daughter-in-law",
+    "sonInLaw": "Son-in-law",
+    "grandchildren": "Grandchildren",
+    "paternalGrandchildren": "Paternal grandchildren",
+    "maternalGrandchildren": "Maternal grandchildren"
   },
   "relationship": {
     "loadingFamily": "Loading family information...",

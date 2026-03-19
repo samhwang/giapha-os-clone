@@ -12,10 +12,21 @@ import { getAvatarBg } from '../../ui/utils/styles';
 import { createRelationship, deleteRelationship, getRelationshipsForPerson } from '../server/relationship';
 import { RelationshipType } from '../types';
 
+interface DescendantStats {
+  biologicalChildren: number;
+  maleBiologicalChildren: number;
+  femaleBiologicalChildren: number;
+  paternalGrandchildren: number;
+  maternalGrandchildren: number;
+  sonInLaw: number;
+  daughterInLaw: number;
+}
+
 interface RelationshipManagerProps {
   personId: string;
   canEdit?: boolean;
   personGender: string;
+  onStatsLoaded?: (stats: DescendantStats) => void;
 }
 
 interface EnrichedRelationship {
@@ -26,7 +37,7 @@ interface EnrichedRelationship {
   note: string | null;
 }
 
-export default function RelationshipManager({ personId, canEdit = false, personGender }: RelationshipManagerProps) {
+export default function RelationshipManager({ personId, canEdit = false, personGender, onStatsLoaded }: RelationshipManagerProps) {
   const { t } = useTranslation();
   const { setMemberModalId } = useDashboardStore();
 
@@ -129,13 +140,48 @@ export default function RelationshipManager({ personId, canEdit = false, personG
         }
       }
 
+      if (onStatsLoaded) {
+        const bioChildren = formattedRels.filter((r) => r.direction === 'child' && r.type === RelationshipType.enum.biological_child);
+        const maleChildren = formattedRels.filter((r) => r.direction === 'child' && r.targetPerson.gender === Gender.enum.male);
+        const femaleChildren = formattedRels.filter((r) => r.direction === 'child' && r.targetPerson.gender === Gender.enum.female);
+
+        const sonInLaw = formattedRels.filter((r) => r.direction === 'child_in_law' && r.targetPerson.gender === Gender.enum.male).length;
+        const daughterInLaw = formattedRels.filter((r) => r.direction === 'child_in_law' && r.targetPerson.gender === Gender.enum.female).length;
+
+        let paternalGrandchildren = 0;
+        let maternalGrandchildren = 0;
+
+        if (childrenIds.length > 0) {
+          for (const childId of childrenIds) {
+            const childRelsForGrandchildren = await getRelationshipsForPerson({ data: { personId: childId } });
+            const grandchildCount = childRelsForGrandchildren.filter(
+              (r) => r.personAId === childId && (r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child)
+            ).length;
+
+            const childPerson = personsMap.get(childId);
+            if (childPerson?.gender === Gender.enum.male) paternalGrandchildren += grandchildCount;
+            else if (childPerson?.gender === Gender.enum.female) maternalGrandchildren += grandchildCount;
+          }
+        }
+
+        onStatsLoaded({
+          biologicalChildren: bioChildren.length,
+          maleBiologicalChildren: maleChildren.length,
+          femaleBiologicalChildren: femaleChildren.length,
+          paternalGrandchildren,
+          maternalGrandchildren,
+          sonInLaw,
+          daughterInLaw,
+        });
+      }
+
       setRelationships(formattedRels);
     } catch (err) {
       logger.error('Error fetching relationships:', err);
     } finally {
       setLoading(false);
     }
-  }, [personId, t]);
+  }, [personId, t, onStatsLoaded]);
 
   useEffect(() => {
     fetchRelationships();
