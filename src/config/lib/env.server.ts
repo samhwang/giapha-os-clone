@@ -26,16 +26,22 @@ const AuthEnv = z.object({
   BETTER_AUTH_URL: z.url(),
 });
 
-const StorageEnv = z.object({
-  STORAGE_PROVIDER: z.enum(['local', 's3']).default('local'),
+const LocalFSStorageEnv = z.object({
+  STORAGE_PROVIDER: z.literal('local'),
   UPLOAD_DIR: z.string().min(1).default('./uploads'),
-  S3_ENDPOINT: z.string().optional(),
-  S3_BUCKET: z.string().optional(),
-  S3_REGION: z.string().optional(),
-  S3_ACCESS_KEY_ID: z.string().optional(),
-  S3_SECRET_ACCESS_KEY: z.string().optional(),
-  S3_PUBLIC_URL: z.string().optional(),
 });
+
+const S3StorageEnv = z.object({
+  STORAGE_PROVIDER: z.literal('s3'),
+  S3_ENDPOINT: z.string(),
+  S3_BUCKET: z.string(),
+  S3_REGION: z.string(),
+  S3_ACCESS_KEY_ID: z.string(),
+  S3_SECRET_ACCESS_KEY: z.string(),
+  S3_PUBLIC_URL: z.string(),
+});
+
+const StorageEnv = z.discriminatedUnion('STORAGE_PROVIDER', [LocalFSStorageEnv, S3StorageEnv]);
 
 const NetworkEnv = z.object({
   TRUSTED_ORIGINS: z
@@ -49,20 +55,7 @@ const NetworkEnv = z.object({
     ),
 });
 
-const ServerEnv = z
-  .intersection(z.intersection(DatabaseEnv, AuthEnv), z.intersection(StorageEnv, NetworkEnv))
-  .refine((env) => env.STORAGE_PROVIDER !== 'local' || !!env.UPLOAD_DIR, {
-    message: 'UPLOAD_DIR is required when STORAGE_PROVIDER=local',
-  })
-  .refine(
-    (env) => {
-      if (env.STORAGE_PROVIDER !== 's3') return true;
-      return env.S3_ENDPOINT && env.S3_BUCKET && env.S3_REGION && env.S3_ACCESS_KEY_ID && env.S3_SECRET_ACCESS_KEY && env.S3_PUBLIC_URL;
-    },
-    {
-      message: 'S3_ENDPOINT, S3_BUCKET, S3_REGION, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, and S3_PUBLIC_URL are required when STORAGE_PROVIDER=s3',
-    }
-  );
+const ServerEnv = z.intersection(z.intersection(DatabaseEnv, AuthEnv), z.intersection(StorageEnv, NetworkEnv));
 type ServerEnv = z.infer<typeof ServerEnv>;
 
 function parseServerEnv(): ServerEnv {

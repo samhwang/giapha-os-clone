@@ -21,16 +21,16 @@ function getStorage() {
     const { S3_ENDPOINT, S3_BUCKET, S3_REGION, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY } = serverEnv;
     _storage = createStorage({
       driver: s3Driver({
-        endpoint: S3_ENDPOINT as string,
-        bucket: S3_BUCKET as string,
-        region: S3_REGION as string,
-        accessKeyId: S3_ACCESS_KEY_ID as string,
-        secretAccessKey: S3_SECRET_ACCESS_KEY as string,
+        endpoint: S3_ENDPOINT,
+        bucket: S3_BUCKET,
+        region: S3_REGION,
+        accessKeyId: S3_ACCESS_KEY_ID,
+        secretAccessKey: S3_SECRET_ACCESS_KEY,
       }),
     });
   } else {
     _storage = createStorage({
-      driver: fsDriver({ base: serverEnv.UPLOAD_DIR as string }),
+      driver: fsDriver({ base: serverEnv.UPLOAD_DIR }),
     });
   }
 
