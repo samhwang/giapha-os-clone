@@ -54,6 +54,10 @@ All changes must be:
     └── update-docs/
 
 docs/                     # User-facing documentation (Diataxis framework)
+├── tutorials/            # Learning-oriented guided experiences
+├── how-to/               # Goal-oriented task guides
+├── explanation/           # Understanding-oriented discussions
+└── reference/             # Information-oriented lookup tables
 prisma/                   # Database schema and seed data
 scripts/                  # Infrastructure setup scripts
 src/

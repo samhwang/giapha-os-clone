@@ -1,6 +1,6 @@
 # Testing Guidelines
 
-See [docs/03-development.md](../docs/03-development.md) for comprehensive testing documentation.
+See [docs/how-to/03-development.md](../docs/how-to/03-development.md) for comprehensive testing documentation.
 
 ## Quick Reference
 

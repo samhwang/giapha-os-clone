@@ -79,7 +79,7 @@ pnpm run dev
 
 The app will be available at `http://localhost:3000`.
 
-See the [Commands](./07-reference.md#commands) reference for the full command list.
+See the [Commands](../reference/02-reference.md#commands) reference for the full command list.
 
 ## Troubleshooting
 
@@ -116,6 +116,6 @@ npx dotenvx run -- prisma db push --force-reset
 
 ## Next Steps
 
-- Read the [Architecture](./04-architecture.md) guide to understand design decisions
+- Read the [Architecture](../explanation/01-architecture.md) guide to understand design decisions
 - Read the [Development](./03-development.md) guide to start building features
-- Explore the [Features](./05-features.md) documentation
+- Explore the [Features](../explanation/02-features.md) documentation

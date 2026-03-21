@@ -53,7 +53,7 @@ Set the following environment variables in your `docker-compose.production.yml`:
 - S3_PUBLIC_URL=http://your-domain.com:8333/giapha
 ```
 
-See the [Environment Variables](./07-reference.md#environment-variables) reference for the full list of storage-related variables.
+See the [Environment Variables](../reference/02-reference.md#environment-variables) reference for the full list of storage-related variables.
 
 ### Running SeaweedFS
 
@@ -118,4 +118,4 @@ Members can upload avatars:
 - Max size: 5MB
 - Stored in `avatars/{personId}/` directory (relative to storage root)
 
-See the [Storage Providers](./07-reference.md#storage-providers) reference for provider-specific CLI tools and documentation links.
+See the [Storage Providers](../reference/02-reference.md#storage-providers) reference for provider-specific CLI tools and documentation links.

@@ -44,7 +44,7 @@ function MemberDetailPage() {
 }
 ```
 
-See the [Route Map](./07-reference.md#route-map) reference for all existing routes.
+See the [Route Map](../reference/02-reference.md#route-map) reference for all existing routes.
 
 ## Loaders (Data Fetching)
 
@@ -269,7 +269,7 @@ pnpm run prisma:generate
 pnpm run prisma:seed
 ```
 
-See the [Database](./06-database.md) reference for the full schema and repository API.
+See the [Database](../reference/01-database.md) reference for the full schema and repository API.
 
 ## Testing
 
@@ -425,7 +425,7 @@ expectTypeOf<PersonNode>().toMatchTypeOf<object>()
 expectTypeOf<KinshipResult | null>().toMatchTypeOf<object | null>()
 ```
 
-See the [Commands](./07-reference.md#commands) and [Coverage Targets](./07-reference.md#coverage-targets) references for the full test command list and coverage goals.
+See the [Commands](../reference/02-reference.md#commands) and [Coverage Targets](../reference/02-reference.md#coverage-targets) references for the full test command list and coverage goals.
 
 ## Running CI Locally
 
@@ -455,4 +455,4 @@ pnpm run typecheck    # TypeScript check
 
 This ensures no broken code leaves your local machine.
 
-See the [CI/CD Workflows](./07-reference.md#cicd-workflows) reference for the full GitHub Actions pipeline description.
+See the [CI/CD Workflows](../reference/02-reference.md#cicd-workflows) reference for the full GitHub Actions pipeline description.

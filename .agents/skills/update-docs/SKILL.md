@@ -59,17 +59,17 @@ For each category, note which documentation locations are affected using the map
 
 | Change Type | Docs to Check |
 |-------------|---------------|
-| New feature | `README.md`, `docs/05-features.md`, `AGENTS.md` (project structure) |
-| New env var | `.env.sample`, `docs/07-reference.md`, `README.md` |
-| New dependency | `README.md`, `AGENTS.md` (tech stack), `docs/07-reference.md`, `.agents/rules/patterns.md` |
-| New command/script | `README.md`, `AGENTS.md` (commands), `docs/07-reference.md`, `.agents/rules/commands.md` |
-| New route/module | `AGENTS.md` (project structure), `docs/07-reference.md` |
-| Database change | `docs/06-database.md`, `.agents/skills/db-migration/SKILL.md` |
+| New feature | `README.md`, `docs/explanation/02-features.md`, `AGENTS.md` (project structure) |
+| New env var | `.env.sample`, `docs/reference/02-reference.md`, `README.md` |
+| New dependency | `README.md`, `AGENTS.md` (tech stack), `docs/reference/02-reference.md`, `.agents/rules/patterns.md` |
+| New command/script | `README.md`, `AGENTS.md` (commands), `docs/reference/02-reference.md`, `.agents/rules/commands.md` |
+| New route/module | `AGENTS.md` (project structure), `docs/reference/02-reference.md` |
+| Database change | `docs/reference/01-database.md`, `.agents/skills/db-migration/SKILL.md` |
 | New skill/rule | `AGENTS.md` (available skills/rules) |
-| Test changes | `docs/03-development.md`, `.agents/rules/testing.md` |
-| Deployment change | `docs/02-deployment.md`, `.agents/rules/deployment.md` |
-| Storage change | `docs/08-storage.md`, `docs/07-reference.md` |
-| CI/CD change | `docs/07-reference.md` |
+| Test changes | `docs/how-to/03-development.md`, `.agents/rules/testing.md` |
+| Deployment change | `docs/how-to/02-deployment.md`, `.agents/rules/deployment.md` |
+| Storage change | `docs/how-to/04-storage.md`, `docs/reference/02-reference.md` |
+| CI/CD change | `docs/reference/02-reference.md` |
 
 ### Step 3: Audit Each Location
 
@@ -152,9 +152,10 @@ The `docs/` directory follows the [Diataxis](https://diataxis.fr/) framework. Ea
 
 Current `docs/` structure:
 
-- **How-to**: `01-quick-start`, `02-deployment`, `03-development`, `08-storage`
-- **Explanation**: `04-architecture`, `05-features`
-- **Reference**: `06-database`, `07-reference`
+- **`tutorials/`**: `01-family-tree`, `02-kinship`, `03-events`, `04-import-export`
+- **`how-to/`**: `01-quick-start`, `02-deployment`, `03-development`, `04-storage`
+- **`explanation/`**: `01-architecture`, `02-features`
+- **`reference/`**: `01-database`, `02-reference`
 
 When updating docs, do not mix content types. Move how-to steps out of reference docs, move reference tables out of explanation docs, etc.
 

@@ -57,7 +57,7 @@ docker compose -f docker-compose.production.yml ps
 
 All services should show `healthy` status.
 
-For storage configuration (bind mounts, S3-compatible storage), see the [Storage Configuration](./08-storage.md) guide.
+For storage configuration (bind mounts, S3-compatible storage), see the [Storage Configuration](./04-storage.md) guide.
 
 ### Database Setup
 
@@ -355,11 +355,11 @@ services:
 
 All cloud/serverless providers share these requirements:
 
-- **S3-compatible storage is required** — serverless providers have no persistent filesystem. Set `STORAGE_PROVIDER=s3` with the appropriate S3 variables (see `.env.sample`). See [Storage Configuration](./08-storage.md#s3-compatible-storage) for setup details.
+- **S3-compatible storage is required** — serverless providers have no persistent filesystem. Set `STORAGE_PROVIDER=s3` with the appropriate S3 variables (see `.env.sample`). See [Storage Configuration](./04-storage.md#s3-compatible-storage) for setup details.
 - **Managed PostgreSQL** — use your provider's managed database or an external service (e.g. [Neon](https://neon.tech/), [Supabase](https://supabase.com/)).
 - **Environment variables** — configure all variables from `.env.sample` in your provider's dashboard.
 
-See the [Deployment Targets](./07-reference.md#deployment-targets) reference for the full build configuration table.
+See the [Deployment Targets](../reference/02-reference.md#deployment-targets) reference for the full build configuration table.
 
 ### Security Headers
 

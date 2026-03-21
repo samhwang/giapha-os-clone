@@ -2,7 +2,7 @@
 
 Why the application is built the way it is, how data flows through the system, and where this project came from.
 
-For the tech stack table, project structure, and environment variables, see the [Reference](./07-reference.md) document.
+For the tech stack table, project structure, and environment variables, see the [Reference](../reference/02-reference.md) document.
 
 ## Why This Stack
 
