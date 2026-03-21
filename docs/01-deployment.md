@@ -122,51 +122,56 @@ Then set `S3_PUBLIC_URL` to the publicly accessible URL of your SeaweedFS instan
 
 ### Migrating Files Between Storage Providers
 
-The database stores provider-agnostic storage keys (e.g. `avatars/{personId}/{filename}`), so no database changes are needed when switching providers. You only need to copy the files themselves.
+The database stores provider-agnostic storage keys (e.g. `avatars/{personId}/{filename}`), so no database changes are needed when switching providers. You only need to copy the files themselves to the new storage, preserving the directory structure.
 
-#### Local to S3
+#### Local to S3-compatible
 
-Copy files from your local uploads directory into the S3 bucket, preserving the directory structure:
+Upload your local files to the S3-compatible bucket. The exact method depends on your provider:
+
+- **SeaweedFS**: Use the [weed tool](https://github.com/seaweedfs/seaweedfs) or any S3-compatible client
+- **MinIO**: Use the [mc (MinIO Client)](https://min.io/docs/minio/linux/reference/minio-mc.html) CLI
+- **Cloudflare R2**: Use [wrangler](https://developers.cloudflare.com/r2/api/s3/api/) or the R2 dashboard
+- **Supabase Storage**: Use the Supabase dashboard or CLI
+
+Most S3-compatible providers support the `s3api` protocol via generic tools like [rclone](https://rclone.org/):
 
 ```bash
-# Using AWS CLI (works with any S3-compatible endpoint)
-aws s3 sync ./data/uploads/ s3://giapha/ --endpoint-url http://localhost:8333
+# Using rclone (works with any S3-compatible provider)
+rclone sync ./data/uploads/ s3-remote:giapha/
 
-# Using Docker named volume
-docker run --rm \
-  -v giapha-os-clone_uploads_data:/data \
-  -e AWS_ACCESS_KEY_ID=your-access-key \
-  -e AWS_SECRET_ACCESS_KEY=your-secret-key \
-  amazon/aws-cli s3 sync /data/ s3://giapha/ --endpoint-url http://seaweedfs:8333
+# Using bind mount path
+rclone sync ./data/uploads/ s3-remote:giapha/
 ```
+
+See [rclone S3 configuration](https://rclone.org/s3/) for how to set up your provider as a remote.
 
 Then update your environment to use S3:
 
-```bash
-STORAGE_PROVIDER=s3
-S3_ENDPOINT=http://seaweedfs:8333
-S3_BUCKET=giapha
+```yaml
+- STORAGE_PROVIDER=s3
+- S3_ENDPOINT=http://seaweedfs:8333   # your provider's endpoint
+- S3_BUCKET=giapha
 # ... other S3 vars
 ```
 
-#### S3 to Local
+#### S3-compatible to Local
 
-Download files from the S3 bucket into your local uploads directory:
+Download files from the S3-compatible bucket into your local uploads directory:
 
 ```bash
-aws s3 sync s3://giapha/ ./data/uploads/ --endpoint-url http://localhost:8333
+rclone sync s3-remote:giapha/ ./data/uploads/
 ```
 
 Then update your environment back to local:
 
-```bash
-STORAGE_PROVIDER=local
-UPLOAD_DIR=/app/uploads
+```yaml
+- STORAGE_PROVIDER=local
+- UPLOAD_DIR=/app/uploads
 ```
 
 #### Verification
 
-After migrating, verify that avatars still display correctly in the application. The `/api/uploads/*` route serves files for local storage or redirects to S3 — existing URLs in the browser cache will continue to work.
+After migrating, verify that avatars display correctly in the application. No database changes are needed — the stored keys work with any provider. The `/api/uploads/*` route serves files for local storage or redirects to the S3 public URL.
 
 ## Database Setup
 
