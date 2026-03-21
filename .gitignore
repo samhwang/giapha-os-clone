@@ -21,3 +21,6 @@ base
 /uploads
 .claude
 .playwright
+.agents/plans
+.agents/worktrees
+
