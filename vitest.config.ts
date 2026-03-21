@@ -20,6 +20,7 @@ export default defineConfig({
             DATABASE_URL: 'postgresql://fake:fake@localhost:5432/fake',
             BETTER_AUTH_SECRET: 'test-secret-that-is-at-least-32-characters-long!!',
             BETTER_AUTH_URL: 'http://localhost:3000',
+            STORAGE_PROVIDER: 'local',
           },
         },
       },
