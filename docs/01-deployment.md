@@ -124,54 +124,51 @@ Then set `S3_PUBLIC_URL` to the publicly accessible URL of your SeaweedFS instan
 
 The database stores provider-agnostic storage keys (e.g. `avatars/{personId}/{filename}`), so no database changes are needed when switching providers. You only need to copy the files themselves to the new storage, preserving the directory structure.
 
-#### Local to S3-compatible
+#### Using rclone (generic solution)
 
-Upload your local files to the S3-compatible bucket. The exact method depends on your provider:
-
-- **SeaweedFS**: Use the [weed tool](https://github.com/seaweedfs/seaweedfs) or any S3-compatible client
-- **MinIO**: Use the [mc (MinIO Client)](https://min.io/docs/minio/linux/reference/minio-mc.html) CLI
-- **Cloudflare R2**: Use [wrangler](https://developers.cloudflare.com/r2/api/s3/api/) or the R2 dashboard
-- **Supabase Storage**: Use the Supabase dashboard or CLI
-
-Most S3-compatible providers support the `s3api` protocol via generic tools like [rclone](https://rclone.org/):
+[rclone](https://rclone.org/) works with any S3-compatible provider. Configure your provider as a remote, then sync files in either direction:
 
 ```bash
-# Using rclone (works with any S3-compatible provider)
+# Local to S3-compatible
 rclone sync ./data/uploads/ s3-remote:giapha/
 
-# Using bind mount path
-rclone sync ./data/uploads/ s3-remote:giapha/
+# S3-compatible to local
+rclone sync s3-remote:giapha/ ./data/uploads/
 ```
 
-See [rclone S3 configuration](https://rclone.org/s3/) for how to set up your provider as a remote.
+See [rclone S3 configuration](https://rclone.org/s3/) for setup instructions.
 
-Then update your environment to use S3:
+#### Provider-specific tools
+
+Each provider has its own CLI or dashboard for managing files. Refer to their documentation for upload/download instructions:
+
+| Provider | Documentation |
+|----------|--------------|
+| SeaweedFS | [S3 API docs](https://github.com/seaweedfs/seaweedfs/wiki/Amazon-S3-API) |
+| Garage | [S3 compatibility docs](https://garagehq.deuxfleurs.fr/documentation/connect/cli/) |
+| AWS S3 | [AWS CLI s3 sync](https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html) |
+| Supabase Storage | [Storage guides](https://supabase.com/docs/guides/storage) |
+| Vercel Blob | [Vercel Blob docs](https://vercel.com/docs/storage/vercel-blob) |
+| Cloudflare R2 | [R2 docs](https://developers.cloudflare.com/r2/) |
+| MinIO | [mc CLI reference](https://min.io/docs/minio/linux/reference/minio-mc.html) |
+
+#### After migrating
+
+Update your environment variables to match the new provider:
 
 ```yaml
+# Switch to S3-compatible
 - STORAGE_PROVIDER=s3
 - S3_ENDPOINT=http://seaweedfs:8333   # your provider's endpoint
 - S3_BUCKET=giapha
 # ... other S3 vars
-```
 
-#### S3-compatible to Local
-
-Download files from the S3-compatible bucket into your local uploads directory:
-
-```bash
-rclone sync s3-remote:giapha/ ./data/uploads/
-```
-
-Then update your environment back to local:
-
-```yaml
+# Or switch back to local
 - STORAGE_PROVIDER=local
 - UPLOAD_DIR=/app/uploads
 ```
 
-#### Verification
-
-After migrating, verify that avatars display correctly in the application. No database changes are needed — the stored keys work with any provider. The `/api/uploads/*` route serves files for local storage or redirects to the S3 public URL.
+Verify that avatars display correctly in the application. No database changes are needed — the stored keys work with any provider. The `/api/uploads/*` route serves files for local storage or redirects to the S3 public URL.
 
 ## Database Setup
 
