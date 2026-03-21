@@ -399,27 +399,29 @@ Available animations: `fade-in`, `fade-in-up`, `scale-in` (defined in `src/style
 
 ## File Storage
 
-### Upload Pattern
+### Storage Abstraction
 
-Avatar files are stored on the local filesystem under `UPLOAD_DIR` (default `./uploads`):
+Files are stored via `unstorage` (`src/lib/storage.ts`) which supports local filesystem (`fs` driver) and S3-compatible storage (`s3` driver), selected at runtime via `STORAGE_PROVIDER` env var.
 
 ```tsx
-import fs from 'node:fs/promises';
-import path from 'node:path';
+import { uploadAvatar, deleteAvatar, getPublicUrl, resolveAvatarUrl } from '../lib/storage';
 
-// Upload
-const dir = path.join(UPLOAD_DIR, 'avatars', personId);
-await fs.mkdir(dir, { recursive: true });
-await fs.writeFile(path.join(dir, filename), buffer);
+// Upload — returns a storage key (not a URL)
+const key = await uploadAvatar({ buffer, personId, filename, contentType });
+// key = "avatars/{personId}/{filename}"
 
-// Delete
-await fs.unlink(path.join(UPLOAD_DIR, key));
+// Delete — takes a storage key
+await deleteAvatar(key);
+
+// URL resolution — converts key to provider-appropriate URL
+const url = getPublicUrl(key);
+// local: "/api/uploads/avatars/..." | s3: "https://cdn.example.com/avatars/..."
 ```
 
-### Public URL Construction
+### Database Storage
 
-Files are served via an API route and stored as relative paths in the database:
+The database stores **storage keys** (e.g. `avatars/{personId}/{filename}`), not URLs. Use `resolveAvatarUrl()` or the `*Resolved` repository wrappers to convert keys to URLs at the read boundary.
 
-```
-/api/uploads/avatars/${personId}/${filename}
-```
+### Local File Serving
+
+For local storage, files are served via the `/api/uploads/*` API route. For S3, this route redirects to the S3 public URL.

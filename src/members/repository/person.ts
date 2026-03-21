@@ -8,6 +8,11 @@ import type {
 } from '../../database/generated/prisma/models';
 import { getDbClient } from '../../database/lib/client';
 import type { DbClient } from '../../database/transaction';
+import { resolveAvatarUrl } from '../../lib/storage';
+
+function withResolvedAvatar<T extends { avatarUrl: string | null }>(person: T): T {
+  return { ...person, avatarUrl: resolveAvatarUrl(person.avatarUrl) };
+}
 
 export function createPerson(data: PersonCreateInput, client: DbClient = getDbClient()) {
   return client.person.create({ data, include: { privateDetails: true } });
@@ -26,12 +31,27 @@ export function findPersonById(id: string, client: DbClient = getDbClient()) {
   return client.person.findUnique({ where: { id }, include: { privateDetails: true } });
 }
 
+export async function findPersonByIdResolved(id: string, client: DbClient = getDbClient()) {
+  const person = await findPersonById(id, client);
+  return person ? withResolvedAvatar(person) : null;
+}
+
 export function findPersonByIdOrThrow(id: string, client: DbClient = getDbClient()) {
   return client.person.findUniqueOrThrow({ where: { id }, include: { privateDetails: true } });
 }
 
+export async function findPersonByIdOrThrowResolved(id: string, client: DbClient = getDbClient()) {
+  const person = await findPersonByIdOrThrow(id, client);
+  return withResolvedAvatar(person);
+}
+
 export function findAllPersons(client: DbClient = getDbClient()) {
   return client.person.findMany({ orderBy: { createdAt: 'asc' } });
+}
+
+export async function findAllPersonsResolved(client: DbClient = getDbClient()) {
+  const persons = await findAllPersons(client);
+  return persons.map(withResolvedAvatar);
 }
 
 export function deletePerson(id: string, client: DbClient = getDbClient()) {

@@ -15,11 +15,35 @@ function parseClientRuntimeEnv(): ClientRuntimeEnv {
 }
 export const clientEnv = parseClientRuntimeEnv();
 
-const ServerEnv = z.object({
+// --- Server env slices ---
+
+const DatabaseEnv = z.object({
   DATABASE_URL: z.url(),
+});
+
+const AuthEnv = z.object({
   BETTER_AUTH_SECRET: z.string().min(32),
   BETTER_AUTH_URL: z.url(),
+});
+
+const LocalFSStorageEnv = z.object({
+  STORAGE_PROVIDER: z.literal('local'),
   UPLOAD_DIR: z.string().min(1).default('./uploads'),
+});
+
+const S3StorageEnv = z.object({
+  STORAGE_PROVIDER: z.literal('s3'),
+  S3_ENDPOINT: z.string(),
+  S3_BUCKET: z.string(),
+  S3_REGION: z.string(),
+  S3_ACCESS_KEY_ID: z.string(),
+  S3_SECRET_ACCESS_KEY: z.string(),
+  S3_PUBLIC_URL: z.string(),
+});
+
+const StorageEnv = z.discriminatedUnion('STORAGE_PROVIDER', [LocalFSStorageEnv, S3StorageEnv]);
+
+const NetworkEnv = z.object({
   TRUSTED_ORIGINS: z
     .string()
     .optional()
@@ -30,6 +54,8 @@ const ServerEnv = z.object({
         .filter(Boolean)
     ),
 });
+
+const ServerEnv = z.intersection(z.intersection(DatabaseEnv, AuthEnv), z.intersection(StorageEnv, NetworkEnv));
 type ServerEnv = z.infer<typeof ServerEnv>;
 
 function parseServerEnv(): ServerEnv {

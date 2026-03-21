@@ -101,11 +101,11 @@ describe('uploadPersonAvatar (inner logic)', () => {
   it('should upload avatar and update person', async () => {
     const person = await createPerson({ fullName: 'Avatar Test', gender: Gender.enum.male });
 
-    const url = await uploadAvatar({ buffer: Buffer.from('fake-image'), personId: person.id, filename: 'photo.jpg', contentType: 'image/jpeg' });
+    const key = await uploadAvatar({ buffer: Buffer.from('fake-image'), personId: person.id, filename: 'photo.jpg', contentType: 'image/jpeg' });
 
-    const result = await updatePerson({ id: person.id, data: { avatarUrl: url } });
+    const result = await updatePerson({ id: person.id, data: { avatarUrl: key } });
 
-    expect(result.avatarUrl).toBe(url);
+    expect(result.avatarUrl).toBe(key);
   });
 
   it('should throw when person not found', async () => {

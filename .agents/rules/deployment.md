@@ -21,9 +21,9 @@ docker compose logs -f        # Follow logs
 
 ### File Storage
 
-- Uploads are stored on the local filesystem under `UPLOAD_DIR` (default `./uploads`)
-- Served via `/api/uploads/` route
-- In Docker, mount a volume at `/app/uploads` for persistence
+- Storage provider is selected via `STORAGE_PROVIDER` env var (`local` or `s3`)
+- **Local**: Files stored under `UPLOAD_DIR`, served via `/api/uploads/` route. Mount a volume at `/app/uploads` in Docker.
+- **S3**: Files stored in an S3-compatible bucket (AWS S3, SeaweedFS, MinIO, Cloudflare R2, etc.). The `/api/uploads/` route redirects to the S3 public URL.
 
 ### Environment Variables
 
@@ -32,7 +32,14 @@ docker compose logs -f        # Follow logs
 | `DATABASE_URL` | PostgreSQL connection string |
 | `BETTER_AUTH_SECRET` | Auth secret (32+ chars) |
 | `BETTER_AUTH_URL` | Application URL |
-| `UPLOAD_DIR` | File upload directory (default `./uploads`) |
+| `STORAGE_PROVIDER` | `local` (default) or `s3` |
+| `UPLOAD_DIR` | File upload directory (required when `local`) |
+| `S3_ENDPOINT` | S3-compatible endpoint (required when `s3`) |
+| `S3_BUCKET` | S3 bucket name (required when `s3`) |
+| `S3_REGION` | S3 region (required when `s3`) |
+| `S3_ACCESS_KEY_ID` | S3 access key (required when `s3`) |
+| `S3_SECRET_ACCESS_KEY` | S3 secret key (required when `s3`) |
+| `S3_PUBLIC_URL` | Public URL prefix for S3 objects (required when `s3`) |
 
 ### Health Checks
 

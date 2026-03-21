@@ -3,6 +3,7 @@ import path from 'node:path';
 import { createFileRoute } from '@tanstack/react-router';
 import { serverEnv } from '../../../config/lib/env.server';
 import { logger } from '../../../lib/logger.server';
+import { getPublicUrl } from '../../../lib/storage';
 
 const CONTENT_TYPES: Record<string, string> = {
   '.jpg': 'image/jpeg',
@@ -23,8 +24,12 @@ export const Route = createFileRoute('/api/uploads/$')({
           return new Response('Not found', { status: 404 });
         }
 
-        const filePath = path.resolve(serverEnv.UPLOAD_DIR, relativePath);
-        const resolvedUploadDir = path.resolve(serverEnv.UPLOAD_DIR);
+        if (serverEnv.STORAGE_PROVIDER === 's3') {
+          return Response.redirect(getPublicUrl(relativePath), 302);
+        }
+
+        const filePath = path.resolve(serverEnv.UPLOAD_DIR as string, relativePath);
+        const resolvedUploadDir = path.resolve(serverEnv.UPLOAD_DIR as string);
 
         if (!filePath.startsWith(resolvedUploadDir)) {
           return new Response('Not found', { status: 404 });

@@ -25,6 +25,7 @@ export async function setup() {
   console.log(`Upload dir: ${uploadDir}`);
 
   process.env.DATABASE_URL = databaseUrl;
+  process.env.STORAGE_PROVIDER = 'local';
   process.env.UPLOAD_DIR = uploadDir;
   process.env.BETTER_AUTH_SECRET = 'test-secret-that-is-at-least-32-characters-long!!';
   process.env.BETTER_AUTH_URL = 'http://localhost:3000';

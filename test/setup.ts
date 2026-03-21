@@ -27,8 +27,10 @@ vi.mock('@tanstack/react-start', async () => {
 });
 
 vi.mock('../src/lib/storage', () => ({
-  uploadAvatar: vi.fn(() => Promise.resolve('/api/uploads/avatars/test/avatar.jpg')),
+  uploadAvatar: vi.fn(() => Promise.resolve('avatars/test/avatar.jpg')),
   deleteAvatar: vi.fn(() => Promise.resolve()),
+  getPublicUrl: vi.fn((key: string) => `/api/uploads/${key}`),
+  resolveAvatarUrl: vi.fn((key: string | null) => (key ? `/api/uploads/${key}` : null)),
 }));
 
 afterEach(() => {

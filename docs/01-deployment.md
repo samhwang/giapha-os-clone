@@ -84,6 +84,92 @@ Create the directories if using bind mounts:
 mkdir -p data/postgres data/uploads
 ```
 
+### S3-Compatible Storage
+
+For cloud deployments or distributed self-hosted setups, you can use S3-compatible storage instead of the local filesystem. This works with AWS S3, SeaweedFS, MinIO, Cloudflare R2, Supabase Storage, and any other S3-compatible provider.
+
+Set the following environment variables in your `docker-compose.production.yml`:
+
+```yaml
+- STORAGE_PROVIDER=s3
+- S3_ENDPOINT=http://seaweedfs:8333
+- S3_BUCKET=giapha
+- S3_REGION=us-east-1
+- S3_ACCESS_KEY_ID=your-access-key
+- S3_SECRET_ACCESS_KEY=your-secret-key
+- S3_PUBLIC_URL=http://your-domain.com:8333/giapha
+```
+
+#### SeaweedFS Example
+
+To run SeaweedFS alongside your app, uncomment the `seaweedfs` service in `docker-compose.production.yml`:
+
+```yaml
+seaweedfs:
+  image: chrislusf/seaweedfs:latest
+  command: "server -s3 -dir=/data"
+  ports:
+    - "8333:8333"
+    - "9333:9333"
+  volumes:
+    - seaweedfs_data:/data
+  restart: unless-stopped
+  networks:
+    - giapha-network
+```
+
+Then set `S3_PUBLIC_URL` to the publicly accessible URL of your SeaweedFS instance (e.g. `https://storage.your-domain.com/giapha` if behind a reverse proxy).
+
+### Migrating Files Between Storage Providers
+
+The database stores provider-agnostic storage keys (e.g. `avatars/{personId}/{filename}`), so no database changes are needed when switching providers. You only need to copy the files themselves to the new storage, preserving the directory structure.
+
+#### Using rclone (generic solution)
+
+[rclone](https://rclone.org/) works with any S3-compatible provider. Configure your provider as a remote, then sync files in either direction:
+
+```bash
+# Local to S3-compatible
+rclone sync ./data/uploads/ s3-remote:giapha/
+
+# S3-compatible to local
+rclone sync s3-remote:giapha/ ./data/uploads/
+```
+
+See [rclone S3 configuration](https://rclone.org/s3/) for setup instructions.
+
+#### Provider-specific tools
+
+Each provider has its own CLI or dashboard for managing files. Refer to their documentation for upload/download instructions:
+
+| Provider | Documentation |
+|----------|--------------|
+| SeaweedFS | [S3 API docs](https://github.com/seaweedfs/seaweedfs/wiki/Amazon-S3-API) |
+| Garage | [S3 compatibility docs](https://garagehq.deuxfleurs.fr/documentation/connect/cli/) |
+| AWS S3 | [AWS CLI s3 sync](https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html) |
+| Supabase Storage | [Storage guides](https://supabase.com/docs/guides/storage) |
+| Vercel Blob | [Vercel Blob docs](https://vercel.com/docs/storage/vercel-blob) |
+| Cloudflare R2 | [R2 docs](https://developers.cloudflare.com/r2/) |
+| MinIO | [mc CLI reference](https://min.io/docs/minio/linux/reference/minio-mc.html) |
+
+#### After migrating
+
+Update your environment variables to match the new provider:
+
+```yaml
+# Switch to S3-compatible
+- STORAGE_PROVIDER=s3
+- S3_ENDPOINT=http://seaweedfs:8333   # your provider's endpoint
+- S3_BUCKET=giapha
+# ... other S3 vars
+
+# Or switch back to local
+- STORAGE_PROVIDER=local
+- UPLOAD_DIR=/app/uploads
+```
+
+Verify that avatars display correctly in the application. No database changes are needed — the stored keys work with any provider. The `/api/uploads/*` route serves files for local storage or redirects to the S3 public URL.
+
 ## Database Setup
 
 ### Run Migrations
