@@ -15,11 +15,29 @@ function parseClientRuntimeEnv(): ClientRuntimeEnv {
 }
 export const clientEnv = parseClientRuntimeEnv();
 
-const ServerEnv = z.object({
+// --- Server env slices ---
+
+const DatabaseEnv = z.object({
   DATABASE_URL: z.url(),
+});
+
+const AuthEnv = z.object({
   BETTER_AUTH_SECRET: z.string().min(32),
   BETTER_AUTH_URL: z.url(),
-  UPLOAD_DIR: z.string().min(1).default('./uploads'),
+});
+
+const StorageEnv = z.object({
+  STORAGE_PROVIDER: z.enum(['local', 's3']).default('local'),
+  UPLOAD_DIR: z.string().min(1).optional(),
+  S3_ENDPOINT: z.string().optional(),
+  S3_BUCKET: z.string().optional(),
+  S3_REGION: z.string().optional(),
+  S3_ACCESS_KEY_ID: z.string().optional(),
+  S3_SECRET_ACCESS_KEY: z.string().optional(),
+  S3_PUBLIC_URL: z.string().optional(),
+});
+
+const NetworkEnv = z.object({
   TRUSTED_ORIGINS: z
     .string()
     .optional()
@@ -30,6 +48,21 @@ const ServerEnv = z.object({
         .filter(Boolean)
     ),
 });
+
+const ServerEnv = z
+  .intersection(z.intersection(DatabaseEnv, AuthEnv), z.intersection(StorageEnv, NetworkEnv))
+  .refine((env) => env.STORAGE_PROVIDER !== 'local' || !!env.UPLOAD_DIR, {
+    message: 'UPLOAD_DIR is required when STORAGE_PROVIDER=local',
+  })
+  .refine(
+    (env) => {
+      if (env.STORAGE_PROVIDER !== 's3') return true;
+      return env.S3_ENDPOINT && env.S3_BUCKET && env.S3_REGION && env.S3_ACCESS_KEY_ID && env.S3_SECRET_ACCESS_KEY && env.S3_PUBLIC_URL;
+    },
+    {
+      message: 'S3_ENDPOINT, S3_BUCKET, S3_REGION, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, and S3_PUBLIC_URL are required when STORAGE_PROVIDER=s3',
+    }
+  );
 type ServerEnv = z.infer<typeof ServerEnv>;
 
 function parseServerEnv(): ServerEnv {

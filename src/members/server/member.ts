@@ -7,9 +7,10 @@ import { countRelationshipsForPerson } from '../../relationships/repository/rela
 import {
   createPerson as createPersonRepo,
   deletePerson as deletePersonRepo,
-  findAllPersons,
+  findAllPersonsResolved,
   findPersonById,
-  findPersonByIdOrThrow,
+  findPersonByIdOrThrowResolved,
+  findPersonByIdResolved,
   updatePerson as updatePersonRepo,
   upsertPersonDetailsPrivate,
 } from '../repository/person';
@@ -114,7 +115,7 @@ export const updatePerson = createServerFn({ method: 'POST' })
       });
     }
 
-    return findPersonByIdOrThrow(id);
+    return findPersonByIdOrThrowResolved(id);
   });
 
 export const deleteMember = createServerFn({ method: 'POST' })
@@ -150,17 +151,17 @@ export const uploadPersonAvatar = createServerFn({ method: 'POST' })
     }
 
     const buffer = Buffer.from(data.base64, 'base64');
-    const url = await uploadAvatar({ buffer, personId: data.personId, filename: data.filename, contentType: data.contentType });
+    const key = await uploadAvatar({ buffer, personId: data.personId, filename: data.filename, contentType: data.contentType });
 
-    return updatePersonRepo({ id: data.personId, data: { avatarUrl: url } });
+    return updatePersonRepo({ id: data.personId, data: { avatarUrl: key } });
   });
 
 export const getPersons = createServerFn({ method: 'GET' }).handler(async () => {
-  return findAllPersons();
+  return findAllPersonsResolved();
 });
 
 export const getPersonById = createServerFn({ method: 'GET' })
   .inputValidator(IdPayload)
   .handler(async ({ data }) => {
-    return findPersonById(data.id);
+    return findPersonByIdResolved(data.id);
   });
