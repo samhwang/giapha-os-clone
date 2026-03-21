@@ -50,7 +50,8 @@ All changes must be:
     ├── create-route/
     ├── create-server-function/
     ├── create-test/
-    └── db-migration/
+    ├── db-migration/
+    └── update-docs/
 
 prisma/                   # Database schema and seed data
 scripts/                  # Infrastructure setup scripts
@@ -111,6 +112,7 @@ Load a skill when working on specific task types:
 - **[create-server-function](.agents/skills/create-server-function/SKILL.md)** - Create server functions with Zod validation and Prisma
 - **[db-migration](.agents/skills/db-migration/SKILL.md)** - Manage Prisma schema changes and migrations
 - **[port-changes](.agents/skills/port-changes/SKILL.md)** - Analyze upstream base repo changes and create an integration plan for the fork
+- **[update-docs](.agents/skills/update-docs/SKILL.md)** - Audit and update all documentation to reflect recent changes
 
 ## Quick Reference
 
