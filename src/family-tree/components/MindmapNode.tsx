@@ -7,7 +7,7 @@ import type { Relationship } from '../../relationships/types';
 import DefaultAvatar from '../../ui/icons/DefaultAvatar';
 import { cn } from '../../ui/utils/cn';
 import { getAvatarBg } from '../../ui/utils/styles';
-import type { AdjacencyLists } from '../utils/treeHelpers';
+import type { AdjacencyLists, TreeFilterOptions } from '../utils/treeHelpers';
 import { getFilteredTreeData } from '../utils/treeHelpers';
 
 export interface ExpandSignal {
@@ -19,12 +19,7 @@ export interface MindmapContextData {
   personsMap: Map<string, Person>;
   relationships: Relationship[];
   adj: AdjacencyLists;
-  hideDaughtersInLaw: boolean;
-  hideSonsInLaw: boolean;
-  hideDaughters: boolean;
-  hideSons: boolean;
-  hideMales: boolean;
-  hideFemales: boolean;
+  filters: TreeFilterOptions;
   showAvatar: boolean;
   expandSignal: ExpandSignal | null;
   setMemberModalId: (id: string | null) => void;
@@ -36,14 +31,7 @@ function getTreeData(personId: string, ctx: MindmapContextData) {
     personId,
     personsMap: ctx.personsMap,
     adj: ctx.adj,
-    filters: {
-      hideDaughtersInLaw: ctx.hideDaughtersInLaw,
-      hideSonsInLaw: ctx.hideSonsInLaw,
-      hideDaughters: ctx.hideDaughters,
-      hideSons: ctx.hideSons,
-      hideMales: ctx.hideMales,
-      hideFemales: ctx.hideFemales,
-    },
+    filters: ctx.filters,
   });
 }
 

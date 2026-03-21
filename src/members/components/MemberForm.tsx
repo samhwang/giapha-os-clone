@@ -5,6 +5,7 @@ import { Lunar, Solar } from 'lunar-javascript';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { logger } from '../../lib/logger';
+import Checkbox from '../../ui/common/Checkbox';
 import { cn } from '../../ui/utils/cn';
 import { getAvatarBg } from '../../ui/utils/styles';
 import { useAvatarUpload } from '../hooks/useAvatarUpload';
@@ -292,26 +293,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
 
           <div className="flex items-center sm:mt-7 mt-2">
             <form.AppField name="isInLaw">
-              {(field) => (
-                <label className="flex items-center gap-3 group">
-                  <div className="relative flex items-center">
-                    <input type="checkbox" checked={field.state.value} onChange={(e) => field.handleChange(e.target.checked)} className="peer sr-only" />
-                    <div
-                      className={cn(
-                        'size-5 border-2 border-stone-300 rounded transition-colors flex items-center justify-center',
-                        field.state.value && 'bg-amber-500 border-amber-500'
-                      )}
-                    >
-                      {field.state.value && (
-                        <svg className="size-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4} aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                  <span className="text-sm font-semibold text-stone-700 group-hover:text-amber-700 transition-colors">{t('member.isInLaw')}</span>
-                </label>
-              )}
+              {(field) => <Checkbox checked={field.state.value} onChange={(val) => field.handleChange(val)} label={t('member.isInLaw')} />}
             </form.AppField>
           </div>
 
@@ -471,39 +453,23 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             <div className="flex flex-col gap-4">
               <form.AppField name="isDeceased">
                 {(field) => (
-                  <label className="flex items-center gap-3 group">
-                    <div className="relative flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={field.state.value}
-                        onChange={(e) => {
-                          field.handleChange(e.target.checked);
-                          if (!e.target.checked) {
-                            form.setFieldValue('deathYear', '');
-                            form.setFieldValue('deathMonth', '');
-                            form.setFieldValue('deathDay', '');
-                            form.setFieldValue('deathLunarYear', '');
-                            form.setFieldValue('deathLunarMonth', '');
-                            form.setFieldValue('deathLunarDay', '');
-                          }
-                        }}
-                        className="peer sr-only"
-                      />
-                      <div
-                        className={cn(
-                          'size-5 border-2 border-stone-300 rounded transition-colors flex items-center justify-center',
-                          field.state.value && 'bg-stone-600 border-stone-600'
-                        )}
-                      >
-                        {field.state.value && (
-                          <svg className="size-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4} aria-hidden="true">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-                    <span className="text-sm font-semibold text-stone-700 group-hover:text-stone-900 transition-colors">{t('member.isDeceased')}</span>
-                  </label>
+                  <Checkbox
+                    checked={field.state.value}
+                    onChange={(val) => {
+                      field.handleChange(val);
+                      if (!val) {
+                        form.setFieldValue('deathYear', '');
+                        form.setFieldValue('deathMonth', '');
+                        form.setFieldValue('deathDay', '');
+                        form.setFieldValue('deathLunarYear', '');
+                        form.setFieldValue('deathLunarMonth', '');
+                        form.setFieldValue('deathLunarDay', '');
+                      }
+                    }}
+                    label={t('member.isDeceased')}
+                    colorClass="bg-stone-600 border-stone-600"
+                    hoverClass="group-hover:text-stone-900"
+                  />
                 )}
               </form.AppField>
             </div>
