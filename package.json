@@ -49,10 +49,10 @@
     "@tanstack/react-form": "^1.28.5",
     "@tanstack/react-form-devtools": "^0.2.19",
     "@tanstack/react-form-start": "^1.28.5",
-    "@tanstack/react-router": "^1.168.0",
+    "@tanstack/react-router": "^1.168.1",
     "@tanstack/react-router-devtools": "^1.166.10",
-    "@tanstack/react-start": "^1.167.0",
-    "@tanstack/router-plugin": "^1.167.0",
+    "@tanstack/react-start": "^1.167.2",
+    "@tanstack/router-plugin": "^1.167.2",
     "aws4fetch": "^1.0.20",
     "better-auth": "^1.5.5",
     "class-variance-authority": "^0.7.1",
@@ -60,7 +60,7 @@
     "consola": "^3.4.2",
     "dayjs": "^1.11.20",
     "html-to-image": "^1.11.13",
-    "i18next": "^25.8.20",
+    "i18next": "^25.10.1",
     "jspdf": "^4.2.1",
     "jszip": "^3.10.1",
     "lucide-react": "^0.577.0",
@@ -92,7 +92,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^25.5.0",
     "@types/papaparse": "^5.5.2",
-    "@types/pg": "^8.18.0",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
@@ -116,6 +116,7 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@parcel/watcher",
       "@prisma/client",
       "@prisma/engines",
       "better-sqlite3",
@@ -124,7 +125,9 @@
       "esbuild",
       "prisma",
       "protobufjs",
-      "ssh2"
+      "sharp",
+      "ssh2",
+      "workerd"
     ]
   }
 }
