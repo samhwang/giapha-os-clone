@@ -11,7 +11,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
       # Option 2: Bind mount (uncomment and customize path)
-      # - "./data/postgres:/var/lib/postgresql/data"
+      # - ./data/postgres:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U giapha -d giapha"]
       interval: 10s
@@ -61,7 +61,7 @@ services:
       - uploads_data:/app/uploads
 
       # Option 2: Bind mount (uncomment and customize path)
-      # - "./data/uploads:/app/uploads"
+      # - ./data/uploads:/app/uploads
     healthcheck:
       test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/').then(r=>{process.exit(r.ok?0:1)}).catch(()=>process.exit(1))\""]
       interval: 30s
@@ -84,7 +84,11 @@ services:
   #     - "8333:8333"
   #     - "9333:9333"
   #   volumes:
+  #    Option 1: Named volume (default, portable)
   #     - seaweedfs_data:/data
+  #
+  #   Option 2: Bind mount (uncomment and customize path)
+  #     - ./data/seaweedfs:/data
   #   restart: unless-stopped
   #   networks:
   #     - giapha-network
