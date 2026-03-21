@@ -74,7 +74,7 @@ Create co-located test: `src/components/[ComponentName].test.tsx`
 
 ## Patterns
 
-For components with variants (e.g., Button, Input), use `cva` from `class-variance-authority` with `cn()`:
+For components with variants (e.g., Button, Input), use `cva` from [class-variance-authority](https://cva.style/) with `cn()`:
 
 ### Button Component (with cva)
 

@@ -59,7 +59,7 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 
    Open `http://localhost:3000`. The first user to sign up becomes admin.
 
-See the [Deployment Guide](./docs/01-deployment.md) for detailed instructions.
+See the [Deployment Guide](./docs/02-deployment.md) for detailed instructions.
 
 ## Quick Start (Development)
 

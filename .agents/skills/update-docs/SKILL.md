@@ -19,7 +19,7 @@ When user asks to:
 | Location | Content | Key Sections |
 |----------|---------|-------------|
 | `README.md` | Project overview, setup, tech stack | Overview, quick start, commands |
-| `docs/` | Numbered user-facing docs | Deployment, features, architecture, database, testing, development, CI/CD |
+| `docs/` | Numbered user-facing docs ([Diataxis](https://diataxis.fr/) framework) | How-to guides, explanation, reference |
 | `AGENTS.md` | Agent control manifest | Project structure, tech stack, available skills/rules, commands |
 | `.agents/rules/` | Domain-specific guidelines | Code style, patterns, commands, testing, deployment, communication |
 | `.agents/skills/` | Task-specific toolkits | Each skill's SKILL.md |
@@ -59,16 +59,17 @@ For each category, note which documentation locations are affected using the map
 
 | Change Type | Docs to Check |
 |-------------|---------------|
-| New feature | `README.md`, `docs/03-features.md`, `AGENTS.md` (project structure) |
-| New env var | `.env.sample`, `docs/01-deployment.md`, `README.md` |
-| New dependency | `README.md`, `AGENTS.md` (tech stack), `.agents/rules/patterns.md` |
-| New command/script | `README.md`, `AGENTS.md` (commands), `.agents/rules/commands.md` |
-| New route/module | `AGENTS.md` (project structure), `docs/04-architecture.md` |
-| Database change | `docs/05-database.md`, `.agents/skills/db-migration/SKILL.md` |
+| New feature | `README.md`, `docs/05-features.md`, `AGENTS.md` (project structure) |
+| New env var | `.env.sample`, `docs/07-reference.md`, `README.md` |
+| New dependency | `README.md`, `AGENTS.md` (tech stack), `docs/07-reference.md`, `.agents/rules/patterns.md` |
+| New command/script | `README.md`, `AGENTS.md` (commands), `docs/07-reference.md`, `.agents/rules/commands.md` |
+| New route/module | `AGENTS.md` (project structure), `docs/07-reference.md` |
+| Database change | `docs/06-database.md`, `.agents/skills/db-migration/SKILL.md` |
 | New skill/rule | `AGENTS.md` (available skills/rules) |
-| Test changes | `docs/06-testing.md`, `.agents/rules/testing.md` |
-| Deployment change | `docs/01-deployment.md`, `.agents/rules/deployment.md` |
-| CI/CD change | `docs/08-cicd.md` |
+| Test changes | `docs/03-development.md`, `.agents/rules/testing.md` |
+| Deployment change | `docs/02-deployment.md`, `.agents/rules/deployment.md` |
+| Storage change | `docs/08-storage.md`, `docs/07-reference.md` |
+| CI/CD change | `docs/07-reference.md` |
 
 ### Step 3: Audit Each Location
 
@@ -137,6 +138,29 @@ pnpm lint
 - [ ] American English spelling throughout
 - [ ] No stale file paths or broken references
 - [ ] Passes `pnpm lint` (for any code-adjacent changes)
+
+## Documentation Framework
+
+The `docs/` directory follows the [Diataxis](https://diataxis.fr/) framework. Each document must serve **one** primary purpose:
+
+| Type | Purpose | Question It Answers |
+|------|---------|---------------------|
+| **How-to guide** | Goal-oriented steps | "How do I...?" |
+| **Explanation** | Understanding-oriented discussion | "Why...? Can you tell me about...?" |
+| **Reference** | Information-oriented lookup | "What is...?" |
+| **Tutorial** | Learning-oriented guided experience | "Can you teach me to...?" |
+
+Current `docs/` structure:
+
+- **How-to**: `01-quick-start`, `02-deployment`, `03-development`, `08-storage`
+- **Explanation**: `04-architecture`, `05-features`
+- **Reference**: `06-database`, `07-reference`
+
+When updating docs, do not mix content types. Move how-to steps out of reference docs, move reference tables out of explanation docs, etc.
+
+### External Linking Rule
+
+Every mention of an external tool, framework, pattern, or standard must include a hyperlink on first mention per document. This applies to technology names, methodologies, external tools, specifications, and design patterns.
 
 ## Notes
 

@@ -1,6 +1,6 @@
 # Deployment & Self-Hosting
 
-See [docs/01-deployment.md](../docs/01-deployment.md) for comprehensive deployment guide.
+See [docs/02-deployment.md](../docs/02-deployment.md) for the comprehensive deployment guide and [docs/08-storage.md](../docs/08-storage.md) for storage configuration.
 
 ## Quick Reference
 

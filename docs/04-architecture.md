@@ -1,113 +1,35 @@
 # Architecture
 
-TL;DR: TanStack Start + React 19 + TanStack Router for full-stack, Prisma + PostgreSQL for database, Better Auth for authentication, local filesystem for file storage.
+Why the application is built the way it is, how data flows through the system, and where this project came from.
 
-## Tech Stack
+For the tech stack table, project structure, and environment variables, see the [Reference](./07-reference.md) document.
 
-| Layer | Technology | Version |
-|-------|------------|---------|
-| Framework | TanStack Start | latest |
-| UI | React | 19 |
-| Routing | TanStack Router | latest |
-| Forms | TanStack Form | latest |
-| Database | PostgreSQL | 15+ |
-| ORM | Prisma | 7.x |
-| Auth | Better Auth | latest |
-| Storage | unstorage (local fs / S3-compatible) | latest |
-| Styling | Tailwind CSS | 4.x |
-| Component Variants | CVA (class-variance-authority) | latest |
-| State Management | Zustand | 5.x |
-| Validation | Zod | 4.x |
-| i18n | react-i18next | latest |
-| Icons | lucide-react | latest |
-| Unit Testing | Vitest | 4.x |
-| E2E Testing | Playwright | latest |
+## Why This Stack
 
-## Project Structure
+[TanStack Start](https://tanstack.com/start/latest) was chosen as the framework because it provides full-stack React with file-based routing, server functions, and type-safe data loading — all without a separate API layer. Combined with [Prisma](https://www.prisma.io/) for database access and [Better Auth](https://www.better-auth.com/) for authentication, the stack allows the entire application to be self-hosted via Docker Compose with no third-party cloud dependencies.
 
-```
-src/
-├── admin/              # Admin features (user management, data import/export)
-│   ├── components/     # AdminUserList, DataImportExport
-│   ├── hooks/          # useAdminForm (TanStack Form)
-│   ├── repository/     # user.ts (database operations)
-│   ├── server/         # Server functions (user, data management)
-│   └── utils/          # CSV and GEDCOM export utilities
-├── auth/               # Authentication (Better Auth)
-│   ├── client.ts       # Auth client (browser)
-│   ├── server.ts       # Auth server (node)
-│   ├── components/     # LoginForm, RegisterForm, AuthField
-│   ├── hooks/          # useAuthForm (TanStack Form)
-│   └── server/         # Auth helpers and middleware
-├── dashboard/          # Main dashboard
-│   ├── components/     # DashboardHeader, ViewToggle, RootSelector, FamilyStats
-│   └── store/          # Zustand store (dashboardStore)
-├── events/             # Events management
-│   ├── components/     # CustomEventModal, EventsList, LineageManager
-│   ├── repository/     # custom-event.ts (database operations)
-│   ├── server/         # customEvent, lineage server functions
-│   └── utils/          # eventHelpers, dateHelpers
-├── family-tree/        # Family tree visualization
-│   ├── components/     # FamilyTree, MindmapTree, MindmapNode, FamilyNodeCard
-│   ├── hooks/          # usePanZoom
-│   └── utils/          # treeHelpers
-├── members/            # Member management
-│   ├── components/     # MemberForm, MemberDetailModal, PersonCard
-│   ├── hooks/          # useMemberForm (TanStack Form)
-│   ├── repository/     # person.ts (database operations)
-│   └── server/         # member server functions
-├── relationships/      # Kinship and relationships
-│   ├── components/     # RelationshipManager, KinshipFinder
-│   ├── server/         # relationship server functions
-│   └── utils/          # kinshipHelpers (Vietnamese kinship logic)
-├── routes/             # TanStack Router file-based routes
-│   ├── __root.tsx      # Root route with providers
-│   ├── index.tsx       # Landing page (/)
-│   ├── login.tsx       # Login page (/login)
-│   ├── about.tsx       # About page (/about)
-│   ├── dashboard/      # Protected routes (/dashboard/*)
-│   └── api/            # API routes (auth, uploads)
-├── ui/                 # Shared UI components
-│   ├── common/         # LanguageSwitcher, ExportButton
-│   ├── icons/          # GenderIcons, DefaultAvatar
-│   ├── layout/         # Footer, HeaderMenu, LogoutButton, LandingHero
-│   └── utils/          # cn() utility, gender style helpers
-├── database/           # Database layer
-│   ├── generated/prisma/  # Prisma generated types (auto-generated)
-│   ├── lib/
-│   │   └── client.ts   # Prisma client singleton (getDbClient)
-│   └── repository/     # Repository functions (one per entity)
-│       ├── transaction.ts  # DbClient type + withTransaction
-│       ├── person.ts       # Person + PersonDetailsPrivate ops
-│       ├── relationship.ts # Relationship ops
-│       ├── custom-event.ts # CustomEvent ops
-│       └── user.ts         # User ops
-├── config/             # App configuration
-│   ├── lib/
-│   │   └── env.server.ts   # Server environment variables (Zod-validated)
-│   └── server/
-│       └── getSiteName.ts  # Server function for runtime site name
-├── lib/                # Core infrastructure
-│   ├── storage.ts      # File upload handling
-│   ├── date.ts         # Date/timezone utilities
-│   └── errors.ts       # Error constants
-├── types/              # Global TypeScript types and Zod enums
-└── i18n/               # Internationalization
-    ├── lib/            # i18next setup and translations (en, vi)
-    └── server/         # getLanguage server function
-```
+Key design decisions:
 
-### Domain Module Convention
+- **TanStack Start over Next.js**: Server functions with middleware chains provide cleaner auth patterns than Next.js API routes. File-based routing with type-safe loaders reduces boilerplate.
+- **Prisma over raw SQL**: Generated TypeScript types ensure type safety across the database layer. The repository pattern decouples business logic from the ORM.
+- **Better Auth over Supabase Auth**: Self-hosted authentication with no external dependency. Session-based auth stored in cookies.
+- **unstorage over direct filesystem calls**: Abstraction layer that supports both local filesystem and S3-compatible storage via a single `STORAGE_PROVIDER` environment variable.
+- **Tailwind CSS v4 over CSS Modules**: Utility-first styling with built-in animation support. Consistent design system without maintaining separate CSS files.
 
-Each domain module follows a consistent structure:
+## Domain Module Convention
+
+The codebase is organized by domain (members, events, relationships, etc.) rather than by technical layer (components, services, models). Each domain module follows a consistent structure:
 
 ```
 src/{domain}/
 ├── components/     # React components for this domain
 ├── hooks/          # TanStack Form hooks and custom hooks
 ├── server/         # Server functions (createServerFn)
+│   └── repository/ # Database operations for this domain
 └── utils/          # Pure utility functions
 ```
+
+This convention means all code related to "members" lives under `src/members/`, all code related to "events" lives under `src/events/`, etc. Cross-cutting concerns (database client, storage, auth) live in dedicated infrastructure directories (`src/database/`, `src/lib/`, `src/auth/`).
 
 ## Data Flow
 
@@ -152,53 +74,42 @@ Return result / Invalidate router
 3. **Protected Routes**: `beforeLoad` checks session, redirects if not authenticated
 4. **Roles**: Three roles (admin, editor, member) stored on the User model. Server function middleware (`isAdminMiddleware`, `isUserMiddleware`) enforces authorization.
 
-## File Organization Conventions
-
-### Routes
-
-- File-based routing: `src/routes/path.tsx` → `/path`
-- Nested routes: `src/routes/dashboard/members/index.tsx` → `/dashboard/members`
-- Dynamic segments: `src/routes/dashboard/members/$id/index.tsx` → `/dashboard/members/:id`
-
-### Components
-
-- Domain components: `src/{domain}/components/` (co-located with their domain)
-- Shared UI components: `src/ui/` (layout, icons, common utilities)
-
-### Server Functions
-
-- Domain server functions: `src/{domain}/server/` using `createServerFn` with middleware
-- Auth middleware applied via `.middleware()` chain
-
 ## Database Layer
 
-All database concerns live under `src/database/`:
+All database concerns follow a repository pattern. Server functions import repository functions instead of calling Prisma directly. This decouples business logic from the ORM — if the ORM is replaced, only the repository files need to change.
 
-- **Client**: `src/database/lib/client.ts` initializes the Prisma client singleton using the PostgreSQL adapter
-- **Repositories**: Co-located with domain modules (e.g., `src/members/repository/person.ts`)
-- **Generated types**: `src/database/generated/prisma/` contains auto-generated Prisma types
+Repository functions accept an optional `client` parameter that defaults to the singleton Prisma client. Pass a transaction client (`tx`) from `withTransaction` for transactional operations. This pattern keeps the database layer testable and transaction-friendly.
 
-Server functions import repository functions instead of calling Prisma directly. This decouples business logic from the ORM.
+## Project Origins
 
-```typescript
-// Server functions use repository functions
-import { findPersonById, createPerson } from '../repository/person';
-import { withTransaction } from '../../database/transaction';
-```
+This project is a reimplementation of [Gia Pha OS](https://github.com/homielab/giapha-os) by [Homielab](https://github.com/homielab). The original application is built with [Next.js](https://nextjs.org/) and [Supabase](https://supabase.com/). This clone replaces the cloud dependencies with self-hosted alternatives while preserving the core functionality and UI.
 
-## Environment Variables
+### Divergence from Original
 
-| Variable | Description |
-|----------|-------------|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `STORAGE_PROVIDER` | Storage driver: `local` (default) or `s3` |
-| `UPLOAD_DIR` | File upload directory (required when `local`) |
-| `S3_ENDPOINT` | S3-compatible endpoint URL (required when `s3`) |
-| `S3_BUCKET` | S3 bucket name (required when `s3`) |
-| `S3_REGION` | S3 region (required when `s3`) |
-| `S3_ACCESS_KEY_ID` | S3 access key (required when `s3`) |
-| `S3_SECRET_ACCESS_KEY` | S3 secret key (required when `s3`) |
-| `S3_PUBLIC_URL` | Public URL prefix for S3 objects (required when `s3`) |
-| `BETTER_AUTH_SECRET` | Auth encryption key |
-| `BETTER_AUTH_URL` | Public URL for auth |
-| `SITE_NAME` | Site display name (runtime, server-side) |
+This project has evolved significantly beyond being a direct clone. The original purpose of preserving the original implementation is no longer relevant as the codebase has diverged substantially.
+
+### Architecture Changes
+
+| Aspect | Original | This Clone |
+|--------|----------|------------|
+| Framework | Next.js | TanStack Start |
+| Auth | Supabase Auth | Better Auth |
+| Database | Supabase (PostgreSQL) | Prisma + PostgreSQL |
+| File Storage | Supabase Storage | Local filesystem / S3-compatible |
+| Styling | CSS Modules + custom | Tailwind CSS v4 |
+
+### Code Improvements
+
+- **Server Functions**: Refactored with per-function Prisma client initialization instead of singleton pattern
+- **Type Safety**: Strict TypeScript with [Zod](https://zod.dev/) schema validation at API boundaries
+- **Kinship Logic**: Added WeakMap caching for ancestry calculations, extracted reusable transformation functions
+- **Error Handling**: Centralized error constants for i18n support
+- **Database**: Added indexes on frequently queried columns (generation, isDeceased, birthYear, isInLaw)
+- **Testing**: Comprehensive test coverage with [Vitest](https://vitest.dev/), integration tests with [Testcontainers](https://testcontainers.com/)
+
+### Conventions
+
+- [Biome](https://biomejs.dev/) for linting/formatting (replacing ESLint + Prettier)
+- Atomic commits with [Conventional Commits](https://www.conventionalcommits.org/)
+- Agent-based workflow with `.agents/` rules for consistent implementation patterns
+- Module-based project structure organized by domain functionality

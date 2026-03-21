@@ -1,8 +1,10 @@
 # Deployment Guide
 
+How to deploy Gia Pha OS to production.
+
 ## Node-based / Container-based Deployments
 
-This section covers self-hosting Gia Pha OS in production using Docker Compose on bare-metal servers, Linux VPS, home servers, or container platforms like Railway.
+This section covers self-hosting Gia Pha OS in production using [Docker](https://www.docker.com/) Compose on bare-metal servers, Linux VPS, home servers, or container platforms like [Railway](https://railway.app/).
 
 ### Prerequisites
 
@@ -55,122 +57,7 @@ docker compose -f docker-compose.production.yml ps
 
 All services should show `healthy` status.
 
-#### Storage Options
-
-By default, Docker manages named volumes. You can use bind mounts instead for more control:
-
-```yaml
-# docker-compose.production.yml - use these instead of named volumes
-
-services:
-  postgres:
-    volumes:
-      # Named volume (default)
-      # - postgres_data:/var/lib/postgresql/data
-
-      # Bind mount (uncomment and customize path)
-      - "./data/postgres:/var/lib/postgresql/data"
-
-  app:
-    volumes:
-      # Named volume (default)
-      # - uploads_data:/app/uploads
-
-      # Bind mount (uncomment and customize path)
-      - "./data/uploads:/app/uploads"
-```
-
-Create the directories if using bind mounts:
-
-```bash
-mkdir -p data/postgres data/uploads
-```
-
-#### S3-Compatible Storage
-
-For cloud deployments or distributed self-hosted setups, you can use S3-compatible storage instead of the local filesystem. This works with AWS S3, SeaweedFS, MinIO, Cloudflare R2, Supabase Storage, and any other S3-compatible provider.
-
-Set the following environment variables in your `docker-compose.production.yml`:
-
-```yaml
-- STORAGE_PROVIDER=s3
-- S3_ENDPOINT=http://seaweedfs:8333
-- S3_BUCKET=giapha
-- S3_REGION=us-east-1
-- S3_ACCESS_KEY_ID=your-access-key
-- S3_SECRET_ACCESS_KEY=your-secret-key
-- S3_PUBLIC_URL=http://your-domain.com:8333/giapha
-```
-
-##### SeaweedFS Example
-
-To run SeaweedFS alongside your app, uncomment the `seaweedfs` service in `docker-compose.production.yml`:
-
-```yaml
-seaweedfs:
-  image: chrislusf/seaweedfs:latest
-  command: "server -s3 -dir=/data"
-  ports:
-    - "8333:8333"
-    - "9333:9333"
-  volumes:
-    - seaweedfs_data:/data
-  restart: unless-stopped
-  networks:
-    - giapha-network
-```
-
-Then set `S3_PUBLIC_URL` to the publicly accessible URL of your SeaweedFS instance (e.g. `https://storage.your-domain.com/giapha` if behind a reverse proxy).
-
-#### Migrating Files Between Storage Providers
-
-The database stores provider-agnostic storage keys (e.g. `avatars/{personId}/{filename}`), so no database changes are needed when switching providers. You only need to copy the files themselves to the new storage, preserving the directory structure.
-
-##### Using rclone (generic solution)
-
-[rclone](https://rclone.org/) works with any S3-compatible provider. Configure your provider as a remote, then sync files in either direction:
-
-```bash
-# Local to S3-compatible
-rclone sync ./data/uploads/ s3-remote:giapha/
-
-# S3-compatible to local
-rclone sync s3-remote:giapha/ ./data/uploads/
-```
-
-See [rclone S3 configuration](https://rclone.org/s3/) for setup instructions.
-
-##### Provider-specific tools
-
-Each provider has its own CLI or dashboard for managing files. Refer to their documentation for upload/download instructions:
-
-| Provider | Documentation |
-|----------|--------------|
-| SeaweedFS | [S3 API docs](https://github.com/seaweedfs/seaweedfs/wiki/Amazon-S3-API) |
-| Garage | [S3 compatibility docs](https://garagehq.deuxfleurs.fr/documentation/connect/cli/) |
-| AWS S3 | [AWS CLI s3 sync](https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html) |
-| Supabase Storage | [Storage guides](https://supabase.com/docs/guides/storage) |
-| Vercel Blob | [Vercel Blob docs](https://vercel.com/docs/storage/vercel-blob) |
-| Cloudflare R2 | [R2 docs](https://developers.cloudflare.com/r2/) |
-| MinIO | [mc CLI reference](https://min.io/docs/minio/linux/reference/minio-mc.html) |
-
-##### After migrating
-
-Update your environment variables to match the new provider:
-
-```yaml
-# Switch to S3-compatible
-- STORAGE_PROVIDER=s3
-- S3_ENDPOINT=http://seaweedfs:8333   # your provider's endpoint
-- S3_BUCKET=giapha
-# ... other S3 vars
-
-# Or switch back to local
-- STORAGE_PROVIDER=local
-- UPLOAD_DIR=/app/uploads
-```
-
-Verify that avatars display correctly in the application. No database changes are needed — the stored keys work with any provider. The `/api/uploads/*` route serves files for local storage or redirects to the S3 public URL.
+For storage configuration (bind mounts, S3-compatible storage), see the [Storage Configuration](./08-storage.md) guide.
 
 ### Database Setup
 
@@ -203,7 +90,7 @@ http://your-server-ip:3000
 
 #### Option 2: Nginx
 
-Install Nginx, then create `/etc/nginx/sites-available/giapha`:
+Install [Nginx](https://nginx.org/), then create `/etc/nginx/sites-available/giapha`:
 
 ```nginx
 server {
@@ -224,7 +111,7 @@ server {
 }
 ```
 
-For SSL, use Certbot:
+For SSL, use [Certbot](https://certbot.eff.org/):
 
 ```bash
 sudo apt install certbot python3-certbot-nginx
@@ -241,13 +128,13 @@ your-domain.com {
 }
 ```
 
-Run Caddy:
+Run [Caddy](https://caddyserver.com/):
 
 ```bash
 caddy run
 ```
 
-Caddy automatically handles SSL via Let's Encrypt.
+Caddy automatically handles SSL via [Let's Encrypt](https://letsencrypt.org/).
 
 #### Option 4: Traefik
 
@@ -263,7 +150,7 @@ services:
       - "traefik.http.routers.giapha.tls.certresolver=letsencrypt"
 ```
 
-Run Traefik:
+Run [Traefik](https://traefik.io/):
 
 ```yaml
 # docker-compose.traefik.yml
@@ -370,13 +257,6 @@ docker compose -f docker-compose.production.yml logs -f
 docker stats
 ```
 
-#### Endpoints
-
-| Service | Endpoint | Description |
-|---------|----------|-------------|
-| App | `http://localhost:3000` | Application |
-| PostgreSQL | `localhost:5432` | Database |
-
 ### Troubleshooting
 
 #### Service Won't Start
@@ -475,20 +355,11 @@ services:
 
 All cloud/serverless providers share these requirements:
 
-- **S3-compatible storage is required** — serverless providers have no persistent filesystem. Set `STORAGE_PROVIDER=s3` with the appropriate S3 variables (see `.env.sample`).
-- **Managed PostgreSQL** — use your provider's managed database or an external service (e.g. Neon, Supabase, PlanetScale).
+- **S3-compatible storage is required** — serverless providers have no persistent filesystem. Set `STORAGE_PROVIDER=s3` with the appropriate S3 variables (see `.env.sample`). See [Storage Configuration](./08-storage.md#s3-compatible-storage) for setup details.
+- **Managed PostgreSQL** — use your provider's managed database or an external service (e.g. [Neon](https://neon.tech/), [Supabase](https://supabase.com/)).
 - **Environment variables** — configure all variables from `.env.sample` in your provider's dashboard.
 
-### Build Configuration
-
-The deployment target is controlled by the `DEPLOYMENT_ENV` environment variable at **build time**:
-
-| DEPLOYMENT_ENV | Provider | Vite Plugin |
-|----------------|----------|-------------|
-| `node` (default) | Docker, VPS, Railway | `nitro` (node-server preset) |
-| `vercel` | Vercel | `nitro` (vercel preset) |
-| `netlify` | Netlify | `@netlify/vite-plugin-tanstack-start` |
-| `cloudflare` | Cloudflare Workers | `@cloudflare/vite-plugin` |
+See the [Deployment Targets](./07-reference.md#deployment-targets) reference for the full build configuration table.
 
 ### Security Headers
 
@@ -498,8 +369,8 @@ For `netlify` and `cloudflare`, these headers must be configured in their respec
 
 ### Vercel
 
-1. Import the repository in the Vercel dashboard
-2. Set the build command to `pnpm build`
+1. Import the repository in the [Vercel](https://vercel.com/) dashboard
+2. Set the build command to `pnpm run build`
 3. Add `DEPLOYMENT_ENV=vercel` to the build environment variables
 4. Add all other environment variables from `.env.sample`
 5. Set `STORAGE_PROVIDER=s3` with your S3 credentials
@@ -509,7 +380,7 @@ The app uses `/api/auth/*` and `/api/uploads/*` routes via TanStack Start server
 ### Netlify
 
 1. Install the Netlify plugin: `pnpm add -D @netlify/vite-plugin-tanstack-start`
-2. Import the repository in the Netlify dashboard
+2. Import the repository in the [Netlify](https://www.netlify.com/) dashboard
 3. Copy `netlify.toml.sample` to `netlify.toml` and update as needed
 4. Add all environment variables from `.env.sample` to the Netlify dashboard
 5. Set `STORAGE_PROVIDER=s3` with your S3 credentials
@@ -524,12 +395,18 @@ npx netlify deploy
 
 1. Install the Cloudflare plugin and Wrangler: `pnpm add -D @cloudflare/vite-plugin wrangler`
 2. Copy `wrangler.toml.sample` to `wrangler.toml` and update as needed
-3. Authenticate: `wrangler login`
-4. Build and deploy:
+3. Add `DEPLOYMENT_ENV=cloudflare` to the build environment variables
+4. Add all other environment variables from `.env.sample`
+5. Set `STORAGE_PROVIDER=s3` with your S3 credentials
+
+[Cloudflare](https://workers.cloudflare.com/) picks up configuration from `wrangler.toml` automatically — you do not need to run Wrangler locally to deploy. Connect your repository via the Cloudflare dashboard and it will build and deploy on push.
+
+To deploy manually instead:
 
 ```bash
-DEPLOYMENT_ENV=cloudflare pnpm build
-wrangler deploy
+npx wrangler login
+DEPLOYMENT_ENV=cloudflare pnpm run build
+npx wrangler deploy
 ```
 
 #### Database Connectivity
@@ -537,7 +414,7 @@ wrangler deploy
 Cloudflare Workers cannot make direct TCP connections to PostgreSQL. Options:
 
 - **Hyperdrive** — Cloudflare's managed connection pooler. Add a Hyperdrive binding in `wrangler.toml` and set `DATABASE_URL` to the Hyperdrive connection string.
-- **Connection pooler** — Use Supabase Pooler, Neon, or PgBouncer with HTTP/WebSocket support.
+- **Connection pooler** — Use Supabase Pooler, [Neon](https://neon.tech/), or PgBouncer with HTTP/WebSocket support.
 
 #### Prisma on Cloudflare
 
@@ -546,5 +423,5 @@ The standard Prisma client may not work on Cloudflare Workers. You may need `@pr
 #### Additional Notes
 
 - The `nodejs_compat` compatibility flag is required (the app uses Node.js APIs via unstorage, Prisma, etc.)
-- `STORAGE_PROVIDER` must be `s3`. Cloudflare R2 is S3-compatible and works well here.
+- `STORAGE_PROVIDER` must be `s3`. [Cloudflare R2](https://developers.cloudflare.com/r2/) is S3-compatible and works well here.
 - Workers have a 128MB memory limit and 30s CPU time limit.

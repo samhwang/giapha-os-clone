@@ -1,29 +1,10 @@
 # Development
 
-TL;DR: Create routes in `src/routes/`, add loaders for data fetching. Use TanStack Form for submissions and server functions for backend logic. Code is organized by domain module.
-
-## Route Map
-
-| Route | Description |
-|-------|-------------|
-| `/` | Landing page |
-| `/about` | About page |
-| `/login` | Login/register |
-| `/dashboard` | Main dashboard (family tree, stats) |
-| `/dashboard/members` | Member list |
-| `/dashboard/members/new` | Create member |
-| `/dashboard/members/$id` | Member detail |
-| `/dashboard/members/$id/edit` | Edit member |
-| `/dashboard/events` | Events management |
-| `/dashboard/kinship` | Kinship finder |
-| `/dashboard/lineage` | Lineage order |
-| `/dashboard/stats` | Family statistics |
-| `/dashboard/data` | Data import/export |
-| `/dashboard/users` | Admin user management |
+How to build features, write tests, and run CI for Gia Pha OS.
 
 ## Creating Routes
 
-TanStack Router uses file-based routing. The route file path determines the URL.
+[TanStack Router](https://tanstack.com/router/latest) uses file-based routing. The route file path determines the URL. See the [file naming conventions](https://tanstack.com/router/v1/docs/routing/file-naming-conventions) for the full set of defaults.
 
 ### Basic Route
 
@@ -62,6 +43,8 @@ function MemberDetailPage() {
   return <div>Member ID: {id}</div>
 }
 ```
+
+See the [Route Map](./07-reference.md#route-map) reference for all existing routes.
 
 ## Loaders (Data Fetching)
 
@@ -106,12 +89,12 @@ export const getMembers = createServerFn()
 
 ## Forms (TanStack Form)
 
-This project uses TanStack Form for type-safe form handling.
+This project uses [TanStack Form](https://tanstack.com/form/latest) for type-safe form handling.
 
 ### Validation Strategy
 
 - **Calling server functions**: No form validators needed — server functions already validate with `.inputValidator()` or `.validator()`
-- **Calling external APIs**: Add Zod validators to the form (e.g., Better Auth client)
+- **Calling external APIs**: Add [Zod](https://zod.dev/) validators to the form (e.g., [Better Auth](https://www.better-auth.com/) client)
 
 ### Creating a Form Hook
 
@@ -257,7 +240,7 @@ export const Route = createFileRoute('/dashboard/users')({
 
 ## Using the Database
 
-Use repository functions co-located with domain modules instead of calling Prisma directly:
+Use repository functions co-located with domain modules instead of calling [Prisma](https://www.prisma.io/) directly:
 
 ```typescript
 import { findAllPersons, findPersonById, createPerson, updatePerson, deletePerson } from '../repository/person'
@@ -270,43 +253,206 @@ const updated = await updatePerson({ id: 'xxx', data: { fullName: 'New' } })
 const deleted = await deletePerson('xxx')
 ```
 
-## Component Organization
-
-### Domain Components
-
-Components live in their domain module:
-
-```
-src/{domain}/components/    # Domain-specific components
-src/{domain}/hooks/         # TanStack Form hooks, custom hooks
-src/{domain}/server/        # Server functions
-src/{domain}/utils/         # Pure utility functions
-```
-
-### Shared UI Components
-
-Reusable non-domain components live in `src/ui/`:
-
-```
-src/ui/
-├── common/       # LanguageSwitcher, ExportButton
-├── icons/        # GenderIcons, DefaultAvatar
-├── layout/       # Footer, HeaderMenu, LogoutButton, LandingHero
-└── utils/        # cn() class merge utility, gender style helpers
-```
-
-## Running Development Server
+### Database Migrations
 
 ```bash
-pnpm dev
+# Push schema changes (development)
+pnpm run prisma:push
+
+# Create a migration file (tracked schema evolution)
+pnpm run prisma:migrate:dev
+
+# Regenerate TypeScript types after schema changes
+pnpm run prisma:generate
+
+# Seed sample data
+pnpm run prisma:seed
 ```
 
-The app runs at `http://localhost:3000`.
+See the [Database](./06-database.md) reference for the full schema and repository API.
 
-## Building for Production
+## Testing
+
+### Running Tests
 
 ```bash
-pnpm build
+pnpm run test:run          # Run all Vitest tests once
+pnpm run test              # Watch mode
+pnpm run test:ui           # UI component tests
+pnpm run test:server       # Server function tests (Testcontainers)
+pnpm run test:integration  # Route-level integration tests
+pnpm run test:e2e          # Playwright E2E tests
+pnpm run test:e2e:ui       # Playwright UI mode
 ```
 
-Output goes to `dist/`.
+### Test Layers
+
+#### Layer 1: Utility Functions
+
+Pure logic tests — no mocking needed.
+
+```typescript
+// src/utils/kinshipHelpers.test.ts
+import { computeKinship } from './kinshipHelpers'
+
+test('returns correct kinship for parent-child', () => {
+  const result = computeKinship(parent, child, persons, relationships)
+  expect(result.aCallsB).toBe('cha')
+})
+```
+
+#### Layer 2: Server Functions
+
+Test business logic with a real PostgreSQL database using [Testcontainers](https://testcontainers.com/). Never mock database connections.
+
+```typescript
+// src/members/server/member.test.ts
+import { createPerson, findPersonById } from '../repository/person'
+
+test('creates person with private details', async () => {
+  const person = await createPerson({
+    data: {
+      fullName: 'Test User',
+      gender: 'male',
+      privateDetails: {
+        create: { phoneNumber: '0901234567' }
+      }
+    },
+  })
+
+  expect(person.privateDetails?.phoneNumber).toBe('0901234567')
+})
+```
+
+#### Layer 3: Components
+
+Test rendering and user interactions with [React Testing Library](https://testing-library.com/).
+
+```tsx
+// src/components/PersonCard.test.tsx
+import { render, screen } from '@testing-library/react'
+import { PersonCard } from './PersonCard'
+
+test('renders person name', () => {
+  render(<PersonCard person={{ fullName: 'Nguyen Van A', gender: 'male' }} />)
+  expect(screen.getByText('Nguyen Van A')).toBeInTheDocument()
+})
+```
+
+#### Layer 4: E2E Tests
+
+Real browser testing with [Playwright](https://playwright.dev/).
+
+```typescript
+// e2e/landing.spec.ts
+import { test, expect } from '@playwright/test'
+
+test('landing page displays correctly', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByRole('heading')).toBeVisible()
+})
+```
+
+##### E2E Prerequisites
+
+Before running E2E tests:
+
+- Chromium for Testing is installed (managed via Playwright)
+- The DB migration and seeding scripts have been run
+- `UPLOAD_DIR` is configured in the `.env` file
+- There is a dev server running
+
+```bash
+npx playwright install chromium
+
+docker compose up -d
+pnpm run prisma:migrate:dev && pnpm run prisma:seed
+pnpm run dev
+
+pnpm run test:e2e
+```
+
+### Writing E2E Tests
+
+E2E tests live in the `e2e/` folder:
+
+```
+e2e/landing.spec.ts
+e2e/login.spec.ts
+e2e/members.spec.ts
+```
+
+#### Basic Structure
+
+```typescript
+import { test, expect } from '@playwright/test'
+
+test.describe('Feature Name', () => {
+  test('user flow description', async ({ page }) => {
+    // Navigate
+    await page.goto('/')
+
+    // Interact
+    await page.getByRole('link', { name: 'Login' }).click()
+
+    // Assert
+    await expect(page).toHaveURL(/.*\/login/)
+  })
+})
+```
+
+#### Authentication in E2E
+
+Use `storageState` in Playwright config to persist auth state across tests:
+
+```typescript
+// playwright.config.ts
+export default defineConfig({
+  use: {
+    storageState: '.auth/user.json',
+  },
+})
+```
+
+### Type Testing
+
+Inline type tests using `expectTypeOf`:
+
+```typescript
+import { expectTypeOf } from 'vitest'
+
+expectTypeOf<PersonNode>().toMatchTypeOf<object>()
+expectTypeOf<KinshipResult | null>().toMatchTypeOf<object | null>()
+```
+
+See the [Commands](./07-reference.md#commands) and [Coverage Targets](./07-reference.md#coverage-targets) references for the full test command list and coverage goals.
+
+## Running CI Locally
+
+Before submitting a pull request, run the same checks locally:
+
+```bash
+# Full quality check (lint + typecheck + tests)
+pnpm run typecheck && pnpm run lint && pnpm run test:run
+
+# Build to verify production build works
+pnpm run build
+```
+
+### Pre-commit Hooks
+
+The project uses lint-staged with [Biome](https://biomejs.dev/) to run lint checks on staged files before commit.
+
+### Pre-push Hook
+
+Before pushing to remote, the pre-push hook runs:
+
+```bash
+pnpm run lint:ci      # Lint check
+pnpm run test:run     # All tests
+pnpm run typecheck    # TypeScript check
+```
+
+This ensures no broken code leaves your local machine.
+
+See the [CI/CD Workflows](./07-reference.md#cicd-workflows) reference for the full GitHub Actions pipeline description.

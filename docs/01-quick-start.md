@@ -1,12 +1,12 @@
 # Getting Started
 
-TL;DR: Clone the repo, install dependencies, start Docker services, run migrations, then start the dev server with `pnpm dev`.
+TL;DR: Clone the repo, install dependencies, start Docker services, run migrations, then start the dev server with `pnpm run dev`.
 
 ## Prerequisites
 
-- **Docker** & Docker Compose - for PostgreSQL
-- **pnpm** - package manager
-- **Node.js** 20+ - runtime
+- **[Docker](https://www.docker.com/)** & Docker Compose - for PostgreSQL
+- **[pnpm](https://pnpm.io/)** - package manager
+- **[Node.js](https://nodejs.org/)** 20+ - runtime
 
 ## Installation
 
@@ -56,38 +56,30 @@ File uploads are stored locally under `UPLOAD_DIR` (default `./uploads`), which 
 Push the schema to your database:
 
 ```bash
-pnpm prisma db push
+pnpm run prisma:push
 ```
 
 Generate the Prisma client:
 
 ```bash
-pnpm prisma generate
+pnpm run prisma:generate
 ```
 
 (Optional) Seed sample data:
 
 ```bash
-pnpm prisma db seed
+pnpm run prisma:seed
 ```
 
 ### 6. Start development server
 
 ```bash
-pnpm dev
+pnpm run dev
 ```
 
 The app will be available at `http://localhost:3000`.
 
-## Common Commands
-
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start development server |
-| `pnpm build` | Build for production |
-| `pnpm prisma studio` | Open database GUI |
-| `pnpm prisma db push` | Push schema changes |
-| `docker compose up -d` | Start/stop infrastructure |
+See the [Commands](./07-reference.md#commands) reference for the full command list.
 
 ## Troubleshooting
 
@@ -100,7 +92,7 @@ If port 3000 is taken:
 lsof -i :3000
 
 # Or use a different port
-PORT=3001 pnpm dev
+PORT=3001 pnpm run dev
 ```
 
 ### Database connection refused
@@ -116,14 +108,14 @@ docker ps
 
 ```bash
 # Wipe and recreate
-pnpm prisma migrate reset
+npx dotenvx run -- prisma migrate reset
 
 # Or just push fresh
-pnpm prisma db push --force-reset
+npx dotenvx run -- prisma db push --force-reset
 ```
 
 ## Next Steps
 
-- Read the [Architecture](./04-architecture.md) guide to understand the project structure
-- Read the [Development](./07-development.md) guide to start building features
-- Explore the [Features](./03-features.md) documentation
+- Read the [Architecture](./04-architecture.md) guide to understand design decisions
+- Read the [Development](./03-development.md) guide to start building features
+- Explore the [Features](./05-features.md) documentation

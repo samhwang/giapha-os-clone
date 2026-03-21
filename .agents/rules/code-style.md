@@ -2,7 +2,7 @@
 
 ## Tooling
 
-Biome handles both linting and formatting. No ESLint, Prettier, or separate formatters.
+[Biome](https://biomejs.dev/) handles both linting and formatting. No ESLint, Prettier, or separate formatters.
 
 ## Formatting Rules
 

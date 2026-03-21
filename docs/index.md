@@ -1,24 +1,20 @@
 # Documentation
 
-Welcome to the Gia Pha OS documentation.
+Welcome to the Gia Pha OS documentation, organized following the [Diataxis](https://diataxis.fr/) framework.
 
-## Getting Started
+## How-to Guides
 
-- [01 - Deployment](./01-deployment.md) - Self-hosted production deployment
-- [02 - Quick Start](./02-quick-start.md) - Local development setup
+- [Quick Start](./01-quick-start.md) — Set up local development
+- [Deployment](./02-deployment.md) — Deploy to production with Docker
+- [Development](./03-development.md) — Build features, write tests, run CI
+- [Storage](./08-storage.md) — Configure S3 storage, migrate between providers
 
-## Features
+## Explanation
 
-- [03 - Features](./03-features.md) - Family tree, kinship, events, i18n, data export
-- [04 - Architecture](./04-architecture.md) - Tech stack and project structure
-- [05 - Database](./05-database.md) - Schema and Prisma
-
-## Contributing
-
-- [06 - Testing](./06-testing.md) - Unit, integration, and browser tests
-- [07 - Development](./07-development.md) - Creating routes and features
-- [08 - CI/CD](./08-cicd.md) - GitHub Actions and pipeline
+- [Architecture](./04-architecture.md) — Design decisions, data flow, project history
+- [Features](./05-features.md) — What the app does and how it works
 
 ## Reference
 
-- [09 - Attribution](./09-attribution.md) - Project origins and divergence from original
+- [Database](./06-database.md) — Schema, models, and repository API
+- [Reference](./07-reference.md) — Tech stack, env vars, routes, commands, CI/CD

@@ -1,12 +1,10 @@
 # Database
 
-TL;DR: Schema defined in Prisma, use `pnpm prisma:push` to sync, `pnpm prisma studio` to browse.
-
-## Schema Overview
+Schema, models, and repository API reference for the [Prisma](https://www.prisma.io/) + [PostgreSQL](https://www.postgresql.org/) database layer.
 
 The database schema is defined in `prisma/schema.prisma`. Prisma generates TypeScript types to `src/database/generated/prisma`. The schema uses `@@map` annotations to map camelCase Prisma field names to snake_case database column names.
 
-### Enums
+## Enums
 
 ```prisma
 enum Gender {
@@ -28,7 +26,7 @@ enum UserRole {
 }
 ```
 
-### Authentication Models (Better Auth Managed)
+## Authentication Models ([Better Auth](https://www.better-auth.com/) Managed)
 
 ```prisma
 model User {
@@ -96,7 +94,7 @@ model Verification {
 }
 ```
 
-### Domain Models
+## Domain Models
 
 ```prisma
 model Person {
@@ -173,63 +171,11 @@ model CustomEvent {
 }
 ```
 
-## Common Commands
-
-### Push Schema Changes
-
-```bash
-pnpm prisma:push
-```
-
-Syncs the Prisma schema to the database. Use for development.
-
-### Generate Prisma Client
-
-```bash
-pnpm prisma:generate
-```
-
-Regenerates the TypeScript types to `src/database/generated/prisma` after schema changes.
-
-### Open Prisma Studio
-
-```bash
-pnpm prisma studio
-```
-
-Opens a web interface to browse and edit database data.
-
-### Create Migration
-
-```bash
-pnpm prisma:migrate:dev
-```
-
-Creates a migration file for schema changes. Use for tracked schema evolution.
-
-### Reset Database
-
-```bash
-pnpm prisma migrate reset
-```
-
-Resets the database and re-runs all migrations. Warning: deletes all data.
-
-### Seed Database
-
-```bash
-pnpm prisma:seed
-```
-
-Runs the seed script defined in `prisma/seed.ts` to populate sample data.
-
 ## Repository Layer
 
-All database operations go through repository functions co-located with their domain modules. Server functions import from these repositories instead of calling Prisma directly. This decouples business logic from the ORM — if the ORM is replaced, only the repository files need to change.
+All database operations go through repository functions co-located with their domain modules. Server functions import from these repositories instead of calling Prisma directly.
 
 ### Structure
-
-Repository files live alongside their domain server functions:
 
 ```
 src/database/
@@ -251,27 +197,7 @@ src/admin/server/
 └── repository/user.ts     # User operations
 ```
 
-### Usage in Server Functions
-
-```typescript
-import { createPerson, findPersonById } from '../repository/person';
-import { withTransaction } from '../../database/transaction';
-
-// Simple query
-const person = await findPersonById(id);
-
-// Create
-const newPerson = await createPerson({ fullName: 'Nguyễn Văn A', gender: 'male' });
-
-// Transaction (pass tx client to repository functions)
-await withTransaction(async (tx) => {
-  await deleteAllRelationships(tx);
-  await deleteAllPersons(tx);
-  await createManyPersons(data, tx);
-});
-```
-
-### Repository Function Pattern
+### Function Pattern
 
 Each function accepts an optional `client` parameter that defaults to `getDbClient()`. Pass `tx` from a transaction for transactional operations. Functions with 3+ domain parameters use a single object parameter with a colocated `{FunctionName}Input` interface. The `client` parameter always stays as a separate positional argument — it is infrastructure, not domain data.
 
@@ -295,6 +221,18 @@ export function updatePerson({ id, data }: UpdatePersonInput, client: DbClient =
 }
 ```
 
+### Transaction Pattern
+
+```typescript
+import { withTransaction } from '../../database/transaction';
+
+await withTransaction(async (tx) => {
+  await deleteAllRelationships(tx);
+  await deleteAllPersons(tx);
+  await createManyPersons(data, tx);
+});
+```
+
 ### Available Repositories
 
 | File | Entity | Operations |
@@ -304,12 +242,3 @@ export function updatePerson({ id, data }: UpdatePersonInput, client: DbClient =
 | `events/server/repository/custom-event.ts` | CustomEvent | create, update, delete, find all |
 | `admin/server/repository/user.ts` | User | count, find by email, find all, update, delete |
 | `database/transaction.ts` | — | `withTransaction` helper, `DbClient` type |
-
-## Best Practices
-
-1. **Use repository functions** — never call `db.entity.operation()` directly in server files
-2. **Always use transactions** for multi-step operations via `withTransaction`
-3. **Validate input** before database operations
-4. **Use Prisma types** from `src/database/generated/prisma` instead of raw queries
-5. **Include relations** when needed, avoid over-fetching
-6. **Use `@@map`** to keep Prisma field names camelCase while database columns stay snake_case

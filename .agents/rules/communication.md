@@ -56,6 +56,13 @@ refactor: extract avatar upload to shared utility
 - Active voice preferred
 - Concise writing — say what needs to be said, nothing more
 
+## Documentation
+
+- The `docs/` directory follows the [Diataxis](https://diataxis.fr/) framework
+- Each doc file serves one primary purpose: how-to guide, explanation, or reference
+- Do not mix content types (e.g., no how-to steps in reference docs)
+- Every external tool or framework mentioned must include a hyperlink on first mention per document
+
 ## Pull Request Structure
 
 ```markdown

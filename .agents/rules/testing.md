@@ -1,6 +1,6 @@
 # Testing Guidelines
 
-See [docs/en/06-testing.md](../docs/en/06-testing.md) for comprehensive testing documentation.
+See [docs/03-development.md](../docs/03-development.md) for comprehensive testing documentation.
 
 ## Quick Reference
 
@@ -39,9 +39,9 @@ pnpm test:e2e:ui            # Playwright UI mode
 - Highest coverage target: 90%+
 - Files: `src/utils/*.test.ts`
 
-### Layer 2: Server Functions (inner logic via Testcontainers)
+### Layer 2: Server Functions (inner logic via [Testcontainers](https://testcontainers.com/))
 
-- **DO NOT mock Prisma** — use Testcontainers for real PostgreSQL
+- **DO NOT mock Prisma** — use [Testcontainers](https://testcontainers.com/) for real PostgreSQL
 - Test the **inner business logic** directly, not the TanStack Start wrapper
 - Extract core logic into testable functions, call them directly from tests
 - Use Testcontainers globalSetup for database lifecycle
@@ -105,7 +105,7 @@ Type tests can be inlined within regular test files using `expectTypeOf` from vi
 
 ## Query Priority
 
-Follow Testing Library's query priority:
+Follow [Testing Library](https://testing-library.com/)'s query priority:
 
 1. `getByRole` — Most accessible
 2. `getByLabelText` — For form elements

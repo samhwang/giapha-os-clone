@@ -53,6 +53,7 @@ All changes must be:
     ├── db-migration/
     └── update-docs/
 
+docs/                     # User-facing documentation (Diataxis framework)
 prisma/                   # Database schema and seed data
 scripts/                  # Infrastructure setup scripts
 src/
@@ -136,17 +137,17 @@ Load a skill when working on specific task types:
 ### Essential Commands
 
 ```bash
-docker compose up -d     # Start PostgreSQL
-pnpm dev                 # Development server
-pnpm build               # Production build
-pnpm test                # Run tests (watch mode)
-pnpm test:run            # Run tests (single run)
-pnpm lint                # Check code quality (Biome)
-pnpm lint:fix            # Auto-fix linting issues
-pnpm typecheck           # TypeScript type checking
-pnpm prisma studio       # Database GUI
-pnpm prisma db push      # Push schema to database
-pnpm prisma db seed      # Seed sample data
+docker compose up -d          # Start PostgreSQL
+pnpm run dev                  # Development server
+pnpm run build                # Production build
+pnpm run test                 # Run tests (watch mode)
+pnpm run test:run             # Run tests (single run)
+pnpm run lint                 # Check code quality (Biome)
+pnpm run lint:fix             # Auto-fix linting issues
+pnpm run typecheck            # TypeScript type checking
+pnpm run prisma:studio        # Database GUI
+pnpm run prisma:push          # Push schema to database
+pnpm run prisma:seed          # Seed sample data
 ```
 
 ### Key Principles
@@ -172,9 +173,9 @@ pnpm prisma db seed      # Seed sample data
 ### Before Committing
 
 ```bash
-pnpm typecheck     # Type check
-pnpm lint          # Lint check
-pnpm test:run      # Run all tests
+pnpm run typecheck     # Type check
+pnpm run lint          # Lint check
+pnpm run test:run      # Run all tests
 ```
 
 Pre-commit hooks run lint-staged (Biome) automatically.
@@ -182,15 +183,15 @@ Pre-commit hooks run lint-staged (Biome) automatically.
 ### Full Quality Check
 
 ```bash
-pnpm typecheck && pnpm lint && pnpm test:run && pnpm build
+pnpm run typecheck && pnpm run lint && pnpm run test:run && pnpm run build
 ```
 
 ### Database Changes
 
 ```bash
 # Edit prisma/schema.prisma, then:
-pnpm prisma migrate dev --name describe_change
-pnpm prisma generate
+pnpm run prisma:migrate:dev
+pnpm run prisma:generate
 ```
 
 ### Adding a New Route
