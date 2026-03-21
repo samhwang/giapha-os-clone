@@ -28,7 +28,7 @@ const AuthEnv = z.object({
 
 const StorageEnv = z.object({
   STORAGE_PROVIDER: z.enum(['local', 's3']).default('local'),
-  UPLOAD_DIR: z.string().min(1).optional(),
+  UPLOAD_DIR: z.string().min(1).default('./uploads'),
   S3_ENDPOINT: z.string().optional(),
   S3_BUCKET: z.string().optional(),
   S3_REGION: z.string().optional(),
