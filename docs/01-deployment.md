@@ -84,6 +84,42 @@ Create the directories if using bind mounts:
 mkdir -p data/postgres data/uploads
 ```
 
+### S3-Compatible Storage
+
+For cloud deployments or distributed self-hosted setups, you can use S3-compatible storage instead of the local filesystem. This works with AWS S3, SeaweedFS, MinIO, Cloudflare R2, Supabase Storage, and any other S3-compatible provider.
+
+Set the following environment variables in your `docker-compose.production.yml`:
+
+```yaml
+- STORAGE_PROVIDER=s3
+- S3_ENDPOINT=http://seaweedfs:8333
+- S3_BUCKET=giapha
+- S3_REGION=us-east-1
+- S3_ACCESS_KEY_ID=your-access-key
+- S3_SECRET_ACCESS_KEY=your-secret-key
+- S3_PUBLIC_URL=http://your-domain.com:8333/giapha
+```
+
+#### SeaweedFS Example
+
+To run SeaweedFS alongside your app, uncomment the `seaweedfs` service in `docker-compose.production.yml`:
+
+```yaml
+seaweedfs:
+  image: chrislusf/seaweedfs:latest
+  command: "server -s3 -dir=/data"
+  ports:
+    - "8333:8333"
+    - "9333:9333"
+  volumes:
+    - seaweedfs_data:/data
+  restart: unless-stopped
+  networks:
+    - giapha-network
+```
+
+Then set `S3_PUBLIC_URL` to the publicly accessible URL of your SeaweedFS instance (e.g. `https://storage.your-domain.com/giapha` if behind a reverse proxy).
+
 ## Database Setup
 
 ### Run Migrations

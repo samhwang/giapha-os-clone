@@ -43,10 +43,19 @@ services:
     environment:
       # change-me must be the same as POSTGRES_PASSWORD above
       - DATABASE_URL=postgresql://giapha:change-me@postgres:5432/giapha
-      - UPLOAD_DIR=/app/uploads
       - BETTER_AUTH_SECRET=change-me-to-a-random-secret-at-least-32-chars
       - BETTER_AUTH_URL=http://localhost:3000
       - SITE_NAME=Gia Phả OS
+      # Storage: defaults to local filesystem. Set STORAGE_PROVIDER=s3 for S3-compatible storage.
+      - STORAGE_PROVIDER=local
+      - UPLOAD_DIR=/app/uploads
+      # S3-compatible storage (uncomment when STORAGE_PROVIDER=s3)
+      # - S3_ENDPOINT=http://seaweedfs:8333
+      # - S3_BUCKET=giapha
+      # - S3_REGION=us-east-1
+      # - S3_ACCESS_KEY_ID=your-access-key
+      # - S3_SECRET_ACCESS_KEY=your-secret-key
+      # - S3_PUBLIC_URL=http://seaweedfs:8333/giapha
     volumes:
       # Option 1: Named volume (default, portable)
       - uploads_data:/app/uploads
@@ -67,9 +76,23 @@ services:
     networks:
       - giapha-network
 
+  # Uncomment to use SeaweedFS for S3-compatible storage
+  # seaweedfs:
+  #   image: chrislusf/seaweedfs:latest
+  #   command: "server -s3 -dir=/data"
+  #   ports:
+  #     - "8333:8333"
+  #     - "9333:9333"
+  #   volumes:
+  #     - seaweedfs_data:/data
+  #   restart: unless-stopped
+  #   networks:
+  #     - giapha-network
+
 volumes:
   postgres_data:
   uploads_data:
+  # seaweedfs_data:
 
 networks:
   giapha-network:

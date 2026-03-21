@@ -18,7 +18,7 @@ The project focuses on:
 ## Role & Technical Context
 
 - **Domain**: Vietnamese genealogy/family tree management
-- **Tech Stack**: TanStack Start, React 19, TypeScript, TanStack Form, Zustand, Prisma 7, PostgreSQL, Better Auth, Zod 4, CVA, Local filesystem, Tailwind CSS v4
+- **Tech Stack**: TanStack Start, React 19, TypeScript, TanStack Form, Zustand, Prisma 7, PostgreSQL, Better Auth, Zod 4, CVA, unstorage (local fs / S3-compatible), Tailwind CSS v4
 - **Architecture**: Full-stack app with server functions, file-based routing, Docker Compose infrastructure
 - **Deployment**: Self-hosted via Docker Compose
 - **Package Manager**: pnpm
@@ -125,7 +125,7 @@ Load a skill when working on specific task types:
 - **Better Auth** (authentication)
 - **Zod 4** (validation)
 - **CVA** (component variants)
-- **Local filesystem** (file uploads via `UPLOAD_DIR`)
+- **unstorage (local fs / S3-compatible)** (file uploads via `STORAGE_PROVIDER`)
 - **Tailwind CSS v4** (styling/animation)
 - **Biome** (linting + formatting)
 - **Vitest** + React Testing Library (unit/component tests)
@@ -209,7 +209,7 @@ pnpm prisma generate
 
 - **Clone project**: Reimplementation of [Gia Pha OS](https://github.com/homielab/giapha-os)
 - **Reference code**: Available in `base/giapha-os/` directory
-- **Self-hosted**: Docker Compose for PostgreSQL + Local filesystem
+- **Self-hosted**: Docker Compose for PostgreSQL + unstorage (local fs / S3-compatible)
 - **Vietnamese genealogy**: Kinship terms, lunar calendar, family tree visualization
 - **Core modules**: `src/relationships/utils/` (kinship), `src/events/utils/` (dates, events), `src/members/server/` (member logic), `src/admin/server/` (admin logic)
 - **Code quality**: Biome for linting/formatting, TypeScript strict mode, comprehensive tests

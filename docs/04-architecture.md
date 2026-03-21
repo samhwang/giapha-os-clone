@@ -13,7 +13,7 @@ TL;DR: TanStack Start + React 19 + TanStack Router for full-stack, Prisma + Post
 | Database | PostgreSQL | 15+ |
 | ORM | Prisma | 7.x |
 | Auth | Better Auth | latest |
-| Storage | Local filesystem | - |
+| Storage | unstorage (local fs / S3-compatible) | latest |
 | Styling | Tailwind CSS | 4.x |
 | Component Variants | CVA (class-variance-authority) | latest |
 | State Management | Zustand | 5.x |
@@ -191,7 +191,14 @@ import { withTransaction } from '../../database/transaction';
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string |
-| `UPLOAD_DIR` | File upload directory (default `./uploads`) |
+| `STORAGE_PROVIDER` | Storage driver: `local` (default) or `s3` |
+| `UPLOAD_DIR` | File upload directory (required when `local`) |
+| `S3_ENDPOINT` | S3-compatible endpoint URL (required when `s3`) |
+| `S3_BUCKET` | S3 bucket name (required when `s3`) |
+| `S3_REGION` | S3 region (required when `s3`) |
+| `S3_ACCESS_KEY_ID` | S3 access key (required when `s3`) |
+| `S3_SECRET_ACCESS_KEY` | S3 secret key (required when `s3`) |
+| `S3_PUBLIC_URL` | Public URL prefix for S3 objects (required when `s3`) |
 | `BETTER_AUTH_SECRET` | Auth encryption key |
 | `BETTER_AUTH_URL` | Public URL for auth |
 | `SITE_NAME` | Site display name (runtime, server-side) |
