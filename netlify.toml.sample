@@ -1,0 +1,16 @@
+# Netlify configuration for Gia Pha OS
+# Copy this to netlify.toml and update to fit your project.
+
+[build]
+  command = "pnpm build"
+  publish = "dist/client"
+
+[build.environment]
+  DEPLOYMENT_ENV = "netlify"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"

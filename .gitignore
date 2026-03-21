@@ -6,6 +6,8 @@ dist-ssr
 .env
 .nitro
 .tanstack
+.vercel
+.netlify
 .wrangler
 .output
 .vinxi

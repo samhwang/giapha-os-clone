@@ -1,8 +1,10 @@
 # Deployment Guide
 
-This guide covers self-hosting Gia Pha OS in production using Docker Compose.
+## Node-based / Container-based Deployments
 
-## Prerequisites
+This section covers self-hosting Gia Pha OS in production using Docker Compose on bare-metal servers, Linux VPS, home servers, or container platforms like Railway.
+
+### Prerequisites
 
 - **Server**: VPS, bare-metal, or home server with Docker and Docker Compose
 - **Domain**: Optional but recommended for SSL/TLS
@@ -14,16 +16,16 @@ This guide covers self-hosting Gia Pha OS in production using Docker Compose.
 - Docker Compose v2.20+
 - OpenSSL (for generating secrets)
 
-## Environment Setup
+### Environment Setup
 
-### 1. Clone and Configure
+#### 1. Clone and Configure
 
 ```bash
 git clone https://github.com/your-repo/giapha-os-clone.git
 cd giapha-os-clone
 ```
 
-### 2. Generate Secrets
+#### 2. Generate Secrets
 
 Edit `.env` and generate secure values:
 
@@ -37,9 +39,9 @@ openssl rand -hex 16
 
 Update your `docker-compose.production.yaml` file. The fields need to be changed all starts with `change-me`.
 
-## Infrastructure Setup
+### Infrastructure Setup
 
-### Start Services
+#### Start Services
 
 ```bash
 docker compose -f docker-compose.production.yml up -d
@@ -53,7 +55,7 @@ docker compose -f docker-compose.production.yml ps
 
 All services should show `healthy` status.
 
-### Storage Options
+#### Storage Options
 
 By default, Docker manages named volumes. You can use bind mounts instead for more control:
 
@@ -84,7 +86,7 @@ Create the directories if using bind mounts:
 mkdir -p data/postgres data/uploads
 ```
 
-### S3-Compatible Storage
+#### S3-Compatible Storage
 
 For cloud deployments or distributed self-hosted setups, you can use S3-compatible storage instead of the local filesystem. This works with AWS S3, SeaweedFS, MinIO, Cloudflare R2, Supabase Storage, and any other S3-compatible provider.
 
@@ -100,7 +102,7 @@ Set the following environment variables in your `docker-compose.production.yml`:
 - S3_PUBLIC_URL=http://your-domain.com:8333/giapha
 ```
 
-#### SeaweedFS Example
+##### SeaweedFS Example
 
 To run SeaweedFS alongside your app, uncomment the `seaweedfs` service in `docker-compose.production.yml`:
 
@@ -120,11 +122,11 @@ seaweedfs:
 
 Then set `S3_PUBLIC_URL` to the publicly accessible URL of your SeaweedFS instance (e.g. `https://storage.your-domain.com/giapha` if behind a reverse proxy).
 
-### Migrating Files Between Storage Providers
+#### Migrating Files Between Storage Providers
 
 The database stores provider-agnostic storage keys (e.g. `avatars/{personId}/{filename}`), so no database changes are needed when switching providers. You only need to copy the files themselves to the new storage, preserving the directory structure.
 
-#### Using rclone (generic solution)
+##### Using rclone (generic solution)
 
 [rclone](https://rclone.org/) works with any S3-compatible provider. Configure your provider as a remote, then sync files in either direction:
 
@@ -138,7 +140,7 @@ rclone sync s3-remote:giapha/ ./data/uploads/
 
 See [rclone S3 configuration](https://rclone.org/s3/) for setup instructions.
 
-#### Provider-specific tools
+##### Provider-specific tools
 
 Each provider has its own CLI or dashboard for managing files. Refer to their documentation for upload/download instructions:
 
@@ -152,7 +154,7 @@ Each provider has its own CLI or dashboard for managing files. Refer to their do
 | Cloudflare R2 | [R2 docs](https://developers.cloudflare.com/r2/) |
 | MinIO | [mc CLI reference](https://min.io/docs/minio/linux/reference/minio-mc.html) |
 
-#### After migrating
+##### After migrating
 
 Update your environment variables to match the new provider:
 
@@ -170,28 +172,28 @@ Update your environment variables to match the new provider:
 
 Verify that avatars display correctly in the application. No database changes are needed — the stored keys work with any provider. The `/api/uploads/*` route serves files for local storage or redirects to the S3 public URL.
 
-## Database Setup
+### Database Setup
 
-### Run Migrations
+#### Run Migrations
 
 ```bash
 docker compose -f docker-compose.production.yml up db-migrate
 ```
 
-## First User Setup
+### First User Setup
 
 1. Access your application at `http://your-server-ip:3000`
 2. Sign up with your account
 3. The first user to sign up automatically becomes admin
 
-## Reverse Proxy
+### Reverse Proxy
 
 A reverse proxy is optional but recommended for:
 - SSL/TLS termination
 - Custom domain names
 - Better security headers
 
-### Option 1: Skip Reverse Proxy
+#### Option 1: Skip Reverse Proxy
 
 If you're testing or running on a private network, you can access directly:
 
@@ -199,7 +201,7 @@ If you're testing or running on a private network, you can access directly:
 http://your-server-ip:3000
 ```
 
-### Option 2: Nginx
+#### Option 2: Nginx
 
 Install Nginx, then create `/etc/nginx/sites-available/giapha`:
 
@@ -229,7 +231,7 @@ sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx -d your-domain.com
 ```
 
-### Option 2: Caddy
+#### Option 3: Caddy
 
 Create `Caddyfile`:
 
@@ -247,7 +249,7 @@ caddy run
 
 Caddy automatically handles SSL via Let's Encrypt.
 
-### Option 3: Traefik
+#### Option 4: Traefik
 
 Add labels to your `docker-compose.production.yml`:
 
@@ -284,9 +286,9 @@ services:
     restart: unless-stopped
 ```
 
-## Security Considerations
+### Security Considerations
 
-### Firewall
+#### Firewall
 
 ```bash
 # Allow SSH, HTTP, HTTPS
@@ -298,13 +300,13 @@ sudo ufw allow 443/tcp
 sudo ufw enable
 ```
 
-### Environment Variables
+#### Environment Variables
 
 - Never commit `.env` to version control
 - Use strong, random values for all secrets
 - Rotate secrets periodically
 
-### Regular Updates
+#### Regular Updates
 
 ```bash
 # Pull latest code
@@ -318,9 +320,9 @@ docker compose -f docker-compose.production.yml up -d
 docker compose -f docker-compose.production.yml up db-migrate
 ```
 
-## Backup & Restore
+### Backup & Restore
 
-### Database Backup
+#### Database Backup
 
 ```bash
 # Create backup
@@ -330,7 +332,7 @@ docker compose -f docker-compose.production.yml exec postgres pg_dump -U giapha 
 docker compose -f docker-compose.production.yml exec -T postgres psql -U giapha giapha < backup_20240101.sql
 ```
 
-### Uploads Backup
+#### Uploads Backup
 
 ```bash
 # Using bind mounts (backup the data directory)
@@ -343,7 +345,7 @@ docker run --rm \
   alpine tar czf /backup/uploads_backup.tar.gz /data
 ```
 
-### Full System Backup
+#### Full System Backup
 
 ```bash
 # Backup everything
@@ -353,9 +355,9 @@ tar czf giapha_backup_$(date +%Y%m%d).tar.gz \
   docker-compose.production.yml
 ```
 
-## Monitoring
+### Monitoring
 
-### Health Checks
+#### Health Checks
 
 ```bash
 # Check service status
@@ -368,16 +370,16 @@ docker compose -f docker-compose.production.yml logs -f
 docker stats
 ```
 
-### Endpoints
+#### Endpoints
 
 | Service | Endpoint | Description |
 |---------|----------|-------------|
 | App | `http://localhost:3000` | Application |
 | PostgreSQL | `localhost:5432` | Database |
 
-## Troubleshooting
+### Troubleshooting
 
-### Service Won't Start
+#### Service Won't Start
 
 ```bash
 # Check logs
@@ -386,7 +388,7 @@ docker compose -f docker-compose.production.yml logs db-migrate
 docker compose -f docker-compose.production.yml logs app
 ```
 
-### Database Connection Issues
+#### Database Connection Issues
 
 ```bash
 # Verify database is running
@@ -396,14 +398,14 @@ docker compose -f docker-compose.production.yml exec postgres pg_isready -U giap
 docker compose -f docker-compose.production.yml exec app sh -c 'nc -zv postgres 5432'
 ```
 
-### Permission Errors
+#### Permission Errors
 
 ```bash
 # Fix bind mount permissions
 sudo chown -R 1000:1000 data/postgres data/uploads
 ```
 
-### Reset Everything
+#### Reset Everything
 
 ```bash
 # Stop and remove containers
@@ -416,11 +418,11 @@ docker compose -f docker-compose.production.yml down -v
 docker compose -f docker-compose.production.yml up -d
 ```
 
-## Using Pre-built Docker Image
+### Using Pre-built Docker Image
 
 Instead of building locally, you can use the pre-built image from GitHub Container Registry.
 
-### Pull the Image
+#### Pull the Image
 
 ```bash
 # Latest tag
@@ -430,7 +432,7 @@ docker pull ghcr.io/<owner>/giapha-os-clone:latest
 docker pull ghcr.io/<owner>/giapha-os-clone:abc1234
 ```
 
-### Run with Docker Compose
+#### Run with Docker Compose
 
 The docker-compose files already reference the GHCR image. Use `--pull` to always pull the latest:
 
@@ -444,7 +446,7 @@ docker compose pull app
 docker compose up -d
 ```
 
-### Build Locally Instead
+#### Build Locally Instead
 
 If you prefer to build locally instead of using the pre-built image:
 
@@ -464,3 +466,85 @@ services:
     # OR build locally (comment out image:)
     # build: .
 ```
+
+## Cloud Deployments
+
+> **Note:** This project primarily targets self-hosting on a Node server. The other hosting adapters are provided as best effort and are not 100% guaranteed. Please report any errors found with these hosting options, including error messages.
+
+### Prerequisites
+
+All cloud/serverless providers share these requirements:
+
+- **S3-compatible storage is required** — serverless providers have no persistent filesystem. Set `STORAGE_PROVIDER=s3` with the appropriate S3 variables (see `.env.sample`).
+- **Managed PostgreSQL** — use your provider's managed database or an external service (e.g. Neon, Supabase, PlanetScale).
+- **Environment variables** — configure all variables from `.env.sample` in your provider's dashboard.
+
+### Build Configuration
+
+The deployment target is controlled by the `DEPLOYMENT_ENV` environment variable at **build time**:
+
+| DEPLOYMENT_ENV | Provider | Vite Plugin |
+|----------------|----------|-------------|
+| `node` (default) | Docker, VPS, Railway | `nitro` (node-server preset) |
+| `vercel` | Vercel | `nitro` (vercel preset) |
+| `netlify` | Netlify | `@netlify/vite-plugin-tanstack-start` |
+| `cloudflare` | Cloudflare Workers | `@cloudflare/vite-plugin` |
+
+### Security Headers
+
+For `node` and `vercel` deployments, security headers (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`) are applied automatically via Nitro route rules.
+
+For `netlify` and `cloudflare`, these headers must be configured in their respective config files. See the sample files (`netlify.toml.sample`, `wrangler.toml.sample`) in the project root.
+
+### Vercel
+
+1. Import the repository in the Vercel dashboard
+2. Set the build command to `pnpm build`
+3. Add `DEPLOYMENT_ENV=vercel` to the build environment variables
+4. Add all other environment variables from `.env.sample`
+5. Set `STORAGE_PROVIDER=s3` with your S3 credentials
+
+The app uses `/api/auth/*` and `/api/uploads/*` routes via TanStack Start server functions — these do not conflict with Vercel's reserved `/api` directory.
+
+### Netlify
+
+1. Install the Netlify plugin: `pnpm add -D @netlify/vite-plugin-tanstack-start`
+2. Import the repository in the Netlify dashboard
+3. Copy `netlify.toml.sample` to `netlify.toml` and update as needed
+4. Add all environment variables from `.env.sample` to the Netlify dashboard
+5. Set `STORAGE_PROVIDER=s3` with your S3 credentials
+
+Alternatively, deploy via CLI:
+
+```bash
+npx netlify deploy
+```
+
+### Cloudflare Workers
+
+1. Install the Cloudflare plugin and Wrangler: `pnpm add -D @cloudflare/vite-plugin wrangler`
+2. Copy `wrangler.toml.sample` to `wrangler.toml` and update as needed
+3. Authenticate: `wrangler login`
+4. Build and deploy:
+
+```bash
+DEPLOYMENT_ENV=cloudflare pnpm build
+wrangler deploy
+```
+
+#### Database Connectivity
+
+Cloudflare Workers cannot make direct TCP connections to PostgreSQL. Options:
+
+- **Hyperdrive** — Cloudflare's managed connection pooler. Add a Hyperdrive binding in `wrangler.toml` and set `DATABASE_URL` to the Hyperdrive connection string.
+- **Connection pooler** — Use Supabase Pooler, Neon, or PgBouncer with HTTP/WebSocket support.
+
+#### Prisma on Cloudflare
+
+The standard Prisma client may not work on Cloudflare Workers. You may need `@prisma/adapter-pg-worker` or Prisma Accelerate. See [Prisma's Cloudflare docs](https://www.prisma.io/docs/orm/overview/databases/cloudflare-d1) for details.
+
+#### Additional Notes
+
+- The `nodejs_compat` compatibility flag is required (the app uses Node.js APIs via unstorage, Prisma, etc.)
+- `STORAGE_PROVIDER` must be `s3`. Cloudflare R2 is S3-compatible and works well here.
+- Workers have a 128MB memory limit and 30s CPU time limit.

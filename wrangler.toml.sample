@@ -1,0 +1,10 @@
+# Cloudflare Workers configuration for Gia Pha OS
+# Copy this to wrangler.toml and update to fit your project.
+
+name = "giapha-os"
+main = "dist/server/index.mjs"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+DEPLOYMENT_ENV = "cloudflare"

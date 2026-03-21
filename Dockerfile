@@ -20,6 +20,8 @@ RUN pnpm prisma generate
 COPY . .
 
 ENV NODE_ENV=production
+ARG DEPLOYMENT_ENV=node
+ENV DEPLOYMENT_ENV=${DEPLOYMENT_ENV}
 RUN pnpm run build
 RUN pnpm install --production ${PNPM_ARGS}
 
