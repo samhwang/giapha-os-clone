@@ -120,6 +120,54 @@ seaweedfs:
 
 Then set `S3_PUBLIC_URL` to the publicly accessible URL of your SeaweedFS instance (e.g. `https://storage.your-domain.com/giapha` if behind a reverse proxy).
 
+### Migrating Files Between Storage Providers
+
+The database stores provider-agnostic storage keys (e.g. `avatars/{personId}/{filename}`), so no database changes are needed when switching providers. You only need to copy the files themselves.
+
+#### Local to S3
+
+Copy files from your local uploads directory into the S3 bucket, preserving the directory structure:
+
+```bash
+# Using AWS CLI (works with any S3-compatible endpoint)
+aws s3 sync ./data/uploads/ s3://giapha/ --endpoint-url http://localhost:8333
+
+# Using Docker named volume
+docker run --rm \
+  -v giapha-os-clone_uploads_data:/data \
+  -e AWS_ACCESS_KEY_ID=your-access-key \
+  -e AWS_SECRET_ACCESS_KEY=your-secret-key \
+  amazon/aws-cli s3 sync /data/ s3://giapha/ --endpoint-url http://seaweedfs:8333
+```
+
+Then update your environment to use S3:
+
+```bash
+STORAGE_PROVIDER=s3
+S3_ENDPOINT=http://seaweedfs:8333
+S3_BUCKET=giapha
+# ... other S3 vars
+```
+
+#### S3 to Local
+
+Download files from the S3 bucket into your local uploads directory:
+
+```bash
+aws s3 sync s3://giapha/ ./data/uploads/ --endpoint-url http://localhost:8333
+```
+
+Then update your environment back to local:
+
+```bash
+STORAGE_PROVIDER=local
+UPLOAD_DIR=/app/uploads
+```
+
+#### Verification
+
+After migrating, verify that avatars still display correctly in the application. The `/api/uploads/*` route serves files for local storage or redirects to S3 — existing URLs in the browser cache will continue to work.
+
 ## Database Setup
 
 ### Run Migrations
