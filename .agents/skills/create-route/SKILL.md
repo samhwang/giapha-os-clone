@@ -1,3 +1,13 @@
+---
+name: create-route
+description: Create a new TanStack Start route with loader, validation, component, and tests
+license: MIT
+compatibility: opencode
+metadata:
+  audience: developers
+  workflow: route-development
+---
+
 # Route Creation Skill
 
 ## Purpose

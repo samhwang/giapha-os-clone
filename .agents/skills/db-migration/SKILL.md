@@ -1,3 +1,13 @@
+---
+name: db-migration
+description: Manage Prisma schema changes and database migrations
+license: MIT
+compatibility: opencode
+metadata:
+  audience: developers
+  workflow: database-management
+---
+
 # Database Migration Skill
 
 ## Purpose

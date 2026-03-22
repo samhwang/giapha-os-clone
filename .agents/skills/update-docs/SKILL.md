@@ -1,3 +1,13 @@
+---
+name: update-docs
+description: Audit and update all project documentation to reflect recent changes
+license: MIT
+compatibility: opencode
+metadata:
+  audience: developers
+  workflow: documentation
+---
+
 # Update Documentation Skill
 
 ## Purpose

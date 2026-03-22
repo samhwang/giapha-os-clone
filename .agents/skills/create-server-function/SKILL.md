@@ -1,3 +1,13 @@
+---
+name: create-server-function
+description: Create a server function with Zod validation and Prisma integration
+license: MIT
+compatibility: opencode
+metadata:
+  audience: developers
+  workflow: api-development
+---
+
 # Server Function CRUD Skill
 
 ## Purpose

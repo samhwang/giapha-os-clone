@@ -1,3 +1,13 @@
+---
+name: port-changes
+description: Analyze upstream Gia Pha OS changes and create an integration plan for the fork
+license: MIT
+compatibility: opencode
+metadata:
+  audience: developers
+  workflow: upstream-integration
+---
+
 # Port Changes Skill
 
 ## Purpose

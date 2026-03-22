@@ -1,3 +1,13 @@
+---
+name: create-test
+description: Write unit and browser tests with Vitest and React Testing Library
+license: MIT
+compatibility: opencode
+metadata:
+  audience: developers
+  workflow: testing
+---
+
 # Test Creation Skill
 
 ## Purpose

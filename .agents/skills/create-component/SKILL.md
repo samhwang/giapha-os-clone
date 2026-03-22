@@ -1,3 +1,13 @@
+---
+name: create-component
+description: Create a new React component with proper structure, styling, and testing patterns
+license: MIT
+compatibility: opencode
+metadata:
+  audience: developers
+  workflow: component-development
+---
+
 # Component Creation Skill
 
 ## Purpose
