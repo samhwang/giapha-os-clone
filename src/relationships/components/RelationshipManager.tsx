@@ -1,6 +1,7 @@
 import { Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
+import type { Person } from '../../members/types';
 import Avatar from '../../ui/common/Avatar';
 import type { DescendantStats } from '../hooks/useRelationships';
 import { useRelationships } from '../hooks/useRelationships';
@@ -10,15 +11,17 @@ import BulkAddChildrenForm from './BulkAddChildrenForm';
 import QuickAddSpouseForm from './QuickAddSpouseForm';
 
 interface RelationshipManagerProps {
-  personId: string;
+  person: Person;
   canEdit?: boolean;
-  personGender: string;
   onStatsLoaded?: (stats: DescendantStats) => void;
 }
 
-export default function RelationshipManager({ personId, canEdit = false, personGender, onStatsLoaded }: RelationshipManagerProps) {
+export default function RelationshipManager({ person, canEdit = false, onStatsLoaded }: RelationshipManagerProps) {
   const { t } = useTranslation();
   const { setMemberModalId } = useDashboardStore();
+
+  const personId = person.id;
+  const personGender = person.gender;
 
   const {
     loading,
@@ -33,7 +36,7 @@ export default function RelationshipManager({ personId, canEdit = false, personG
     handleQuickAddSpouse,
     handleDelete,
     groupByType,
-  } = useRelationships({ personId, personGender, onStatsLoaded });
+  } = useRelationships({ person, onStatsLoaded });
 
   if (loading) return <div className="text-stone-500 text-sm">{t('relationship.loadingFamily')}</div>;
 

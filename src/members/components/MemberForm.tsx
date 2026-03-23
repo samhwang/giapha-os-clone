@@ -84,9 +84,9 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
       birthOrder: initialData?.birthOrder || ('' as number | ''),
       generation: initialData?.generation || ('' as number | ''),
       avatarUrl: initialData?.avatarUrl || '',
-      phoneNumber: initialData?.phoneNumber || '',
-      occupation: initialData?.occupation || '',
-      currentResidence: initialData?.currentResidence || '',
+      phoneNumber: initialData?.phoneNumber ?? '',
+      occupation: initialData?.occupation ?? '',
+      currentResidence: initialData?.currentResidence ?? '',
     },
     validators: {
       onSubmit: ({ value }) => {
@@ -125,9 +125,9 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
           otherNames: value.otherNames || null,
           avatarUrl: value.avatarUrl || null,
           note: value.note || null,
-          phoneNumber: isAdmin ? value.phoneNumber || null : undefined,
-          occupation: isAdmin ? value.occupation || null : undefined,
-          currentResidence: isAdmin ? value.currentResidence || null : undefined,
+          phoneNumber: isAdmin ? value.phoneNumber?.trim() || null : undefined,
+          occupation: isAdmin ? value.occupation?.trim() || null : undefined,
+          currentResidence: isAdmin ? value.currentResidence?.trim() || null : undefined,
         };
 
         let personId = initialData?.id;

@@ -21,6 +21,11 @@ export const TEST_ADMIN = {
   password: 'testpassword123',
 };
 
+export const TEST_EDITOR = {
+  email: 'editor@e2e.test',
+  password: 'testpassword123',
+};
+
 export const TEST_MEMBER = {
   email: 'member@e2e.test',
   password: 'testpassword123',

@@ -18,8 +18,9 @@ function EditMemberPage() {
   const { person, privateData } = Route.useLoaderData();
   const { session } = Route.useRouteContext();
   const isAdmin = session.role === UserRole.enum.admin;
+  const isEditor = session.role === UserRole.enum.editor;
 
-  if (!isAdmin) {
+  if (!isAdmin && !isEditor) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50">
         <div className="text-center">
@@ -30,7 +31,7 @@ function EditMemberPage() {
     );
   }
 
-  const initialData = { ...person, ...(privateData || {}) };
+  const initialData = isAdmin ? { ...person, ...(privateData || {}) } : { ...person };
 
   return (
     <div className="flex-1 w-full relative flex flex-col pb-8">
@@ -45,7 +46,7 @@ function EditMemberPage() {
         </Link>
       </div>
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 relative z-10 w-full flex-1">
-        <MemberForm initialData={initialData} isEditing isAdmin />
+        <MemberForm initialData={initialData} isEditing isAdmin={isAdmin} />
       </main>
     </div>
   );

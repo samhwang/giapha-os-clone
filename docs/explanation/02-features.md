@@ -26,10 +26,11 @@ Each person has a `generation` number. First generation represents founders/ance
 
 ### Visualization
 
-Three view modes available on the dashboard:
+Four view modes available on the dashboard:
 
-- **Tree view**: Hierarchical family tree with pan/zoom
-- **Mindmap view**: Mindmap-style tree layout
+- **Tree view**: Hierarchical family tree with pan/zoom and collapsible nodes
+- **Mindmap view**: Mindmap-style tree layout with expand/collapse
+- **Bubble map view**: D3 force-directed graph showing family units as draggable pill-shaped nodes
 - **List view**: Flat member list with search
 
 ## Kinship Calculation
@@ -93,8 +94,8 @@ Three roles control access to different parts of the application:
 
 | Role | Permissions |
 |------|-------------|
-| `admin` | Full access, manage users, approve accounts, data import/export |
-| `editor` | Add/edit family members, view private details |
+| `admin` | Full access, manage users, approve accounts, data import/export, view private details |
+| `editor` | Add/edit family members (no access to private details) |
 | `member` | View family tree, limited editing |
 
 Role checks are enforced via server function middleware on the backend and `beforeLoad` route guards on the frontend.

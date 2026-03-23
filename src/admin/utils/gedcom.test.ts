@@ -21,7 +21,7 @@ describe('exportToGedcom', () => {
     const person = makePerson({ id: 'abc-123', fullName: 'Vạn Công Trí', gender: Gender.enum.male, birthYear: 1958, birthMonth: 4, birthDay: 12 });
     const result = exportToGedcom({ persons: [person], relationships: [] });
 
-    expect(result).toContain('0 @Iabc123@ INDI');
+    expect(result).toContain('0 @I1@ INDI');
     expect(result).toContain('1 NAME Vạn Công /Trí/');
     expect(result).toContain('1 SEX M');
     expect(result).toContain('1 BIRT');
@@ -61,8 +61,8 @@ describe('exportToGedcom', () => {
     const marriage = makeRel({ type: RelationshipType.enum.marriage, personAId: husband.id, personBId: wife.id });
 
     const result = exportToGedcom({ persons: [husband, wife], relationships: [marriage] });
-    expect(result).toContain('1 HUSB @Ih1@');
-    expect(result).toContain('1 WIFE @Iw1@');
+    expect(result).toContain('1 HUSB @I1@');
+    expect(result).toContain('1 WIFE @I2@');
   });
 
   it('exports children in FAM record', () => {
@@ -71,7 +71,29 @@ describe('exportToGedcom', () => {
     const rel = makeRel({ type: RelationshipType.enum.biological_child, personAId: parent.id, personBId: child.id });
 
     const result = exportToGedcom({ persons: [parent, child], relationships: [rel] });
-    expect(result).toContain('1 CHIL @Ic1@');
+    expect(result).toContain('1 CHIL @I2@');
+  });
+
+  it('adds FAMC and FAMS tags to individuals', () => {
+    const husband = makePerson({ id: 'h-1', gender: Gender.enum.male });
+    const wife = makePerson({ id: 'w-1', gender: Gender.enum.female });
+    const child = makePerson({ id: 'c-1', gender: Gender.enum.male });
+    const marriage = makeRel({ type: RelationshipType.enum.marriage, personAId: husband.id, personBId: wife.id });
+    const childRel = makeRel({ type: RelationshipType.enum.biological_child, personAId: husband.id, personBId: child.id });
+
+    const result = exportToGedcom({ persons: [husband, wife, child], relationships: [marriage, childRel] });
+
+    // Husband should have FAMS
+    const husbandBlock = result.split('0 @I1@ INDI')[1].split('0 @I2@')[0];
+    expect(husbandBlock).toContain('1 FAMS @F1@');
+
+    // Wife should have FAMS
+    const wifeBlock = result.split('0 @I2@ INDI')[1].split('0 @I3@')[0];
+    expect(wifeBlock).toContain('1 FAMS @F1@');
+
+    // Child should have FAMC
+    const childBlock = result.split('0 @I3@ INDI')[1].split('0 @F1@')[0];
+    expect(childBlock).toContain('1 FAMC @F1@');
   });
 
   it('handles person with no name', () => {

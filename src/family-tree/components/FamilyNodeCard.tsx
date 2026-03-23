@@ -1,4 +1,3 @@
-import { Minus, Plus } from 'lucide-react';
 import type { MouseEvent } from 'react';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import type { Person } from '../../members/types';
@@ -11,21 +10,11 @@ interface FamilyNodeCardProps {
   note?: string | null;
   onClickCard?: () => void;
   onClickName?: (e: MouseEvent) => void;
-  isExpandable?: boolean;
-  isExpanded?: boolean;
   isRingVisible?: boolean;
   isPlusVisible?: boolean;
 }
 
-export default function FamilyNodeCard({
-  person,
-  onClickCard,
-  onClickName,
-  isExpandable = false,
-  isExpanded = false,
-  isRingVisible = false,
-  isPlusVisible = false,
-}: FamilyNodeCardProps) {
+export default function FamilyNodeCard({ person, onClickCard, onClickName, isRingVisible = false, isPlusVisible = false }: FamilyNodeCardProps) {
   const { showAvatar, setMemberModalId } = useDashboardStore();
 
   const content = (
@@ -47,12 +36,6 @@ export default function FamilyNodeCard({
       {isPlusVisible && (
         <div className="absolute top-3/12 -left-2.5 sm:-left-4 size-5 sm:size-6 rounded-full shadow-sm bg-white z-20 flex items-center justify-center text-2xs sm:text-sm">
           +
-        </div>
-      )}
-
-      {isExpandable && (
-        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white border border-stone-200/80 rounded-full size-6 flex items-center justify-center shadow-md z-20 text-stone-500 hover:text-amber-600 transition-colors">
-          {isExpanded ? <Minus className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
         </div>
       )}
 

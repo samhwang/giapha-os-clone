@@ -72,7 +72,7 @@ Add the next generation.
    - **Person**: Select `Nguyễn Văn C`
 3. Save the relationship
 
-**Nguyễn Văn C** now appears as a child of Nguyễn Văn A. The tree view will show a line connecting them.
+**Nguyễn Văn C** now appears as a child of Nguyễn Văn A. The tree view will show a line connecting them. If Nguyễn Văn C didn't already have a generation number, it is automatically set to the parent's generation + 1.
 
 ## 6. Add a Grandchild (Generation 3)
 
@@ -100,13 +100,15 @@ You now have three generations: grandparent → parent → grandchild.
 
 ## 7. Switch Visualization Modes
 
-Go to the members page and use the view toggle to explore all three modes:
+Go to the members page and use the view toggle to explore all four modes:
 
-1. **Tree view** — You should see a hierarchical tree with Nguyễn Văn A at the top, Nguyễn Văn C in the middle, and Nguyễn Thị D at the bottom. Trần Thị B appears alongside Nguyễn Văn A as a spouse. Use pan and zoom to navigate.
+1. **Tree view** — You should see a hierarchical tree with Nguyễn Văn A at the top, Nguyễn Văn C in the middle, and Nguyễn Thị D at the bottom. Trần Thị B appears alongside Nguyễn Văn A as a spouse. Use pan and zoom to navigate. Nodes at depth 2+ are auto-collapsed — click the +/- buttons to expand or collapse branches.
 
-2. **Mindmap view** — The same data displayed as a mindmap layout, branching outward from the root.
+2. **Mindmap view** — The same data displayed as a mindmap layout, branching outward from the root. Use the expand/collapse buttons on each branch.
 
-3. **List view** — A flat searchable list of all four members. Try typing "Nguyễn" in the search box to filter results.
+3. **Bubble map view** — A force-directed graph where each family unit (person + spouses) is a draggable pill-shaped node. Drag nodes to rearrange, scroll to zoom.
+
+4. **List view** — A flat searchable list of all four members. Try typing "Nguyễn" in the search box to filter results.
 
 ## 8. Upload an Avatar
 
@@ -126,7 +128,7 @@ Back on the member detail page, the avatar now appears in the profile banner and
 You now have a working family tree with:
 - **4 members** across 3 generations
 - **3 relationships** (1 marriage, 2 biological child)
-- **3 visualization modes** to explore the same data
+- **4 visualization modes** to explore the same data
 - **1 avatar** to personalize a member
 
 To learn more about how these features work, see [Features](../explanation/02-features.md). To explore how members are related using Vietnamese kinship terms, continue to the [next tutorial](./02-kinship.md).

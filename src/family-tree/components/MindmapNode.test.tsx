@@ -23,6 +23,8 @@ function buildCtx(overrides: Partial<MindmapContextData> = {}): MindmapContextDa
     adj: { spousesByPersonId: new Map(), childrenByPersonId: new Map() },
     filters: defaultFilters,
     showAvatar: true,
+    hideExpandButtons: false,
+    autoCollapseLevel: 2,
     expandSignal: null,
     setMemberModalId: vi.fn(),
     t,
@@ -256,7 +258,7 @@ describe('MindmapNode', () => {
     expect(screen.getByRole('button', { name: t('tree.expand') })).toBeInTheDocument();
   });
 
-  it('responds to expand signal', () => {
+  it('responds to expand signal', async () => {
     const parent = createPerson({ id: 'p1', fullName: 'Nguyễn Văn A' });
     const child = createPerson({ id: 'c1', fullName: 'Nguyễn Văn Con' });
 

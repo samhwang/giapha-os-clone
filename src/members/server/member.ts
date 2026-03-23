@@ -6,6 +6,7 @@ import { deleteAvatar, uploadAvatar } from '../../lib/storage';
 import { countRelationshipsForPerson } from '../../relationships/repository/relationship';
 import {
   createPerson as createPersonRepo,
+  deletePersonDetailsPrivate,
   deletePerson as deletePersonRepo,
   findAllPersonsResolved,
   findPersonById,
@@ -100,19 +101,24 @@ export const updatePerson = createServerFn({ method: 'POST' })
 
     const hasPrivateDetailsToUpdate = phoneNumber !== undefined || occupation !== undefined || currentResidence !== undefined;
     if (hasPrivateDetailsToUpdate) {
-      await upsertPersonDetailsPrivate({
-        personId: id,
-        create: {
-          phoneNumber: phoneNumber ?? null,
-          occupation: occupation ?? null,
-          currentResidence: currentResidence ?? null,
-        },
-        update: {
-          ...(phoneNumber !== undefined && { phoneNumber }),
-          ...(occupation !== undefined && { occupation }),
-          ...(currentResidence !== undefined && { currentResidence }),
-        },
-      });
+      const allEmpty = !phoneNumber && !occupation && !currentResidence;
+      if (allEmpty) {
+        await deletePersonDetailsPrivate(id);
+      } else {
+        await upsertPersonDetailsPrivate({
+          personId: id,
+          create: {
+            phoneNumber: phoneNumber ?? null,
+            occupation: occupation ?? null,
+            currentResidence: currentResidence ?? null,
+          },
+          update: {
+            ...(phoneNumber !== undefined && { phoneNumber }),
+            ...(occupation !== undefined && { occupation }),
+            ...(currentResidence !== undefined && { currentResidence }),
+          },
+        });
+      }
     }
 
     return findPersonByIdOrThrowResolved(id);

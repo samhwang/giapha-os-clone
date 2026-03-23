@@ -34,8 +34,8 @@ export const DIRECT = {
   MOTHER: 'Mẹ',
   GRANDFATHER: 'Ông',
   GRANDMOTHER: 'Bà',
-  GREAT_GRANDFATHER: 'Cụ ông',
-  GREAT_GRANDMOTHER: 'Cụ bà',
+  GREAT_GRANDFATHER: 'Cụ ông (ông cố)',
+  GREAT_GRANDMOTHER: 'Cụ bà (bà cố)',
 } as const;
 
 // --- Siblings ---

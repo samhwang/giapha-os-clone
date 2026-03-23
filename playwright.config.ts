@@ -49,6 +49,15 @@ export default defineConfig({
       },
     },
     {
+      name: 'editor',
+      testDir: './e2e/editor',
+      dependencies: ['setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: '.playwright/auth/editor.json',
+      },
+    },
+    {
       name: 'member',
       testDir: './e2e/member',
       dependencies: ['setup'],

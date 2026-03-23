@@ -80,6 +80,10 @@ export function upsertPersonDetailsPrivate({ personId, create, update }: UpsertP
   });
 }
 
+export function deletePersonDetailsPrivate(personId: string, client: DbClient = getDbClient()) {
+  return client.personDetailsPrivate.deleteMany({ where: { personId } });
+}
+
 export function findAllPersonDetailsPrivate(client: DbClient = getDbClient()) {
   return client.personDetailsPrivate.findMany({ orderBy: { createdAt: 'asc' } });
 }

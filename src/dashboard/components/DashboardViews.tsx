@@ -1,6 +1,9 @@
-import { useMemo } from 'react';
+import { lazy, Suspense, useMemo } from 'react';
 import FamilyTree from '../../family-tree/components/FamilyTree';
 import MindmapTree from '../../family-tree/components/MindmapTree';
+
+const BubbleMapTree = lazy(() => import('../../family-tree/components/BubbleMapTree'));
+
 import type { Person } from '../../members/types';
 import { type Relationship, RelationshipType } from '../../relationships/types';
 import ExportButton from '../../ui/common/ExportButton';
@@ -71,6 +74,11 @@ export default function DashboardViews({ persons, relationships }: DashboardView
       <div className="flex-1 w-full relative z-10">
         {currentView === 'tree' && <FamilyTree personsMap={personsMap} relationships={relationships} roots={roots} />}
         {currentView === 'mindmap' && <MindmapTree personsMap={personsMap} relationships={relationships} roots={roots} />}
+        {currentView === 'bubble' && (
+          <Suspense fallback={null}>
+            <BubbleMapTree personsMap={personsMap} relationships={relationships} roots={roots} />
+          </Suspense>
+        )}
       </div>
     </main>
   );

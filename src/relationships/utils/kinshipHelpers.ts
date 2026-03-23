@@ -261,8 +261,12 @@ function findBloodKinship({ personA, personB, personsMap, parentMap }: FindBlood
 
   const lcaName = personsMap.get(lcaId)?.fullName ?? FALLBACK.COMMON_ANCESTOR;
   const pathParts: string[] = [];
-  pathParts.push(`${personA.fullName} cách ${lcaName} ${dataA.depth} đời.`);
-  pathParts.push(`${personB.fullName} cách ${lcaName} ${dataB.depth} đời.`);
+  if (personA.id !== lcaId) {
+    pathParts.push(`${personA.fullName} cách ${lcaName} ${dataA.depth} đời.`);
+  }
+  if (personB.id !== lcaId) {
+    pathParts.push(`${personB.fullName} cách ${lcaName} ${dataB.depth} đời.`);
+  }
 
   return {
     aCallsB,

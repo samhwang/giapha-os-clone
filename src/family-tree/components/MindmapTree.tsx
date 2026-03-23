@@ -10,6 +10,8 @@ import { MindmapNode } from './MindmapNode';
 import TreeFilters, { useTreeFilters } from './TreeFilters';
 import ZoomControls from './ZoomControls';
 
+const DEFAULT_AUTO_COLLAPSE_LEVEL = 2;
+
 interface MindmapTreeProps {
   personsMap: Map<string, Person>;
   relationships: Relationship[];
@@ -21,6 +23,8 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
   const { showAvatar, setMemberModalId } = useDashboardStore();
   const [scale, setScale] = useState(1);
   const { filters, toggle } = useTreeFilters();
+  const [hideExpandButtons, _setHideExpandButtons] = useState(false);
+  const [autoCollapseLevel, _setAutoCollapseLevel] = useState(DEFAULT_AUTO_COLLAPSE_LEVEL);
   const [expandSignal, setExpandSignal] = useState<ExpandSignal | null>(null);
 
   const handleZoomIn = () => setScale((s) => Math.min(s + 0.1, 2));
@@ -36,11 +40,13 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
       adj,
       filters,
       showAvatar,
+      hideExpandButtons,
+      autoCollapseLevel,
       expandSignal,
       setMemberModalId,
       t,
     }),
-    [personsMap, relationships, adj, filters, showAvatar, expandSignal, setMemberModalId, t]
+    [personsMap, relationships, adj, filters, showAvatar, hideExpandButtons, autoCollapseLevel, expandSignal, setMemberModalId, t]
   );
 
   if (roots.length === 0) {

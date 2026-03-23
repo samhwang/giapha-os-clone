@@ -21,6 +21,8 @@ export interface MindmapContextData {
   adj: AdjacencyLists;
   filters: TreeFilterOptions;
   showAvatar: boolean;
+  hideExpandButtons: boolean;
+  autoCollapseLevel: number;
   expandSignal: ExpandSignal | null;
   setMemberModalId: (id: string | null) => void;
   t: TFunction;
@@ -44,12 +46,22 @@ interface MindmapNodeProps {
 
 export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLast = false, ctx }: MindmapNodeProps) {
   const data = getTreeData(personId, ctx);
-  const [isExpanded, setIsExpanded] = useState(level < 2);
+  const [isExpanded, setIsExpanded] = useState(ctx.autoCollapseLevel > 0 ? level < ctx.autoCollapseLevel : level < 2);
   const [lastSignalTs, setLastSignalTs] = useState(0);
+  const [lastCollapseLevel, setLastCollapseLevel] = useState(ctx.autoCollapseLevel);
 
+  // React 18 supports setState during render for synchronous derived state.
+  // This ensures expand/collapse signals apply before the first paint.
   if (ctx.expandSignal && ctx.expandSignal.ts !== lastSignalTs) {
     setIsExpanded(ctx.expandSignal.type === 'expand');
     setLastSignalTs(ctx.expandSignal.ts);
+  }
+
+  if (ctx.autoCollapseLevel !== lastCollapseLevel) {
+    setLastCollapseLevel(ctx.autoCollapseLevel);
+    if (ctx.autoCollapseLevel > 0) {
+      setIsExpanded(level < ctx.autoCollapseLevel);
+    }
   }
 
   if (!data.person) return null;
@@ -78,7 +90,7 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
 
       <div className="flex items-center gap-2 group relative z-10">
         <div className="size-5 flex items-center justify-center shrink-0 z-10 bg-transparent">
-          {hasChildren ? (
+          {hasChildren && !ctx.hideExpandButtons ? (
             <button
               type="button"
               onClick={() => setIsExpanded(!isExpanded)}
