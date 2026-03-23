@@ -71,7 +71,8 @@ src/
 ├── routes/               # TanStack Start file-based routes
 ├── ui/                   # Shared UI components (layout, icons, common)
 ├── database/             # Database layer (client, repositories, generated types)
-├── lib/                  # Core infrastructure (storage, env, config, type declarations)
+├── config/               # App configuration (env validation, site settings)
+├── lib/                  # Shared utilities (storage, dates, errors, logging, query keys)
 └── i18n/                 # i18next setup and translations
 ```
 

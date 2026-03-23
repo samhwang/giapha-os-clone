@@ -10,7 +10,7 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 - **Forms**: [TanStack Form](https://tanstack.com/form) (type-safe form handling)
 - **Authentication**: [Better Auth](https://www.better-auth.com/)
 - **Database**: [Prisma](https://www.prisma.io/) + PostgreSQL
-- **File Storage**: Local filesystem
+- **File Storage**: Local filesystem / S3-compatible (via [unstorage](https://unstorage.unjs.io/))
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Infrastructure**: Docker Compose
 
@@ -120,8 +120,8 @@ See the [Deployment Guide](./docs/how-to/02-deployment.md) for detailed instruct
 │   ├── routes/           # TanStack Start file-based routes
 │   ├── ui/               # Shared UI components
 │   ├── database/         # Database layer (client, repositories, generated types)
-│   ├── lib/              # Core infrastructure (storage, env, config)
-│   ├── types/            # Global TypeScript types
+│   ├── config/           # App configuration (env validation, site settings)
+│   ├── lib/              # Shared utilities (storage, dates, errors, logging, query keys)
 │   └── i18n/             # i18next translations
 ├── docker-compose.yml    # PostgreSQL
 └── biome.json            # Linter/formatter config

@@ -29,7 +29,7 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
     error: queryError,
   } = useQuery({
     queryKey: queryKeys.persons.detail(memberId ?? ''),
-    queryFn: () => getPersonById({ data: { id: memberId! } }),
+    queryFn: () => getPersonById({ data: { id: memberId ?? '' } }),
     enabled: !!memberId,
   });
 

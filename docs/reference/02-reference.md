@@ -10,6 +10,7 @@ Lookup tables for tech stack, project structure, routes, environment variables, 
 | UI | [React](https://react.dev/) | 19 |
 | Routing | [TanStack Router](https://tanstack.com/router/latest) | latest |
 | Forms | [TanStack Form](https://tanstack.com/form/latest) | latest |
+| Server State | [TanStack Query](https://tanstack.com/query/latest) | 5.x |
 | Database | [PostgreSQL](https://www.postgresql.org/) | 15+ |
 | ORM | [Prisma](https://www.prisma.io/) | 7.x |
 | Auth | [Better Auth](https://www.better-auth.com/) | latest |
@@ -88,11 +89,18 @@ src/
 │   │   └── env.server.ts   # Server environment variables (Zod-validated)
 │   └── server/
 │       └── getSiteName.ts  # Server function for runtime site name
-├── lib/                # Core infrastructure
+├── config/             # App configuration
+│   ├── lib/
+│   │   └── env.server.ts   # Server environment variables (Zod-validated)
+│   └── server/
+│       └── getSiteName.ts  # Server function for runtime site name
+├── lib/                # Shared utilities
 │   ├── storage.ts      # File upload handling
 │   ├── date.ts         # Date/timezone utilities
-│   └── errors.ts       # Error constants
-├── types/              # Global TypeScript types and Zod enums
+│   ├── errors.ts       # Error constants
+│   ├── queryKeys.ts    # TanStack Query key factories
+│   ├── logger.ts       # Client logger
+│   └── logger.server.ts # Server logger
 └── i18n/               # Internationalization
     ├── lib/            # i18next setup and translations (en, vi)
     └── server/         # getLanguage server function
@@ -154,7 +162,10 @@ src/ui/
 | `S3_PUBLIC_URL` | Public URL prefix for S3 objects (required when `s3`) |
 | `BETTER_AUTH_SECRET` | Auth encryption key |
 | `BETTER_AUTH_URL` | Public URL for auth |
+| `TRUSTED_ORIGINS` | Comma-delimited list of trusted origins (optional) |
 | `SITE_NAME` | Site display name (runtime, server-side) |
+| `DEPLOYMENT_ENV` | Build-time deployment target: `node` (default), `vercel`, `netlify`, `cloudflare` |
+| `E2E_TEST_UTILS` | Enable E2E test utilities (`true`); testing only, not for production |
 
 ## Commands
 

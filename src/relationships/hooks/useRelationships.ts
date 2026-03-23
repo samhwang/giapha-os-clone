@@ -54,7 +54,6 @@ interface RelationshipsData {
   allPersons: Person[];
 }
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: relationship enrichment requires nested loops
 async function fetchRelationshipsData(
   personId: string,
   t: (key: string, opts?: Record<string, string>) => string,

@@ -11,15 +11,14 @@ import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/dashboard/')({
   loader: async () => {
-    // Runs on server — fetch data with Prisma
-    const persons = await db.person.findMany();
-    return { persons };
+    const [persons, customEvents] = await Promise.all([getPersons(), getCustomEvents()]);
+    return { persons, customEvents };
   },
   component: DashboardPage,
 });
 
 function DashboardPage() {
-  const { persons } = Route.useLoaderData();
+  const { persons, customEvents } = Route.useLoaderData();
   return <div>{/* render */}</div>;
 }
 ```
@@ -107,6 +106,70 @@ export const exportData = createServerFn({ method: 'GET' })
     // Handler logic
   });
 ```
+
+## TanStack Query
+
+[TanStack Query](https://tanstack.com/query/latest) manages server state on the client: caching, background refetching, and mutation side effects.
+
+### Query Key Factory
+
+All query keys live in `src/lib/queryKeys.ts`:
+
+```ts
+import { queryKeys } from '../../lib/queryKeys';
+
+// Usage
+queryKeys.persons.all        // ['persons']
+queryKeys.persons.detail(id) // ['person', id]
+queryKeys.relationships.forPerson(personId) // ['relationships', personId]
+```
+
+Always use factory keys — never hand-write key arrays.
+
+### useQuery
+
+```tsx
+import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '../../lib/queryKeys';
+
+const { data, isLoading, error } = useQuery({
+  queryKey: queryKeys.persons.detail(memberId ?? ''),
+  queryFn: () => getPersonById({ data: { id: memberId! } }),
+  enabled: !!memberId, // conditional fetching
+});
+```
+
+### useMutation + Invalidation
+
+```tsx
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+const queryClient = useQueryClient();
+
+const mutation = useMutation({
+  mutationFn: (data: CreatePersonInput) => createPerson({ data }),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.persons.all });
+  },
+});
+```
+
+For mutations that affect loader data, use `router.invalidate()` instead:
+
+```tsx
+const router = useRouter();
+const handleChange = useCallback(() => {
+  router.invalidate();
+}, [router]);
+```
+
+### When to Use What
+
+| Scenario | Approach |
+|----------|----------|
+| Data loaded in route loader, no client-side refetch needed | `Route.useLoaderData()` only |
+| Data fetched on demand (modals, conditional UI) | `useQuery` with `enabled` flag |
+| Write operations (create, update, delete) | `useMutation` + `invalidateQueries` or `router.invalidate()` |
 
 ## TanStack Router
 

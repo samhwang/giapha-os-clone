@@ -13,6 +13,7 @@ Key design decisions:
 - **TanStack Start over Next.js**: Server functions with middleware chains provide cleaner auth patterns than Next.js API routes. File-based routing with type-safe loaders reduces boilerplate.
 - **Prisma over raw SQL**: Generated TypeScript types ensure type safety across the database layer. The repository pattern decouples business logic from the ORM.
 - **Better Auth over Supabase Auth**: Self-hosted authentication with no external dependency. Session-based auth stored in cookies.
+- **[TanStack Query](https://tanstack.com/query/latest) for server state**: Handles caching, background refetching, and deduplication of server data. Server functions fetch data; TanStack Query manages when to refetch and how to cache it on the client.
 - **unstorage over direct filesystem calls**: Abstraction layer that supports both local filesystem and S3-compatible storage via a single `STORAGE_PROVIDER` environment variable.
 - **Tailwind CSS v4 over CSS Modules**: Utility-first styling with built-in animation support. Consistent design system without maintaining separate CSS files.
 
