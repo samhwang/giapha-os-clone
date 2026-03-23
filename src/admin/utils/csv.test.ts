@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { createPerson, mockPersons, mockRelationships } from '../../../test/fixtures';
 import type { Person } from '../../members/types';
 import type { Relationship } from '../../relationships/types';
+import { exportToCsvZip, parseCsvZip } from './csv';
 
 // JSZip in Node doesn't support Blob round-trips, so we test the CSV logic
 // (Papa.unparse → zip → extract → Papa.parse) using ArrayBuffer instead.
@@ -87,5 +88,74 @@ describe('CSV export/import via zip', () => {
     zip.file('wrong.csv', 'data');
     const buf = await zip.generateAsync({ type: 'arraybuffer' });
     await expect(parseZipBuffer(buf)).rejects.toThrow('Invalid ZIP: missing persons.csv or relationships.csv');
+  });
+});
+
+describe('exportToCsvZip / parseCsvZip (actual functions)', () => {
+  it('exportToCsvZip produces a Blob with correct size', async () => {
+    const persons = mockPersons as Person[];
+    const relationships = mockRelationships as Relationship[];
+    const blob = await exportToCsvZip({ persons, relationships });
+    expect(blob.size).toBeGreaterThan(0);
+    expect(blob.type).toBe('application/zip');
+  });
+
+  it('exportToCsvZip includes optional personDetailsPrivate when provided', async () => {
+    const blob = await exportToCsvZip({
+      persons: mockPersons as Person[],
+      relationships: mockRelationships as Relationship[],
+      personDetailsPrivate: [{ personId: 'p1', phoneNumber: '0901234567', occupation: 'Engineer', currentResidence: 'HN' }],
+    });
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it('exportToCsvZip includes optional customEvents when provided', async () => {
+    const blob = await exportToCsvZip({
+      persons: mockPersons as Person[],
+      relationships: mockRelationships as Relationship[],
+      customEvents: [{ id: 'e1', name: 'Wedding', eventDate: '2024-01-01', location: 'HN', content: 'Test', createdBy: 'admin' }],
+    });
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  it('exportToCsvZip excludes optional files when arrays are empty', async () => {
+    const blob = await exportToCsvZip({
+      persons: mockPersons as Person[],
+      relationships: mockRelationships as Relationship[],
+      personDetailsPrivate: [],
+      customEvents: [],
+    });
+    expect(blob.size).toBeGreaterThan(0);
+  });
+
+  // parseCsvZip accepts Blob but JSZip.loadAsync also accepts ArrayBuffer.
+  // In Node, JSZip can't read native Blob, so we pass ArrayBuffer via type assertion.
+  it('parseCsvZip parses ZIP with optional personDetailsPrivate', async () => {
+    const exportBlob = await exportToCsvZip({
+      persons: mockPersons as Person[],
+      relationships: mockRelationships as Relationship[],
+      personDetailsPrivate: [{ personId: 'p1', phoneNumber: '0901234567', occupation: 'Engineer', currentResidence: 'HN' }],
+    });
+    const result = await parseCsvZip((await exportBlob.arrayBuffer()) as unknown as Blob);
+    expect(result.personDetailsPrivate).toHaveLength(1);
+    expect(result.personDetailsPrivate?.[0].personId).toBe('p1');
+  });
+
+  it('parseCsvZip parses ZIP with optional customEvents', async () => {
+    const exportBlob = await exportToCsvZip({
+      persons: mockPersons as Person[],
+      relationships: mockRelationships as Relationship[],
+      customEvents: [{ id: 'e1', name: 'Wedding', eventDate: '2024-01-01', location: 'HN', content: 'Test', createdBy: 'admin' }],
+    });
+    const result = await parseCsvZip((await exportBlob.arrayBuffer()) as unknown as Blob);
+    expect(result.customEvents).toHaveLength(1);
+    expect(result.customEvents?.[0].name).toBe('Wedding');
+  });
+
+  it('parseCsvZip throws when required files are missing', async () => {
+    const zip = new JSZip();
+    zip.file('wrong.csv', 'data');
+    const buf = await zip.generateAsync({ type: 'arraybuffer' });
+    await expect(parseCsvZip(buf as unknown as Blob)).rejects.toThrow('Invalid ZIP: missing persons.csv or relationships.csv');
   });
 });

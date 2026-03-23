@@ -2,9 +2,8 @@ import { Minus, Plus } from 'lucide-react';
 import type { MouseEvent } from 'react';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import type { Person } from '../../members/types';
-import DefaultAvatar from '../../ui/icons/DefaultAvatar';
+import Avatar from '../../ui/common/Avatar';
 import { cn } from '../../ui/utils/cn';
-import { getAvatarBg } from '../../ui/utils/styles';
 
 interface FamilyNodeCardProps {
   person: Person;
@@ -59,18 +58,12 @@ export default function FamilyNodeCard({
 
       {showAvatar && (
         <div className="relative z-10 mb-1.5 sm:mb-2">
-          <div
-            className={cn(
-              'h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center text-2xs sm:text-xs md:text-sm text-white overflow-hidden shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105',
-              getAvatarBg(person.gender)
-            )}
-          >
-            {person.avatarUrl ? (
-              <img src={person.avatarUrl} alt={person.fullName} className="w-full h-full object-cover" />
-            ) : (
-              <DefaultAvatar gender={person.gender} />
-            )}
-          </div>
+          <Avatar
+            gender={person.gender}
+            avatarUrl={person.avatarUrl}
+            fullName={person.fullName}
+            className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 text-2xs sm:text-xs md:text-sm shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105"
+          />
         </div>
       )}
 

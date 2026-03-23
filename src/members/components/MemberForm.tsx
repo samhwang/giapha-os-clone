@@ -5,9 +5,9 @@ import { Lunar, Solar } from 'lunar-javascript';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { logger } from '../../lib/logger';
+import Avatar from '../../ui/common/Avatar';
 import Checkbox from '../../ui/common/Checkbox';
 import { cn } from '../../ui/utils/cn';
-import { getAvatarBg } from '../../ui/utils/styles';
 import { useAvatarUpload } from '../hooks/useAvatarUpload';
 import { useMemberForm } from '../hooks/useMemberForm';
 import { createPerson, updatePerson, uploadPersonAvatar } from '../server/member';
@@ -346,18 +346,12 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               {t('member.avatar')}
             </label>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 bg-stone-50/50 p-4 rounded-xl border border-stone-100">
-              <div
-                className={cn(
-                  'w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center text-xl font-bold text-white overflow-hidden shrink-0 shadow-md border-4 border-white',
-                  !avatarPreview && getAvatarBg(gender)
-                )}
-              >
-                {avatarPreview ? (
-                  <img src={avatarPreview} alt="Avatar preview" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="opacity-90">{fullName ? fullName.charAt(0).toUpperCase() : '?'}</span>
-                )}
-              </div>
+              <Avatar
+                gender={gender}
+                avatarUrl={avatarPreview}
+                fullName={fullName}
+                className="w-20 h-20 sm:w-24 sm:h-24 text-xl font-bold shrink-0 shadow-md border-4 border-white"
+              />
               <div className="flex-1 w-full">
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="relative">

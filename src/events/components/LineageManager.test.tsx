@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson, createRelationship } from '../../../test/fixtures';
+import { t } from '../../../test/i18n';
 import { Gender } from '../../members/types';
 import { RelationshipType } from '../../relationships/types';
 import LineageManager from './LineageManager';
@@ -20,7 +21,7 @@ describe('LineageManager', () => {
   it('renders calculate button', () => {
     const persons = [createPerson({ fullName: 'Nguyễn Văn A', gender: Gender.enum.male })];
     render(<LineageManager persons={persons} relationships={[]} />);
-    expect(screen.getByText(/tính toán/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('lineage.calculate'), 'i'))).toBeInTheDocument();
   });
 
   it('renders with persons and relationships', () => {
@@ -29,12 +30,12 @@ describe('LineageManager', () => {
     const rel = createRelationship({ personAId: 'p1', personBId: 'p2', type: RelationshipType.enum.biological_child });
 
     render(<LineageManager persons={[pA, pB]} relationships={[rel]} />);
-    expect(screen.getByText(/tính toán/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('lineage.calculate'), 'i'))).toBeInTheDocument();
   });
 
   it('renders calculate button even when no persons', () => {
     render(<LineageManager persons={[]} relationships={[]} />);
-    expect(screen.getByText(/tính toán/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('lineage.calculate'), 'i'))).toBeInTheDocument();
   });
 
   it('calculate shows results table with change summary', async () => {
@@ -45,14 +46,14 @@ describe('LineageManager', () => {
     const user = userEvent.setup();
     render(<LineageManager persons={[parent, child]} relationships={[rel]} />);
 
-    await user.click(screen.getByText(/tính toán/i));
+    await user.click(screen.getByText(new RegExp(t('lineage.calculate'), 'i')));
 
     await waitFor(() => {
       expect(screen.getByText('Nguyễn Văn Cha')).toBeInTheDocument();
       expect(screen.getByText('Nguyễn Văn Con')).toBeInTheDocument();
     });
     // Change summary: "X thành viên sẽ được cập nhật / Y tổng"
-    expect(screen.getByText(/thành viên sẽ được cập nhật/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('lineage.changesSummary', { changed: '\\d+', total: '\\d+' })))).toBeInTheDocument();
   });
 
   it('apply button calls updateBatch with changed records', async () => {
@@ -63,13 +64,13 @@ describe('LineageManager', () => {
     const user = userEvent.setup();
     render(<LineageManager persons={[parent, child]} relationships={[rel]} />);
 
-    await user.click(screen.getByText(/tính toán/i));
+    await user.click(screen.getByText(new RegExp(t('lineage.calculate'), 'i')));
 
     await waitFor(() => {
-      expect(screen.getByText(/áp dụng/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('lineage.applyChanges', { count: '\\d+' }).replace(/[()]/g, '\\$&'), 'i'))).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText(/áp dụng/i));
+    await user.click(screen.getByText(new RegExp(t('lineage.applyChanges', { count: '\\d+' }).replace(/[()]/g, '\\$&'), 'i')));
 
     await waitFor(() => {
       expect(mockUpdateBatch).toHaveBeenCalledWith({
@@ -88,15 +89,15 @@ describe('LineageManager', () => {
     const user = userEvent.setup();
     render(<LineageManager persons={[parent, child]} relationships={[rel]} />);
 
-    await user.click(screen.getByText(/tính toán/i));
+    await user.click(screen.getByText(new RegExp(t('lineage.calculate'), 'i')));
     await waitFor(() => {
-      expect(screen.getByText(/áp dụng/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('lineage.applyChanges', { count: '\\d+' }).replace(/[()]/g, '\\$&'), 'i'))).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText(/áp dụng/i));
+    await user.click(screen.getByText(new RegExp(t('lineage.applyChanges', { count: '\\d+' }).replace(/[()]/g, '\\$&'), 'i')));
 
     await waitFor(() => {
-      expect(screen.getByText(/đã áp dụng thành công/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('lineage.applySuccess', { count: '\\d+' }), 'i'))).toBeInTheDocument();
     });
   });
 
@@ -110,12 +111,12 @@ describe('LineageManager', () => {
     const user = userEvent.setup();
     render(<LineageManager persons={[parent, child]} relationships={[rel]} />);
 
-    await user.click(screen.getByText(/tính toán/i));
+    await user.click(screen.getByText(new RegExp(t('lineage.calculate'), 'i')));
     await waitFor(() => {
-      expect(screen.getByText(/áp dụng/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('lineage.applyChanges', { count: '\\d+' }).replace(/[()]/g, '\\$&'), 'i'))).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText(/áp dụng/i));
+    await user.click(screen.getByText(new RegExp(t('lineage.applyChanges', { count: '\\d+' }).replace(/[()]/g, '\\$&'), 'i')));
 
     await waitFor(() => {
       expect(screen.getByText('Database error')).toBeInTheDocument();

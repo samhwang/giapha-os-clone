@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { t } from '../../../test/i18n';
 import DeleteMemberButton from './DeleteMemberButton';
 
 const mockNavigate = vi.fn();
@@ -29,14 +30,14 @@ describe('DeleteMemberButton', () => {
 
   it('renders delete button', () => {
     render(<DeleteMemberButton memberId="test-id" />);
-    expect(screen.getByRole('button', { name: /xoá hồ sơ/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: new RegExp(t('member.deleteButton'), 'i') })).toBeInTheDocument();
   });
 
   it('shows confirm dialog on click', async () => {
     const user = userEvent.setup();
     render(<DeleteMemberButton memberId="test-id" />);
 
-    await user.click(screen.getByRole('button', { name: /xoá hồ sơ/i }));
+    await user.click(screen.getByRole('button', { name: new RegExp(t('member.deleteButton'), 'i') }));
     expect(confirmSpy).toHaveBeenCalled();
   });
 
@@ -44,7 +45,7 @@ describe('DeleteMemberButton', () => {
     const user = userEvent.setup();
     render(<DeleteMemberButton memberId="test-id" />);
 
-    await user.click(screen.getByRole('button', { name: /xoá hồ sơ/i }));
+    await user.click(screen.getByRole('button', { name: new RegExp(t('member.deleteButton'), 'i') }));
     expect(mockDeleteMember).not.toHaveBeenCalled();
   });
 
@@ -53,7 +54,7 @@ describe('DeleteMemberButton', () => {
     const user = userEvent.setup();
     render(<DeleteMemberButton memberId="test-id" />);
 
-    await user.click(screen.getByRole('button', { name: /xoá hồ sơ/i }));
+    await user.click(screen.getByRole('button', { name: new RegExp(t('member.deleteButton'), 'i') }));
 
     await waitFor(() => {
       expect(mockDeleteMember).toHaveBeenCalledWith({ data: { id: 'test-id' } });
@@ -67,10 +68,10 @@ describe('DeleteMemberButton', () => {
     const user = userEvent.setup();
     render(<DeleteMemberButton memberId="test-id" />);
 
-    await user.click(screen.getByRole('button', { name: /xoá hồ sơ/i }));
+    await user.click(screen.getByRole('button', { name: new RegExp(t('member.deleteButton'), 'i') }));
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /đang xoá/i })).toBeDisabled();
+      expect(screen.getByRole('button', { name: new RegExp(t('common.deleting'), 'i') })).toBeDisabled();
     });
   });
 
@@ -80,7 +81,7 @@ describe('DeleteMemberButton', () => {
     const user = userEvent.setup();
     render(<DeleteMemberButton memberId="test-id" />);
 
-    await user.click(screen.getByRole('button', { name: /xoá hồ sơ/i }));
+    await user.click(screen.getByRole('button', { name: new RegExp(t('member.deleteButton'), 'i') }));
 
     await waitFor(() => {
       expect(screen.getByText('Delete failed')).toBeInTheDocument();

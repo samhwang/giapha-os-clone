@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import { t } from '../../../test/i18n';
 import { renderWithProviders } from '../../../test/render-wrapper';
 import Footer from './Footer';
 
@@ -7,22 +8,22 @@ describe('Footer', () => {
   it('renders GitHub link', () => {
     renderWithProviders(<Footer />);
     expect(screen.getByText('Gia Phả OS')).toBeInTheDocument();
-    expect(screen.getByText('Gia Phả OS').closest('a')).toHaveAttribute('href', 'https://github.com/homielab/giapha-os');
+    expect(screen.getByText('Gia Phả OS').closest('a')).toHaveAttribute('href', 'https://github.com/samhwang/giapha-os-clone');
   });
 
-  it('renders HomieLab link', () => {
+  it('renders Sam Huynh link', () => {
     renderWithProviders(<Footer />);
-    expect(screen.getByText('HomieLab')).toBeInTheDocument();
-    expect(screen.getByText('HomieLab').closest('a')).toHaveAttribute('href', 'https://homielab.com');
+    expect(screen.getByText('Sam Huynh')).toBeInTheDocument();
+    expect(screen.getByText('Sam Huynh').closest('a')).toHaveAttribute('href', 'https://me.samh.page');
   });
 
   it('shows disclaimer when showDisclaimer is true', () => {
     renderWithProviders(<Footer showDisclaimer />);
-    expect(screen.getByText('Nội dung có thể thiếu sót. Vui lòng đóng góp để gia phả chính xác hơn.')).toBeInTheDocument();
+    expect(screen.getByText(t('footer.disclaimer'))).toBeInTheDocument();
   });
 
   it('hides disclaimer by default', () => {
     renderWithProviders(<Footer />);
-    expect(screen.queryByText('Nội dung có thể thiếu sót. Vui lòng đóng góp để gia phả chính xác hơn.')).not.toBeInTheDocument();
+    expect(screen.queryByText(t('footer.disclaimer'))).not.toBeInTheDocument();
   });
 });

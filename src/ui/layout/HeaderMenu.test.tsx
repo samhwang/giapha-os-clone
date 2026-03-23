@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
+import { t } from '../../../test/i18n';
 import HeaderMenu from './HeaderMenu';
 
 vi.mock('@tanstack/react-router', () => ({
@@ -28,9 +29,9 @@ describe('HeaderMenu', () => {
 
     await user.click(screen.getByRole('button'));
 
-    expect(screen.getByText(/quản lý người dùng/i)).toBeInTheDocument();
-    expect(screen.getByText(/thứ tự gia phả/i)).toBeInTheDocument();
-    expect(screen.getByText(/sao lưu & phục hồi/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('nav.userManagement'), 'i'))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('nav.lineageOrder'), 'i'))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('nav.backupRestore'), 'i'))).toBeInTheDocument();
   });
 
   it('hides admin links when not admin', async () => {
@@ -39,9 +40,9 @@ describe('HeaderMenu', () => {
 
     await user.click(screen.getByRole('button'));
 
-    expect(screen.queryByText(/quản lý người dùng/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/thứ tự gia phả/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/sao lưu & phục hồi/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(new RegExp(t('nav.userManagement'), 'i'))).not.toBeInTheDocument();
+    expect(screen.queryByText(new RegExp(t('nav.lineageOrder'), 'i'))).not.toBeInTheDocument();
+    expect(screen.queryByText(new RegExp(t('nav.backupRestore'), 'i'))).not.toBeInTheDocument();
   });
 
   it('shows common links for all users', async () => {
@@ -50,10 +51,10 @@ describe('HeaderMenu', () => {
 
     await user.click(screen.getByRole('button'));
 
-    expect(screen.getByText(/sự kiện/i)).toBeInTheDocument();
-    expect(screen.getByText(/tra cứu danh xưng/i)).toBeInTheDocument();
-    expect(screen.getByText(/thống kê gia phả/i)).toBeInTheDocument();
-    expect(screen.getByText(/giới thiệu/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('nav.events'), 'i'))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('nav.kinshipLookup'), 'i'))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('nav.familyStats'), 'i'))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('nav.aboutContact'), 'i'))).toBeInTheDocument();
   });
 
   it('shows user email in menu', async () => {
@@ -71,6 +72,6 @@ describe('HeaderMenu', () => {
 
     await user.click(screen.getByRole('button'));
 
-    expect(screen.getByText(/đăng xuất/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('auth.logout'), 'i'))).toBeInTheDocument();
   });
 });

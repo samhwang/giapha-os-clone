@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PersonCard from '../../members/components/PersonCard';
 import { Gender, type Person } from '../../members/types';
-import { buildFamilyGroupedSort } from '../../members/utils/familyGrouping';
+import { buildFamilyGroupedSort, FALLBACK_BIRTH_YEAR } from '../../members/utils/familyGrouping';
 import type { Relationship } from '../../relationships/types';
 import { useDashboardStore } from '../store/dashboardStore';
 import GenerationGroupedList from './GenerationGroupedList';
@@ -77,7 +77,7 @@ export default function DashboardMemberList({ initialPersons, relationships = []
       return [...filteredPersons].sort((a, b) => {
         switch (sortOption) {
           case 'birth_asc':
-            return (a.birthYear || 9999) - (b.birthYear || 9999);
+            return (a.birthYear || FALLBACK_BIRTH_YEAR) - (b.birthYear || FALLBACK_BIRTH_YEAR);
           case 'birth_desc':
             return (b.birthYear || 0) - (a.birthYear || 0);
           case 'name_asc':

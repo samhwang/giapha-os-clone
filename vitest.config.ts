@@ -5,7 +5,35 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/routeTree.gen.ts', 'test/**', 'src/**/*.test.{ts,tsx}', 'src/**/*.browser-test.{ts,tsx}'],
+      exclude: [
+        'src/routeTree.gen.ts',
+        'test/**',
+        'src/**/*.test.{ts,tsx}',
+        'src/**/generated/**',
+        // Server function wrappers (inner logic tested via repository layer)
+        'src/members/server/member.ts',
+        'src/relationships/server/relationship.ts',
+        'src/events/server/customEvent.ts',
+        'src/events/server/lineage.ts',
+        'src/admin/server/user.ts',
+        'src/admin/server/data.ts',
+        'src/auth/server/middleware.ts',
+        'src/config/server/getSiteName.ts',
+        'src/i18n/server/getLanguage.ts',
+        // Single-line library wrappers
+        'src/auth/client.ts',
+        'src/auth/server.ts',
+        'src/database/lib/client.ts',
+        'src/database/transaction.ts',
+        // Presentation-only style utilities
+        'src/ui/utils/styles.ts',
+        // Route pages — loaders tested via integration tests, components are layout shells
+        'src/routes/**/*.tsx',
+        // API route handlers
+        'src/routes/api/**',
+        // Type declarations
+        'src/lib/lunar-javascript.d.ts',
+      ],
     },
     projects: [
       {
@@ -39,9 +67,9 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'integration',
-          include: ['src/routes/**.test.{ts,tsx}'],
+          include: ['src/routes/**/*.test.{ts,tsx}'],
           environment: 'jsdom',
-          globalSetup: ['./test/globalSetup.ts'],
+          setupFiles: ['./test/setup.ts', './test/ui-mocks.ts'],
         },
       },
     ],

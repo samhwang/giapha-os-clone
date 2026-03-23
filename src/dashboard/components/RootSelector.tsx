@@ -2,10 +2,10 @@ import { Check, ChevronDown, Search } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Gender, type Person } from '../../members/types';
-import DefaultAvatar from '../../ui/icons/DefaultAvatar';
+import Avatar from '../../ui/common/Avatar';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 import { cn } from '../../ui/utils/cn';
-import { getAvatarBg, getGenderStyle } from '../../ui/utils/styles';
+import { getGenderStyle } from '../../ui/utils/styles';
 import { useDashboardStore } from '../store/dashboardStore';
 
 interface RootSelectorProps {
@@ -53,22 +53,18 @@ export default function RootSelector({ persons, currentRootId }: RootSelectorPro
         )}
       >
         <div className="relative shrink-0">
-          <div
-            className={cn(
-              'size-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden ring-2 ring-white shadow-xs',
-              currentRootPerson ? getAvatarBg(currentRootPerson.gender) : 'bg-stone-100 text-stone-400'
-            )}
-          >
-            {currentRootPerson ? (
-              currentRootPerson.avatarUrl ? (
-                <img src={currentRootPerson.avatarUrl} alt={currentRootPerson.fullName} className="h-full w-full object-cover" />
-              ) : (
-                <DefaultAvatar gender={currentRootPerson.gender} />
-              )
-            ) : (
-              '?'
-            )}
-          </div>
+          {currentRootPerson ? (
+            <Avatar
+              gender={currentRootPerson.gender}
+              avatarUrl={currentRootPerson.avatarUrl}
+              fullName={currentRootPerson.fullName}
+              className="size-8 text-xs font-bold ring-2 ring-white shadow-xs"
+            />
+          ) : (
+            <div className="size-8 rounded-full flex items-center justify-center text-xs font-bold overflow-hidden ring-2 ring-white shadow-xs bg-stone-100 text-stone-400">
+              ?
+            </div>
+          )}
           {currentRootPerson && (
             <div
               className={cn(
@@ -129,18 +125,12 @@ export default function RootSelector({ persons, currentRootId }: RootSelectorPro
                       )}
                     >
                       <div className="relative shrink-0">
-                        <div
-                          className={cn(
-                            'size-8 rounded-full flex items-center justify-center text-2xs font-bold text-white overflow-hidden ring-1 ring-white shadow-xs',
-                            getAvatarBg(person.gender)
-                          )}
-                        >
-                          {person.avatarUrl ? (
-                            <img src={person.avatarUrl} alt={person.fullName} className="h-full w-full object-cover" />
-                          ) : (
-                            <DefaultAvatar gender={person.gender} />
-                          )}
-                        </div>
+                        <Avatar
+                          gender={person.gender}
+                          avatarUrl={person.avatarUrl}
+                          fullName={person.fullName}
+                          className="size-8 text-2xs font-bold ring-1 ring-white shadow-xs"
+                        />
                         <div
                           className={cn(
                             'absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full ring-1 ring-white shadow-xs flex items-center justify-center',

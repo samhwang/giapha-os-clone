@@ -3,7 +3,7 @@ import path from 'node:path';
 import { createFileRoute } from '@tanstack/react-router';
 import { serverEnv } from '../../../config/lib/env.server';
 import { logger } from '../../../lib/logger.server';
-import { getPublicUrl } from '../../../lib/storage';
+import { getPublicUrl, ONE_YEAR_SECONDS } from '../../../lib/storage';
 
 const CONTENT_TYPES: Record<string, string> = {
   '.jpg': 'image/jpeg',
@@ -47,7 +47,7 @@ export const Route = createFileRoute('/api/uploads/$')({
           return new Response(buffer, {
             headers: {
               'Content-Type': contentType,
-              'Cache-Control': 'public, max-age=31536000, immutable',
+              'Cache-Control': `public, max-age=${ONE_YEAR_SECONDS}, immutable`,
             },
           });
         } catch (error) {

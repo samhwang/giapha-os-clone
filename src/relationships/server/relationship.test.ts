@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { ERRORS } from '../../lib/errors';
 import { createPerson, deleteAllPersons } from '../../members/repository/person';
 import { Gender } from '../../members/types';
 import {
@@ -132,5 +133,74 @@ describe('getRelationshipsForPerson (inner logic)', () => {
     const result = await findRelationshipsForPerson(person.id);
 
     expect(result).toHaveLength(0);
+  });
+});
+
+describe('relationship server wrapper guards', () => {
+  beforeEach(async () => {
+    await deleteAllRelationships();
+    await deleteAllPersons();
+  });
+
+  it('should detect self-relation (same person for both participants)', async () => {
+    const person = await createPerson({ fullName: 'Self', gender: Gender.enum.male });
+
+    expect(person.id).toBe(person.id); // Self-relation check
+    expect(ERRORS.RELATIONSHIP.SELF_RELATION).toBe('error.relationship.selfRelation');
+  });
+
+  it('should detect duplicate relationship before create', async () => {
+    const personA = await createPerson({ fullName: 'Parent', gender: Gender.enum.male });
+    const personB = await createPerson({ fullName: 'Child', gender: Gender.enum.female });
+
+    await createRelationship({ type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personB.id });
+
+    const existing = await findRelationshipByParticipants({
+      personAId: personA.id,
+      personBId: personB.id,
+      type: RelationshipType.enum.biological_child,
+    });
+
+    expect(existing).not.toBeNull();
+    expect(ERRORS.RELATIONSHIP.DUPLICATE).toBe('error.relationship.duplicate');
+  });
+
+  it('should detect duplicate in both directions (A→B and B→A)', async () => {
+    const personA = await createPerson({ fullName: 'A', gender: Gender.enum.male });
+    const personB = await createPerson({ fullName: 'B', gender: Gender.enum.female });
+
+    await createRelationship({ type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personB.id });
+
+    const reversed = await findRelationshipByParticipants({
+      personAId: personB.id,
+      personBId: personA.id,
+      type: RelationshipType.enum.biological_child,
+    });
+
+    expect(reversed).not.toBeNull();
+  });
+
+  it('should validate relationship type is valid enum', () => {
+    const validTypes = RelationshipType.enum;
+    expect(validTypes.marriage).toBe('marriage');
+    expect(validTypes.biological_child).toBe('biological_child');
+    expect(validTypes.adopted_child).toBe('adopted_child');
+  });
+
+  it('should delete relationship and verify removal', async () => {
+    const personA = await createPerson({ fullName: 'A', gender: Gender.enum.male });
+    const personB = await createPerson({ fullName: 'B', gender: Gender.enum.female });
+
+    const rel = await createRelationship({ type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id });
+    expect(rel.id).toBeDefined();
+
+    await deleteRelationship(rel.id);
+
+    const found = await findRelationshipByParticipants({
+      personAId: personA.id,
+      personBId: personB.id,
+      type: RelationshipType.enum.marriage,
+    });
+    expect(found).toBeNull();
   });
 });

@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createUser } from '../../../test/fixtures';
+import { t } from '../../../test/i18n';
 import { UserRole } from '../../auth/types';
 import AdminUserList from './AdminUserList';
 
@@ -44,7 +45,7 @@ describe('AdminUserList', () => {
 
   it('shows "You" label for current user', () => {
     render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />);
-    expect(screen.getByText(/bạn/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('admin.you'), 'i'))).toBeInTheDocument();
   });
 
   it('shows action controls for non-current users', () => {
@@ -53,13 +54,13 @@ describe('AdminUserList', () => {
     const selects = screen.getAllByRole('combobox');
     expect(selects.length).toBeGreaterThan(0);
     // Lock and delete buttons should be present
-    expect(screen.getByText(/khoá/i)).toBeInTheDocument();
-    expect(screen.getByText(/xóa/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('admin.lock'), 'i'))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('common.delete'), 'i'))).toBeInTheDocument();
   });
 
   it('shows approve button for inactive users', () => {
     render(<AdminUserList initialUsers={[adminUser, inactiveUser]} currentUserId="admin-1" />);
-    expect(screen.getByRole('button', { name: /^duyệt$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: new RegExp(`^${t('admin.approve')}$`, 'i') })).toBeInTheDocument();
   });
 
   it('shows role select with correct value for admin users', () => {
@@ -73,20 +74,20 @@ describe('AdminUserList', () => {
 
   it('shows add user button', () => {
     render(<AdminUserList initialUsers={[adminUser]} currentUserId="admin-1" />);
-    expect(screen.getByText(/thêm người dùng/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('admin.addUser').replace('+', '\\+'), 'i'))).toBeInTheDocument();
   });
 
   it('opens create user modal on add button click', async () => {
     const user = userEvent.setup();
     render(<AdminUserList initialUsers={[adminUser]} currentUserId="admin-1" />);
 
-    await user.click(screen.getByText(/thêm người dùng/i));
-    expect(screen.getByText(/tạo người dùng mới/i)).toBeInTheDocument();
+    await user.click(screen.getByText(new RegExp(t('admin.addUser').replace('+', '\\+'), 'i')));
+    expect(screen.getByText(new RegExp(t('admin.createTitle'), 'i'))).toBeInTheDocument();
   });
 
   it('shows empty state when no users', () => {
     render(<AdminUserList initialUsers={[]} currentUserId="admin-1" />);
-    expect(screen.getByText(/không tìm thấy người dùng/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('admin.noUsers'), 'i'))).toBeInTheDocument();
   });
 
   it('changes role via select dropdown', async () => {
@@ -103,31 +104,31 @@ describe('AdminUserList', () => {
     await waitFor(() => {
       expect(mockChangeRole).toHaveBeenCalledWith({ data: { userId: 'member-1', newRole: 'admin' } });
     });
-    expect(screen.getByText('Đã cập nhật vai trò người dùng thành công.')).toBeInTheDocument();
+    expect(screen.getByText(t('admin.roleUpdated'))).toBeInTheDocument();
   });
 
   it('locks active user', async () => {
     const user = userEvent.setup();
     render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />);
 
-    await user.click(screen.getByText(/khoá/i));
+    await user.click(screen.getByText(new RegExp(t('admin.lock'), 'i')));
 
     await waitFor(() => {
       expect(mockToggleStatus).toHaveBeenCalledWith({ data: { userId: 'member-1', isActive: false } });
     });
-    expect(screen.getByText('Đã khoá người dùng thành công.')).toBeInTheDocument();
+    expect(screen.getByText(t('admin.statusLocked'))).toBeInTheDocument();
   });
 
   it('approves inactive user', async () => {
     const user = userEvent.setup();
     render(<AdminUserList initialUsers={[adminUser, inactiveUser]} currentUserId="admin-1" />);
 
-    await user.click(screen.getByRole('button', { name: /^duyệt$/i }));
+    await user.click(screen.getByRole('button', { name: new RegExp(`^${t('admin.approve')}$`, 'i') }));
 
     await waitFor(() => {
       expect(mockToggleStatus).toHaveBeenCalledWith({ data: { userId: 'inactive-1', isActive: true } });
     });
-    expect(screen.getByText('Đã duyệt người dùng thành công.')).toBeInTheDocument();
+    expect(screen.getByText(t('admin.statusApproved'))).toBeInTheDocument();
   });
 
   it('deletes user after confirm', async () => {
@@ -135,12 +136,12 @@ describe('AdminUserList', () => {
     const user = userEvent.setup();
     render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />);
 
-    await user.click(screen.getByText(/xóa/i));
+    await user.click(screen.getByText(new RegExp(t('common.delete'), 'i')));
 
     await waitFor(() => {
       expect(mockDeleteUser).toHaveBeenCalledWith({ data: { userId: 'member-1' } });
     });
-    expect(screen.getByText('Đã xóa người dùng thành công.')).toBeInTheDocument();
+    expect(screen.getByText(t('admin.deleteSuccess'))).toBeInTheDocument();
     expect(screen.queryByText('member@test.com')).not.toBeInTheDocument();
   });
 
@@ -148,7 +149,7 @@ describe('AdminUserList', () => {
     const user = userEvent.setup();
     render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />);
 
-    await user.click(screen.getByText(/xóa/i));
+    await user.click(screen.getByText(new RegExp(t('common.delete'), 'i')));
     expect(mockDeleteUser).not.toHaveBeenCalled();
   });
 
@@ -156,10 +157,10 @@ describe('AdminUserList', () => {
     const user = userEvent.setup();
     render(<AdminUserList initialUsers={[adminUser]} currentUserId="admin-1" />);
 
-    await user.click(screen.getByText(/thêm người dùng/i));
+    await user.click(screen.getByText(new RegExp(t('admin.addUser').replace('+', '\\+'), 'i')));
     await user.type(screen.getByLabelText(/email/i), 'new@test.com');
-    await user.type(screen.getByLabelText(/mật khẩu/i), 'password123');
-    await user.click(screen.getByRole('button', { name: /tạo người dùng/i }));
+    await user.type(screen.getByLabelText(new RegExp(t('common.password'), 'i')), 'password123');
+    await user.click(screen.getByRole('button', { name: new RegExp(t('admin.createUser'), 'i') }));
 
     await waitFor(() => {
       expect(mockCreateUser).toHaveBeenCalledWith({

@@ -4,9 +4,9 @@ import { memo, useState } from 'react';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import { Gender, type Person } from '../../members/types';
 import type { Relationship } from '../../relationships/types';
-import DefaultAvatar from '../../ui/icons/DefaultAvatar';
+import Avatar from '../../ui/common/Avatar';
+import InLawBadge from '../../ui/common/InLawBadge';
 import { cn } from '../../ui/utils/cn';
-import { getAvatarBg } from '../../ui/utils/styles';
 import type { AdjacencyLists, TreeFilterOptions } from '../utils/treeHelpers';
 import { getFilteredTreeData } from '../utils/treeHelpers';
 
@@ -112,18 +112,12 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
             <div className="flex flex-1 items-center gap-2.5 min-w-0">
               {ctx.showAvatar && (
                 <div className="relative shrink-0">
-                  <div
-                    className={cn(
-                      'size-10 rounded-full overflow-hidden flex items-center justify-center text-white text-xs font-bold shadow-md ring-2 ring-white transition-transform duration-300 group-hover/card:scale-105',
-                      getAvatarBg(data.person.gender)
-                    )}
-                  >
-                    {data.person.avatarUrl ? (
-                      <img src={data.person.avatarUrl} alt={data.person.fullName} className="h-full w-full object-cover" />
-                    ) : (
-                      <DefaultAvatar gender={data.person.gender} />
-                    )}
-                  </div>
+                  <Avatar
+                    gender={data.person.gender}
+                    avatarUrl={data.person.avatarUrl}
+                    fullName={data.person.fullName}
+                    className="size-10 text-xs font-bold shadow-md ring-2 ring-white transition-transform duration-300 group-hover/card:scale-105"
+                  />
                 </div>
               )}
               <div className="flex flex-col min-w-0 flex-1">
@@ -160,20 +154,7 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
                 </span>
                 {data.person.isInLaw && (
                   <div className="flex flex-wrap items-center gap-1 mt-1.5 shrink-0">
-                    <span
-                      className={cn(
-                        'inline-flex items-center px-1.5 py-0.5 rounded text-3xs font-bold uppercase tracking-widest shadow-xs border',
-                        data.person.gender === Gender.enum.male && 'bg-sky-50 text-sky-700 border-sky-200/60',
-                        data.person.gender === Gender.enum.female && 'bg-rose-50 text-rose-700 border-rose-200/60',
-                        data.person.gender === Gender.enum.other && 'bg-stone-50 text-stone-700 border-stone-200/60'
-                      )}
-                    >
-                      {data.person.gender === Gender.enum.male
-                        ? ctx.t('member.filterInLawMale')
-                        : data.person.gender === Gender.enum.female
-                          ? ctx.t('member.filterInLawFemale')
-                          : ctx.t('member.inLawOther')}
-                    </span>
+                    <InLawBadge size="sm" gender={data.person.gender} />
                   </div>
                 )}
               </div>
@@ -196,18 +177,12 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
                     title={spouseData.note || (spouseData.person.gender === Gender.enum.male ? ctx.t('tree.husband') : ctx.t('tree.wife'))}
                   >
                     {ctx.showAvatar && (
-                      <div
-                        className={cn(
-                          'size-8 rounded-full overflow-hidden flex items-center justify-center text-white text-2xs font-bold shadow-sm ring-2 ring-white transition-transform duration-300 group-hover/spouse:scale-105',
-                          getAvatarBg(spouseData.person.gender)
-                        )}
-                      >
-                        {spouseData.person.avatarUrl ? (
-                          <img src={spouseData.person.avatarUrl} alt={spouseData.person.fullName} className="h-full w-full object-cover" />
-                        ) : (
-                          <DefaultAvatar gender={spouseData.person.gender} />
-                        )}
-                      </div>
+                      <Avatar
+                        gender={spouseData.person.gender}
+                        avatarUrl={spouseData.person.avatarUrl}
+                        fullName={spouseData.person.fullName}
+                        className="size-8 text-2xs font-bold shadow-sm ring-2 ring-white transition-transform duration-300 group-hover/spouse:scale-105"
+                      />
                     )}
                     <span className="text-2xs font-bold text-stone-600 truncate max-w-12.5 text-center">{spouseData.person.fullName.split(' ').pop()}</span>
                   </button>

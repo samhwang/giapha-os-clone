@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
+import { t } from '../../../test/i18n';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { Gender } from '../../members/types';
 import { RelationshipType } from '../types';
@@ -52,9 +53,9 @@ describe('RelationshipManager', () => {
     render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
 
     await waitFor(() => {
-      expect(screen.getByText(/bố \/ mẹ/i)).toBeInTheDocument();
-      expect(screen.getByText(/vợ \/ chồng/i)).toBeInTheDocument();
-      expect(screen.getByText(/con cái/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('relationship.parents').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('relationship.spouse').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('relationship.children'), 'i'))).toBeInTheDocument();
     });
   });
 
@@ -62,9 +63,9 @@ describe('RelationshipManager', () => {
     render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
 
     await waitFor(() => {
-      expect(screen.getByText(/thêm con/i)).toBeInTheDocument();
-      expect(screen.getByText(/thêm vợ\/chồng/i)).toBeInTheDocument();
-      expect(screen.getByText(/thêm mối quan hệ/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('relationship.addChild').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('relationship.addSpouse').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('relationship.addRelationship').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
     });
   });
 
@@ -72,8 +73,8 @@ describe('RelationshipManager', () => {
     render(<RelationshipManager personId="p1" personGender={Gender.enum.male} />);
 
     await waitFor(() => {
-      expect(screen.queryByText(/thêm con/i)).not.toBeInTheDocument();
-      expect(screen.queryByText(/thêm vợ\/chồng/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(new RegExp(t('relationship.addChild').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).not.toBeInTheDocument();
+      expect(screen.queryByText(new RegExp(t('relationship.addSpouse').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).not.toBeInTheDocument();
     });
   });
 
@@ -93,14 +94,14 @@ describe('RelationshipManager', () => {
     mockGetPersons.mockReturnValue(new Promise(() => {}));
 
     render(<RelationshipManager personId="p1" personGender={Gender.enum.male} />);
-    expect(screen.getByText(/đang tải/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('common.loading'), 'i'))).toBeInTheDocument();
   });
 
   it('shows empty state for sections with no relationships when canEdit', async () => {
     render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
 
     await waitFor(() => {
-      const emptyTexts = screen.getAllByText(/chưa có thông tin/i);
+      const emptyTexts = screen.getAllByText(new RegExp(t('relationship.noInfo').replace('.', '\\.'), 'i'));
       expect(emptyTexts.length).toBeGreaterThan(0);
     });
   });
@@ -110,13 +111,13 @@ describe('RelationshipManager', () => {
     render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
 
     await waitFor(() => {
-      expect(screen.getByText(/thêm mối quan hệ/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('relationship.addRelationship').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText(/thêm mối quan hệ/i));
+    await user.click(screen.getByText(new RegExp(t('relationship.addRelationship').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')));
 
-    expect(screen.getByText(/thêm quan hệ mới/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/nhập tên để tìm/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('relationship.addNewRelationship'), 'i'))).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(new RegExp(t('relationship.searchPlaceholder'), 'i'))).toBeInTheDocument();
   });
 
   it('delete relationship calls deleteRelationship', async () => {
@@ -131,7 +132,7 @@ describe('RelationshipManager', () => {
       expect(screen.getByText('Trần Thị B')).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: /xóa mối quan hệ/i }));
+    await user.click(screen.getByRole('button', { name: new RegExp(t('relationship.deleteRelationship'), 'i') }));
 
     await waitFor(() => {
       expect(mockDeleteRelationship).toHaveBeenCalledWith({ data: { id: 'r1' } });
@@ -149,7 +150,7 @@ describe('RelationshipManager', () => {
       expect(screen.getByText('Trần Thị B')).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: /xóa mối quan hệ/i }));
+    await user.click(screen.getByRole('button', { name: new RegExp(t('relationship.deleteRelationship'), 'i') }));
     expect(mockDeleteRelationship).not.toHaveBeenCalled();
   });
 
@@ -158,14 +159,14 @@ describe('RelationshipManager', () => {
     render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
 
     await waitFor(() => {
-      expect(screen.getByText(/thêm vợ\/chồng/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('relationship.addSpouse').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText(/thêm vợ\/chồng/i));
+    await user.click(screen.getByText(new RegExp(t('relationship.addSpouse').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')));
 
-    expect(screen.getByText(/thêm nhanh vợ\/chồng/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('relationship.quickAddSpouse').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText(/họ và tên/i), 'Trần Thị C');
+    await user.type(screen.getByLabelText(new RegExp(t('relationship.fullNameRequired'), 'i')), 'Trần Thị C');
     await user.click(screen.getByText(/^lưu$/i));
 
     await waitFor(() => {
@@ -181,6 +182,46 @@ describe('RelationshipManager', () => {
     });
   });
 
+  it('clicking "Thêm con" shows BulkAddChildrenForm', async () => {
+    const user = userEvent.setup();
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(new RegExp(t('relationship.addChild').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText(new RegExp(t('relationship.addChild').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')));
+
+    expect(screen.getByText(new RegExp(t('relationship.bulkAddChildren').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('relationship.addRow').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
+  });
+
+  it('error banner can be dismissed', async () => {
+    mockCreatePerson.mockRejectedValue(new Error('Test error'));
+
+    const user = userEvent.setup();
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(new RegExp(t('relationship.addSpouse').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText(new RegExp(t('relationship.addSpouse').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')));
+    await user.type(screen.getByLabelText(new RegExp(t('relationship.fullNameRequired'), 'i')), 'Trần Thị C');
+    await user.click(screen.getByText(/^lưu$/i));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Test error/i)).toBeInTheDocument();
+    });
+
+    // Dismiss the error banner
+    await user.click(screen.getByRole('button', { name: '×' }));
+
+    await waitFor(() => {
+      expect(screen.queryByText(/Test error/i)).not.toBeInTheDocument();
+    });
+  });
+
   it('shows inline error on add spouse failure', async () => {
     mockCreatePerson.mockRejectedValue(new Error('Network error'));
 
@@ -188,11 +229,11 @@ describe('RelationshipManager', () => {
     render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
 
     await waitFor(() => {
-      expect(screen.getByText(/thêm vợ\/chồng/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('relationship.addSpouse').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText(/thêm vợ\/chồng/i));
-    await user.type(screen.getByLabelText(/họ và tên/i), 'Trần Thị C');
+    await user.click(screen.getByText(new RegExp(t('relationship.addSpouse').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')));
+    await user.type(screen.getByLabelText(new RegExp(t('relationship.fullNameRequired'), 'i')), 'Trần Thị C');
     await user.click(screen.getByText(/^lưu$/i));
 
     await waitFor(() => {

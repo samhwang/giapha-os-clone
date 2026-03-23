@@ -19,11 +19,13 @@ pnpm test:e2e:ui            # Playwright UI mode
 
 ### Test File Pattern
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Unit | `.test.ts` | `src/utils/kinshipHelpers.test.ts` |
-| Component | `.test.tsx` | `src/components/PersonCard.test.tsx` |
-| E2E | `.spec.ts` | `e2e/login.spec.ts` |
+| Type | Pattern | Vitest Project | Example |
+|------|---------|----------------|---------|
+| Unit | `.test.ts` | `server` | `src/utils/kinshipHelpers.test.ts` |
+| Component | `.test.tsx` | `ui-components` | `src/components/PersonCard.test.tsx` |
+| Hook | `hooks/**/*.test.ts` | `ui-components` | `src/members/hooks/useAvatarUpload.test.ts` |
+| Route/Integration | `src/routes/**/*.test.{ts,tsx}` | `integration` | `src/routes/dashboard/-index.test.ts` |
+| E2E | `.spec.ts` | Playwright | `e2e/login.spec.ts` |
 
 ### Coverage Targets
 
@@ -73,6 +75,30 @@ const result = await createPerson({
 - Coverage target: 70%+
 - Files: `src/components/*.test.tsx`
 
+### Layer 3b: Route Loader / beforeLoad Tests (Integration)
+
+- Mock server functions and framework modules (e.g., `@tanstack/react-router`)
+- Access `Route.options.loader(ctx)` / `Route.options.beforeLoad(ctx)` directly
+- TanStack Router's `redirect()` throws — use try/catch to assert the redirect target
+- Files: `src/routes/**/*.test.{ts,tsx}` (runs in `integration` vitest project)
+
+Example pattern:
+```ts
+let capturedOptions: Record<string, unknown> = {};
+
+vi.mock('@tanstack/react-router', () => ({
+  createFileRoute: () => (opts: Record<string, unknown>) => {
+    capturedOptions = opts;
+    return { options: opts };
+  },
+  redirect: (opts: { to: string }) => { throw new RedirectError(opts); },
+}));
+
+// Then test the loader/beforeLoad:
+const loader = capturedOptions.loader as () => Promise<unknown>;
+const result = await loader();
+```
+
 ### Layer 4: E2E Tests (Playwright)
 
 - Real Chromium browser via Playwright (not Vitest browser)
@@ -114,7 +140,7 @@ Follow [Testing Library](https://testing-library.com/)'s query priority:
 
 ## Test Fixtures
 
-Shared mock data lives in `src/test-utils/fixtures.ts`:
+Shared mock data lives in `test/fixtures.ts`:
 
 - `mockPersons` — Array of representative persons across generations
 - `mockRelationships` — Marriage + biological_child relationships
@@ -129,10 +155,30 @@ Shared mock data lives in `src/test-utils/fixtures.ts`:
 | `src/**/server/*.test.ts` | 80%+ | Business logic via Testcontainers |
 | `src/components/**` | 70%+ | Rendering and interactions |
 
-## What NOT to Test
+## i18n in Tests
 
-- Generated files (`routeTree.gen.ts`)
-- Third-party library internals
-- CSS/styling details
-- Prisma client itself (trust the ORM)
-- Simple pass-through components with no logic
+Use `createI18nInstance('vi').t` for assertions instead of hardcoded Vietnamese strings.
+This way tests only break when behavior changes, not when translations are updated.
+
+```ts
+import { createI18nInstance } from '../../i18n/lib';
+const t = createI18nInstance('vi').t;
+
+// ✅ DO: Use translation keys
+expect(screen.getByLabelText(t('auth.emailLabel'))).toBeInTheDocument();
+
+// ❌ DON'T: Hardcode translated text
+expect(screen.getByLabelText('Email')).toBeInTheDocument();
+```
+
+## What NOT to Test (Excluded from Coverage)
+
+These are excluded from the coverage report in `vitest.config.ts`:
+
+- Generated files (`routeTree.gen.ts`, `src/**/generated/**`)
+- Server function entry points (`src/**/server/*.ts`) — inner logic tested via repository layer
+- Single-line library wrappers (`auth/client.ts`, `auth/server.ts`, `database/lib/client.ts`, `database/transaction.ts`)
+- Presentation-only style utilities (`ui/utils/styles.ts`) — tested implicitly via component tests
+- Route page shells that only compose tested child components (`__root.tsx`, `index.tsx`, `about.tsx`, `login.tsx`, `members/new.tsx`, `members/$id/index.tsx`)
+- API route handlers (`routes/api/**`) — framework glue, tested via E2E
+- Type declaration files (`*.d.ts`)

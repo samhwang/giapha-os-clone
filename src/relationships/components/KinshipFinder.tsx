@@ -2,10 +2,10 @@ import { ArrowLeftRight, BookOpen, GitMerge, Info, Search, Sparkles, Users } fro
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Gender } from '../../members/types';
-import DefaultAvatar from '../../ui/icons/DefaultAvatar';
+import Avatar from '../../ui/common/Avatar';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 import { cn } from '../../ui/utils/cn';
-import { getAvatarBg, getGenderStyle } from '../../ui/utils/styles';
+import { getGenderStyle } from '../../ui/utils/styles';
 import type { PersonNode, RelEdge } from '../types';
 import { COLLATERAL, DESCENDANTS, DIRECT, IN_LAW, UNCLE_AUNT } from '../utils/kinship-dictionary';
 import { computeKinship } from '../utils/kinshipHelpers';
@@ -49,14 +49,13 @@ function PersonSelector({
         )}
       >
         <div className="relative shrink-0">
-          <div
-            className={cn(
-              'size-10 rounded-full flex items-center justify-center text-sm font-bold text-white overflow-hidden ring-2 ring-white shadow-sm',
-              selected ? getAvatarBg(selected.gender) : 'bg-stone-100 text-stone-400'
-            )}
-          >
-            {selected ? <DefaultAvatar gender={selected.gender} /> : '?'}
-          </div>
+          {selected ? (
+            <Avatar gender={selected.gender} fullName={selected.fullName} className="size-10 text-sm font-bold ring-2 ring-white shadow-sm" />
+          ) : (
+            <div className="size-10 rounded-full flex items-center justify-center text-sm font-bold overflow-hidden ring-2 ring-white shadow-sm bg-stone-100 text-stone-400">
+              ?
+            </div>
+          )}
           {selected && (
             <div
               className={cn(
@@ -106,14 +105,7 @@ function PersonSelector({
                   className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50 transition-colors text-left"
                 >
                   <div className="relative shrink-0">
-                    <div
-                      className={cn(
-                        'size-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden ring-1 ring-white shadow-xs',
-                        getAvatarBg(p.gender)
-                      )}
-                    >
-                      <DefaultAvatar gender={p.gender} />
-                    </div>
+                    <Avatar gender={p.gender} fullName={p.fullName} className="size-8 text-xs font-bold ring-1 ring-white shadow-xs" />
                     <div
                       className={cn(
                         'absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full ring-1 ring-white shadow-xs flex items-center justify-center',

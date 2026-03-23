@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { Gender } from '../../members/types';
 import type { PersonNode, RelEdge } from '../types';
 import { RelationshipType } from '../types';
+import { DESCENDANTS, DIRECT, FALLBACK, GENDER_SUFFIX, IN_LAW, IN_LAW_REVERSE, KINSHIP_MODIFIER, SIBLING, SIDE, UNCLE_AUNT } from './kinship-dictionary';
 import { computeKinship } from './kinshipHelpers';
 
 // ── Test data builders ──────────────────────────────────────────────────────
@@ -85,15 +86,15 @@ describe('computeKinship', () => {
     it('should return "Vợ" and "Chồng" for a married couple', () => {
       const result = computeKinship({ personA: father, personB: mother, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Vợ');
-      expect(result?.bCallsA).toBe('Chồng');
+      expect(result?.aCallsB).toBe(IN_LAW.WIFE);
+      expect(result?.bCallsA).toBe(IN_LAW.HUSBAND);
     });
 
     it('should return "Chồng" and "Vợ" when reversed', () => {
       const result = computeKinship({ personA: mother, personB: father, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Chồng');
-      expect(result?.bCallsA).toBe('Vợ');
+      expect(result?.aCallsB).toBe(IN_LAW.HUSBAND);
+      expect(result?.bCallsA).toBe(IN_LAW.WIFE);
     });
   });
 
@@ -101,25 +102,25 @@ describe('computeKinship', () => {
     it('should return "Cha" for father-son', () => {
       const result = computeKinship({ personA: son, personB: father, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Cha');
+      expect(result?.aCallsB).toBe(DIRECT.FATHER);
     });
 
     it('should return "Mẹ" for mother-daughter', () => {
       const result = computeKinship({ personA: daughter, personB: mother, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Mẹ');
+      expect(result?.aCallsB).toBe(DIRECT.MOTHER);
     });
 
     it('should return "Con trai" when father calls son', () => {
       const result = computeKinship({ personA: father, personB: son, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Con trai');
+      expect(result?.aCallsB).toBe(`${DESCENDANTS[1]} ${GENDER_SUFFIX.MALE}`);
     });
 
     it('should return "Con gái" when father calls daughter', () => {
       const result = computeKinship({ personA: father, personB: daughter, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Con gái');
+      expect(result?.aCallsB).toBe(`${DESCENDANTS[1]} ${GENDER_SUFFIX.FEMALE}`);
     });
   });
 
@@ -127,31 +128,31 @@ describe('computeKinship', () => {
     it('should return "Ông nội" for paternal grandfather', () => {
       const result = computeKinship({ personA: son, personB: grandpa, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Ông nội');
+      expect(result?.aCallsB).toBe(`${DIRECT.GRANDFATHER} ${SIDE.PATERNAL}`);
     });
 
     it('should return "Bà nội" for paternal grandmother', () => {
       const result = computeKinship({ personA: son, personB: grandma, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Bà nội');
+      expect(result?.aCallsB).toBe(`${DIRECT.GRANDMOTHER} ${SIDE.PATERNAL}`);
     });
 
     it('should return "Cháu trai" when grandfather calls grandson', () => {
       const result = computeKinship({ personA: grandpa, personB: son, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Cháu trai');
+      expect(result?.aCallsB).toBe(`${DESCENDANTS[2]} ${GENDER_SUFFIX.MALE}`);
     });
 
     it('should return "Ông ngoại" for maternal grandfather', () => {
       const result = computeKinship({ personA: son, personB: maternalGrandpa, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Ông ngoại');
+      expect(result?.aCallsB).toBe(`${DIRECT.GRANDFATHER} ${SIDE.MATERNAL}`);
     });
 
     it('should return "Bà ngoại" for maternal grandmother', () => {
       const result = computeKinship({ personA: son, personB: maternalGrandma, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Bà ngoại');
+      expect(result?.aCallsB).toBe(`${DIRECT.GRANDMOTHER} ${SIDE.MATERNAL}`);
     });
   });
 
@@ -159,15 +160,15 @@ describe('computeKinship', () => {
     it('should return "Em gái" for older brother calling younger sister', () => {
       const result = computeKinship({ personA: son, personB: daughter, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Em gái');
-      expect(result?.bCallsA).toBe('Anh trai');
+      expect(result?.aCallsB).toBe(SIBLING.YOUNGER_SISTER);
+      expect(result?.bCallsA).toBe(SIBLING.OLDER_BROTHER);
     });
 
     it('should return "Anh trai" for younger sister calling older brother', () => {
       const result = computeKinship({ personA: daughter, personB: son, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Anh trai');
-      expect(result?.bCallsA).toBe('Em gái');
+      expect(result?.aCallsB).toBe(SIBLING.OLDER_BROTHER);
+      expect(result?.bCallsA).toBe(SIBLING.YOUNGER_SISTER);
     });
   });
 
@@ -175,13 +176,13 @@ describe('computeKinship', () => {
     it('should return "Cô" for paternal aunt (father\'s sister)', () => {
       const result = computeKinship({ personA: son, personB: aunt, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Cô');
+      expect(result?.aCallsB).toBe(UNCLE_AUNT.CO);
     });
 
     it('should return "Chú" for paternal uncle (father\'s younger brother)', () => {
       const result = computeKinship({ personA: son, personB: uncle, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Chú');
+      expect(result?.aCallsB).toBe(UNCLE_AUNT.CHU);
     });
   });
 
@@ -189,7 +190,7 @@ describe('computeKinship', () => {
     it('should return "Cậu" for maternal uncle (mother\'s brother)', () => {
       const result = computeKinship({ personA: son, personB: maternalUncle, persons: allPersons, relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Cậu');
+      expect(result?.aCallsB).toBe(UNCLE_AUNT.CAU);
     });
   });
 
@@ -202,7 +203,7 @@ describe('computeKinship', () => {
 
       const result = computeKinship({ personA: father, personB: wife, persons: personsWithWife, relationships: relsWithWife });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Con dâu');
+      expect(result?.aCallsB).toBe(IN_LAW.DAUGHTER_IN_LAW);
     });
   });
 
@@ -218,7 +219,7 @@ describe('computeKinship', () => {
       const result = computeKinship({ personA: son, personB: thuWife, persons: personsExt, relationships: relsExt });
       expect(result).not.toBeNull();
       // son → uncle = Chú, uncle's wife = Cô (reverse of Chú)
-      expect(result?.aCallsB).toBe('Cô');
+      expect(result?.aCallsB).toBe(UNCLE_AUNT.CO);
     });
 
     it('should return "Dì" when Cậu calls nephew through reverse marriage', () => {
@@ -230,7 +231,7 @@ describe('computeKinship', () => {
       // son calls maternalUncle's wife
       const result = computeKinship({ personA: son, personB: cauWife, persons: personsExt, relationships: relsExt });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Dì');
+      expect(result?.aCallsB).toBe(UNCLE_AUNT.DI);
     });
   });
 
@@ -260,7 +261,7 @@ describe('computeKinship', () => {
       const result = computeKinship({ personA: son, personB: son2, persons: extPersons, relationships: extRels });
       // son and son2 are brothers (blood), so this should resolve via blood first
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Em trai');
+      expect(result?.aCallsB).toBe(SIBLING.YOUNGER_BROTHER);
     });
 
     it('should detect through-both-spouses for unrelated men married to sisters', () => {
@@ -285,8 +286,8 @@ describe('computeKinship', () => {
 
       const result = computeKinship({ personA: man1, personB: man2, persons: p, relationships: r });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Anh em cột chèo');
-      expect(result?.bCallsA).toBe('Anh em cột chèo');
+      expect(result?.aCallsB).toBe(IN_LAW.BROTHERS_IN_LAW);
+      expect(result?.bCallsA).toBe(IN_LAW.BROTHERS_IN_LAW);
     });
 
     it('should detect "Chị em dâu" for two women married to brothers', () => {
@@ -310,8 +311,110 @@ describe('computeKinship', () => {
 
       const result = computeKinship({ personA: woman1, personB: woman2, persons: p, relationships: r });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Chị em dâu');
-      expect(result?.bCallsA).toBe('Chị em dâu');
+      expect(result?.aCallsB).toBe(IN_LAW.SISTERS_IN_LAW);
+      expect(result?.bCallsA).toBe(IN_LAW.SISTERS_IN_LAW);
+    });
+  });
+
+  describe('through-spouse kinship (in-law relationships)', () => {
+    // Uncle's wife (Thím)
+    const uncleWife = person({ id: 'uncle-wife', fullName: 'Thím', gender: Gender.enum.female, generation: 2, isInLaw: true });
+    // Maternal uncle's wife (Mợ)
+    const maternalUncleWife = person({ id: 'mat-uncle-wife', fullName: 'Mợ', gender: Gender.enum.female, generation: 2, isInLaw: true });
+    // Aunt's husband (Dượng) — aunt = Cô (father's sister)
+    const auntHusband = person({ id: 'aunt-husband', fullName: 'Dượng', gender: Gender.enum.male, generation: 2, isInLaw: true });
+    // Son's wife
+    const sonWife = person({ id: 'son-wife', fullName: 'Vợ Con Trai', gender: Gender.enum.female, generation: 3, isInLaw: true });
+    // Son's wife's older brother
+    const wifeOlderBro = person({ id: 'wife-older-bro', fullName: 'Anh Vợ', gender: Gender.enum.male, generation: 3, birthOrder: 1 });
+    // Son's wife's father (father-in-law)
+    const wifeFather = person({ id: 'wife-father', fullName: 'Bố Vợ', gender: Gender.enum.male, generation: 2 });
+    // Son's wife's mother
+    const wifeMother = person({ id: 'wife-mother', fullName: 'Mẹ Vợ', gender: Gender.enum.female, generation: 2 });
+
+    const localPersons: PersonNode[] = [...allPersons, uncleWife, maternalUncleWife, auntHusband, sonWife, wifeOlderBro, wifeFather, wifeMother];
+
+    const localRels: RelEdge[] = [
+      ...allRelationships,
+      marriage('uncle', 'uncle-wife'),
+      marriage('mat-uncle', 'mat-uncle-wife'),
+      marriage('aunt', 'aunt-husband'),
+      marriage('son', 'son-wife'),
+      // Son's wife's family
+      marriage('wife-father', 'wife-mother'),
+      child('wife-father', 'son-wife'),
+      child('wife-mother', 'son-wife'),
+      child('wife-father', 'wife-older-bro'),
+      child('wife-mother', 'wife-older-bro'),
+    ];
+
+    it("should return Thím when son calls uncle's wife (through marriage of B)", () => {
+      // son → uncle = Chú (blood). Uncle's wife (B) is married to uncle.
+      // Branch 3: B's spouse (uncle) is blood-related to A (son).
+      // IN_LAW_REVERSE[UNCLE_AUNT.CHU] = UNCLE_AUNT.CO, but the algorithm uses aCallsB mapping.
+      const result = computeKinship({ personA: son, personB: uncleWife, persons: localPersons, relationships: localRels });
+      expect(result).not.toBeNull();
+      // son calls uncle "Chú", so uncle's wife reversal → "Cô" via IN_LAW_REVERSE
+      expect(result?.aCallsB).toBe(IN_LAW_REVERSE[UNCLE_AUNT.CHU]);
+    });
+
+    it("should return Mợ when son calls maternal uncle's wife (through marriage of B)", () => {
+      // son → maternalUncle = Cậu (blood). Maternal uncle's wife (B) is married to cậu.
+      // IN_LAW_REVERSE[UNCLE_AUNT.CAU] = UNCLE_AUNT.DI
+      const result = computeKinship({ personA: son, personB: maternalUncleWife, persons: localPersons, relationships: localRels });
+      expect(result).not.toBeNull();
+      expect(result?.aCallsB).toBe(IN_LAW_REVERSE[UNCLE_AUNT.CAU]);
+    });
+
+    it("should return Dượng when son calls aunt's husband (through marriage of B)", () => {
+      // son → aunt = Cô (blood). Aunt's husband (B) is married to Cô.
+      // IN_LAW_REVERSE[UNCLE_AUNT.CO] = UNCLE_AUNT.CHU
+      const result = computeKinship({ personA: son, personB: auntHusband, persons: localPersons, relationships: localRels });
+      expect(result).not.toBeNull();
+      expect(result?.aCallsB).toBe(IN_LAW_REVERSE[UNCLE_AUNT.CO]);
+    });
+
+    it("should resolve spouse's older sibling via through-marriage-of-A path", () => {
+      // son (A) married to sonWife. sonWife's older brother = wifeOlderBro (B).
+      // Branch 2: A's spouse (sonWife) is blood-related to B (wifeOlderBro).
+      // sonWife calls wifeOlderBro = "Anh trai" (older brother). So aCallsB gets wife suffix.
+      const result = computeKinship({ personA: son, personB: wifeOlderBro, persons: localPersons, relationships: localRels });
+      expect(result).not.toBeNull();
+      // The algorithm: res.aCallsB includes SIBLING.OLDER_BROTHER → aCallsB = `Anh${KINSHIP_MODIFIER.WIFE_SUFFIX}`
+      expect(result?.aCallsB).toBe(`Anh${KINSHIP_MODIFIER.WIFE_SUFFIX}`);
+      // B calls A: res.bCallsA includes SIBLING.YOUNGER_BROTHER → includes 'Em' → bCallsA = male younger brother in-law
+      expect(result?.bCallsA).toBe(IN_LAW.YOUNGER_BROTHER_IN_LAW);
+    });
+
+    it("should resolve spouse's parent (father-in-law) via through-marriage-of-A path", () => {
+      // son (A) married to sonWife. sonWife's father = wifeFather (B).
+      // Branch 2: A's spouse (sonWife) is blood-related to B (wifeFather).
+      // sonWife calls wifeFather = "Cha". So aCallsB = DIRECT.FATHER + KINSHIP_MODIFIER.WIFE_SUFFIX
+      const result = computeKinship({ personA: son, personB: wifeFather, persons: localPersons, relationships: localRels });
+      expect(result).not.toBeNull();
+      expect(result?.aCallsB).toBe(DIRECT.FATHER + KINSHIP_MODIFIER.WIFE_SUFFIX);
+      // B calls A: res.bCallsA starts with 'Con' → son-in-law
+      expect(result?.bCallsA).toBe(IN_LAW.SON_IN_LAW);
+    });
+
+    it("should resolve uncle's wife calling son (through marriage of A)", () => {
+      // uncleWife (A) married to uncle. Uncle is blood-related to son (B).
+      // Branch 2: A's spouse (uncle) blood-related to B (son).
+      // uncle calls son = "Cháu trai" — no transformation matches, so aCallsB keeps the blood term
+      const result = computeKinship({ personA: uncleWife, personB: son, persons: localPersons, relationships: localRels });
+      expect(result).not.toBeNull();
+      expect(result?.aCallsB).toBe(`${DESCENDANTS[2]} ${GENDER_SUFFIX.MALE}`);
+      // son calls uncle = "Chú" → IN_LAW_REVERSE["Chú"] = "Cô"
+      expect(result?.bCallsA).toBe(IN_LAW_REVERSE[UNCLE_AUNT.CHU]);
+    });
+
+    it("should resolve spouse's mother (mother-in-law) via through-marriage-of-A path", () => {
+      // son (A) married to sonWife. sonWife's mother = wifeMother (B).
+      // sonWife calls wifeMother = "Mẹ". aCallsB = DIRECT.MOTHER + WIFE_SUFFIX
+      const result = computeKinship({ personA: son, personB: wifeMother, persons: localPersons, relationships: localRels });
+      expect(result).not.toBeNull();
+      expect(result?.aCallsB).toBe(DIRECT.MOTHER + KINSHIP_MODIFIER.WIFE_SUFFIX);
+      expect(result?.bCallsA).toBe(IN_LAW.SON_IN_LAW);
     });
   });
 
@@ -320,8 +423,8 @@ describe('computeKinship', () => {
       const stranger = person({ id: 'stranger', fullName: 'Người Lạ', gender: Gender.enum.male });
       const result = computeKinship({ personA: son, personB: stranger, persons: [...allPersons, stranger], relationships: allRelationships });
       expect(result).not.toBeNull();
-      expect(result?.aCallsB).toBe('Người dưng');
-      expect(result?.bCallsA).toBe('Người dưng');
+      expect(result?.aCallsB).toBe(FALLBACK.STRANGER);
+      expect(result?.bCallsA).toBe(FALLBACK.STRANGER);
     });
   });
 });

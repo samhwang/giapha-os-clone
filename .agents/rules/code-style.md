@@ -89,6 +89,29 @@ export function PersonCard({ person, onSelect }: PersonCardProps): ReactNode {
 }
 ```
 
+## Component Variants (CVA)
+
+Use [class-variance-authority](https://cva.style/) for components with style variants. Define variants as a `cva()` call, export the component and optionally the variants.
+
+```tsx
+import { cva, type VariantProps } from 'class-variance-authority';
+
+const avatarVariants = cva('rounded-full flex items-center justify-center', {
+  variants: {
+    gender: {
+      male: 'bg-sky-400',
+      female: 'bg-rose-400',
+    },
+  },
+});
+
+interface AvatarProps extends VariantProps<typeof avatarVariants> {
+  className?: string;
+}
+```
+
+Existing CVA components: `Avatar` (`src/ui/common/Avatar.tsx`), `InLawBadge` (`src/ui/common/InLawBadge.tsx`).
+
 ## Import Order
 
 Biome auto-organizes imports:

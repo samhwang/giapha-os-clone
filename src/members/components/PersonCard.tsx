@@ -1,10 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
-import DefaultAvatar from '../../ui/icons/DefaultAvatar';
+import Avatar from '../../ui/common/Avatar';
+import InLawBadge from '../../ui/common/InLawBadge';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 import { cn } from '../../ui/utils/cn';
-import { getAvatarBg, getGenderStyle } from '../../ui/utils/styles';
+import { getGenderStyle } from '../../ui/utils/styles';
 import { Gender, type Person } from '../types';
 
 interface PersonCardProps {
@@ -26,18 +27,12 @@ export default function PersonCard({ person }: PersonCardProps) {
     >
       <div className="flex items-center space-x-4 relative z-10">
         <div className="relative">
-          <div
-            className={cn(
-              'h-14 w-14 sm:h-16 sm:w-16 rounded-full flex items-center justify-center text-xl font-bold text-white overflow-hidden shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105',
-              getAvatarBg(person.gender)
-            )}
-          >
-            {person.avatarUrl ? (
-              <img src={person.avatarUrl} alt={person.fullName} className="h-full w-full object-cover" />
-            ) : (
-              <DefaultAvatar gender={person.gender} />
-            )}
-          </div>
+          <Avatar
+            gender={person.gender}
+            avatarUrl={person.avatarUrl}
+            fullName={person.fullName}
+            className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105 text-xl font-bold"
+          />
           <div
             className={cn(
               'absolute bottom-0 right-0 size-5 rounded-full ring-2 ring-white shadow-sm flex items-center justify-center',
@@ -74,22 +69,7 @@ export default function PersonCard({ person }: PersonCardProps) {
           </p>
           {(person.isDeceased || person.isInLaw || person.birthOrder != null || person.generation != null) && (
             <div className="flex flex-wrap items-center gap-1.5 shrink-0 mt-2">
-              {person.isInLaw && (
-                <span
-                  className={cn(
-                    'inline-flex items-center px-2 py-0.5 rounded-md text-2xs sm:text-xs-plus font-bold uppercase tracking-widest shadow-xs border',
-                    person.gender === Gender.enum.male && 'bg-sky-50 text-sky-700 border-sky-200/60',
-                    person.gender === Gender.enum.female && 'bg-rose-50 text-rose-700 border-rose-200/60',
-                    person.gender === Gender.enum.other && 'bg-stone-50 text-stone-700 border-stone-200/60'
-                  )}
-                >
-                  {person.gender === Gender.enum.male
-                    ? t('member.filterInLawMale')
-                    : person.gender === Gender.enum.female
-                      ? t('member.filterInLawFemale')
-                      : t('member.inLawOther')}
-                </span>
-              )}
+              {person.isInLaw && <InLawBadge size="md" gender={person.gender} />}
               {person.birthOrder != null && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-md text-2xs sm:text-xs-plus font-bold bg-amber-50 text-amber-700 border border-amber-200/60 uppercase tracking-widest shadow-xs">
                   {person.birthOrder === 1 ? t('member.birthOrderFirst') : t('member.birthOrderN', { order: person.birthOrder })}

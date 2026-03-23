@@ -11,6 +11,9 @@ import { getPersons } from '../../members/server/member';
 import type { Person } from '../../members/types';
 import { cn } from '../../ui/utils/cn';
 
+const UPCOMING_EVENTS_DAYS = 30;
+const MAX_DISPLAYED_EVENTS = 4;
+
 export const Route = createFileRoute('/dashboard/')({
   loader: async () => {
     const [persons, customEvents] = await Promise.all([getPersons(), getCustomEvents()]);
@@ -35,7 +38,7 @@ function DashboardLaunchpad() {
 
   const upcomingEvents = useMemo(() => {
     const all = computeEvents({ persons, customEvents });
-    return all.filter((e) => e.daysUntil >= 0 && e.daysUntil <= 30);
+    return all.filter((e) => e.daysUntil >= 0 && e.daysUntil <= UPCOMING_EVENTS_DAYS);
   }, [persons, customEvents]);
 
   const publicFeatures = [
@@ -143,7 +146,7 @@ function DashboardLaunchpad() {
                   <ArrowRight className="size-5 text-stone-300 group-hover:text-stone-500 group-hover:translate-x-1 transition-all duration-300" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {upcomingEvents.slice(0, 4).map((evt) => {
+                  {upcomingEvents.slice(0, MAX_DISPLAYED_EVENTS).map((evt) => {
                     const cfg = eventTypeConfig[evt.type];
                     if (!cfg) return null;
                     const Icon = cfg.icon;
@@ -170,9 +173,9 @@ function DashboardLaunchpad() {
                     );
                   })}
                 </div>
-                {upcomingEvents.length > 4 && (
+                {upcomingEvents.length > MAX_DISPLAYED_EVENTS && (
                   <p className="text-xs text-stone-400 mt-2 text-center sm:text-left font-medium">
-                    + {upcomingEvents.length - 4} {t('launchpad.moreEvents')}
+                    + {upcomingEvents.length - MAX_DISPLAYED_EVENTS} {t('launchpad.moreEvents')}
                   </p>
                 )}
               </div>

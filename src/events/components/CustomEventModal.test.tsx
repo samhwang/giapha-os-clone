@@ -1,7 +1,10 @@
 import { screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { t } from '../../../test/i18n';
 import { renderWithProviders } from '../../../test/render-wrapper';
 import type { CustomEventRecord } from '../types';
+
+const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 vi.mock('../server/customEvent', () => ({
   createCustomEvent: vi.fn().mockResolvedValue({}),
@@ -35,12 +38,12 @@ describe('CustomEventModal', () => {
 
   it('renders create mode title when no eventToEdit', () => {
     renderWithProviders(<CustomEventModal {...defaultProps} />);
-    expect(screen.getByText('Thêm Sự Kiện Tuỳ Chỉnh')).toBeInTheDocument();
+    expect(screen.getByText(t('customEvent.createTitle'))).toBeInTheDocument();
   });
 
   it('renders edit mode title when eventToEdit is provided', () => {
     renderWithProviders(<CustomEventModal {...defaultProps} eventToEdit={mockEvent} />);
-    expect(screen.getByText('Sửa Sự Kiện')).toBeInTheDocument();
+    expect(screen.getByText(t('customEvent.editTitle'))).toBeInTheDocument();
   });
 
   it('pre-fills form fields in edit mode', () => {
@@ -53,10 +56,10 @@ describe('CustomEventModal', () => {
 
   it('shows delete button only in edit mode', () => {
     const { rerender } = renderWithProviders(<CustomEventModal {...defaultProps} />);
-    expect(screen.queryByText('Xoá sự kiện')).not.toBeInTheDocument();
+    expect(screen.queryByText(t('customEvent.delete'))).not.toBeInTheDocument();
 
     rerender(<CustomEventModal {...defaultProps} eventToEdit={mockEvent} />);
-    expect(screen.getByText('Xoá sự kiện')).toBeInTheDocument();
+    expect(screen.getByText(t('customEvent.delete'))).toBeInTheDocument();
   });
 
   it('calls createCustomEvent on submit in create mode', async () => {
@@ -64,9 +67,9 @@ describe('CustomEventModal', () => {
     const onClose = vi.fn();
     const { user } = renderWithProviders(<CustomEventModal isOpen onClose={onClose} onSuccess={onSuccess} />);
 
-    await user.type(screen.getByLabelText(/Tên sự kiện/), 'New Event');
-    await user.type(screen.getByLabelText(/Ngày diễn ra/), '2025-06-01');
-    await user.click(screen.getByText('Lưu sự kiện'));
+    await user.type(screen.getByLabelText(new RegExp(t('customEvent.name'))), 'New Event');
+    await user.type(screen.getByLabelText(new RegExp(escapeRegex(t('customEvent.date')))), '2025-06-01');
+    await user.click(screen.getByText(t('customEvent.save')));
 
     await waitFor(() => {
       expect(createCustomEvent).toHaveBeenCalled();
@@ -80,8 +83,8 @@ describe('CustomEventModal', () => {
     const { user } = renderWithProviders(<CustomEventModal isOpen onClose={onClose} onSuccess={onSuccess} eventToEdit={mockEvent} />);
 
     await user.clear(screen.getByDisplayValue('Giỗ Ông'));
-    await user.type(screen.getByLabelText(/Tên sự kiện/), 'Updated Name');
-    await user.click(screen.getByText('Lưu sự kiện'));
+    await user.type(screen.getByLabelText(new RegExp(t('customEvent.name'))), 'Updated Name');
+    await user.click(screen.getByText(t('customEvent.save')));
 
     await waitFor(() => {
       expect(updateCustomEvent).toHaveBeenCalled();
@@ -93,7 +96,7 @@ describe('CustomEventModal', () => {
     const onClose = vi.fn();
     const { user } = renderWithProviders(<CustomEventModal isOpen onClose={onClose} onSuccess={vi.fn()} />);
 
-    await user.click(screen.getByText('Hủy', { selector: 'button' }));
+    await user.click(screen.getByText(t('common.cancel'), { selector: 'button' }));
     expect(onClose).toHaveBeenCalled();
   });
 });

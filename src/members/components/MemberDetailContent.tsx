@@ -3,11 +3,21 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { calculateAge, formatDisplayDate, getLunarDateString, getZodiacAnimal, getZodiacSign } from '../../events/utils/dateHelpers';
 import RelationshipManager from '../../relationships/components/RelationshipManager';
-import DefaultAvatar from '../../ui/icons/DefaultAvatar';
+import Avatar from '../../ui/common/Avatar';
+import InLawBadge from '../../ui/common/InLawBadge';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 import { cn } from '../../ui/utils/cn';
-import { getAvatarBg, getGenderStyle } from '../../ui/utils/styles';
+import { getGenderStyle } from '../../ui/utils/styles';
 import { Gender, type Person } from '../types';
+
+function getBlurBgStyle(gender: string): string {
+  return cn(
+    'absolute right-0 -top-20 w-64 h-64 rounded-full blur-4xl opacity-40',
+    gender === Gender.enum.male && 'bg-sky-300',
+    gender === Gender.enum.female && 'bg-rose-300',
+    gender === Gender.enum.other && 'bg-stone-300'
+  );
+}
 
 interface MemberDetailContentProps {
   person: Person;
@@ -41,29 +51,16 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
   return (
     <div className="bg-stone-50/50">
       <div className="h-28 sm:h-36 bg-linear-to-r from-stone-200 via-stone-100 to-stone-200 relative shrink-0">
-        <div
-          className={cn(
-            'absolute right-0 -top-20 w-64 h-64 rounded-full blur-4xl opacity-40',
-            person.gender === Gender.enum.male && 'bg-sky-300',
-            person.gender === Gender.enum.female && 'bg-rose-300',
-            person.gender === Gender.enum.other && 'bg-stone-300'
-          )}
-        />
+        <div className={getBlurBgStyle(person.gender)} />
         <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full blur-4xl opacity-20 bg-amber-200" />
 
         <div className="absolute -bottom-12 sm:-bottom-16 left-6 sm:left-8 z-10">
-          <div
-            className={cn(
-              'h-24 w-24 sm:h-32 sm:w-32 rounded-full border-4 sm:border-[6px] border-white flex items-center justify-center text-3xl sm:text-4xl font-bold text-white overflow-hidden shadow-xl shrink-0',
-              getAvatarBg(person.gender)
-            )}
-          >
-            {person.avatarUrl ? (
-              <img src={person.avatarUrl} alt={person.fullName} className="h-full w-full object-cover" />
-            ) : (
-              <DefaultAvatar gender={person.gender} />
-            )}
-          </div>
+          <Avatar
+            gender={person.gender}
+            avatarUrl={person.avatarUrl}
+            fullName={person.fullName}
+            className="h-24 w-24 sm:h-32 sm:w-32 border-4 sm:border-[6px] border-white text-3xl sm:text-4xl font-bold shadow-xl shrink-0"
+          />
           <div
             className={cn(
               'absolute bottom-1 right-1 sm:bottom-2 sm:right-2 size-6 sm:size-8 rounded-full ring-2 sm:ring-4 ring-white shadow-md flex items-center justify-center',
@@ -89,22 +86,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                   {t('member.filterDeceased')}
                 </span>
               )}
-              {person.isInLaw && (
-                <span
-                  className={cn(
-                    'text-2xs sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border uppercase tracking-wider',
-                    person.gender === Gender.enum.female && 'text-rose-700 bg-rose-50/50 border-rose-200/60',
-                    person.gender === Gender.enum.male && 'text-sky-700 bg-sky-50/50 border-sky-200/60',
-                    person.gender === Gender.enum.other && 'text-stone-700 bg-stone-50/50 border-stone-200/60'
-                  )}
-                >
-                  {person.gender === Gender.enum.female
-                    ? t('member.filterInLawFemale')
-                    : person.gender === Gender.enum.male
-                      ? t('member.filterInLawMale')
-                      : t('member.inLawOther')}
-                </span>
-              )}
+              {person.isInLaw && <InLawBadge size="detail" gender={person.gender} />}
               {person.birthOrder != null && (
                 <span className="text-2xs sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border text-amber-700 bg-amber-50/60 border-amber-200/60 uppercase tracking-wider">
                   {person.birthOrder === 1 ? t('member.birthOrderFirst') : t('member.birthOrderN', { order: person.birthOrder })}

@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { t } from '../../../test/i18n';
 import { renderWithProviders } from '../../../test/render-wrapper';
 import LogoutButton from './LogoutButton';
 
@@ -21,13 +22,13 @@ describe('LogoutButton', () => {
 
   it('renders logout button', () => {
     renderWithProviders(<LogoutButton />);
-    expect(screen.getByRole('button', { name: /đăng xuất/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: new RegExp(t('auth.logout'), 'i') })).toBeInTheDocument();
   });
 
   it('calls signOut on click', async () => {
     const { user } = renderWithProviders(<LogoutButton />);
 
-    await user.click(screen.getByRole('button', { name: /đăng xuất/i }));
+    await user.click(screen.getByRole('button', { name: new RegExp(t('auth.logout'), 'i') }));
 
     expect(mockSignOut).toHaveBeenCalled();
   });
@@ -42,10 +43,10 @@ describe('LogoutButton', () => {
     );
 
     const { user } = renderWithProviders(<LogoutButton />);
-    await user.click(screen.getByRole('button', { name: /đăng xuất/i }));
+    await user.click(screen.getByRole('button', { name: new RegExp(t('auth.logout'), 'i') }));
 
     await waitFor(() => {
-      expect(screen.getByText('Đang đăng xuất...')).toBeInTheDocument();
+      expect(screen.getByText(t('auth.loggingOut'))).toBeInTheDocument();
       expect(screen.getByRole('button')).toBeDisabled();
     });
 
@@ -56,11 +57,11 @@ describe('LogoutButton', () => {
     mockSignOut.mockRejectedValue(new Error('Network error'));
 
     const { user } = renderWithProviders(<LogoutButton />);
-    await user.click(screen.getByRole('button', { name: /đăng xuất/i }));
+    await user.click(screen.getByRole('button', { name: new RegExp(t('auth.logout'), 'i') }));
 
     await waitFor(() => {
       expect(screen.getByRole('button')).not.toBeDisabled();
-      expect(screen.getByText('Đăng xuất')).toBeInTheDocument();
+      expect(screen.getByText(t('auth.logout'))).toBeInTheDocument();
     });
   });
 });

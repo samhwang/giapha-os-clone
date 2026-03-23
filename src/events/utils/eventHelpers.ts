@@ -2,6 +2,8 @@ import { Lunar, Solar } from 'lunar-javascript';
 import type { Person } from '../../members/types';
 import type { CustomEventRecord, EventType, FamilyEvent } from '../types';
 
+const MS_PER_DAY = 86_400_000;
+
 interface LunarDateLookupInput {
   lunarMonth: number;
   lunarDay: number;
@@ -86,16 +88,16 @@ export function computeEvents({ persons, customEvents = [], lunarSuffix = 'ÂL' 
       };
 
       if (thisYearDate >= today) {
-        const daysUntil = Math.round((thisYearDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        const daysUntil = Math.round((thisYearDate.getTime() - today.getTime()) / MS_PER_DAY);
         events.push({ ...baseEvent, nextOccurrence: thisYearDate, daysUntil });
       } else {
         // Past occurrence this year
-        const pastDays = Math.round((thisYearDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        const pastDays = Math.round((thisYearDate.getTime() - today.getTime()) / MS_PER_DAY);
         events.push({ ...baseEvent, nextOccurrence: thisYearDate, daysUntil: pastDays });
 
         // Upcoming occurrence next year
         const nextYearDate = new Date(thisYear + 1, p.birthMonth - 1, p.birthDay);
-        const futureDays = Math.round((nextYearDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        const futureDays = Math.round((nextYearDate.getTime() - today.getTime()) / MS_PER_DAY);
         events.push({ ...baseEvent, nextOccurrence: nextYearDate, daysUntil: futureDays });
       }
     }
@@ -128,13 +130,13 @@ export function computeEvents({ persons, customEvents = [], lunarSuffix = 'ÂL' 
 
         const next = nextSolarForLunar({ lunarMonth: lMonth, lunarDay: lDay, fromDate: today });
         if (next) {
-          const daysUntil = Math.round((next.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+          const daysUntil = Math.round((next.getTime() - today.getTime()) / MS_PER_DAY);
           events.push({ ...baseDeathEvent, nextOccurrence: next, daysUntil });
         }
 
         const prev = prevSolarForLunar({ lunarMonth: lMonth, lunarDay: lDay, beforeDate: today });
         if (prev) {
-          const pastDays = Math.round((prev.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+          const pastDays = Math.round((prev.getTime() - today.getTime()) / MS_PER_DAY);
           events.push({ ...baseDeathEvent, nextOccurrence: prev, daysUntil: pastDays });
         }
       } catch {
@@ -150,7 +152,7 @@ export function computeEvents({ persons, customEvents = [], lunarSuffix = 'ÂL' 
     if (!y || !m || !d) continue;
 
     const next = new Date(y, m - 1, d);
-    const daysUntil = Math.round((next.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const daysUntil = Math.round((next.getTime() - today.getTime()) / MS_PER_DAY);
 
     events.push({
       personId: ce.id,

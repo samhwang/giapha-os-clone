@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { t } from '../../../test/i18n';
 import { renderWithProviders } from '../../../test/render-wrapper';
 
 const mockToPng = vi.fn().mockResolvedValue('data:image/png;base64,fake');
@@ -44,29 +45,29 @@ describe('ExportButton', () => {
 
   it('renders export button text', () => {
     renderWithProviders(<ExportButton />);
-    expect(screen.getByText('Xuất file')).toBeInTheDocument();
+    expect(screen.getByText(t('export.exportFile'))).toBeInTheDocument();
   });
 
   it('toggles menu on button click', async () => {
     const { user } = renderWithProviders(<ExportButton />);
 
-    await user.click(screen.getByText('Xuất file'));
-    expect(screen.getByText('Lưu thành Ảnh (PNG)')).toBeInTheDocument();
-    expect(screen.getByText('Lưu thành PDF')).toBeInTheDocument();
+    await user.click(screen.getByText(t('export.exportFile')));
+    expect(screen.getByText(t('export.saveAsPng'))).toBeInTheDocument();
+    expect(screen.getByText(t('export.saveAsPdf'))).toBeInTheDocument();
 
-    await user.click(screen.getByText('Xuất file'));
-    expect(screen.queryByText('Lưu thành Ảnh (PNG)')).not.toBeInTheDocument();
+    await user.click(screen.getByText(t('export.exportFile')));
+    expect(screen.queryByText(t('export.saveAsPng'))).not.toBeInTheDocument();
   });
 
   it('closes menu on click outside', async () => {
     const { user } = renderWithProviders(<ExportButton />);
 
-    await user.click(screen.getByText('Xuất file'));
-    expect(screen.getByText('Lưu thành Ảnh (PNG)')).toBeInTheDocument();
+    await user.click(screen.getByText(t('export.exportFile')));
+    expect(screen.getByText(t('export.saveAsPng'))).toBeInTheDocument();
 
     await user.click(document.body);
     await waitFor(() => {
-      expect(screen.queryByText('Lưu thành Ảnh (PNG)')).not.toBeInTheDocument();
+      expect(screen.queryByText(t('export.saveAsPng'))).not.toBeInTheDocument();
     });
   });
 
@@ -74,8 +75,8 @@ describe('ExportButton', () => {
     setupExportContainer();
     const { user } = renderWithProviders(<ExportButton />);
 
-    await user.click(screen.getByText('Xuất file'));
-    await user.click(screen.getByText('Lưu thành Ảnh (PNG)'));
+    await user.click(screen.getByText(t('export.exportFile')));
+    await user.click(screen.getByText(t('export.saveAsPng')));
 
     await waitFor(() => {
       expect(mockToPng).toHaveBeenCalled();
@@ -86,8 +87,8 @@ describe('ExportButton', () => {
     setupExportContainer();
     const { user } = renderWithProviders(<ExportButton />);
 
-    await user.click(screen.getByText('Xuất file'));
-    await user.click(screen.getByText('Lưu thành PDF'));
+    await user.click(screen.getByText(t('export.exportFile')));
+    await user.click(screen.getByText(t('export.saveAsPdf')));
 
     await waitFor(() => {
       expect(mockToJpeg).toHaveBeenCalled();
@@ -99,25 +100,25 @@ describe('ExportButton', () => {
   it('shows error when export container is not found', async () => {
     const { user } = renderWithProviders(<ExportButton />);
 
-    await user.click(screen.getByText('Xuất file'));
-    await user.click(screen.getByText('Lưu thành Ảnh (PNG)'));
+    await user.click(screen.getByText(t('export.exportFile')));
+    await user.click(screen.getByText(t('export.saveAsPng')));
 
     await waitFor(() => {
-      expect(screen.getByText('Đã xảy ra lỗi khi xuất file. Vui lòng thử lại.')).toBeInTheDocument();
+      expect(screen.getByText(t('export.exportError'))).toBeInTheDocument();
     });
   });
 
   it('dismisses error when close button is clicked', async () => {
     const { user } = renderWithProviders(<ExportButton />);
 
-    await user.click(screen.getByText('Xuất file'));
-    await user.click(screen.getByText('Lưu thành Ảnh (PNG)'));
+    await user.click(screen.getByText(t('export.exportFile')));
+    await user.click(screen.getByText(t('export.saveAsPng')));
 
     await waitFor(() => {
-      expect(screen.getByText('Đã xảy ra lỗi khi xuất file. Vui lòng thử lại.')).toBeInTheDocument();
+      expect(screen.getByText(t('export.exportError'))).toBeInTheDocument();
     });
 
     await user.click(screen.getByText('×'));
-    expect(screen.queryByText('Đã xảy ra lỗi khi xuất file. Vui lòng thử lại.')).not.toBeInTheDocument();
+    expect(screen.queryByText(t('export.exportError'))).not.toBeInTheDocument();
   });
 });

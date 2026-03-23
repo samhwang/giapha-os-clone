@@ -9,6 +9,10 @@ import { getTodayLunar, getZodiacSign } from '../utils/dateHelpers';
 import { computeEvents } from '../utils/eventHelpers';
 import CustomEventModal from './CustomEventModal';
 
+const DAYS_MONTHS_AGO_THRESHOLD = 60;
+const DAYS_PER_MONTH_APPROX = 30;
+const DAYS_PER_WEEK = 7;
+
 interface EventsListProps {
   persons: Person[];
   customEvents?: CustomEventRecord[];
@@ -21,12 +25,12 @@ function daysUntilLabel(days: number, t: (key: string, opts?: Record<string, unk
   if (days === -1) return t('common.yesterday');
   if (days === 1) return t('common.tomorrow');
 
-  if (days < -60) return t('common.monthsAgo', { months: Math.ceil(Math.abs(days) / 30) });
+  if (days < -DAYS_MONTHS_AGO_THRESHOLD) return t('common.monthsAgo', { months: Math.ceil(Math.abs(days) / DAYS_PER_MONTH_APPROX) });
   if (days < -1) return t('common.daysAgo', { days: Math.abs(days) });
 
-  if (days <= 30) return t('common.daysFromNow', { days });
-  if (days <= 60) return t('common.weeksFromNow', { weeks: Math.ceil(days / 7) });
-  return t('common.monthsFromNow', { months: Math.ceil(days / 30) });
+  if (days <= DAYS_PER_MONTH_APPROX) return t('common.daysFromNow', { days });
+  if (days <= DAYS_MONTHS_AGO_THRESHOLD) return t('common.weeksFromNow', { weeks: Math.ceil(days / DAYS_PER_WEEK) });
+  return t('common.monthsFromNow', { months: Math.ceil(days / DAYS_PER_MONTH_APPROX) });
 }
 
 function computeYearsInfo(event: FamilyEvent, t: (key: string, opts?: Record<string, unknown>) => string): string | null {

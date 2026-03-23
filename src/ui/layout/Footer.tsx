@@ -19,7 +19,7 @@ export default function Footer({ className = '', showDisclaimer = false }: Foote
         )}
         <p className="flex items-center justify-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
           <a
-            href="https://github.com/homielab/giapha-os"
+            href="https://github.com/samhwang/giapha-os-clone"
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold text-stone-600 hover:text-amber-700 transition-colors inline-flex items-center gap-1.5"
@@ -43,12 +43,12 @@ export default function Footer({ className = '', showDisclaimer = false }: Foote
           </a>
           by
           <a
-            href="https://homielab.com"
+            href="https://me.samh.page"
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold text-green-600 hover:text-amber-700 transition-colors inline-flex items-center gap-1.5"
           >
-            HomieLab
+            Sam Huynh
           </a>
         </p>
       </div>

@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { t } from '../../../test/i18n';
 import DataImportExport from './DataImportExport';
 
 function createJsonFile(data: unknown, name = 'backup.json') {
@@ -26,22 +27,22 @@ describe('DataImportExport', () => {
 
   it('renders export section with backup title', () => {
     render(<DataImportExport />);
-    expect(screen.getByText(/sao lưu dữ liệu/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('data.backupTitle'), 'i'))).toBeInTheDocument();
   });
 
   it('renders import section with restore title', () => {
     render(<DataImportExport />);
-    expect(screen.getByText(/phục hồi dữ liệu/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('data.restoreTitle'), 'i'))).toBeInTheDocument();
   });
 
   it('renders download backup button', () => {
     render(<DataImportExport />);
-    expect(screen.getByText(/tải xuống bản sao lưu/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('data.downloadBackup'), 'i'))).toBeInTheDocument();
   });
 
   it('renders select file button', () => {
     render(<DataImportExport />);
-    expect(screen.getByText(/chọn file/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('data.selectFile').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
   });
 
   it('shows restore warning text', () => {
@@ -57,7 +58,7 @@ describe('DataImportExport', () => {
 
     const user = userEvent.setup();
     render(<DataImportExport />);
-    await user.click(screen.getByText(/tải xuống bản sao lưu/i));
+    await user.click(screen.getByText(new RegExp(t('data.downloadBackup'), 'i')));
 
     await waitFor(() => {
       expect(mockExportData).toHaveBeenCalled();
@@ -74,7 +75,7 @@ describe('DataImportExport', () => {
     fireEvent.change(input, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(screen.getByText(/xác nhận phục hồi/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('data.confirmTitle'), 'i'))).toBeInTheDocument();
     });
     expect(screen.getByText('backup.json')).toBeInTheDocument();
   });
@@ -88,10 +89,10 @@ describe('DataImportExport', () => {
 
     fireEvent.change(input, { target: { files: [file] } });
     await waitFor(() => {
-      expect(screen.getByText(/xác nhận phục hồi/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('data.confirmTitle'), 'i'))).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText(/vẫn tiếp tục/i));
+    await user.click(screen.getByText(new RegExp(t('data.confirmProceed'), 'i')));
 
     await waitFor(() => {
       expect(mockImportData).toHaveBeenCalledWith({
@@ -109,9 +110,9 @@ describe('DataImportExport', () => {
 
     fireEvent.change(input, { target: { files: [file] } });
     await waitFor(() => {
-      expect(screen.getByText(/xác nhận phục hồi/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('data.confirmTitle'), 'i'))).toBeInTheDocument();
     });
-    await user.click(screen.getByText(/vẫn tiếp tục/i));
+    await user.click(screen.getByText(new RegExp(t('data.confirmProceed'), 'i')));
 
     await waitFor(() => {
       expect(screen.getByText(/phục hồi thành công/i)).toBeInTheDocument();
@@ -126,12 +127,21 @@ describe('DataImportExport', () => {
 
     fireEvent.change(input, { target: { files: [file] } });
     await waitFor(() => {
-      expect(screen.getByText(/xác nhận phục hồi/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('data.confirmTitle'), 'i'))).toBeInTheDocument();
     });
-    await user.click(screen.getByText(/vẫn tiếp tục/i));
+    await user.click(screen.getByText(new RegExp(t('data.confirmProceed'), 'i')));
 
     await waitFor(() => {
-      expect(screen.getByText(/không chứa cấu trúc dữ liệu hợp lệ/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          new RegExp(
+            t('data.invalidStructure')
+              .slice(0, 20)
+              .replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+            'i'
+          )
+        )
+      ).toBeInTheDocument();
     });
     expect(mockImportData).not.toHaveBeenCalled();
   });
@@ -144,13 +154,13 @@ describe('DataImportExport', () => {
 
     fireEvent.change(input, { target: { files: [file] } });
     await waitFor(() => {
-      expect(screen.getByText(/xác nhận phục hồi/i)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(t('data.confirmTitle'), 'i'))).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText(/huỷ bỏ/i));
+    await user.click(screen.getByText(new RegExp(t('data.confirmCancel'), 'i')));
 
     await waitFor(() => {
-      expect(screen.queryByText(/xác nhận phục hồi/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(new RegExp(t('data.confirmTitle'), 'i'))).not.toBeInTheDocument();
     });
     expect(mockImportData).not.toHaveBeenCalled();
   });

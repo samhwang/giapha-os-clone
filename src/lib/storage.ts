@@ -6,6 +6,7 @@ import { logger } from './logger.server';
 
 const UPLOADS_PREFIX = '/api/uploads/';
 const MAX_AVATAR_SIZE_BYTES = 2 * 1024 * 1024; // 2 MB
+export const ONE_YEAR_SECONDS = 31_536_000;
 const ALLOWED_AVATAR_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
 let _storage: ReturnType<typeof createStorage> | null = null;
@@ -70,7 +71,7 @@ export async function uploadAvatar({ buffer, personId, filename, contentType }: 
   await getStorage().setItemRaw(key, buffer, {
     headers: {
       'Content-Type': contentType,
-      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Cache-Control': `public, max-age=${ONE_YEAR_SECONDS}, immutable`,
     },
   });
 

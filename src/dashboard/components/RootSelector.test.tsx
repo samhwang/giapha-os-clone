@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { vanCongGoc, vanCongThuan, vanThiBinh } from '../../../test/fixtures';
+import { t } from '../../../test/i18n';
 import { renderWithProviders } from '../../../test/render-wrapper';
 import type { Person } from '../../members/types';
 import { useDashboardStore } from '../store/dashboardStore';
@@ -23,7 +24,7 @@ describe('RootSelector', () => {
     renderWithProviders(<RootSelector persons={persons} currentRootId={vanCongGoc.id} />);
 
     await user.click(screen.getByText('Vạn Công Gốc'));
-    expect(screen.getByPlaceholderText('Tìm thành viên...')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(t('nav.searchMember'))).toBeInTheDocument();
   });
 
   it('filters persons by search term', async () => {
@@ -31,7 +32,7 @@ describe('RootSelector', () => {
     renderWithProviders(<RootSelector persons={persons} currentRootId={vanCongGoc.id} />);
 
     await user.click(screen.getByText('Vạn Công Gốc'));
-    await user.type(screen.getByPlaceholderText('Tìm thành viên...'), 'Thuận');
+    await user.type(screen.getByPlaceholderText(t('nav.searchMember')), 'Thuận');
 
     expect(screen.getByText('Vạn Công Thuận')).toBeInTheDocument();
     expect(screen.queryByText('Vạn Thị Bình')).not.toBeInTheDocument();
@@ -52,8 +53,8 @@ describe('RootSelector', () => {
     renderWithProviders(<RootSelector persons={persons} currentRootId={vanCongGoc.id} />);
 
     await user.click(screen.getByText('Vạn Công Gốc'));
-    await user.type(screen.getByPlaceholderText('Tìm thành viên...'), 'xyz-not-found');
+    await user.type(screen.getByPlaceholderText(t('nav.searchMember')), 'xyz-not-found');
 
-    expect(screen.getByText('Không tìm thấy kết quả')).toBeInTheDocument();
+    expect(screen.getByText(t('nav.noSearchResults'))).toBeInTheDocument();
   });
 });
