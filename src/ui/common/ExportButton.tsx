@@ -78,7 +78,7 @@ export default function ExportButton() {
     <div className="relative" ref={menuRef}>
       <button type="button" onClick={() => setShowMenu(!showMenu)} disabled={isExporting} className="btn">
         {isExporting ? <Loader2 className="size-4 shrink-0 animate-spin" /> : <Download className="size-4 shrink-0" />}
-        <span className="tracking-wide min-w-max">{isExporting ? t('export.exporting') : t('export.exportFile')}</span>
+        <span className="hidden sm:inline tracking-wide min-w-max">{isExporting ? t('export.exporting') : t('export.exportFile')}</span>
       </button>
 
       {exportError && (

@@ -43,52 +43,16 @@ export function exportToGedcom(data: ExportToGedcomInput): string {
 
   const personMap = new Map(data.persons.map((p) => [p.id, p]));
 
-  // Export Individuals
+  // Map original IDs to short export IDs (to satisfy 20-char XREF limit)
+  const exportIdMap = new Map<string, string>();
+  let personCounter = 1;
   for (const person of data.persons) {
-    gedcom += `0 @I${person.id.replace(/-/g, '')}@ INDI\n`;
-
-    // Name
-    if (person.fullName) {
-      const parts = person.fullName.trim().split(' ');
-      const lastName = parts.length > 1 ? parts.pop() : '';
-      const firstName = parts.join(' ');
-      gedcom += `1 NAME ${firstName} /${lastName}/\n`;
-    } else {
-      gedcom += '1 NAME Unknown /Unknown/\n';
-    }
-
-    // Sex
-    if (person.gender === Gender.enum.male) gedcom += '1 SEX M\n';
-    else if (person.gender === Gender.enum.female) gedcom += '1 SEX F\n';
-    else gedcom += '1 SEX U\n';
-
-    // Birth
-    if (person.birthYear || person.birthMonth || person.birthDay) {
-      gedcom += '1 BIRT\n';
-      const dateParts = [formatNum(person.birthDay), getMonthName(person.birthMonth), person.birthYear ? String(person.birthYear) : ''].filter(Boolean);
-      if (dateParts.length > 0) gedcom += `2 DATE ${dateParts.join(' ')}\n`;
-    }
-
-    // Death
-    if (person.isDeceased) {
-      gedcom += '1 DEAT Y\n';
-      if (person.deathYear || person.deathMonth || person.deathDay) {
-        const dateParts = [formatNum(person.deathDay), getMonthName(person.deathMonth), person.deathYear ? String(person.deathYear) : ''].filter(Boolean);
-        if (dateParts.length > 0) gedcom += `2 DATE ${dateParts.join(' ')}\n`;
-      }
-    }
-
-    // Note
-    if (person.note) {
-      const lines = person.note.split('\n');
-      gedcom += `1 NOTE ${lines[0]}\n`;
-      for (let i = 1; i < lines.length; i++) {
-        gedcom += `2 CONT ${lines[i]}\n`;
-      }
-    }
+    exportIdMap.set(person.id, `I${personCounter++}`);
   }
 
-  // Export Families
+  const getIndiXref = (id: string) => `@${exportIdMap.get(id) || id.replace(/-/g, '')}@`;
+
+  // Pre-process Families
   let familyCounter = 1;
   const marriages = data.relationships.filter((r) => r.type === RelationshipType.enum.marriage);
   const childrenRels = data.relationships.filter((r) => r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child);
@@ -131,12 +95,86 @@ export function exportToGedcom(data: ExportToGedcomInput): string {
     }
   }
 
+  // Map persons to their families (for FAMC and FAMS)
+  const personFamc = new Map<string, string[]>();
+  const personFams = new Map<string, string[]>();
+
+  for (const fam of families) {
+    if (fam.husb) {
+      const current = personFams.get(fam.husb) || [];
+      if (!current.includes(fam.id)) personFams.set(fam.husb, [...current, fam.id]);
+    }
+    if (fam.wife) {
+      const current = personFams.get(fam.wife) || [];
+      if (!current.includes(fam.id)) personFams.set(fam.wife, [...current, fam.id]);
+    }
+    for (const childId of fam.children) {
+      const current = personFamc.get(childId) || [];
+      if (!current.includes(fam.id)) personFamc.set(childId, [...current, fam.id]);
+    }
+  }
+
+  // Export Individuals
+  for (const person of data.persons) {
+    gedcom += `0 ${getIndiXref(person.id)} INDI\n`;
+
+    // Name
+    if (person.fullName) {
+      const parts = person.fullName.trim().split(' ');
+      const lastName = parts.length > 1 ? parts.pop() : '';
+      const firstName = parts.join(' ');
+      gedcom += `1 NAME ${firstName} /${lastName}/\n`;
+    } else {
+      gedcom += '1 NAME Unknown /Unknown/\n';
+    }
+
+    // Sex
+    if (person.gender === Gender.enum.male) gedcom += '1 SEX M\n';
+    else if (person.gender === Gender.enum.female) gedcom += '1 SEX F\n';
+    else gedcom += '1 SEX U\n';
+
+    // Birth
+    if (person.birthYear || person.birthMonth || person.birthDay) {
+      gedcom += '1 BIRT\n';
+      const dateParts = [formatNum(person.birthDay), getMonthName(person.birthMonth), person.birthYear ? String(person.birthYear) : ''].filter(Boolean);
+      if (dateParts.length > 0) gedcom += `2 DATE ${dateParts.join(' ')}\n`;
+    }
+
+    // Death
+    if (person.isDeceased) {
+      gedcom += '1 DEAT Y\n';
+      if (person.deathYear || person.deathMonth || person.deathDay) {
+        const dateParts = [formatNum(person.deathDay), getMonthName(person.deathMonth), person.deathYear ? String(person.deathYear) : ''].filter(Boolean);
+        if (dateParts.length > 0) gedcom += `2 DATE ${dateParts.join(' ')}\n`;
+      }
+    }
+
+    // Family Links
+    const famcs = personFamc.get(person.id) || [];
+    for (const famId of famcs) {
+      gedcom += `1 FAMC @${famId}@\n`;
+    }
+    const famss = personFams.get(person.id) || [];
+    for (const famId of famss) {
+      gedcom += `1 FAMS @${famId}@\n`;
+    }
+
+    // Note
+    if (person.note) {
+      const lines = person.note.split('\n');
+      gedcom += `1 NOTE ${lines[0]}\n`;
+      for (let i = 1; i < lines.length; i++) {
+        gedcom += `2 CONT ${lines[i]}\n`;
+      }
+    }
+  }
+
   for (const fam of families) {
     gedcom += `0 @${fam.id}@ FAM\n`;
-    if (fam.husb) gedcom += `1 HUSB @I${fam.husb.replace(/-/g, '')}@\n`;
-    if (fam.wife) gedcom += `1 WIFE @I${fam.wife.replace(/-/g, '')}@\n`;
+    if (fam.husb) gedcom += `1 HUSB ${getIndiXref(fam.husb)}\n`;
+    if (fam.wife) gedcom += `1 WIFE ${getIndiXref(fam.wife)}\n`;
     for (const childId of fam.children) {
-      gedcom += `1 CHIL @I${childId.replace(/-/g, '')}@\n`;
+      gedcom += `1 CHIL ${getIndiXref(childId)}\n`;
     }
   }
 

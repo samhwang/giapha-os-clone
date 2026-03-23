@@ -118,7 +118,7 @@ function FamilyGroup({
   return (
     <div className="relative bg-white border border-stone-300 rounded-[2.5rem] p-5 sm:p-8 shadow-sm">
       {label && (
-        <div className="absolute -top-3 left-8 px-3 py-0.5 bg-stone-100 text-xs font-bold text-stone-600 uppercase tracking-widest border border-stone-300 rounded-full shadow-sm z-20">
+        <div className="absolute -top-3 left-8 px-3 py-0.5 bg-stone-100 text-xs font-bold text-stone-600 tracking-widest border border-stone-300 rounded-full shadow-sm z-20">
           {label}
         </div>
       )}

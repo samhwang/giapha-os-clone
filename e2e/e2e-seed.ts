@@ -6,7 +6,7 @@ import { auth } from '../src/auth/server';
 import { UserRole } from '../src/auth/types';
 import { PrismaClient } from '../src/database/generated/prisma/client';
 import { SEED_DATA_PATH, type SeedData } from './e2e-seed-data';
-import { TEST_ADMIN, TEST_MEMBER, TEST_PERSON } from './fixtures';
+import { TEST_ADMIN, TEST_EDITOR, TEST_MEMBER, TEST_PERSON } from './fixtures';
 
 setup('seed e2e users', async () => {
   const ctx = await auth.$context;
@@ -21,6 +21,15 @@ setup('seed e2e users', async () => {
     emailVerified: true,
   });
   const savedAdmin = await test.saveUser(adminUser);
+
+  const editorUser = test.createUser({
+    email: TEST_EDITOR.email,
+    name: 'Editor',
+    role: UserRole.enum.editor,
+    isActive: true,
+    emailVerified: true,
+  });
+  const savedEditor = await test.saveUser(editorUser);
 
   const memberUser = test.createUser({
     email: TEST_MEMBER.email,
@@ -51,13 +60,14 @@ setup('seed e2e users', async () => {
   }
 
   const seedData: SeedData = {
-    userIds: [savedAdmin.id, savedMember.id],
+    userIds: [savedAdmin.id, savedEditor.id, savedMember.id],
     adminUserId: savedAdmin.id,
+    editorUserId: savedEditor.id,
     memberUserId: savedMember.id,
     personName: personFullName,
   };
   mkdirSync('.playwright', { recursive: true });
   writeFileSync(SEED_DATA_PATH, JSON.stringify(seedData, null, 2));
 
-  console.log(`E2E seed complete: admin (${savedAdmin.email}), member (${savedMember.email}), person (${personFullName})`);
+  console.log(`E2E seed complete: admin (${savedAdmin.email}), editor (${savedEditor.email}), member (${savedMember.email}), person (${personFullName})`);
 });

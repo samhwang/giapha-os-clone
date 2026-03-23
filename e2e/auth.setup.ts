@@ -19,6 +19,11 @@ setup('authenticate as admin', async () => {
   await saveAuthState(seedData.adminUserId, '.playwright/auth/admin.json');
 });
 
+setup('authenticate as editor', async () => {
+  const seedData: SeedData = JSON.parse(readFileSync(SEED_DATA_PATH, 'utf-8'));
+  await saveAuthState(seedData.editorUserId, '.playwright/auth/editor.json');
+});
+
 setup('authenticate as member', async () => {
   const seedData: SeedData = JSON.parse(readFileSync(SEED_DATA_PATH, 'utf-8'));
   await saveAuthState(seedData.memberUserId, '.playwright/auth/member.json');

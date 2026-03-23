@@ -1,9 +1,9 @@
-import { List, ListTree, Network } from 'lucide-react';
+import { Circle, List, ListTree, Network } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../../ui/utils/cn';
 import { useDashboardStore } from '../store/dashboardStore';
 
-export type ViewMode = 'list' | 'tree' | 'mindmap';
+export type ViewMode = 'list' | 'tree' | 'mindmap' | 'bubble';
 
 export default function ViewToggle() {
   const { view: currentView, setView } = useDashboardStore();
@@ -13,6 +13,7 @@ export default function ViewToggle() {
     { id: 'list' as const, label: t('nav.list'), icon: <List className="size-4" /> },
     { id: 'tree' as const, label: t('nav.treeView'), icon: <Network className="size-4" /> },
     { id: 'mindmap' as const, label: 'Mindmap', icon: <ListTree className="size-4" /> },
+    { id: 'bubble' as const, label: 'Bubble', icon: <Circle className="size-4" /> },
   ];
 
   return (

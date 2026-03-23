@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { logger } from '../../lib/logger';
 import { queryKeys } from '../../lib/queryKeys';
-import { createPerson, getPersons } from '../../members/server/member';
+import { createPerson, getPersons, updatePerson } from '../../members/server/member';
 import { Gender, type Person } from '../../members/types';
 import { createRelationship, deleteRelationship, getRelationshipsForPerson } from '../server/relationship';
 import { RelationshipType } from '../types';
+import { getAutoPopulatedFields } from '../utils/autoPopulate';
 
 export interface DescendantStats {
   biologicalChildren: number;
@@ -44,8 +46,7 @@ export interface QuickAddSpouseData {
 }
 
 interface UseRelationshipsOptions {
-  personId: string;
-  personGender: string;
+  person: Person;
   onStatsLoaded?: (stats: DescendantStats) => void;
 }
 
@@ -161,7 +162,9 @@ async function fetchRelationshipsData(
   return { relationships: formattedRels, allPersons: persons };
 }
 
-export function useRelationships({ personId, personGender, onStatsLoaded }: UseRelationshipsOptions) {
+export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOptions) {
+  const personId = person.id;
+  const personGender = person.gender;
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [activeForm, setActiveForm] = useState<'none' | 'add' | 'bulk' | 'spouse'>('none');
@@ -195,6 +198,28 @@ export function useRelationships({ personId, personGender, onStatsLoaded }: UseR
       await createRelationship({
         data: { personAId, personBId, type, note: mutationData.note || null },
       });
+
+      // Auto-populate generation and isInLaw on target if currently null
+      try {
+        const targetPerson = allPersons.find((p) => p.id === mutationData.targetId);
+        if (targetPerson && (targetPerson.generation == null || targetPerson.isInLaw == null)) {
+          const fields = getAutoPopulatedFields(mutationData.direction as 'child' | 'parent' | 'spouse', person);
+          const updates: { id: string; generation?: number; isInLaw?: boolean } = { id: mutationData.targetId };
+
+          if (targetPerson.generation == null && fields.generation !== undefined) {
+            updates.generation = fields.generation;
+          }
+          if (targetPerson.isInLaw == null) {
+            updates.isInLaw = fields.isInLaw;
+          }
+
+          if (updates.generation !== undefined || updates.isInLaw !== undefined) {
+            await updatePerson({ data: updates });
+          }
+        }
+      } catch (err) {
+        logger.error('Failed to auto-update target person properties', err);
+      }
     },
     onSuccess: () => {
       setActiveForm('none');
@@ -215,10 +240,12 @@ export function useRelationships({ personId, personGender, onStatsLoaded }: UseR
         const birthYear = child.birthYear.trim() !== '' ? Number.parseInt(child.birthYear, 10) : undefined;
         const birthOrder = child.birthOrder.trim() !== '' ? Number.parseInt(child.birthOrder, 10) : undefined;
 
+        const childFields = getAutoPopulatedFields('child', person);
         const newPerson = await createPerson({
           data: {
             fullName: child.name.trim(),
             gender: child.gender as Gender,
+            ...childFields,
             ...(birthYear && !Number.isNaN(birthYear) ? { birthYear } : {}),
             ...(birthOrder && !Number.isNaN(birthOrder) ? { birthOrder } : {}),
           },
@@ -260,10 +287,12 @@ export function useRelationships({ personId, personGender, onStatsLoaded }: UseR
         personGender === Gender.enum.male ? Gender.enum.female : personGender === Gender.enum.female ? Gender.enum.male : Gender.enum.female;
       const birthYear = mutationData.birthYear.trim() !== '' ? Number.parseInt(mutationData.birthYear, 10) : undefined;
 
+      const spouseFields = getAutoPopulatedFields('spouse', person);
       const newPerson = await createPerson({
         data: {
           fullName: mutationData.name.trim(),
           gender: newSpouseGender as Gender,
+          ...spouseFields,
           ...(birthYear && !Number.isNaN(birthYear) ? { birthYear } : {}),
         },
       });

@@ -5,9 +5,9 @@ import { cn } from '../utils/cn';
 const avatarVariants = cva('rounded-full flex items-center justify-center text-white overflow-hidden', {
   variants: {
     gender: {
-      male: 'bg-linear-to-br from-sky-400 to-sky-700',
-      female: 'bg-linear-to-br from-rose-400 to-rose-700',
-      other: 'bg-linear-to-br from-stone-400 to-stone-600',
+      male: 'bg-linear-to-br from-sky-400 to-sky-500',
+      female: 'bg-linear-to-br from-rose-400 to-rose-500',
+      other: 'bg-linear-to-br from-stone-400 to-stone-500',
     },
   },
   defaultVariants: { gender: 'other' },

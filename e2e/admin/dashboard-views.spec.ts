@@ -9,7 +9,7 @@ test.describe('Dashboard Views', () => {
     await expect(page.getByPlaceholder(/tìm/i)).toBeVisible({ timeout: 15000 });
   });
 
-  test('should switch between list, tree, and mindmap views', async ({ page }) => {
+  test('should switch between list, tree, mindmap, and bubble views', async ({ page }) => {
     await page.goto('/dashboard/members');
     await waitForHydration(page);
 
@@ -24,9 +24,26 @@ test.describe('Dashboard Views', () => {
     await page.getByText(/mindmap/i).click();
     await expect(page.getByText(/mindmap/i)).toBeVisible();
 
+    // Switch to bubble map view
+    await page.getByRole('button', { name: /bubble/i }).click();
+    // Bubble map renders a full-size SVG in a container
+    await expect(page.locator('svg.w-full.h-full')).toBeVisible({ timeout: 10000 });
+
     // Switch back to list view
     await page.getByText(/danh sách/i).click();
     await expect(page.getByPlaceholder(/tìm/i)).toBeVisible();
+  });
+
+  test('should show collapse buttons in tree view', async ({ page }) => {
+    await page.goto('/dashboard/members');
+    await waitForHydration(page);
+
+    // Switch to tree view
+    await page.getByText(/sơ đồ cây/i).click();
+
+    // Center button should be visible
+    const centerButton = page.locator('button').filter({ has: page.locator('svg.lucide-crosshair') });
+    await expect(centerButton).toBeVisible({ timeout: 10000 });
   });
 
   test('should show admin menu items in header', async ({ page }) => {
