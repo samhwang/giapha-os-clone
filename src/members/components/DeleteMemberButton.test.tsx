@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { t } from '../../../test/i18n';
+import { queryWrapper as wrapper } from '../../../test/render-wrapper';
 import DeleteMemberButton from './DeleteMemberButton';
 
 const mockNavigate = vi.fn();
@@ -29,13 +30,13 @@ describe('DeleteMemberButton', () => {
   });
 
   it('renders delete button', () => {
-    render(<DeleteMemberButton memberId="test-id" />);
+    render(<DeleteMemberButton memberId="test-id" />, { wrapper });
     expect(screen.getByRole('button', { name: new RegExp(t('member.deleteButton'), 'i') })).toBeInTheDocument();
   });
 
   it('shows confirm dialog on click', async () => {
     const user = userEvent.setup();
-    render(<DeleteMemberButton memberId="test-id" />);
+    render(<DeleteMemberButton memberId="test-id" />, { wrapper });
 
     await user.click(screen.getByRole('button', { name: new RegExp(t('member.deleteButton'), 'i') }));
     expect(confirmSpy).toHaveBeenCalled();
@@ -43,7 +44,7 @@ describe('DeleteMemberButton', () => {
 
   it('does not delete when confirm is cancelled', async () => {
     const user = userEvent.setup();
-    render(<DeleteMemberButton memberId="test-id" />);
+    render(<DeleteMemberButton memberId="test-id" />, { wrapper });
 
     await user.click(screen.getByRole('button', { name: new RegExp(t('member.deleteButton'), 'i') }));
     expect(mockDeleteMember).not.toHaveBeenCalled();
@@ -52,7 +53,7 @@ describe('DeleteMemberButton', () => {
   it('confirms and deletes, then navigates', async () => {
     confirmSpy.mockReturnValue(true);
     const user = userEvent.setup();
-    render(<DeleteMemberButton memberId="test-id" />);
+    render(<DeleteMemberButton memberId="test-id" />, { wrapper });
 
     await user.click(screen.getByRole('button', { name: new RegExp(t('member.deleteButton'), 'i') }));
 
@@ -66,7 +67,7 @@ describe('DeleteMemberButton', () => {
     confirmSpy.mockReturnValue(true);
     mockDeleteMember.mockReturnValue(new Promise(() => {}));
     const user = userEvent.setup();
-    render(<DeleteMemberButton memberId="test-id" />);
+    render(<DeleteMemberButton memberId="test-id" />, { wrapper });
 
     await user.click(screen.getByRole('button', { name: new RegExp(t('member.deleteButton'), 'i') }));
 
@@ -79,7 +80,7 @@ describe('DeleteMemberButton', () => {
     confirmSpy.mockReturnValue(true);
     mockDeleteMember.mockRejectedValue(new Error('Delete failed'));
     const user = userEvent.setup();
-    render(<DeleteMemberButton memberId="test-id" />);
+    render(<DeleteMemberButton memberId="test-id" />, { wrapper });
 
     await user.click(screen.getByRole('button', { name: new RegExp(t('member.deleteButton'), 'i') }));
 

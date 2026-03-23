@@ -1,5 +1,7 @@
 import { TanStackDevtools } from '@tanstack/react-devtools';
 import { formDevtoolsPlugin } from '@tanstack/react-form-devtools';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { I18nextProvider, useTranslation } from 'react-i18next';
@@ -8,6 +10,19 @@ import { getSiteName } from '../config/server/getSiteName';
 import { createI18nInstance, type Language } from '../i18n/lib';
 import { getLanguage } from '../i18n/server/getLanguage';
 import appCss from '../styles.css?url';
+
+const THIRTY_SECONDS = 30 * 1000;
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: THIRTY_SECONDS,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+export { queryClient };
 
 export const Route = createRootRoute({
   beforeLoad: async () => {
@@ -52,25 +67,28 @@ function RootComponent() {
   const i18n = createI18nInstance(language);
 
   return (
-    <I18nextProvider i18n={i18n}>
-      <html lang={language}>
-        <head>
-          <HeadContent />
-        </head>
-        <body className="font-sans antialiased relative">
-          <Outlet />
-          <TanStackDevtools
-            plugins={[
-              formDevtoolsPlugin(),
-              {
-                name: 'TanStack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-            ]}
-          />
-          <Scripts />
-        </body>
-      </html>
-    </I18nextProvider>
+    <QueryClientProvider client={queryClient}>
+      <I18nextProvider i18n={i18n}>
+        <html lang={language}>
+          <head>
+            <HeadContent />
+          </head>
+          <body className="font-sans antialiased relative">
+            <Outlet />
+            <TanStackDevtools
+              plugins={[
+                formDevtoolsPlugin(),
+                {
+                  name: 'TanStack Router',
+                  render: <TanStackRouterDevtoolsPanel />,
+                },
+              ]}
+            />
+            <ReactQueryDevtools initialIsOpen={false} />
+            <Scripts />
+          </body>
+        </html>
+      </I18nextProvider>
+    </QueryClientProvider>
   );
 }

@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, RefreshCw, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -225,15 +226,29 @@ export default function LineageManager({ persons, relationships }: LineageManage
   const { t } = useTranslation();
   const [updates, setUpdates] = useState<ComputedUpdate[] | null>(null);
   const [computing, setComputing] = useState(false);
-  const [applying, setApplying] = useState(false);
-  const [applied, setApplied] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
+
+  const applyMutation = useMutation({
+    mutationFn: (changedUpdates: ComputedUpdate[]) =>
+      updateBatch({
+        data: {
+          updates: changedUpdates.map((u) => ({
+            id: u.id,
+            generation: u.newGeneration,
+            birthOrder: u.newBirthOrder,
+            isInLaw: u.newIsInLaw,
+          })),
+        },
+      }),
+  });
+
+  const applying = applyMutation.isPending;
+  const applied = applyMutation.isSuccess;
+  const error = applyMutation.error ? (applyMutation.error as Error).message || t('lineage.applyError') : null;
 
   const handleCompute = () => {
     setComputing(true);
-    setApplied(false);
-    setError(null);
+    applyMutation.reset();
 
     try {
       const genMap = computeGenerations(persons, relationships);
@@ -270,35 +285,17 @@ export default function LineageManager({ persons, relationships }: LineageManage
 
       setUpdates(result);
     } catch (err) {
-      setError((err as Error).message || t('lineage.calcError'));
+      // Compute errors are local (not server), keep as-is
+      applyMutation.reset();
     } finally {
       setComputing(false);
     }
   };
 
-  const handleApply = async () => {
+  const handleApply = () => {
     if (!updates) return;
-    setApplying(true);
-    setError(null);
-
-    try {
-      const changedOnly = updates.filter((u) => u.changed);
-      await updateBatch({
-        data: {
-          updates: changedOnly.map((u) => ({
-            id: u.id,
-            generation: u.newGeneration,
-            birthOrder: u.newBirthOrder,
-            isInLaw: u.newIsInLaw,
-          })),
-        },
-      });
-      setApplied(true);
-    } catch (err) {
-      setError((err as Error).message || t('lineage.applyError'));
-    } finally {
-      setApplying(false);
-    }
+    const changedOnly = updates.filter((u) => u.changed);
+    applyMutation.mutate(changedOnly);
   };
 
   const changedCount = updates?.filter((u) => u.changed).length ?? 0;

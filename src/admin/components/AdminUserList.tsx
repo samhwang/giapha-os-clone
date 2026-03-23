@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../../auth/types';
@@ -19,9 +20,68 @@ interface Notification {
 export default function AdminUserList({ initialUsers, currentUserId }: AdminUserListProps) {
   const { t } = useTranslation();
   const [users, setUsers] = useState<UserProfile[]>(initialUsers);
-  const [loadingId, setLoadingId] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
+
+  const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setNotification({ message, type });
+  };
+
+  const createUserMutation = useMutation({
+    mutationFn: (data: { email: string; password: string; role: UserRole; isActive: boolean }) => createUser({ data }),
+    onSuccess: (result) => {
+      if (result.user) {
+        setUsers((prev) => [...prev, result.user as UserProfile]);
+      }
+      showNotification(t('admin.createSuccess'), 'success');
+      setIsCreateModalOpen(false);
+      form.reset();
+    },
+    onError: (error: unknown) => {
+      showNotification(error instanceof Error ? error.message : t('admin.createError'), 'error');
+    },
+  });
+
+  const roleChangeMutation = useMutation({
+    mutationFn: (data: { userId: string; newRole: UserRole }) => changeRole({ data }),
+    onSuccess: (_, { userId, newRole }) => {
+      setUsers(users.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
+      showNotification(t('admin.roleUpdated'), 'success');
+    },
+    onError: (error: unknown) => {
+      showNotification(error instanceof Error ? error.message : t('admin.roleError'), 'error');
+    },
+  });
+
+  const statusChangeMutation = useMutation({
+    mutationFn: (data: { userId: string; isActive: boolean }) => toggleStatus({ data }),
+    onSuccess: (_, { userId, isActive: newStatus }) => {
+      setUsers(users.map((u) => (u.id === userId ? { ...u, isActive: newStatus } : u)));
+      showNotification(newStatus ? t('admin.statusApproved') : t('admin.statusLocked'), 'success');
+    },
+    onError: (error: unknown) => {
+      showNotification(error instanceof Error ? error.message : t('admin.statusError'), 'error');
+    },
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: (userId: string) => deleteUser({ data: { userId } }),
+    onSuccess: (_, userId) => {
+      setUsers(users.filter((u) => u.id !== userId));
+      showNotification(t('admin.deleteSuccess'), 'success');
+    },
+    onError: (error: unknown) => {
+      showNotification(error instanceof Error ? error.message : t('admin.deleteError'), 'error');
+    },
+  });
+
+  const loadingId = roleChangeMutation.isPending
+    ? (roleChangeMutation.variables as { userId: string })?.userId
+    : statusChangeMutation.isPending
+      ? (statusChangeMutation.variables as { userId: string })?.userId
+      : deleteUserMutation.isPending
+        ? (deleteUserMutation.variables as string)
+        : null;
 
   const form = useAdminForm({
     defaultValues: {
@@ -31,24 +91,12 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
       isActive: true,
     },
     onSubmit: async ({ value }) => {
-      try {
-        const result = await createUser({
-          data: {
-            email: value.email,
-            password: value.password,
-            role: value.role,
-            isActive: value.isActive,
-          },
-        });
-        if (result.user) {
-          setUsers((prev) => [...prev, result.user as UserProfile]);
-        }
-        showNotification(t('admin.createSuccess'), 'success');
-        setIsCreateModalOpen(false);
-        form.reset();
-      } catch (error: unknown) {
-        showNotification(error instanceof Error ? error.message : t('admin.createError'), 'error');
-      }
+      createUserMutation.mutate({
+        email: value.email,
+        password: value.password,
+        role: value.role,
+        isActive: value.isActive,
+      });
     },
   });
 
@@ -58,48 +106,17 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
     return () => clearTimeout(timer);
   }, [notification]);
 
-  const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
-    setNotification({ message, type });
+  const handleRoleChange = (userId: string, newRole: UserRole) => {
+    roleChangeMutation.mutate({ userId, newRole });
   };
 
-  const handleRoleChange = async (userId: string, newRole: UserRole) => {
-    try {
-      setLoadingId(userId);
-      await changeRole({ data: { userId, newRole } });
-      setUsers(users.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
-      showNotification(t('admin.roleUpdated'), 'success');
-    } catch (error: unknown) {
-      showNotification(error instanceof Error ? error.message : t('admin.roleError'), 'error');
-    } finally {
-      setLoadingId(null);
-    }
+  const handleStatusChange = (userId: string, newStatus: boolean) => {
+    statusChangeMutation.mutate({ userId, isActive: newStatus });
   };
 
-  const handleStatusChange = async (userId: string, newStatus: boolean) => {
-    try {
-      setLoadingId(userId);
-      await toggleStatus({ data: { userId, isActive: newStatus } });
-      setUsers(users.map((u) => (u.id === userId ? { ...u, isActive: newStatus } : u)));
-      showNotification(newStatus ? t('admin.statusApproved') : t('admin.statusLocked'), 'success');
-    } catch (error: unknown) {
-      showNotification(error instanceof Error ? error.message : t('admin.statusError'), 'error');
-    } finally {
-      setLoadingId(null);
-    }
-  };
-
-  const handleDelete = async (userId: string) => {
+  const handleDelete = (userId: string) => {
     if (!confirm(t('admin.deleteConfirm'))) return;
-    try {
-      setLoadingId(userId);
-      await deleteUser({ data: { userId } });
-      setUsers(users.filter((u) => u.id !== userId));
-      showNotification(t('admin.deleteSuccess'), 'success');
-    } catch (error: unknown) {
-      showNotification(error instanceof Error ? error.message : t('admin.deleteError'), 'error');
-    } finally {
-      setLoadingId(null);
-    }
+    deleteUserMutation.mutate(userId);
   };
 
   return (

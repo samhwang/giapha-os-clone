@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import { AlertTriangle, CheckCircle2, Download, Upload } from 'lucide-react';
 import { type ChangeEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,8 +11,6 @@ type ExportFormat = 'json' | 'gedcom' | 'csv';
 
 export default function DataImportExport() {
   const { t } = useTranslation();
-  const [isExporting, setIsExporting] = useState(false);
-  const [isImporting, setIsImporting] = useState(false);
   const [importStatus, setImportStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -29,28 +28,88 @@ export default function DataImportExport() {
     URL.revokeObjectURL(url);
   };
 
-  const handleExport = async () => {
-    try {
-      setIsExporting(true);
+  const exportMutation = useMutation({
+    mutationFn: async (format: ExportFormat) => {
       const data = await exportData();
       const dateSuffix = new Date().toISOString().split('T')[0];
 
-      if (exportFormat === 'json') {
+      if (format === 'json') {
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         downloadBlob(blob, `giapha-export-${dateSuffix}.json`);
-      } else if (exportFormat === 'gedcom') {
+      } else if (format === 'gedcom') {
         const gedcomStr = exportToGedcom({ persons: data.persons, relationships: data.relationships });
         const blob = new Blob([gedcomStr], { type: 'text/plain' });
         downloadBlob(blob, `giapha-export-${dateSuffix}.ged`);
-      } else if (exportFormat === 'csv') {
+      } else if (format === 'csv') {
         const zipBlob = await exportToCsvZip({ persons: data.persons, relationships: data.relationships });
         downloadBlob(zipBlob, `giapha-export-${dateSuffix}.zip`);
       }
-    } catch (error: unknown) {
+    },
+    onError: (error: unknown) => {
       setImportStatus({ type: 'error', message: error instanceof Error ? error.message : t('data.downloadError') });
-    } finally {
-      setIsExporting(false);
-    }
+    },
+  });
+
+  const importMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const name = file.name.toLowerCase();
+      let persons: unknown[];
+      let relationships: unknown[];
+
+      if (name.endsWith('.ged')) {
+        const text = await file.text();
+        const parsed = parseGedcom(text);
+        persons = parsed.persons;
+        relationships = parsed.relationships;
+      } else if (name.endsWith('.zip')) {
+        const parsed = await parseCsvZip(file);
+        persons = parsed.persons;
+        relationships = parsed.relationships;
+      } else {
+        const fileText = await file.text();
+        const payload = JSON.parse(fileText);
+        if (!payload.persons || !payload.relationships) {
+          throw new Error(t('data.invalidStructure'));
+        }
+        persons = payload.persons;
+        relationships = payload.relationships;
+      }
+
+      return importData({
+        data: {
+          persons: persons as Parameters<typeof importData>[0]['data']['persons'],
+          relationships: relationships as Parameters<typeof importData>[0]['data']['relationships'],
+        },
+      });
+    },
+    onSuccess: (result) => {
+      setImportStatus({
+        type: 'success',
+        message: t('data.restoreSuccess', {
+          persons: result.imported.persons,
+          relationships: result.imported.relationships,
+        }),
+      });
+      setShowConfirm(false);
+      setSelectedFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    },
+    onError: (error: unknown) => {
+      setImportStatus({
+        type: 'error',
+        message: error instanceof Error ? error.message : t('data.restoreError'),
+      });
+      setShowConfirm(false);
+      setSelectedFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    },
+  });
+
+  const isExporting = exportMutation.isPending;
+  const isImporting = importMutation.isPending;
+
+  const handleExport = () => {
+    exportMutation.mutate(exportFormat);
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -68,64 +127,9 @@ export default function DataImportExport() {
     setImportStatus(null);
   };
 
-  const handleConfirmImport = async () => {
+  const handleConfirmImport = () => {
     if (!selectedFile) return;
-
-    try {
-      setIsImporting(true);
-      setImportStatus(null);
-
-      const name = selectedFile.name.toLowerCase();
-      let persons: unknown[];
-      let relationships: unknown[];
-
-      if (name.endsWith('.ged')) {
-        const text = await selectedFile.text();
-        const parsed = parseGedcom(text);
-        persons = parsed.persons;
-        relationships = parsed.relationships;
-      } else if (name.endsWith('.zip')) {
-        const parsed = await parseCsvZip(selectedFile);
-        persons = parsed.persons;
-        relationships = parsed.relationships;
-      } else {
-        const fileText = await selectedFile.text();
-        const payload = JSON.parse(fileText);
-        if (!payload.persons || !payload.relationships) {
-          throw new Error(t('data.invalidStructure'));
-        }
-        persons = payload.persons;
-        relationships = payload.relationships;
-      }
-
-      const result = await importData({
-        data: {
-          persons: persons as Parameters<typeof importData>[0]['data']['persons'],
-          relationships: relationships as Parameters<typeof importData>[0]['data']['relationships'],
-        },
-      });
-
-      setImportStatus({
-        type: 'success',
-        message: t('data.restoreSuccess', {
-          persons: result.imported.persons,
-          relationships: result.imported.relationships,
-        }),
-      });
-      setShowConfirm(false);
-      setSelectedFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    } catch (error: unknown) {
-      setImportStatus({
-        type: 'error',
-        message: error instanceof Error ? error.message : t('data.restoreError'),
-      });
-      setShowConfirm(false);
-      setSelectedFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    } finally {
-      setIsImporting(false);
-    }
+    importMutation.mutate(selectedFile);
   };
 
   return (

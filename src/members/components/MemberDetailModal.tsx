@@ -1,9 +1,10 @@
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { AlertCircle, ArrowLeft, ExternalLink, Pencil, X } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
-import { logger } from '../../lib/logger';
+import { queryKeys } from '../../lib/queryKeys';
 import { getPersonById } from '../server/member';
 import type { Person } from '../types';
 import MemberDetailContent from './MemberDetailContent';
@@ -16,14 +17,31 @@ interface MemberDetailModalProps {
 
 export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDetailModalProps) {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const { memberModalId: memberId, setMemberModalId, showCreateModal, setShowCreateModal } = useDashboardStore();
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [person, setPerson] = useState<Person | null>(null);
-  const [privateData, setPrivateData] = useState<{ phoneNumber?: string | null; occupation?: string | null; currentResidence?: string | null } | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+
+  const {
+    data: result,
+    isLoading: loading,
+    error: queryError,
+  } = useQuery({
+    queryKey: queryKeys.persons.detail(memberId ?? ''),
+    queryFn: () => getPersonById({ data: { id: memberId! } }),
+    enabled: !!memberId,
+  });
+
+  const person = (result as Person) ?? null;
+  const privateData = isAdmin && result?.privateDetails ? result.privateDetails : null;
+  const error = queryError
+    ? queryError instanceof Error
+      ? queryError.message
+      : t('member.systemError')
+    : !result && !loading && memberId
+      ? t('member.loadError')
+      : null;
 
   const closeModal = () => {
     if (isEditing) {
@@ -38,51 +56,23 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
     setMemberModalId(null);
   };
 
-  const fetchData = useCallback(
-    async (id: string) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const result = await getPersonById({ data: { id } });
-        if (!result) throw new Error(t('member.loadError'));
-        setPerson(result as Person);
-        if (isAdmin && result.privateDetails) {
-          setPrivateData(result.privateDetails);
-        }
-      } catch (err) {
-        logger.error('Error fetching member details:', err);
-        setError(err instanceof Error ? err.message : t('member.systemError'));
-      } finally {
-        setLoading(false);
-      }
-    },
-    [isAdmin, t]
-  );
-
   useEffect(() => {
     if (memberId) {
       setIsOpen(true);
       setIsCreating(false);
-      fetchData(memberId);
     } else if (showCreateModal) {
       setIsOpen(true);
       setIsCreating(true);
-      setPerson(null);
-      setPrivateData(null);
-      setError(null);
       setIsEditing(false);
     } else {
       setIsOpen(false);
       const timeoutId = setTimeout(() => {
-        setPerson(null);
-        setPrivateData(null);
-        setError(null);
         setIsEditing(false);
         setIsCreating(false);
       }, 300);
       return () => clearTimeout(timeoutId);
     }
-  }, [memberId, showCreateModal, fetchData]);
+  }, [memberId, showCreateModal]);
 
   useEffect(() => {
     if (isOpen) {
@@ -94,6 +84,10 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
+
+  const refetchPerson = (personId: string) => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.persons.detail(personId) });
+  };
 
   return (
     <>
@@ -213,7 +207,7 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
                       isAdmin={isAdmin}
                       onSuccess={(personId) => {
                         setIsEditing(false);
-                        fetchData(personId);
+                        refetchPerson(personId);
                       }}
                       onCancel={() => setIsEditing(false)}
                     />

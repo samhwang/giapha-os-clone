@@ -12,7 +12,7 @@ describe('getUserTimeZone', () => {
   it('returns a valid time zone identifier', () => {
     const tz = getUserTimeZone();
     // Intl.DateTimeFormat().resolvedOptions().timeZone returns valid IANA timezone
-    expect(tz).toMatch(/^[A-Za-z_]+\/[A-Za-z_]+$/);
+    expect(tz).toMatch(/^([A-Za-z_]+\/[A-Za-z_]+|UTC)$/);
   });
 });
 

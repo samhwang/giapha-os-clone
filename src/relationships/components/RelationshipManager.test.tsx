@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
 import { t } from '../../../test/i18n';
+import { queryWrapper as wrapper } from '../../../test/render-wrapper';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { Gender } from '../../members/types';
 import { RelationshipType } from '../types';
@@ -50,7 +51,7 @@ describe('RelationshipManager', () => {
   });
 
   it('renders relationship section titles', async () => {
-    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText(new RegExp(t('relationship.parents').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
@@ -60,7 +61,7 @@ describe('RelationshipManager', () => {
   });
 
   it('shows add buttons for editor', async () => {
-    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText(new RegExp(t('relationship.addChild').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
@@ -70,7 +71,7 @@ describe('RelationshipManager', () => {
   });
 
   it('hides add buttons for non-editor', async () => {
-    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} />);
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.queryByText(new RegExp(t('relationship.addChild').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).not.toBeInTheDocument();
@@ -82,7 +83,7 @@ describe('RelationshipManager', () => {
     mockGetRelationshipsForPerson.mockResolvedValue([{ id: 'r1', type: RelationshipType.enum.marriage, personAId: 'p1', personBId: 'p2', note: null }]);
     mockGetPersons.mockResolvedValue([personA, personB]);
 
-    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} />);
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText('Trần Thị B')).toBeInTheDocument();
@@ -93,12 +94,12 @@ describe('RelationshipManager', () => {
     mockGetRelationshipsForPerson.mockReturnValue(new Promise(() => {}));
     mockGetPersons.mockReturnValue(new Promise(() => {}));
 
-    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} />);
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} />, { wrapper });
     expect(screen.getByText(new RegExp(t('common.loading'), 'i'))).toBeInTheDocument();
   });
 
   it('shows empty state for sections with no relationships when canEdit', async () => {
-    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       const emptyTexts = screen.getAllByText(new RegExp(t('relationship.noInfo').replace('.', '\\.'), 'i'));
@@ -108,7 +109,7 @@ describe('RelationshipManager', () => {
 
   it('clicking add relationship opens form', async () => {
     const user = userEvent.setup();
-    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText(new RegExp(t('relationship.addRelationship').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
@@ -126,7 +127,7 @@ describe('RelationshipManager', () => {
     mockGetPersons.mockResolvedValue([personA, personB]);
 
     const user = userEvent.setup();
-    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText('Trần Thị B')).toBeInTheDocument();
@@ -144,7 +145,7 @@ describe('RelationshipManager', () => {
     mockGetPersons.mockResolvedValue([personA, personB]);
 
     const user = userEvent.setup();
-    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText('Trần Thị B')).toBeInTheDocument();
@@ -156,7 +157,7 @@ describe('RelationshipManager', () => {
 
   it('quick add spouse creates person and relationship', async () => {
     const user = userEvent.setup();
-    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText(new RegExp(t('relationship.addSpouse').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
@@ -184,7 +185,7 @@ describe('RelationshipManager', () => {
 
   it('clicking "Thêm con" shows BulkAddChildrenForm', async () => {
     const user = userEvent.setup();
-    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText(new RegExp(t('relationship.addChild').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
@@ -200,7 +201,7 @@ describe('RelationshipManager', () => {
     mockCreatePerson.mockRejectedValue(new Error('Test error'));
 
     const user = userEvent.setup();
-    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText(new RegExp(t('relationship.addSpouse').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
@@ -226,7 +227,7 @@ describe('RelationshipManager', () => {
     mockCreatePerson.mockRejectedValue(new Error('Network error'));
 
     const user = userEvent.setup();
-    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />);
+    render(<RelationshipManager personId="p1" personGender={Gender.enum.male} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText(new RegExp(t('relationship.addSpouse').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();

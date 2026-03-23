@@ -1,7 +1,7 @@
+import { useMutation } from '@tanstack/react-query';
 import { AlertCircle, Loader2, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { logger } from '../../lib/logger';
 import { cn } from '../../ui/utils/cn';
 import { useCustomEventForm } from '../hooks/useCustomEventForm';
 import { createCustomEvent, deleteCustomEvent, updateCustomEvent } from '../server/customEvent';
@@ -16,8 +16,17 @@ interface CustomEventModalProps {
 
 export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEdit }: CustomEventModalProps) {
   const { t } = useTranslation();
-  const [deleting, setDeleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteCustomEvent({ data: { id } }),
+    onSuccess: () => {
+      onSuccess();
+      onClose();
+    },
+  });
+
+  const error = deleteMutation.error ? (deleteMutation.error instanceof Error ? deleteMutation.error.message : t('customEvent.deleteError')) : null;
+  const deleting = deleteMutation.isPending;
 
   const form = useCustomEventForm({
     defaultValues: {
@@ -28,42 +37,22 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
     },
     listeners: {
       onMount: ({ formApi }) => {
-        if (!isOpen) {
-          return;
-        }
+        if (!isOpen) return;
+        deleteMutation.reset();
 
-        if (!eventToEdit) {
-          setError(null);
-          return;
-        }
+        if (!eventToEdit) return;
 
         formApi.setFieldValue('name', eventToEdit.name);
         formApi.setFieldValue('eventDate', eventToEdit.eventDate);
         formApi.setFieldValue('location', eventToEdit.location || '');
         formApi.setFieldValue('content', eventToEdit.content || '');
-        setError(null);
       },
     },
     onSubmit: async ({ value }) => {
-      setError(null);
-      try {
-        if (eventToEdit) {
-          await updateCustomEvent({
-            data: {
-              id: eventToEdit.id,
-              name: value.name,
-              eventDate: value.eventDate,
-              location: value.location || null,
-              content: value.content || null,
-            },
-          });
-          onSuccess();
-          onClose();
-          return;
-        }
-
-        await createCustomEvent({
+      if (eventToEdit) {
+        await updateCustomEvent({
           data: {
+            id: eventToEdit.id,
             name: value.name,
             eventDate: value.eventDate,
             location: value.location || null,
@@ -72,10 +61,19 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
         });
         onSuccess();
         onClose();
-      } catch (err) {
-        logger.error(err);
-        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        return;
       }
+
+      await createCustomEvent({
+        data: {
+          name: value.name,
+          eventDate: value.eventDate,
+          location: value.location || null,
+          content: value.content || null,
+        },
+      });
+      onSuccess();
+      onClose();
     },
   });
 
@@ -90,22 +88,10 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
     };
   }, [isOpen]);
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!eventToEdit) return;
     if (!window.confirm(t('customEvent.deleteConfirm'))) return;
-
-    setDeleting(true);
-    setError(null);
-    try {
-      await deleteCustomEvent({ data: { id: eventToEdit.id } });
-      onSuccess();
-      onClose();
-    } catch (err) {
-      logger.error(err);
-      setError(err instanceof Error ? err.message : t('customEvent.deleteError'));
-    } finally {
-      setDeleting(false);
-    }
+    deleteMutation.mutate(eventToEdit.id);
   };
 
   if (!isOpen) return null;

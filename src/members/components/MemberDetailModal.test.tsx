@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPerson } from '../../../test/fixtures';
 import { t } from '../../../test/i18n';
+import { queryWrapper as wrapper } from '../../../test/render-wrapper';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import MemberDetailModal from './MemberDetailModal';
 
@@ -43,7 +44,7 @@ describe('MemberDetailModal', () => {
   });
 
   it('does not render when memberModalId is null', () => {
-    const { container } = render(<MemberDetailModal isAdmin={true} />);
+    const { container } = render(<MemberDetailModal isAdmin={true} />, { wrapper });
     expect(container.querySelector('.fixed')).not.toBeInTheDocument();
   });
 
@@ -52,7 +53,7 @@ describe('MemberDetailModal', () => {
     const person = createPerson({ id: 'person-1', fullName: 'Nguyễn Văn A' });
     mockGetPersonById.mockResolvedValue({ ...person, privateDetails: null });
 
-    render(<MemberDetailModal isAdmin={true} />);
+    render(<MemberDetailModal isAdmin={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByTestId('member-detail-content')).toBeInTheDocument();
@@ -67,7 +68,7 @@ describe('MemberDetailModal', () => {
       privateDetails: null,
     });
 
-    render(<MemberDetailModal isAdmin={true} />);
+    render(<MemberDetailModal isAdmin={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByLabelText(new RegExp(t('common.close'), 'i'))).toBeInTheDocument();
@@ -78,7 +79,7 @@ describe('MemberDetailModal', () => {
     useDashboardStore.getState().setMemberModalId('person-1');
     mockGetPersonById.mockReturnValue(new Promise(() => {}));
 
-    render(<MemberDetailModal isAdmin={true} />);
+    render(<MemberDetailModal isAdmin={true} />, { wrapper });
     expect(screen.getByText(new RegExp(t('common.loading'), 'i'))).toBeInTheDocument();
   });
 
@@ -86,7 +87,7 @@ describe('MemberDetailModal', () => {
     useDashboardStore.getState().setMemberModalId('person-1');
     mockGetPersonById.mockRejectedValue(new Error('Fetch failed'));
 
-    render(<MemberDetailModal isAdmin={true} />);
+    render(<MemberDetailModal isAdmin={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText('Fetch failed')).toBeInTheDocument();
@@ -101,7 +102,7 @@ describe('MemberDetailModal', () => {
     });
 
     const user = userEvent.setup();
-    render(<MemberDetailModal isAdmin={true} />);
+    render(<MemberDetailModal isAdmin={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByLabelText(new RegExp(t('common.close'), 'i'))).toBeInTheDocument();
@@ -118,7 +119,7 @@ describe('MemberDetailModal', () => {
       privateDetails: null,
     });
 
-    render(<MemberDetailModal isAdmin={true} canEdit={true} />);
+    render(<MemberDetailModal isAdmin={true} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByTestId('member-detail-content')).toBeInTheDocument();
@@ -133,7 +134,7 @@ describe('MemberDetailModal', () => {
     const person = createPerson({ id: 'person-1', fullName: 'Nguyễn Văn B' });
     mockGetPersonById.mockResolvedValue({ ...person, privateDetails: null });
 
-    render(<MemberDetailModal isAdmin={false} />);
+    render(<MemberDetailModal isAdmin={false} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByTestId('member-detail-content')).toBeInTheDocument();
@@ -142,7 +143,7 @@ describe('MemberDetailModal', () => {
   });
 
   it('opens modal when memberModalId is set in dashboard store', async () => {
-    const { container } = render(<MemberDetailModal isAdmin={true} />);
+    const { container } = render(<MemberDetailModal isAdmin={true} />, { wrapper });
 
     // Modal should not be open initially
     expect(container.querySelector('.fixed')).not.toBeInTheDocument();
@@ -166,7 +167,7 @@ describe('MemberDetailModal', () => {
     });
 
     const user = userEvent.setup();
-    render(<MemberDetailModal isAdmin={true} canEdit={true} />);
+    render(<MemberDetailModal isAdmin={true} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText(t('common.edit'))).toBeInTheDocument();
@@ -182,7 +183,7 @@ describe('MemberDetailModal', () => {
   it('shows create form when showCreateModal is set', async () => {
     useDashboardStore.getState().setShowCreateModal(true);
 
-    render(<MemberDetailModal isAdmin={true} />);
+    render(<MemberDetailModal isAdmin={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText(t('member.addMember'))).toBeInTheDocument();
@@ -194,7 +195,7 @@ describe('MemberDetailModal', () => {
     useDashboardStore.getState().setShowCreateModal(true);
     const user = userEvent.setup();
 
-    render(<MemberDetailModal isAdmin={true} />);
+    render(<MemberDetailModal isAdmin={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByTestId('member-form')).toBeInTheDocument();
@@ -213,7 +214,7 @@ describe('MemberDetailModal', () => {
     });
 
     const user = userEvent.setup();
-    render(<MemberDetailModal isAdmin={true} canEdit={true} />);
+    render(<MemberDetailModal isAdmin={true} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText(t('common.edit'))).toBeInTheDocument();
@@ -242,7 +243,7 @@ describe('MemberDetailModal', () => {
       privateDetails: null,
     });
 
-    render(<MemberDetailModal isAdmin={true} canEdit={true} />);
+    render(<MemberDetailModal isAdmin={true} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText(t('member.viewDetail'))).toBeInTheDocument();
@@ -256,7 +257,7 @@ describe('MemberDetailModal', () => {
     useDashboardStore.getState().setShowCreateModal(true);
     const user = userEvent.setup();
 
-    render(<MemberDetailModal isAdmin={true} />);
+    render(<MemberDetailModal isAdmin={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByTestId('member-form')).toBeInTheDocument();
@@ -272,7 +273,7 @@ describe('MemberDetailModal', () => {
     mockGetPersonById.mockRejectedValue(new Error('Network error'));
 
     const user = userEvent.setup();
-    render(<MemberDetailModal isAdmin={true} />);
+    render(<MemberDetailModal isAdmin={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByText('Network error')).toBeInTheDocument();
@@ -296,7 +297,7 @@ describe('MemberDetailModal', () => {
       privateDetails: null,
     });
 
-    render(<MemberDetailModal isAdmin={true} canEdit={false} />);
+    render(<MemberDetailModal isAdmin={true} canEdit={false} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByTestId('member-detail-content')).toBeInTheDocument();
@@ -312,7 +313,7 @@ describe('MemberDetailModal', () => {
       privateDetails: null,
     });
 
-    render(<MemberDetailModal isAdmin={false} canEdit={true} />);
+    render(<MemberDetailModal isAdmin={false} canEdit={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByTestId('member-detail-content')).toBeInTheDocument();
@@ -328,7 +329,7 @@ describe('MemberDetailModal', () => {
       privateDetails: { phoneNumber: '0123456789', occupation: 'Engineer', currentResidence: 'HCMC' },
     });
 
-    render(<MemberDetailModal isAdmin={true} />);
+    render(<MemberDetailModal isAdmin={true} />, { wrapper });
 
     await waitFor(() => {
       expect(screen.getByTestId('member-detail-content')).toBeInTheDocument();

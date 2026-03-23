@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { t } from '../../../test/i18n';
+import { queryWrapper as wrapper } from '../../../test/render-wrapper';
 import DataImportExport from './DataImportExport';
 
 function createJsonFile(data: unknown, name = 'backup.json') {
@@ -26,27 +27,27 @@ describe('DataImportExport', () => {
   });
 
   it('renders export section with backup title', () => {
-    render(<DataImportExport />);
+    render(<DataImportExport />, { wrapper });
     expect(screen.getByText(new RegExp(t('data.backupTitle'), 'i'))).toBeInTheDocument();
   });
 
   it('renders import section with restore title', () => {
-    render(<DataImportExport />);
+    render(<DataImportExport />, { wrapper });
     expect(screen.getByText(new RegExp(t('data.restoreTitle'), 'i'))).toBeInTheDocument();
   });
 
   it('renders download backup button', () => {
-    render(<DataImportExport />);
+    render(<DataImportExport />, { wrapper });
     expect(screen.getByText(new RegExp(t('data.downloadBackup'), 'i'))).toBeInTheDocument();
   });
 
   it('renders select file button', () => {
-    render(<DataImportExport />);
+    render(<DataImportExport />, { wrapper });
     expect(screen.getByText(new RegExp(t('data.selectFile').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'))).toBeInTheDocument();
   });
 
   it('shows restore warning text', () => {
-    render(<DataImportExport />);
+    render(<DataImportExport />, { wrapper });
     expect(screen.getByText(/xoá toàn bộ/i)).toBeInTheDocument();
   });
 
@@ -57,7 +58,7 @@ describe('DataImportExport', () => {
     globalThis.URL.revokeObjectURL = revokeObjectURLSpy;
 
     const user = userEvent.setup();
-    render(<DataImportExport />);
+    render(<DataImportExport />, { wrapper });
     await user.click(screen.getByText(new RegExp(t('data.downloadBackup'), 'i')));
 
     await waitFor(() => {
@@ -68,7 +69,7 @@ describe('DataImportExport', () => {
   });
 
   it('import: valid JSON file opens confirm modal', async () => {
-    const { container } = render(<DataImportExport />);
+    const { container } = render(<DataImportExport />, { wrapper });
     const file = createJsonFile({ persons: [], relationships: [] });
     const input = container.querySelector('input[type="file"]') as HTMLInputElement;
 
@@ -83,7 +84,7 @@ describe('DataImportExport', () => {
   it('import: confirm calls importData', async () => {
     mockImportData.mockResolvedValue({ imported: { persons: 5, relationships: 10 } });
     const user = userEvent.setup();
-    const { container } = render(<DataImportExport />);
+    const { container } = render(<DataImportExport />, { wrapper });
     const file = createJsonFile({ persons: [1, 2, 3], relationships: [4, 5] });
     const input = container.querySelector('input[type="file"]') as HTMLInputElement;
 
@@ -104,7 +105,7 @@ describe('DataImportExport', () => {
   it('import: shows success message', async () => {
     mockImportData.mockResolvedValue({ imported: { persons: 5, relationships: 10 } });
     const user = userEvent.setup();
-    const { container } = render(<DataImportExport />);
+    const { container } = render(<DataImportExport />, { wrapper });
     const file = createJsonFile({ persons: [1], relationships: [2] });
     const input = container.querySelector('input[type="file"]') as HTMLInputElement;
 
@@ -121,7 +122,7 @@ describe('DataImportExport', () => {
 
   it('import: shows error for invalid structure', async () => {
     const user = userEvent.setup();
-    const { container } = render(<DataImportExport />);
+    const { container } = render(<DataImportExport />, { wrapper });
     const file = createJsonFile({ foo: 'bar' }, 'bad.json');
     const input = container.querySelector('input[type="file"]') as HTMLInputElement;
 
@@ -148,7 +149,7 @@ describe('DataImportExport', () => {
 
   it('import: cancel closes modal', async () => {
     const user = userEvent.setup();
-    const { container } = render(<DataImportExport />);
+    const { container } = render(<DataImportExport />, { wrapper });
     const file = createJsonFile({ persons: [], relationships: [] });
     const input = container.querySelector('input[type="file"]') as HTMLInputElement;
 
