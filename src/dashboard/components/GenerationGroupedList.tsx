@@ -109,7 +109,7 @@ function FamilyGroup({
   const firstBloodline = famPersons.find((p) => !p.isInLaw) || famPersons[0];
   const parentIds = parentsOf.get(firstBloodline.id) || [];
   const parents = parentIds.map((id) => initialPersons.find((p) => p.id === id)).filter(Boolean) as Person[];
-  const parentNames = parents.map((p) => p.fullName.split(' ').splice(-2).join(' ')).join(' & ');
+  const parentNames = parents.map((p) => p.fullName.trim().split(' ').splice(-2).join(' ')).join(' & ');
 
   const label = parentNames ? `${t('member.childrenOf')}: ${parentNames}` : totalFamilies > 1 ? `${t('member.family')} ${familyIndex + 1}` : null;
 
