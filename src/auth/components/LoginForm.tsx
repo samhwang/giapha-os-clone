@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import * as z from 'zod';
 import { authClient } from '../../auth/client';
 import { useAuthForm } from '../../auth/hooks/useAuthForm';
+import { Button } from '../../ui/common/Button';
 
 interface LoginFormProps {
   onSuccess: () => void;
@@ -83,10 +84,12 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       )}
 
       <div className="flex flex-col gap-4 pt-4">
-        <button
+        <Button
+          variant="dark"
+          size="xl"
           type="submit"
           disabled={form.state.isSubmitting}
-          className="group relative w-full flex justify-center items-center gap-2 py-4 px-4 text-base-plus font-bold rounded-xl text-white bg-stone-900 hover:bg-stone-800 border border-stone-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-900 disabled:opacity-70 disabled:cursor-wait transition-all duration-300 shadow-xl shadow-stone-900/10 hover:shadow-2xl hover:shadow-stone-900/20 hover:-translate-y-0.5"
+          className="w-full focus:ring-2 focus:ring-offset-2 focus:ring-stone-900 disabled:opacity-70 disabled:cursor-wait"
         >
           {form.state.isSubmitting ? (
             <span className="flex items-center gap-2.5">
@@ -104,7 +107,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           ) : (
             t('auth.loginButton')
           )}
-        </button>
+        </Button>
       </div>
     </form>
   );

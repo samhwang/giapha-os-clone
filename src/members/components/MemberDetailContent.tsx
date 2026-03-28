@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { calculateAge, formatDisplayDate, getLunarDateString, getZodiacAnimal, getZodiacSign } from '../../events/utils/dateHelpers';
 import RelationshipManager from '../../relationships/components/RelationshipManager';
 import Avatar from '../../ui/common/Avatar';
+import { Badge } from '../../ui/common/Badge';
+import { Card } from '../../ui/common/Card';
 import InLawBadge from '../../ui/common/InLawBadge';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 import { cn } from '../../ui/utils/cn';
@@ -82,20 +84,20 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
             <h1 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 flex items-center gap-2 sm:gap-3 flex-wrap">
               {person.fullName}
               {isDeceased && (
-                <span className="text-2xs sm:text-xs font-sans font-bold text-stone-500 border border-stone-200/80 bg-stone-100/50 rounded-md px-2 py-0.5 whitespace-nowrap uppercase tracking-wider shadow-xs">
+                <Badge color="stone" size="detail">
                   {t('member.filterDeceased')}
-                </span>
+                </Badge>
               )}
               {person.isInLaw && <InLawBadge size="detail" gender={person.gender} />}
               {person.birthOrder != null && (
-                <span className="text-2xs sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border text-amber-700 bg-amber-50/60 border-amber-200/60 uppercase tracking-wider">
+                <Badge color="amber" size="detail">
                   {person.birthOrder === 1 ? t('member.birthOrderFirst') : t('member.birthOrderN', { order: person.birthOrder })}
-                </span>
+                </Badge>
               )}
               {person.generation != null && (
-                <span className="text-2xs sm:text-xs font-sans font-bold rounded-md px-2 py-0.5 whitespace-nowrap shadow-xs border text-emerald-700 bg-emerald-50/60 border-emerald-200/60 uppercase tracking-wider">
+                <Badge color="emerald" size="detail">
                   {t('stats.generationLabel', { gen: person.generation })}
-                </span>
+                </Badge>
               )}
             </h1>
             {person.otherNames && (
@@ -105,13 +107,15 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
             )}
 
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-              <div
-                className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-stone-200/60 shadow-sm transition-all hover:shadow-md hover:border-amber-200/60 animate-[fade-in-up_0.4s_ease-out_forwards]"
+              <Card
+                variant="elevated"
+                interactive
+                className="p-4 animate-[fade-in-up_0.4s_ease-out_forwards]"
                 style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
-                  <h3 className="text-xs-plus font-bold text-stone-400 uppercase tracking-widest">{t('member.birth')}</h3>
+                  <h3 className="text-overline">{t('member.birth')}</h3>
                 </div>
                 <div className="space-y-1.5 pl-4 border-l-2 border-stone-100">
                   <p className="text-stone-800 font-semibold text-sm sm:text-base">
@@ -119,7 +123,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                   </p>
                   {(person.birthYear || person.birthMonth || person.birthDay) && (
                     <p className="text-sm font-medium text-stone-500 flex items-center gap-1.5">
-                      <span className="text-2xs border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
+                      <span className="text-2xs border border-border-default bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
                       {getLunarDateString({ year: person.birthYear, month: person.birthMonth, day: person.birthDay, leapLabel: t('common.lunarLeap') }) ||
                         t('common.unknown')}
                     </p>
@@ -145,16 +149,18 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                     </div>
                   )}
                 </div>
-              </div>
+              </Card>
 
               {isDeceased && (
-                <div
-                  className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-stone-200/60 shadow-sm transition-all hover:shadow-md hover:border-amber-200/60 animate-[fade-in-up_0.4s_ease-out_forwards]"
+                <Card
+                  variant="elevated"
+                  interactive
+                  className="p-4 animate-[fade-in-up_0.4s_ease-out_forwards]"
                   style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span className="size-2 rounded-full bg-stone-400 shadow-[0_0_8px_rgba(156,163,175,0.5)]" />
-                    <h3 className="text-xs-plus font-bold text-stone-400 uppercase tracking-widest">{t('member.death')}</h3>
+                    <h3 className="text-overline">{t('member.death')}</h3>
                   </div>
                   <div className="space-y-1.5 pl-4 border-l-2 border-stone-100">
                     <p className="text-stone-800 font-semibold text-sm sm:text-base">
@@ -162,13 +168,13 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                     </p>
                     {(person.deathYear || person.deathMonth || person.deathDay) && (
                       <p className="text-xs font-medium text-stone-500 flex items-center gap-1.5">
-                        <span className="text-2xs border border-stone-200/60 bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
+                        <span className="text-2xs border border-border-default bg-stone-50/80 rounded px-1.5 py-0.5">{t('member.lunarCalendar')}</span>
                         {getLunarDateString({ year: person.deathYear, month: person.deathMonth, day: person.deathDay, leapLabel: t('common.lunarLeap') }) ||
                           t('common.unknown')}
                       </p>
                     )}
                   </div>
-                </div>
+                </Card>
               )}
 
               {(() => {
@@ -221,12 +227,12 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                 <Info className="size-5 text-amber-600" />
                 {t('common.note')}
               </h2>
-              <div className="bg-white/80 backdrop-blur-sm p-5 sm:p-6 rounded-2xl border border-stone-200/60 shadow-sm">
+              <Card variant="elevated" className="p-5 sm:p-6">
                 {person.note ? (
                   <div className="relative">
                     <p
                       className={cn(
-                        'text-stone-600 whitespace-pre-wrap text-sm sm:text-base leading-relaxed transition-all duration-300',
+                        'text-stone-600 whitespace-pre-wrap text-sm sm:text-base leading-relaxed transition-all duration-default',
                         isNoteLong && !isNoteExpanded && 'max-h-28 overflow-hidden'
                       )}
                     >
@@ -242,14 +248,14 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                         className="relative z-10 mt-2 text-sm font-medium text-amber-700 hover:text-amber-800 flex items-center gap-1 transition-colors"
                       >
                         {isNoteExpanded ? t('member.noteCollapse') : t('member.noteExpand')}
-                        <ChevronDown className={cn('size-4 transition-transform duration-200', isNoteExpanded && 'rotate-180')} />
+                        <ChevronDown className={cn('size-4 transition-transform duration-fast', isNoteExpanded && 'rotate-180')} />
                       </button>
                     )}
                   </div>
                 ) : (
                   <p className="text-stone-400 italic text-sm sm:text-base">{t('member.noNote')}</p>
                 )}
-              </div>
+              </Card>
             </section>
 
             <section>
@@ -257,17 +263,17 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                 <Users className="size-5 text-amber-600" />
                 {t('member.family')}
               </h2>
-              <div className="bg-white/80 backdrop-blur-sm p-4 sm:p-6 rounded-2xl border border-stone-200/60 shadow-sm relative z-0">
+              <Card variant="elevated" className="p-4 sm:p-6 relative z-0">
                 <RelationshipManager person={person} canEdit={canEdit} onStatsLoaded={handleStatsLoaded} />
-              </div>
+              </Card>
             </section>
           </div>
 
           <div className="space-y-6">
             <div className="animate-[fade-in-up_0.4s_ease-out_forwards]" style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}>
               {isAdmin ? (
-                <div className="bg-stone-50 p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-sm">
-                  <h3 className="font-bold text-stone-900 mb-4 flex items-center gap-2 text-sm sm:text-base border-b border-stone-200/60 pb-3">
+                <div className="bg-stone-50 p-5 sm:p-6 rounded-2xl border border-border-strong shadow-sm">
+                  <h3 className="font-bold text-stone-900 mb-4 flex items-center gap-2 text-sm sm:text-base border-b border-border-default pb-3">
                     <span className="bg-amber-100/80 text-amber-700 p-1.5 rounded-lg border border-amber-200/50">🔒</span>
                     {t('member.contactInfo')}
                   </h3>
@@ -276,7 +282,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                       <dt className="text-xs-plus font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
                         <Phone className="w-3.5 h-3.5" /> {t('member.phone')}
                       </dt>
-                      <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-stone-200/60 shadow-xs">
+                      <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-border-default shadow-xs">
                         {privateData?.phoneNumber || <span className="text-stone-400 font-normal">{t('member.notUpdated')}</span>}
                       </dd>
                     </div>
@@ -284,7 +290,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                       <dt className="text-xs-plus font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
                         <Briefcase className="w-3.5 h-3.5" /> {t('member.occupation')}
                       </dt>
-                      <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-stone-200/60 shadow-xs">
+                      <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-border-default shadow-xs">
                         {privateData?.occupation || <span className="text-stone-400 font-normal">{t('member.notUpdated')}</span>}
                       </dd>
                     </div>
@@ -292,7 +298,7 @@ export default function MemberDetailContent({ person, privateData, isAdmin, canE
                       <dt className="text-xs-plus font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1.5 mb-1">
                         <MapPin className="w-3.5 h-3.5" /> {t('member.currentResidence')}
                       </dt>
-                      <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-stone-200/60 shadow-xs">
+                      <dd className="text-stone-900 font-medium bg-white px-3 py-2 rounded-lg border border-border-default shadow-xs">
                         {privateData?.currentResidence || <span className="text-stone-400 font-normal">{t('member.notUpdated')}</span>}
                       </dd>
                     </div>
@@ -318,13 +324,15 @@ function DescendantStatsCard({ stats, t }: { stats: DescendantStats; t: (key: st
   if (!hasData) return null;
 
   return (
-    <div
-      className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-stone-200/60 shadow-sm transition-all hover:shadow-md hover:border-amber-200/60 sm:col-span-2 md:col-span-3 animate-[fade-in-up_0.4s_ease-out_forwards]"
+    <Card
+      variant="elevated"
+      interactive
+      className="p-4 sm:col-span-2 md:col-span-3 animate-[fade-in-up_0.4s_ease-out_forwards]"
       style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }}
     >
       <div className="flex items-center gap-2 mb-3">
         <span className="size-2 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.5)]" />
-        <h3 className="text-xs-plus font-bold text-stone-400 uppercase tracking-widest">{t('member.descendants')}</h3>
+        <h3 className="text-overline">{t('member.descendants')}</h3>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {stats.biologicalChildren > 0 && (
@@ -403,6 +411,6 @@ function DescendantStatsCard({ stats, t }: { stats: DescendantStats; t: (key: st
           </div>
         )}
       </div>
-    </div>
+    </Card>
   );
 }

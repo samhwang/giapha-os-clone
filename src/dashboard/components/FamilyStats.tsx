@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { getZodiacAnimal, getZodiacSign } from '../../events/utils/dateHelpers';
 import { Gender, type Person } from '../../members/types';
 import { type Relationship, RelationshipType } from '../../relationships/types';
+import { Card } from '../../ui/common/Card';
+import { ProgressBar } from '../../ui/common/ProgressBar';
 import { cn } from '../../ui/utils/cn';
 
 interface FamilyStatsProps {
@@ -24,8 +26,9 @@ function StatCard({ label, value, total, icon, color, delay = 0 }: StatCardProps
   const pct = total > 0 ? Math.round((value / total) * 100) : 0;
 
   return (
-    <div
-      className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all group relative overflow-hidden animate-[fade-in-up_0.4s_ease-out_forwards]"
+    <Card
+      variant="elevated"
+      className="p-5 hover:shadow-md group relative overflow-hidden animate-[fade-in-up_0.4s_ease-out_forwards]"
       style={{ animationDelay: `${delay}s`, animationFillMode: 'backwards' }}
     >
       <div className={cn('absolute -top-6 -right-6 size-24 rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-opacity', color)} />
@@ -35,13 +38,8 @@ function StatCard({ label, value, total, icon, color, delay = 0 }: StatCardProps
       </div>
       <p className="text-3xl font-bold text-stone-800 relative z-10">{value}</p>
       <p className="text-sm font-medium text-stone-500 mt-0.5 relative z-10">{label}</p>
-      <div className="mt-3 h-1.5 bg-stone-100 rounded-full overflow-hidden relative z-10">
-        <div
-          className={cn('h-full rounded-full', color, 'transition-all duration-700 ease-out')}
-          style={{ width: `${pct}%`, transitionDelay: `${delay + 0.2}s` }}
-        />
-      </div>
-    </div>
+      <ProgressBar value={pct} max={100} size="sm" color={color} delay={delay + 0.2} className="mt-3 relative z-10" />
+    </Card>
   );
 }
 
@@ -58,9 +56,7 @@ function GenerationRow({ gen, count, max, delay }: GenerationRowProps) {
   return (
     <div className="flex items-center gap-3">
       <span className="text-xs font-bold text-stone-500 w-14 shrink-0">{t('stats.generationLabel', { gen })}</span>
-      <div className="flex-1 h-2 bg-stone-100 rounded-full overflow-hidden">
-        <div className="h-full bg-amber-400 rounded-full transition-all duration-600 ease-out" style={{ width: `${pct}%`, transitionDelay: `${delay}s` }} />
-      </div>
+      <ProgressBar value={pct} max={100} delay={delay} className="flex-1" />
       <span className="text-sm font-bold text-stone-700 w-8 text-right shrink-0">{count}</span>
     </div>
   );
@@ -151,11 +147,8 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
       </div>
 
       {stats.generationBreakdown.length > 0 && (
-        <div
-          className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-6 shadow-sm animate-[fade-in-up_0.4s_ease-out_forwards]"
-          style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}
-        >
-          <h2 className="text-base font-bold text-stone-700 mb-5 flex items-center gap-2">
+        <Card variant="elevated" className="p-6 animate-[fade-in-up_0.4s_ease-out_forwards]" style={{ animationDelay: '0.5s', animationFillMode: 'backwards' }}>
+          <h2 className="text-heading-card mb-5 flex items-center gap-2">
             <Crown className="size-4 text-amber-500" />
             {t('stats.generationDistribution')}
           </h2>
@@ -165,14 +158,11 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
             ))}
           </div>
           <p className="text-xs text-stone-400 mt-4 italic">{t('stats.generationNote')}</p>
-        </div>
+        </Card>
       )}
 
-      <div
-        className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-6 shadow-sm animate-[fade-in-up_0.4s_ease-out_forwards]"
-        style={{ animationDelay: '0.65s', animationFillMode: 'backwards' }}
-      >
-        <h2 className="text-base font-bold text-stone-700 mb-5 flex items-center gap-2">
+      <Card variant="elevated" className="p-6 animate-[fade-in-up_0.4s_ease-out_forwards]" style={{ animationDelay: '0.65s', animationFillMode: 'backwards' }}>
+        <h2 className="text-heading-card mb-5 flex items-center gap-2">
           <Users className="size-4 text-stone-500" />
           {t('stats.genderRatio')}
         </h2>
@@ -202,7 +192,7 @@ export default function FamilyStats({ persons, relationships }: FamilyStatsProps
             {t('stats.femaleCount', { count: stats.female, percentage: stats.total > 0 ? Math.round((stats.female / stats.total) * 100) : 0 })}
           </span>
         </div>
-      </div>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {stats.zodiacBreakdown.length > 0 && (
@@ -250,11 +240,12 @@ function ZodiacSection({
   baseDelay: number;
 }) {
   return (
-    <div
-      className="bg-white/80 border border-stone-200/60 rounded-2xl p-6 shadow-sm animate-[fade-in-up_0.4s_ease-out_forwards]"
+    <Card
+      variant="elevated"
+      className="p-6 animate-[fade-in-up_0.4s_ease-out_forwards]"
       style={{ animationDelay: `${baseDelay}s`, animationFillMode: 'backwards' }}
     >
-      <h2 className="text-base font-bold text-stone-700 mb-5 flex items-center gap-2">
+      <h2 className="text-heading-card mb-5 flex items-center gap-2">
         {icon}
         {title}
       </h2>
@@ -264,18 +255,13 @@ function ZodiacSection({
           return (
             <div key={name} className="flex items-center gap-3">
               <span className="text-sm font-bold text-stone-500 w-24 shrink-0">{name}</span>
-              <div className="flex-1 h-2 bg-stone-100 rounded-full overflow-hidden">
-                <div
-                  className={cn('h-full rounded-full transition-all duration-600 ease-out', barColor)}
-                  style={{ width: `${pct}%`, transitionDelay: `${baseDelay + 0.05 + i * 0.07}s` }}
-                />
-              </div>
+              <ProgressBar value={pct} max={100} color={barColor} delay={baseDelay + 0.05 + i * 0.07} className="flex-1" />
               <span className="text-sm font-bold text-stone-700 w-8 text-right shrink-0">{count}</span>
             </div>
           );
         })}
       </div>
       <p className="text-xs text-stone-400 mt-4 italic">{note}</p>
-    </div>
+    </Card>
   );
 }

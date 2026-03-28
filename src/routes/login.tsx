@@ -41,7 +41,7 @@ function LoginPage() {
           <div className="text-center mb-8 relative z-10">
             <Link
               to="/"
-              className="inline-flex items-center justify-center p-3.5 bg-white rounded-2xl mb-5 shadow-sm ring-1 ring-stone-100 hover:scale-105 hover:shadow-md transition-all duration-300"
+              className="inline-flex items-center justify-center p-3.5 bg-white rounded-2xl mb-5 shadow-sm ring-1 ring-stone-100 hover:scale-105 hover:shadow-md transition-all duration-default"
             >
               <Shield className="size-8 text-amber-600" />
             </Link>
@@ -61,7 +61,7 @@ function LoginPage() {
             <button
               type="button"
               onClick={() => setIsLogin(!isLogin)}
-              className="w-full text-sm font-semibold text-stone-600 hover:text-stone-900 bg-white hover:bg-stone-50 border border-stone-200/80 py-3.5 rounded-xl shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] focus:outline-none transition-all duration-200"
+              className="w-full text-sm font-semibold text-stone-600 hover:text-stone-900 bg-white hover:bg-stone-50 border border-border-strong py-3.5 rounded-xl shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] focus:outline-none transition-all duration-fast"
             >
               {isLogin ? t('auth.noAccount') : t('auth.hasAccount')}
             </button>
@@ -71,17 +71,17 @@ function LoginPage() {
 
       <Link
         to="/"
-        className="absolute top-6 left-6 z-20 flex items-center gap-2 text-stone-500 hover:text-stone-900 font-semibold text-sm transition-all duration-300 group bg-white/60 px-5 py-2.5 rounded-full backdrop-blur-md shadow-sm border border-stone-200 hover:border-stone-300 hover:shadow-md"
+        className="absolute top-6 left-6 z-20 flex items-center gap-2 text-stone-500 hover:text-stone-900 font-semibold text-sm transition-all duration-default group bg-surface-glass px-5 py-2.5 rounded-full backdrop-blur-md shadow-sm border border-stone-200 hover:border-stone-300 hover:shadow-md"
       >
         <ArrowLeft className="size-4 group-hover:-translate-x-1 transition-transform" />
         {t('common.homepage')}
       </Link>
 
       <div className="absolute top-6 right-6 z-20 flex items-center gap-3">
-        <LanguageSwitcher className="bg-white/60 px-4 py-2.5 rounded-full backdrop-blur-md shadow-sm border border-stone-200 hover:border-stone-300 hover:shadow-md" />
+        <LanguageSwitcher className="bg-surface-glass px-4 py-2.5 rounded-full backdrop-blur-md shadow-sm border border-stone-200 hover:border-stone-300 hover:shadow-md" />
         <Link
           to="/about"
-          className="flex items-center gap-2 text-stone-500 hover:text-stone-900 font-semibold text-sm transition-all duration-300 group bg-white/60 px-5 py-2.5 rounded-full backdrop-blur-md shadow-sm border border-stone-200 hover:border-stone-300 hover:shadow-md"
+          className="flex items-center gap-2 text-stone-500 hover:text-stone-900 font-semibold text-sm transition-all duration-default group bg-surface-glass px-5 py-2.5 rounded-full backdrop-blur-md shadow-sm border border-stone-200 hover:border-stone-300 hover:shadow-md"
         >
           <Info className="size-4 group-hover:scale-110 transition-transform" />
           {t('common.about')}

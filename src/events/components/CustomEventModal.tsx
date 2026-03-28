@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import { AlertCircle, Loader2, X } from 'lucide-react';
-import { useEffect } from 'react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Modal, ModalCloseButton, ModalPanel } from '../../ui/common/Modal';
 import { cn } from '../../ui/utils/cn';
 import { useCustomEventForm } from '../hooks/useCustomEventForm';
 import { createCustomEvent, deleteCustomEvent, updateCustomEvent } from '../server/customEvent';
@@ -77,46 +77,25 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
     },
   });
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
-
   const handleDelete = () => {
     if (!eventToEdit) return;
     if (!window.confirm(t('customEvent.deleteConfirm'))) return;
     deleteMutation.mutate(eventToEdit.id);
   };
 
-  if (!isOpen) return null;
-
   const inputClasses = cn(
     'bg-white text-stone-900 placeholder-stone-500 block w-full rounded-xl border border-stone-300 shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:bg-white text-sm px-4 py-3 transition-all outline-none'
   );
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 bg-stone-900/40 backdrop-blur-sm animate-[fade-in_0.2s_ease-out_forwards]">
-      <button type="button" className="absolute inset-0 cursor-pointer" onClick={onClose} aria-label="Close" />
-
-      <div className="relative bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col border border-stone-200 animate-[fade-in-up_0.25s_ease-out_forwards]">
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalPanel maxWidth="2xl">
         <div className="absolute top-4 right-4 sm:top-5 sm:right-5 z-20">
-          <button
-            type="button"
-            onClick={onClose}
-            className="size-10 flex items-center justify-center bg-stone-100/80 text-stone-600 rounded-full hover:bg-stone-200 hover:text-stone-900 shadow-sm border border-stone-200/50 transition-colors"
-          >
-            <X className="size-5" />
-          </button>
+          <ModalCloseButton onClick={onClose} />
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 sm:px-8 pt-16 pb-8">
-          <h2 className="text-xl font-serif font-bold text-stone-800 mb-6">{eventToEdit ? t('customEvent.editTitle') : t('customEvent.createTitle')}</h2>
+          <h2 className="text-heading-section mb-6">{eventToEdit ? t('customEvent.editTitle') : t('customEvent.createTitle')}</h2>
 
           {error && (
             <div className="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-sm font-medium flex items-start gap-3 shadow-sm">
@@ -133,11 +112,11 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
             }}
             className="space-y-6"
           >
-            <div className="bg-white/80 p-5 sm:p-6 rounded-2xl shadow-sm border border-stone-200/80 space-y-5">
+            <div className="bg-surface-elevated p-5 sm:p-6 rounded-2xl shadow-sm border border-border-strong space-y-5">
               <form.AppField name="name">
                 {(field) => (
                   <div>
-                    <label htmlFor={`ce-${field.name}`} className="block text-sm font-semibold text-stone-700 mb-1.5">
+                    <label htmlFor={`ce-${field.name}`} className="text-label">
                       {t('customEvent.name')} <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -215,7 +194,7 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
             </div>
           </form>
         </div>
-      </div>
-    </div>
+      </ModalPanel>
+    </Modal>
   );
 }

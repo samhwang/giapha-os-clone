@@ -1,5 +1,7 @@
 import { Minus, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { cardVariants } from '../../ui/common/Card';
+import { cn } from '../../ui/utils/cn';
 
 interface ZoomControlsProps {
   scale: number;
@@ -14,7 +16,7 @@ export default function ZoomControls({ scale, onZoomIn, onZoomOut, onResetZoom, 
   const { t } = useTranslation();
 
   return (
-    <div className="flex items-center bg-white/80 backdrop-blur-md shadow-sm border border-stone-200/60 rounded-full overflow-hidden h-10">
+    <div className={cn(cardVariants({ variant: 'elevated' }), 'flex items-center rounded-full h-10')}>
       <button
         type="button"
         onClick={onZoomOut}
