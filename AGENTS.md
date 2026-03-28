@@ -69,7 +69,7 @@ src/
 ├── members/              # Member CRUD
 ├── relationships/        # Kinship and relationships
 ├── routes/               # TanStack Start file-based routes
-├── ui/                   # Shared UI components (layout, icons, common)
+├── ui/                   # Shared UI components and design system (see docs/reference/02-reference.md)
 ├── database/             # Database layer (client, repositories, generated types)
 ├── config/               # App configuration (env validation, site settings)
 ├── lib/                  # Shared utilities (storage, dates, errors, logging, query keys)
