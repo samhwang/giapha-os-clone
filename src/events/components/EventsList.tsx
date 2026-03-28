@@ -3,6 +3,8 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import type { Person } from '../../members/types';
+import { Badge } from '../../ui/common/Badge';
+import { EmptyState } from '../../ui/common/EmptyState';
 import { cn } from '../../ui/utils/cn';
 import type { CustomEventRecord, EventType, FamilyEvent } from '../types';
 import { getTodayLunar, getZodiacSign } from '../utils/dateHelpers';
@@ -87,10 +89,10 @@ function EventCard({ event, index, onCustomEventClick }: EventCardProps) {
     : isToday
       ? 'bg-amber-50 border-amber-300 shadow-sm'
       : isCustom
-        ? 'bg-white/80 border-stone-200/60 hover:border-purple-200'
+        ? 'bg-surface-elevated border-border-default hover:border-purple-200'
         : isBirthday
-          ? 'bg-white/80 border-stone-200/60 hover:border-blue-200'
-          : 'bg-white/80 border-stone-200/60 hover:border-rose-200';
+          ? 'bg-surface-elevated border-border-default hover:border-blue-200'
+          : 'bg-surface-elevated border-border-default hover:border-rose-200';
 
   return (
     <button
@@ -110,12 +112,17 @@ function EventCard({ event, index, onCustomEventClick }: EventCardProps) {
         <div className="flex items-center gap-2">
           <p className="font-semibold text-stone-800 truncate group-hover:text-amber-700 transition-colors">{event.personName}</p>
           {isBirthday && event.originDay && event.originMonth && getZodiacSign(event.originDay, event.originMonth) && (
-            <span className="shrink-0 text-2xs font-sans font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/60 rounded-md px-1.5 py-0.5 whitespace-nowrap shadow-xs tracking-wider">
+            <Badge
+              size="sm"
+              className="shrink-0 text-2xs font-sans font-bold text-indigo-700 bg-indigo-50 border-indigo-200/60 tracking-wider whitespace-nowrap"
+            >
               {getZodiacSign(event.originDay, event.originMonth)}
-            </span>
+            </Badge>
           )}
           {yearsInfo && (
-            <span className="shrink-0 text-2xs font-semibold text-stone-500 bg-stone-100 rounded-md px-1.5 py-0.5 whitespace-nowrap">{yearsInfo}</span>
+            <Badge size="sm" className="shrink-0 text-2xs font-semibold whitespace-nowrap">
+              {yearsInfo}
+            </Badge>
           )}
         </div>
         <div className="flex flex-col gap-1 mt-0.5">
@@ -248,7 +255,7 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
               'px-4 py-2 rounded-xl text-sm font-semibold transition-all',
               filter === tab.key
                 ? 'bg-amber-500 text-white shadow-sm'
-                : 'bg-white/80 text-stone-600 border border-stone-200/60 hover:border-amber-200 hover:text-amber-700'
+                : 'bg-surface-elevated text-stone-600 border border-border-default hover:border-amber-200 hover:text-amber-700'
             )}
           >
             {tab.label}
@@ -286,11 +293,7 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
       )}
 
       {visible.length === 0 ? (
-        <div className="text-center py-16 text-stone-400 animate-[fade-in_0.3s_ease-out_forwards]">
-          <CalendarDays className="size-10 mx-auto mb-3 opacity-40" />
-          <p className="font-medium">{t('events.emptyTitle')}</p>
-          <p className="text-sm mt-1">{t('events.emptyDesc')}</p>
-        </div>
+        <EmptyState icon={<CalendarDays className="size-10 opacity-40" />} title={t('events.emptyTitle')} description={t('events.emptyDesc')} />
       ) : (
         <div className="space-y-2.5">
           {visible.map((event, i) => (

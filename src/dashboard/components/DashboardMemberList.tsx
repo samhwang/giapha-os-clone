@@ -5,6 +5,9 @@ import PersonCard from '../../members/components/PersonCard';
 import { Gender, type Person } from '../../members/types';
 import { buildFamilyGroupedSort, FALLBACK_BIRTH_YEAR } from '../../members/utils/familyGrouping';
 import type { Relationship } from '../../relationships/types';
+import { Button } from '../../ui/common/Button';
+import { Card } from '../../ui/common/Card';
+import { EmptyState } from '../../ui/common/EmptyState';
 import { useDashboardStore } from '../store/dashboardStore';
 import GenerationGroupedList from './GenerationGroupedList';
 
@@ -102,14 +105,14 @@ export default function DashboardMemberList({ initialPersons, relationships = []
   return (
     <>
       <div className="mb-8 relative">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/60 backdrop-blur-xl p-4 sm:p-5 rounded-2xl shadow-sm border border-stone-200/60 transition-all duration-300 relative z-10 w-full">
+        <Card className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 sm:p-5 relative z-10 w-full">
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto flex-1">
             <div className="relative flex-1 max-w-sm group">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
               <input
                 type="text"
                 placeholder={t('member.searchPlaceholder')}
-                className="bg-white/90 text-stone-900 w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200/80 shadow-sm placeholder-stone-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                className="bg-white/90 text-stone-900 w-full pl-10 pr-4 py-2.5 rounded-xl border border-border-strong shadow-sm placeholder-stone-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 transition-all"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -118,7 +121,7 @@ export default function DashboardMemberList({ initialPersons, relationships = []
               <div className="relative w-full sm:w-auto">
                 <Filter className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none" />
                 <select
-                  className="appearance-none bg-white/90 text-stone-700 w-full sm:w-40 pl-9 pr-8 py-2.5 rounded-xl border border-stone-200/80 shadow-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 hover:border-amber-300 font-medium text-sm transition-all focus:bg-white"
+                  className="appearance-none bg-white/90 text-stone-700 w-full sm:w-40 pl-9 pr-8 py-2.5 rounded-xl border border-border-strong shadow-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 hover:border-amber-300 font-medium text-sm transition-all focus:bg-white"
                   value={filterOption}
                   onChange={(e) => setFilterOption(e.target.value)}
                 >
@@ -141,7 +144,7 @@ export default function DashboardMemberList({ initialPersons, relationships = []
               <div className="relative w-full sm:w-auto">
                 <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none" />
                 <select
-                  className="appearance-none bg-white/90 text-stone-700 w-full sm:w-52 pl-9 pr-8 py-2.5 rounded-xl border border-stone-200/80 shadow-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 hover:border-amber-300 font-medium text-sm transition-all focus:bg-white"
+                  className="appearance-none bg-white/90 text-stone-700 w-full sm:w-52 pl-9 pr-8 py-2.5 rounded-xl border border-border-strong shadow-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 hover:border-amber-300 font-medium text-sm transition-all focus:bg-white"
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
                 >
@@ -163,16 +166,14 @@ export default function DashboardMemberList({ initialPersons, relationships = []
               </div>
             </div>
           </div>
-          <button type="button" onClick={() => setShowCreateModal(true)} className="btn-primary">
+          <Button variant="primary" onClick={() => setShowCreateModal(true)}>
             <Plus className="size-4" strokeWidth={2.5} />
             {t('member.addMember')}
-          </button>
-        </div>
+          </Button>
+        </Card>
       </div>
 
-      {sortedPersons.length === 0 && (
-        <div className="text-center py-12 text-stone-400 italic">{initialPersons.length > 0 ? t('member.noResults') : t('member.emptyState')}</div>
-      )}
+      {sortedPersons.length === 0 && <EmptyState title={initialPersons.length > 0 ? t('member.noResults') : t('member.emptyState')} className="py-12" />}
 
       {sortedPersons.length > 0 && isGenerationSort && (
         <GenerationGroupedList
@@ -186,7 +187,7 @@ export default function DashboardMemberList({ initialPersons, relationships = []
       )}
 
       {sortedPersons.length > 0 && !isGenerationSort && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="layout-card-grid">
           {sortedPersons.map((person) => (
             <PersonCard key={person.id} person={person} />
           ))}

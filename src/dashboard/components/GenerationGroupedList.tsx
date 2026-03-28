@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import PersonCard from '../../members/components/PersonCard';
 import type { Person } from '../../members/types';
 import { buildCoupleGroups, type PersonWithFamily } from '../../members/utils/familyGrouping';
+import { Card } from '../../ui/common/Card';
 
 interface GenerationGroupedListProps {
   persons: PersonWithFamily[];
@@ -116,7 +117,7 @@ function FamilyGroup({
   const coupleGroups = buildCoupleGroups(famPersons, spousesOf);
 
   return (
-    <div className="relative bg-white border border-stone-300 rounded-[2.5rem] p-5 sm:p-8 shadow-sm">
+    <Card variant="elevated" className="relative bg-white rounded-[2.5rem] p-5 sm:p-8 border-stone-300">
       {label && (
         <div className="absolute -top-3 left-8 px-3 py-0.5 bg-stone-100 text-xs font-bold text-stone-600 tracking-widest border border-stone-300 rounded-full shadow-sm z-20">
           {label}
@@ -127,7 +128,7 @@ function FamilyGroup({
           <CoupleGroup key={group[0]?.id ?? 'empty'} group={group} />
         ))}
       </div>
-    </div>
+    </Card>
   );
 }
 

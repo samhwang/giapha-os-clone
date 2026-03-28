@@ -14,7 +14,7 @@ export default function CustomEventField({ label, required, className, placehold
   const field = useFieldContext<string | undefined>();
   return (
     <div>
-      <label htmlFor={`ce-${field.name}`} className="block text-sm font-semibold text-stone-700 mb-1.5">
+      <label htmlFor={`ce-${field.name}`} className="text-label">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <div className="relative">

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import { Gender, type Person } from '../../members/types';
+import { Button } from '../../ui/common/Button';
+import { INPUT_BASE } from '../../ui/common/Input';
 import { cn } from '../../ui/utils/cn';
 import { RelationshipType } from '../types';
 
@@ -12,6 +14,8 @@ interface AddRelationshipFormProps {
   allPersons: Person[];
   personId: string;
 }
+
+const COMPACT_INPUT = cn(INPUT_BASE, 'text-sm rounded-md sm:rounded-lg p-2 sm:p-2.5');
 
 export default function AddRelationshipForm({ onSubmit, onCancel, processing, allPersons, personId }: AddRelationshipFormProps) {
   const { t } = useTranslation();
@@ -63,19 +67,14 @@ export default function AddRelationshipForm({ onSubmit, onCancel, processing, al
             placeholder={t('relationship.notePlaceholder')}
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 sm:p-2.5 border mb-3 transition-colors"
+            className={cn(COMPACT_INPUT, 'mb-3')}
           />
         </div>
         <div>
           <label htmlFor="relDirection" className="block text-xs font-medium text-stone-500 mb-1">
             {t('relationship.typeLabel')}
           </label>
-          <select
-            id="relDirection"
-            value={direction}
-            onChange={(e) => setDirection(e.target.value as 'parent' | 'child' | 'spouse')}
-            className="bg-white text-stone-900 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 sm:p-2.5 border transition-colors"
-          >
+          <select id="relDirection" value={direction} onChange={(e) => setDirection(e.target.value as 'parent' | 'child' | 'spouse')} className={COMPACT_INPUT}>
             <option value="parent">{t('relationship.typeChild')}</option>
             <option value="spouse">{t('relationship.typeSpouse')}</option>
             <option value="child">{t('relationship.typeParent')}</option>
@@ -87,12 +86,7 @@ export default function AddRelationshipForm({ onSubmit, onCancel, processing, al
             <label htmlFor="relType" className="block text-xs font-medium text-stone-500 mb-1">
               {t('relationship.detailLabel')}
             </label>
-            <select
-              id="relType"
-              value={type}
-              onChange={(e) => setType(e.target.value as RelationshipType)}
-              className="bg-white text-stone-900 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 sm:p-2.5 border transition-colors"
-            >
+            <select id="relType" value={type} onChange={(e) => setType(e.target.value as RelationshipType)} className={COMPACT_INPUT}>
               <option value="biological_child">{t('relationship.biological')}</option>
               <option value="adopted_child">{t('relationship.adopted')}</option>
             </select>
@@ -109,7 +103,7 @@ export default function AddRelationshipForm({ onSubmit, onCancel, processing, al
             placeholder={t('relationship.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 sm:p-2.5 border transition-colors"
+            className={COMPACT_INPUT}
           />
           {searchResults.length > 0 && (
             <div className="mt-2 bg-white border border-stone-200 rounded-md shadow-lg max-h-62.5 overflow-y-auto">
@@ -151,21 +145,12 @@ export default function AddRelationshipForm({ onSubmit, onCancel, processing, al
         </div>
 
         <div className="flex gap-2 pt-2">
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={!selectedTargetId || processing}
-            className="flex-1 bg-amber-700 text-white py-2 sm:py-2.5 rounded-md sm:rounded-lg text-sm font-medium hover:bg-amber-800 disabled:opacity-50 transition-colors"
-          >
+          <Button variant="primary" size="sm" onClick={handleSubmit} disabled={!selectedTargetId || processing} className="flex-1 rounded-md sm:rounded-lg">
             {processing ? t('common.saving') : t('common.save')}
-          </button>
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="px-4 py-2 sm:py-2.5 bg-white border border-stone-300 text-stone-700 rounded-md sm:rounded-lg text-sm hover:bg-stone-50 transition-colors"
-          >
+          </Button>
+          <Button size="sm" onClick={handleCancel} className="rounded-md sm:rounded-lg">
             {t('common.cancel')}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

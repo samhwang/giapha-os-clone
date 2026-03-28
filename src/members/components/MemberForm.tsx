@@ -6,6 +6,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { logger } from '../../lib/logger';
 import Avatar from '../../ui/common/Avatar';
+import { Button } from '../../ui/common/Button';
+import { Card } from '../../ui/common/Card';
 import Checkbox from '../../ui/common/Checkbox';
 import { cn } from '../../ui/utils/cn';
 import { useAvatarUpload } from '../hooks/useAvatarUpload';
@@ -223,14 +225,14 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
         form.handleSubmit();
       }}
     >
-      <div className="bg-white/80 backdrop-blur-md p-5 sm:p-8 rounded-2xl shadow-sm border border-stone-200/80 animate-[fade-in-up_0.3s_ease-out_forwards]">
-        <h3 className="text-lg sm:text-xl font-serif font-bold text-stone-800 mb-6 border-b border-stone-100 pb-4 flex items-center gap-2">
+      <Card variant="elevated" className="p-5 sm:p-8 animate-[fade-in-up_0.3s_ease-out_forwards]">
+        <h3 className="text-heading-section mb-6 border-b border-stone-100 pb-4 flex items-center gap-2">
           <User className="size-5 text-amber-600" />
           {t('member.generalInfo')}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2">
-            <label htmlFor="fullName" className="block text-sm font-semibold text-stone-700 mb-1.5">
+            <label htmlFor="fullName" className="text-label">
               {t('member.fullName')} <span className="text-red-500">*</span>
             </label>
             <form.AppField name="fullName">
@@ -249,7 +251,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
           </div>
 
           <div className="md:col-span-2">
-            <label htmlFor="otherNames" className="block text-sm font-semibold text-stone-700 mb-1.5">
+            <label htmlFor="otherNames" className="text-label">
               {t('member.otherNames')}
             </label>
             <form.AppField name="otherNames">
@@ -267,7 +269,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
           </div>
 
           <div>
-            <label htmlFor="gender" className="block text-sm font-semibold text-stone-700 mb-1.5">
+            <label htmlFor="gender" className="text-label">
               {t('member.gender')} <span className="text-red-500">*</span>
             </label>
             <form.AppField name="gender">
@@ -298,7 +300,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
           </div>
 
           <div>
-            <label htmlFor="birthOrder" className="block text-sm font-semibold text-stone-700 mb-1.5">
+            <label htmlFor="birthOrder" className="text-label">
               {t('member.birthOrder')}
             </label>
             <form.AppField name="birthOrder">
@@ -320,7 +322,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
           </div>
 
           <div>
-            <label htmlFor="generation" className="block text-sm font-semibold text-stone-700 mb-1.5">
+            <label htmlFor="generation" className="text-label">
               {t('member.generation')}
             </label>
             <form.AppField name="generation">
@@ -398,7 +400,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
           </div>
 
           <div className="md:col-span-2">
-            <label htmlFor="birthDay" className="block text-sm font-semibold text-stone-700 mb-1.5">
+            <label htmlFor="birthDay" className="text-label">
               {t('member.solarBirthDate')}
             </label>
             <div className="grid grid-cols-3 gap-3">
@@ -443,7 +445,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             </div>
           </div>
 
-          <div className="md:col-span-2 bg-stone-50/50 p-5 rounded-2xl border border-stone-200/60 shadow-xs">
+          <div className="md:col-span-2 bg-stone-50/50 p-5 rounded-2xl border border-border-default shadow-xs">
             <div className="flex flex-col gap-4">
               <form.AppField name="isDeceased">
                 {(field) => (
@@ -586,7 +588,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
           </div>
 
           <div className="md:col-span-2">
-            <label htmlFor="note" className="block text-sm font-semibold text-stone-700 mb-1.5">
+            <label htmlFor="note" className="text-label">
               {t('common.note')}
             </label>
             <form.AppField name="note">
@@ -603,7 +605,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             </form.AppField>
           </div>
         </div>
-      </div>
+      </Card>
 
       {isAdmin && (
         <div
@@ -705,13 +707,11 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
         className="flex justify-end gap-3 sm:gap-4 pt-6 animate-[fade-in-up_0.3s_ease-out_forwards]"
         style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}
       >
-        <button type="button" onClick={() => (onCancel ? onCancel() : window.history.back())} className="btn">
-          {t('member.cancelButton')}
-        </button>
-        <button type="submit" disabled={isSubmitting} className="btn-primary">
+        <Button onClick={() => (onCancel ? onCancel() : window.history.back())}>{t('member.cancelButton')}</Button>
+        <Button variant="primary" type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="size-4 animate-spin" />}
           {isSubmitting ? t('common.saving') : isEditing ? t('member.saveChanges') : t('member.addMember')}
-        </button>
+        </Button>
       </div>
     </form>
   );

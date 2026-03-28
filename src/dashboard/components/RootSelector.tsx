@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Gender, type Person } from '../../members/types';
 import Avatar from '../../ui/common/Avatar';
+import { EmptyState } from '../../ui/common/EmptyState';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 import { cn } from '../../ui/utils/cn';
 import { getGenderStyle } from '../../ui/utils/styles';
@@ -46,10 +47,10 @@ export default function RootSelector({ persons, currentRootId }: RootSelectorPro
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          'w-full flex items-center gap-3 bg-white/60 backdrop-blur-md border rounded-xl px-3 py-2 text-sm shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 group',
+          'w-full flex items-center gap-3 bg-surface-glass backdrop-blur-md border rounded-xl px-3 py-2 text-sm shadow-sm transition-all duration-default focus:outline-none focus:ring-2 focus:ring-amber-500/20 group',
           isOpen
             ? 'border-amber-300 bg-white shadow-md ring-2 ring-amber-500/10'
-            : 'border-stone-200/60 hover:border-amber-300 hover:bg-white/90 hover:shadow-md'
+            : 'border-border-default hover:border-amber-300 hover:bg-white/90 hover:shadow-md'
         )}
       >
         <div className="relative shrink-0">
@@ -88,19 +89,19 @@ export default function RootSelector({ persons, currentRootId }: RootSelectorPro
           </p>
         </div>
 
-        <div className={cn('transition-transform duration-300', isOpen && 'rotate-180')}>
+        <div className={cn('transition-transform duration-default', isOpen && 'rotate-180')}>
           <ChevronDown className={cn('size-4 shrink-0', isOpen ? 'text-amber-600' : 'text-stone-400 group-hover:text-stone-600')} />
         </div>
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-white/95 backdrop-blur-xl border border-stone-200/80 rounded-xl shadow-xl max-h-80 flex flex-col overflow-hidden ring-1 ring-black/5 animate-[scale-in_0.2s_ease-out_forwards]">
+        <div className="absolute z-50 w-full mt-2 bg-surface-panel backdrop-blur-xl border border-border-strong rounded-xl shadow-xl max-h-80 flex flex-col overflow-hidden ring-1 ring-black/5 animate-[scale-in_0.2s_ease-out_forwards]">
           <div className="p-2 border-b border-stone-100/80 bg-stone-50/50 backdrop-blur-sm sticky top-0 z-10">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400" />
               <input
                 type="text"
-                className="w-full text-stone-900 placeholder-stone-400 bg-white border border-stone-200/80 rounded-lg pl-9 pr-3 py-2 text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all shadow-sm"
+                className="w-full text-stone-900 placeholder-stone-400 bg-white border border-border-strong rounded-lg pl-9 pr-3 py-2 text-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-all shadow-sm"
                 placeholder={t('nav.searchMember')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -118,7 +119,7 @@ export default function RootSelector({ persons, currentRootId }: RootSelectorPro
                       key={person.id}
                       onClick={() => handleSelect(person.id)}
                       className={cn(
-                        'w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-all duration-200 group/item',
+                        'w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-all duration-fast group/item',
                         isSelected
                           ? 'bg-amber-50 text-amber-900 border border-amber-200/50 shadow-sm'
                           : 'text-stone-700 hover:bg-stone-100/80 border border-transparent'
@@ -156,13 +157,12 @@ export default function RootSelector({ persons, currentRootId }: RootSelectorPro
                 })}
               </div>
             ) : (
-              <div className="px-4 py-8 text-center flex flex-col items-center justify-center gap-2">
-                <div className="size-10 rounded-full bg-stone-100 flex items-center justify-center mb-1">
-                  <Search className="size-5 text-stone-300" />
-                </div>
-                <div className="text-sm font-medium text-stone-600">{t('nav.noSearchResults')}</div>
-                <div className="text-xs text-stone-400">{t('nav.tryDifferentSearch')}</div>
-              </div>
+              <EmptyState
+                icon={<Search className="size-10 text-stone-300" />}
+                title={t('nav.noSearchResults')}
+                description={t('nav.tryDifferentSearch')}
+                className="px-4 py-8"
+              />
             )}
           </div>
         </div>

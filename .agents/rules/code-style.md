@@ -110,7 +110,58 @@ interface AvatarProps extends VariantProps<typeof avatarVariants> {
 }
 ```
 
-Existing CVA components: `Avatar` (`src/ui/common/Avatar.tsx`), `InLawBadge` (`src/ui/common/InLawBadge.tsx`).
+Existing CVA components in `src/ui/common/`: `Card`, `Badge`, `Button`, `Avatar`, `InLawBadge`. See [Reference](../../docs/reference/02-reference.md#shared-ui-components-design-system) for the full component list and design tokens.
+
+### Design System Policy
+
+All screens and components must use the design system. See [Reference](../../docs/reference/02-reference.md#design-tokens) for the complete token, typography, and layout utility tables.
+
+**Tokens** — Use semantic tokens over hardcoded Tailwind colors:
+```tsx
+// ✅ Semantic tokens
+<div className="bg-surface-glass border-border-default text-text-primary rounded-card shadow-card duration-default">
+
+// ❌ Hardcoded values
+<div className="bg-white/60 border-stone-200/60 text-stone-900 rounded-2xl shadow-sm duration-300">
+```
+
+**Typography** — Use typography utility classes:
+```tsx
+// ✅ Typography utilities
+<h1 className="text-heading-page">{title}</h1>
+<label className="text-label">{label}</label>
+<p className="text-description">{desc}</p>
+
+// ❌ Inline typography combos
+<h1 className="text-xl sm:text-2xl font-serif font-bold text-stone-800">{title}</h1>
+```
+
+**Layout** — Use layout utility classes:
+```tsx
+// ✅ Layout utilities
+<div className="layout-page">...</div>
+<div className="layout-card-grid">...</div>
+
+// ❌ Inline layout combos
+<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">...</div>
+```
+
+**Components** — Use shared components from `src/ui/common/`:
+```tsx
+<Card variant="glass" interactive>...</Card>
+<Badge color="amber">Label</Badge>
+<Button variant="primary">Save</Button>
+<Modal isOpen onClose={close}><ModalPanel>...</ModalPanel></Modal>
+<Input label="Name" error={error} leftIcon={<Search />} />
+<EmptyState icon={<Icon />} title="No results" />
+<ProgressBar value={50} max={100} color="bg-amber-400" />
+```
+
+**Custom classes** — Any Tailwind class that deviates from the design system must include a comment:
+```tsx
+{/* custom: landing page hero needs larger shadow for visual emphasis */}
+<div className="shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+```
 
 ## Import Order
 

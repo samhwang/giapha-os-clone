@@ -15,7 +15,7 @@ Key design decisions:
 - **Better Auth over Supabase Auth**: Self-hosted authentication with no external dependency. Session-based auth stored in cookies.
 - **[TanStack Query](https://tanstack.com/query/latest) for server state**: Handles caching, background refetching, and deduplication of server data. Server functions fetch data; TanStack Query manages when to refetch and how to cache it on the client.
 - **unstorage over direct filesystem calls**: Abstraction layer that supports both local filesystem and S3-compatible storage via a single `STORAGE_PROVIDER` environment variable.
-- **Tailwind CSS v4 over CSS Modules**: Utility-first styling with built-in animation support. Consistent design system without maintaining separate CSS files.
+- **Tailwind CSS v4 over CSS Modules**: Utility-first styling with built-in animation support. Semantic design tokens defined as CSS custom properties in `src/styles.css` and registered in Tailwind's `@theme inline` block enable theming (dark mode, custom themes) by overriding `:root` variables. Reusable UI components in `src/ui/common/` use [CVA](https://cva.style/) for type-safe variants.
 
 ## Domain Module Convention
 
