@@ -109,7 +109,7 @@ function DashboardLaunchpad() {
       {/* Today's Date & Upcoming Events */}
       <Link
         to="/dashboard/events"
-        className="group relative block overflow-hidden rounded-3xl bg-white border border-stone-200/60 shadow-sm hover:shadow-stone-100 hover:border-stone-400 mb-10 transition-all duration-300 hover:-translate-y-1"
+        className="group relative block overflow-hidden rounded-3xl bg-white border border-border-default shadow-sm hover:shadow-stone-100 hover:border-stone-400 mb-10 transition-all duration-default hover:-translate-y-1"
       >
         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-50/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none opacity-50" />
 
@@ -143,7 +143,7 @@ function DashboardLaunchpad() {
                     </span>
                     {t('launchpad.upcomingEvents', { count: upcomingEvents.length })}
                   </p>
-                  <ArrowRight className="size-5 text-stone-300 group-hover:text-stone-500 group-hover:translate-x-1 transition-all duration-300" />
+                  <ArrowRight className="size-5 text-stone-300 group-hover:text-stone-500 group-hover:translate-x-1 transition-all duration-default" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {upcomingEvents.slice(0, MAX_DISPLAYED_EVENTS).map((evt) => {
@@ -153,7 +153,7 @@ function DashboardLaunchpad() {
                     return (
                       <div
                         key={`${evt.personId}-${evt.type}`}
-                        className="flex items-center gap-3.5 p-3 rounded-2xl bg-stone-50/50 hover:bg-stone-50 border border-transparent hover:border-stone-100 transition-all duration-300 cursor-pointer"
+                        className="flex items-center gap-3.5 p-3 rounded-2xl bg-stone-50/50 hover:bg-stone-50 border border-transparent hover:border-stone-100 transition-all duration-default cursor-pointer"
                       >
                         <div className={cn('size-10 rounded-xl', cfg.bg, 'flex items-center justify-center shrink-0 shadow-sm border border-white')}>
                           <Icon className={cn('size-4', cfg.color)} />
@@ -207,10 +207,10 @@ function DashboardLaunchpad() {
                   'group flex flex-col p-6 rounded-2xl bg-white border',
                   feat.borderColor,
                   feat.hoverColor,
-                  'transition-all duration-300 hover:-translate-y-1 shadow-sm'
+                  'transition-all duration-default hover:-translate-y-1 shadow-sm'
                 )}
               >
-                <div className={cn('size-14 rounded-xl flex items-center justify-center mb-5', feat.bgColor, 'transition-colors duration-300')}>
+                <div className={cn('size-14 rounded-xl flex items-center justify-center mb-5', feat.bgColor, 'transition-colors duration-default')}>
                   {feat.icon}
                 </div>
                 <h4 className={cn('text-lg font-bold text-stone-800 mb-2', feat.hoverTitle, 'transition-colors')}>{feat.title}</h4>
@@ -235,10 +235,10 @@ function DashboardLaunchpad() {
                     'group flex flex-col p-6 rounded-2xl bg-white border',
                     feat.borderColor,
                     feat.hoverColor,
-                    'transition-all duration-300 hover:-translate-y-1 shadow-sm'
+                    'transition-all duration-default hover:-translate-y-1 shadow-sm'
                   )}
                 >
-                  <div className={cn('size-14 rounded-xl flex items-center justify-center mb-5', feat.bgColor, 'transition-colors duration-300')}>
+                  <div className={cn('size-14 rounded-xl flex items-center justify-center mb-5', feat.bgColor, 'transition-colors duration-default')}>
                     {feat.icon}
                   </div>
                   <h4 className="text-lg font-bold text-stone-800 mb-2 group-hover:text-rose-700 transition-colors">{feat.title}</h4>

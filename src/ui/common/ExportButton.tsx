@@ -4,6 +4,7 @@ import { Download, FileImage, FileText, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { logger } from '../../lib/logger';
+import { Button } from './Button';
 
 export default function ExportButton() {
   const { t } = useTranslation();
@@ -76,10 +77,10 @@ export default function ExportButton() {
 
   return (
     <div className="relative" ref={menuRef}>
-      <button type="button" onClick={() => setShowMenu(!showMenu)} disabled={isExporting} className="btn">
+      <Button onClick={() => setShowMenu(!showMenu)} disabled={isExporting}>
         {isExporting ? <Loader2 className="size-4 shrink-0 animate-spin" /> : <Download className="size-4 shrink-0" />}
         <span className="hidden sm:inline tracking-wide min-w-max">{isExporting ? t('export.exporting') : t('export.exportFile')}</span>
-      </button>
+      </Button>
 
       {exportError && (
         <div className="absolute top-full right-0 mt-2 w-56 bg-red-50 border border-red-200 text-red-700 text-xs font-medium rounded-lg p-3 shadow-lg z-50 flex items-center justify-between gap-2">
@@ -91,7 +92,7 @@ export default function ExportButton() {
       )}
 
       {showMenu && !isExporting && (
-        <div className="absolute top-full right-0 sm:right-auto sm:left-0 mt-2 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-stone-200/60 py-2 z-50 overflow-hidden animate-[scale-in_0.15s_ease-out_forwards]">
+        <div className="absolute top-full right-0 sm:right-auto sm:left-0 mt-2 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-border-default py-2 z-50 overflow-hidden animate-[scale-in_0.15s_ease-out_forwards]">
           <button
             type="button"
             onClick={() => handleExport('png')}
