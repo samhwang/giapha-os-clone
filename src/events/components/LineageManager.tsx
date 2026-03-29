@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Person } from '../../members/types';
 import { type Relationship, RelationshipType } from '../../relationships/types';
+import { Button } from '../../ui/common/Button';
 import { cn } from '../../ui/utils/cn';
 import { updateBatch } from '../server/lineage';
 
@@ -304,26 +305,16 @@ export default function LineageManager({ persons, relationships }: LineageManage
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-3">
-        <button
-          type="button"
-          onClick={handleCompute}
-          disabled={computing || applying}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
-        >
+        <Button variant="ghost" onClick={handleCompute} disabled={computing || applying} className="bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl">
           {computing ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
           {computing ? t('lineage.calculating') : t('lineage.calculate')}
-        </button>
+        </Button>
 
         {updates && changedCount > 0 && !applied && (
-          <button
-            type="button"
-            onClick={handleApply}
-            disabled={applying}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm shadow-sm"
-          >
+          <Button variant="primary" onClick={handleApply} disabled={applying} className="rounded-xl">
             {applying ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
             {applying ? t('lineage.updating') : t('lineage.applyChanges', { count: changedCount })}
-          </button>
+          </Button>
         )}
       </div>
 
@@ -347,11 +338,11 @@ export default function LineageManager({ persons, relationships }: LineageManage
             <p className="text-sm text-stone-500 font-medium">{t('lineage.changesSummary', { changed: changedCount, total: updates.length })}</p>
           </div>
 
-          <div className="rounded-2xl border border-stone-200/80 overflow-hidden shadow-sm">
+          <div className="rounded-2xl border border-border-strong overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-stone-50 border-b border-stone-200/80">
+                  <tr className="bg-stone-50 border-b border-border-strong">
                     <th className="text-left px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.nameHeader')}</th>
                     <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.generationHeader')}</th>
                     <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.birthOrderHeader')}</th>
@@ -398,7 +389,7 @@ export default function LineageManager({ persons, relationships }: LineageManage
                             {t('common.update')}
                           </span>
                         ) : (
-                          <span className="inline-block px-2 py-0.5 rounded-full text-xs-plus font-bold bg-stone-100 text-stone-400 border border-stone-200/60">
+                          <span className="inline-block px-2 py-0.5 rounded-full text-xs-plus font-bold bg-stone-100 text-stone-400 border border-border-default">
                             {t('common.unchanged')}
                           </span>
                         )}
