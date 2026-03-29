@@ -2,6 +2,9 @@ import { useMutation } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserRole } from '../../auth/types';
+import { Button } from '../../ui/common/Button';
+import { Card } from '../../ui/common/Card';
+import { Modal, ModalPanel } from '../../ui/common/Modal';
 import { cn } from '../../ui/utils/cn';
 import { useAdminForm } from '../hooks/useAdminForm';
 import { changeRole, createUser, deleteUser, toggleStatus } from '../server/user';
@@ -135,19 +138,15 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
       )}
 
       <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={() => setIsCreateModalOpen(true)}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl transition-colors text-sm shadow-sm"
-        >
+        <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
           {t('admin.addUser')}
-        </button>
+        </Button>
       </div>
 
-      <div className="bg-white/60 backdrop-blur-xl rounded-2xl shadow-sm border border-stone-200/60 overflow-hidden">
+      <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="uppercase tracking-wider border-b border-stone-200/60 bg-stone-50/50">
+            <thead className="uppercase tracking-wider border-b border-border-default bg-stone-50/50">
               <tr>
                 <th className="px-6 py-4 text-stone-500 font-semibold text-xs">{t('admin.emailHeader')}</th>
                 <th className="px-6 py-4 text-stone-500 font-semibold text-xs">{t('admin.roleHeader')}</th>
@@ -240,130 +239,120 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
 
       {/* Create User Modal */}
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-sm">
-          <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-stone-200/60 w-full max-w-md overflow-hidden">
-            <div className="px-6 py-5 border-b border-stone-100/80 flex justify-between items-center bg-stone-50/50">
-              <h3 className="text-xl font-serif font-bold text-stone-800">{t('admin.createTitle')}</h3>
-              <button
-                type="button"
-                onClick={() => setIsCreateModalOpen(false)}
-                className="text-stone-400 hover:text-stone-600 transition-colors size-8 flex items-center justify-center hover:bg-stone-100 rounded-full"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                form.handleSubmit();
-              }}
-              className="p-6"
+      <Modal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)}>
+        <ModalPanel maxWidth="md" className="rounded-2xl">
+          <div className="px-6 py-5 border-b border-stone-100/80 flex justify-between items-center bg-stone-50/50">
+            <h3 className="text-xl font-serif font-bold text-stone-800">{t('admin.createTitle')}</h3>
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(false)}
+              className="text-stone-400 hover:text-stone-600 transition-colors size-8 flex items-center justify-center hover:bg-stone-100 rounded-full"
             >
-              <div className="space-y-4">
-                <form.AppField name="email">
-                  {(field) => (
-                    <div>
-                      <label htmlFor={field.name} className="block text-sm font-medium text-stone-700 mb-1">
-                        {t('admin.emailRequired')}
-                      </label>
-                      <input
-                        id={field.name}
-                        type="email"
-                        required
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 placeholder-stone-400 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
-                        placeholder={t('admin.emailPlaceholder')}
-                      />
-                    </div>
-                  )}
-                </form.AppField>
-
-                <form.AppField name="password">
-                  {(field) => (
-                    <div>
-                      <label htmlFor={field.name} className="block text-sm font-medium text-stone-700 mb-1">
-                        {t('admin.passwordRequired')}
-                      </label>
-                      <input
-                        id={field.name}
-                        type="password"
-                        required
-                        minLength={8}
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 placeholder-stone-400 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
-                        placeholder={t('admin.passwordHint')}
-                      />
-                    </div>
-                  )}
-                </form.AppField>
-
-                <form.AppField name="role">
-                  {(field) => (
-                    <div>
-                      <label htmlFor={field.name} className="block text-sm font-medium text-stone-700 mb-1">
-                        {t('common.role')}
-                      </label>
-                      <select
-                        id={field.name}
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value as UserRole)}
-                        className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
-                      >
-                        <option value="member">{t('admin.roleMember')}</option>
-                        <option value="editor">{t('admin.roleEditor')}</option>
-                        <option value="admin">{t('admin.roleAdmin')}</option>
-                      </select>
-                    </div>
-                  )}
-                </form.AppField>
-
-                <form.AppField name="isActive">
-                  {(field) => (
-                    <div>
-                      <label htmlFor={field.name} className="block text-sm font-medium text-stone-700 mb-1">
-                        {t('common.status')}
-                      </label>
-                      <select
-                        id={field.name}
-                        value={field.state.value ? 'true' : 'false'}
-                        onChange={(e) => field.handleChange(e.target.value === 'true')}
-                        className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
-                      >
-                        <option value="true">{t('admin.statusActive')}</option>
-                        <option value="false">{t('admin.statusPending')}</option>
-                      </select>
-                    </div>
-                  )}
-                </form.AppField>
-              </div>
-              <div className="mt-8 flex justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors"
-                >
-                  {t('common.cancel')}
-                </button>
-                <button
-                  type="submit"
-                  disabled={form.state.isSubmitting}
-                  className="px-4 py-2 text-sm font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-xl transition-colors shadow-sm disabled:opacity-50"
-                >
-                  {form.state.isSubmitting ? t('admin.creating') : t('admin.createUser')}
-                </button>
-              </div>
-            </form>
+              ✕
+            </button>
           </div>
-        </div>
-      )}
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              form.handleSubmit();
+            }}
+            className="p-6"
+          >
+            <div className="space-y-4">
+              <form.AppField name="email">
+                {(field) => (
+                  <div>
+                    <label htmlFor={field.name} className="text-label">
+                      {t('admin.emailRequired')}
+                    </label>
+                    <input
+                      id={field.name}
+                      type="email"
+                      required
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 placeholder-stone-400 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                      placeholder={t('admin.emailPlaceholder')}
+                    />
+                  </div>
+                )}
+              </form.AppField>
+
+              <form.AppField name="password">
+                {(field) => (
+                  <div>
+                    <label htmlFor={field.name} className="text-label">
+                      {t('admin.passwordRequired')}
+                    </label>
+                    <input
+                      id={field.name}
+                      type="password"
+                      required
+                      minLength={8}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 placeholder-stone-400 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                      placeholder={t('admin.passwordHint')}
+                    />
+                  </div>
+                )}
+              </form.AppField>
+
+              <form.AppField name="role">
+                {(field) => (
+                  <div>
+                    <label htmlFor={field.name} className="text-label">
+                      {t('common.role')}
+                    </label>
+                    <select
+                      id={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value as UserRole)}
+                      className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                    >
+                      <option value="member">{t('admin.roleMember')}</option>
+                      <option value="editor">{t('admin.roleEditor')}</option>
+                      <option value="admin">{t('admin.roleAdmin')}</option>
+                    </select>
+                  </div>
+                )}
+              </form.AppField>
+
+              <form.AppField name="isActive">
+                {(field) => (
+                  <div>
+                    <label htmlFor={field.name} className="text-label">
+                      {t('common.status')}
+                    </label>
+                    <select
+                      id={field.name}
+                      value={field.state.value ? 'true' : 'false'}
+                      onChange={(e) => field.handleChange(e.target.value === 'true')}
+                      className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                    >
+                      <option value="true">{t('admin.statusActive')}</option>
+                      <option value="false">{t('admin.statusPending')}</option>
+                    </select>
+                  </div>
+                )}
+              </form.AppField>
+            </div>
+            <div className="mt-8 flex justify-end gap-3 pt-2">
+              <Button variant="ghost" size="sm" onClick={() => setIsCreateModalOpen(false)}>
+                {t('common.cancel')}
+              </Button>
+              <Button variant="primary" size="sm" type="submit" disabled={form.state.isSubmitting}>
+                {form.state.isSubmitting ? t('admin.creating') : t('admin.createUser')}
+              </Button>
+            </div>
+          </form>
+        </ModalPanel>
+      </Modal>
     </div>
   );
 }

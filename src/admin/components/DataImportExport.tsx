@@ -2,6 +2,9 @@ import { useMutation } from '@tanstack/react-query';
 import { AlertTriangle, CheckCircle2, Download, Upload } from 'lucide-react';
 import { type ChangeEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button } from '../../ui/common/Button';
+import { Card } from '../../ui/common/Card';
+import { Modal, ModalPanel } from '../../ui/common/Modal';
 import { cn } from '../../ui/utils/cn';
 import { exportData, importData } from '../server/data';
 import { exportToCsvZip, parseCsvZip } from '../utils/csv';
@@ -136,7 +139,7 @@ export default function DataImportExport() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Export Card */}
-        <div className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <Card variant="elevated" className="p-6 hover:shadow-md relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-amber-200/20 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none group-hover:bg-amber-300/30 transition-colors" />
           <div className="flex items-start gap-4 mb-4 relative z-10">
             <div className="p-3 bg-stone-100 rounded-xl text-stone-600">
@@ -162,18 +165,13 @@ export default function DataImportExport() {
               </button>
             ))}
           </div>
-          <button
-            type="button"
-            onClick={handleExport}
-            disabled={isExporting}
-            className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm shadow-sm"
-          >
+          <Button variant="primary" onClick={handleExport} disabled={isExporting} className="w-full rounded-xl">
             {isExporting ? t('data.downloading') : t('data.downloadBackup')}
-          </button>
-        </div>
+          </Button>
+        </Card>
 
         {/* Import Card */}
-        <div className="bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <Card variant="elevated" className="p-6 hover:shadow-md relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-rose-200/20 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none group-hover:bg-rose-300/30 transition-colors" />
           <div className="flex items-start gap-4 mb-4 relative z-10">
             <div className="p-3 bg-rose-50 rounded-xl text-rose-600">
@@ -189,60 +187,42 @@ export default function DataImportExport() {
           </div>
           <p className="text-xs text-stone-400 mb-3">{t('data.supportedFormats')}</p>
           <input type="file" accept=".json,.ged,.zip" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={() => fileInputRef.current?.click()}
             disabled={isImporting}
-            className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold rounded-xl transition-colors disabled:opacity-50 text-sm"
+            className="w-full rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700"
           >
             {isImporting ? t('data.restoring') : t('data.selectFile')}
-          </button>
-        </div>
+          </Button>
+        </Card>
       </div>
 
       {/* Confirmation Modal */}
-      {showConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <button
-            type="button"
-            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm cursor-pointer animate-[fade-in_0.2s_ease-out_forwards]"
-            onClick={() => setShowConfirm(false)}
-            aria-label="Close modal"
-          />
-          <div className="bg-white rounded-2xl shadow-xl border border-stone-200/60 p-6 w-full max-w-md relative z-10 animate-[scale-in_0.2s_ease-out_forwards]">
-            <div className="flex items-start gap-4 mb-5">
-              <div className="p-3 bg-rose-100/50 rounded-full text-rose-600 shrink-0 mt-1">
-                <AlertTriangle className="size-6" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-stone-800">{t('data.confirmTitle')}</h3>
-                <p className="text-sm text-stone-600 mt-2 leading-relaxed">
-                  {t('data.confirmMessage')} <span className="font-mono text-xs bg-stone-100 px-1 rounded">{selectedFile?.name}</span>.
-                </p>
-                <p className="text-sm text-rose-600 font-semibold mt-2">{t('data.confirmWarning')}</p>
-              </div>
+      <Modal isOpen={showConfirm} onClose={() => setShowConfirm(false)}>
+        <ModalPanel maxWidth="md" className="p-6 rounded-2xl">
+          <div className="flex items-start gap-4 mb-5">
+            <div className="p-3 bg-rose-100/50 rounded-full text-rose-600 shrink-0 mt-1">
+              <AlertTriangle className="size-6" />
             </div>
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                type="button"
-                onClick={() => setShowConfirm(false)}
-                disabled={isImporting}
-                className="px-4 py-2 text-sm font-medium text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors"
-              >
-                {t('data.confirmCancel')}
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmImport}
-                disabled={isImporting}
-                className="px-4 py-2 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors shadow-sm disabled:opacity-50"
-              >
-                {isImporting ? t('data.confirmRestoring') : t('data.confirmProceed')}
-              </button>
+            <div>
+              <h3 className="text-lg font-bold text-stone-800">{t('data.confirmTitle')}</h3>
+              <p className="text-sm text-stone-600 mt-2 leading-relaxed">
+                {t('data.confirmMessage')} <span className="font-mono text-xs bg-stone-100 px-1 rounded">{selectedFile?.name}</span>.
+              </p>
+              <p className="text-sm text-rose-600 font-semibold mt-2">{t('data.confirmWarning')}</p>
             </div>
           </div>
-        </div>
-      )}
+          <div className="flex justify-end gap-3 mt-6">
+            <Button variant="ghost" size="sm" onClick={() => setShowConfirm(false)} disabled={isImporting}>
+              {t('data.confirmCancel')}
+            </Button>
+            <Button variant="danger" size="sm" onClick={handleConfirmImport} disabled={isImporting}>
+              {isImporting ? t('data.confirmRestoring') : t('data.confirmProceed')}
+            </Button>
+          </div>
+        </ModalPanel>
+      </Modal>
 
       {/* Status messages */}
       {importStatus && (

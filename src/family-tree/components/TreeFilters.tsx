@@ -1,6 +1,7 @@
 import { Filter } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Card } from '../../ui/common/Card';
 import { cn } from '../../ui/utils/cn';
 import type { TreeFilterOptions } from '../utils/treeHelpers';
 
@@ -59,7 +60,7 @@ export default function TreeFilters({ filters, onToggle }: TreeFiltersProps) {
           'flex items-center gap-2 px-4 h-10 rounded-full font-semibold text-sm shadow-sm border transition-all',
           showFilters
             ? 'bg-amber-100/90 text-amber-800 border-amber-200'
-            : 'bg-white/80 text-stone-600 border-stone-200/60 hover:bg-white hover:text-stone-900 hover:shadow-md backdrop-blur-md'
+            : 'bg-surface-elevated text-stone-600 border-border-default hover:bg-white hover:text-stone-900 hover:shadow-md backdrop-blur-md'
         )}
       >
         <Filter className="size-4" />
@@ -67,7 +68,7 @@ export default function TreeFilters({ filters, onToggle }: TreeFiltersProps) {
       </button>
 
       {showFilters && (
-        <div className="absolute top-full right-0 mt-2 w-52 bg-white/95 backdrop-blur-xl shadow-xl border border-stone-200/60 rounded-2xl p-4 flex flex-col gap-3 z-50 animate-[fade-in_0.15s_ease-out_forwards]">
+        <Card className="absolute top-full right-0 mt-2 w-52 bg-surface-panel backdrop-blur-xl shadow-xl p-4 flex flex-col gap-3 z-50 animate-[fade-in_0.15s_ease-out_forwards]">
           {filterOptions.map(({ key, label }) => (
             <label key={key} className="flex items-center gap-2.5 text-sm font-medium text-stone-700 cursor-pointer select-none">
               <input
@@ -79,7 +80,7 @@ export default function TreeFilters({ filters, onToggle }: TreeFiltersProps) {
               {label}
             </label>
           ))}
-        </div>
+        </Card>
       )}
     </div>
   );

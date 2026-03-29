@@ -64,7 +64,7 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
     <div className="relative w-full">
       <div className="absolute top-3 right-3 z-20 flex items-center gap-2">
         {/* Expand/Collapse all */}
-        <div className="flex items-center bg-white/80 backdrop-blur-md shadow-sm border border-stone-200/60 rounded-full overflow-hidden h-10">
+        <div className="flex items-center bg-surface-elevated backdrop-blur-md shadow-sm border border-border-default rounded-full overflow-hidden h-10">
           <button
             type="button"
             onClick={() => setExpandSignal({ type: 'expand', ts: Date.now() })}
@@ -92,7 +92,7 @@ export default function MindmapTree({ personsMap, relationships, roots }: Mindma
       <div className="w-full h-full p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-140px)] flex justify-start lg:justify-center overflow-x-auto">
         <div
           id="export-container"
-          className="font-sans min-w-max pb-20 p-8 transition-all duration-200"
+          className="font-sans min-w-max pb-20 p-8 transition-all duration-fast"
           style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}
         >
           {roots.map((root, index) => (

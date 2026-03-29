@@ -23,7 +23,7 @@ export default function FamilyNodeCard({ person, onClickCard, onClickName, isRin
     <div
       onClick={onClickCard}
       className={cn(
-        'group py-2 px-1 flex flex-col items-center justify-start transition-all duration-300 hover:-translate-y-1 rounded-2xl relative h-full',
+        'group py-2 px-1 flex flex-col items-center justify-start transition-all duration-default hover:-translate-y-1 rounded-2xl relative h-full',
         person.isDeceased && 'grayscale-[0.4] opacity-80',
         showAvatar ? 'w-20 sm:w-24 md:w-28 bg-white/70 hover:shadow-xl' : 'px-3'
       )}
@@ -45,7 +45,7 @@ export default function FamilyNodeCard({ person, onClickCard, onClickName, isRin
             gender={person.gender}
             avatarUrl={person.avatarUrl}
             fullName={person.fullName}
-            className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 text-2xs sm:text-xs md:text-sm shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105"
+            className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 text-2xs sm:text-xs md:text-sm shrink-0 shadow-lg ring-2 ring-white transition-transform duration-default group-hover:scale-105"
           />
         </div>
       )}
