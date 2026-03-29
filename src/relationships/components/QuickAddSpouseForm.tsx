@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Gender } from '../../members/types';
+import { Button } from '../../ui/common/Button';
+import { INPUT_BASE } from '../../ui/common/Input';
+import { cn } from '../../ui/utils/cn';
 
 interface QuickAddSpouseFormProps {
   onSubmit: (data: { name: string; birthYear: string; note: string }) => Promise<void>;
@@ -40,7 +43,7 @@ export default function QuickAddSpouseForm({ onSubmit, onCancel, processing, per
             placeholder={t('member.fullNamePlaceholder')}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 p-2 sm:p-2.5 border transition-colors"
+            className={cn(INPUT_BASE, 'text-sm rounded-md sm:rounded-lg p-2 sm:p-2.5 focus:border-rose-500 focus:ring-rose-500')}
           />
         </div>
         <div>
@@ -53,7 +56,7 @@ export default function QuickAddSpouseForm({ onSubmit, onCancel, processing, per
             placeholder={t('relationship.birthYearPlaceholder')}
             value={birthYear}
             onChange={(e) => setBirthYear(e.target.value)}
-            className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 p-2 sm:p-2.5 border transition-colors"
+            className={cn(INPUT_BASE, 'text-sm rounded-md sm:rounded-lg p-2 sm:p-2.5 focus:border-rose-500 focus:ring-rose-500')}
           />
         </div>
         <div>
@@ -66,7 +69,7 @@ export default function QuickAddSpouseForm({ onSubmit, onCancel, processing, per
             placeholder={t('relationship.spouseNotePlaceholder')}
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="bg-white text-stone-900 placeholder-stone-400 block w-full text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 p-2 sm:p-2.5 border transition-colors"
+            className={cn(INPUT_BASE, 'text-sm rounded-md sm:rounded-lg p-2 sm:p-2.5 focus:border-rose-500 focus:ring-rose-500')}
           />
         </div>
         <p className="text-xs text-stone-500 italic mt-1">
@@ -75,21 +78,18 @@ export default function QuickAddSpouseForm({ onSubmit, onCancel, processing, per
           })}
         </p>
         <div className="flex gap-2 pt-2">
-          <button
-            type="button"
+          <Button
+            variant="danger"
+            size="sm"
             onClick={handleSubmit}
             disabled={!name.trim() || processing}
-            className="flex-1 bg-rose-600 text-white py-2 sm:py-2.5 rounded-md sm:rounded-lg text-sm font-medium hover:bg-rose-700 disabled:opacity-50 transition-colors"
+            className="flex-1 bg-rose-600 hover:bg-rose-700 text-white rounded-md sm:rounded-lg"
           >
             {processing ? t('common.saving') : t('common.save')}
-          </button>
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="px-4 py-2 sm:py-2.5 bg-white border border-stone-300 text-stone-700 rounded-md sm:rounded-lg text-sm hover:bg-stone-50 transition-colors"
-          >
+          </Button>
+          <Button size="sm" onClick={handleCancel} className="rounded-md sm:rounded-lg">
             {t('common.cancel')}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

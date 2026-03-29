@@ -3,6 +3,9 @@ import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Gender } from '../../members/types';
 import Avatar from '../../ui/common/Avatar';
+import { Badge } from '../../ui/common/Badge';
+import { Card } from '../../ui/common/Card';
+import { EmptyState } from '../../ui/common/EmptyState';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 import { cn } from '../../ui/utils/cn';
 import { getGenderStyle } from '../../ui/utils/styles';
@@ -45,7 +48,7 @@ function PersonSelector({
         onClick={() => setOpen((v) => !v)}
         className={cn(
           'w-full flex items-center gap-3 px-4 py-3 rounded-2xl border text-left transition-all',
-          selected ? 'bg-amber-50 border-amber-300 text-stone-800' : 'bg-white/80 border-stone-200 text-stone-400 hover:border-amber-200'
+          selected ? 'bg-amber-50 border-amber-300 text-stone-800' : 'bg-surface-elevated border-stone-200 text-stone-400 hover:border-amber-200'
         )}
       >
         <div className="relative shrink-0">
@@ -77,7 +80,7 @@ function PersonSelector({
       </button>
 
       {open && (
-        <div className="absolute top-full mt-2 left-0 right-0 z-50 bg-white rounded-2xl shadow-xl border border-stone-200/60 overflow-hidden animate-[scale-in_0.15s_ease-out_forwards]">
+        <div className="absolute top-full mt-2 left-0 right-0 z-50 bg-white rounded-2xl shadow-xl border border-border-default overflow-hidden animate-[scale-in_0.15s_ease-out_forwards]">
           <div className="p-3 border-b border-stone-100">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400" />
@@ -123,9 +126,9 @@ function PersonSelector({
                   <span className="text-sm font-medium text-stone-700 truncate">{p.fullName}</span>
                   {p.birthYear && <span className="text-xs text-stone-400 ml-auto shrink-0">{p.birthYear}</span>}
                   {p.generation != null && (
-                    <span className="text-xs text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md shrink-0">
+                    <Badge color="emerald" size="sm" className="shrink-0">
                       {t('kinship.generationShort', { gen: p.generation })}
-                    </span>
+                    </Badge>
                   )}
                 </button>
               ))
@@ -182,7 +185,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="relative z-10 bg-white/80 backdrop-blur-md border border-stone-200/60 rounded-2xl p-6 shadow-sm">
+      <Card variant="elevated" className="relative z-10 p-6">
         <div className="flex items-end gap-3">
           <PersonSelector label={t('kinship.memberA')} selected={personA} onSelect={setPersonA} persons={persons} disabledId={personB?.id} />
           <button
@@ -195,15 +198,12 @@ export default function KinshipFinder({ persons, relationships }: Props) {
           </button>
           <PersonSelector label={t('kinship.memberB')} selected={personB} onSelect={setPersonB} persons={persons} disabledId={personA?.id} />
         </div>
-      </div>
+      </Card>
 
       {!personA || !personB ? (
-        <div className="text-center py-16 text-stone-400 animate-[fade-in_0.3s_ease-out_forwards]">
-          <Users className="size-12 mx-auto mb-3 opacity-30" />
-          <p className="font-medium">{t('kinship.selectTwo')}</p>
-        </div>
+        <EmptyState icon={<Users className="size-12 opacity-30" />} title={t('kinship.selectTwo')} />
       ) : result === null ? (
-        <div className="text-center py-8 text-stone-400 animate-[fade-in_0.3s_ease-out_forwards]">{t('kinship.selectDifferent')}</div>
+        <EmptyState title={t('kinship.selectDifferent')} className="py-8" />
       ) : (
         <div className="space-y-4 animate-[fade-in-up_0.35s_ease-out_forwards]">
           <div className="bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 flex items-center gap-3">
@@ -212,30 +212,32 @@ export default function KinshipFinder({ persons, relationships }: Props) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div
-              className="bg-white/90 border border-stone-200/60 rounded-2xl p-5 shadow-sm animate-[fade-in-up_0.35s_ease-out_forwards]"
+            <Card
+              variant="elevated"
+              className="p-5 animate-[fade-in-up_0.35s_ease-out_forwards]"
               style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}
             >
               <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">
                 {t('kinship.aCallsB', { personA: personA.fullName, personB: personB.fullName })}
               </p>
               <p className="text-4xl font-serif font-bold text-amber-600 capitalize">{result.aCallsB}</p>
-            </div>
+            </Card>
 
-            <div
-              className="bg-white/90 border border-stone-200/60 rounded-2xl p-5 shadow-sm animate-[fade-in-up_0.35s_ease-out_forwards]"
+            <Card
+              variant="elevated"
+              className="p-5 animate-[fade-in-up_0.35s_ease-out_forwards]"
               style={{ animationDelay: '0.15s', animationFillMode: 'backwards' }}
             >
               <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">
                 {t('kinship.bCallsA', { personA: personA.fullName, personB: personB.fullName })}
               </p>
               <p className="text-4xl font-serif font-bold text-amber-600 capitalize">{result.bCallsA}</p>
-            </div>
+            </Card>
           </div>
 
           {result.pathLabels.length > 0 && (
             <div
-              className="bg-stone-50 border border-stone-200/60 rounded-2xl px-6 py-5 animate-[fade-in-up_0.35s_ease-out_forwards]"
+              className="bg-stone-50 border border-border-default rounded-2xl px-6 py-5 animate-[fade-in-up_0.35s_ease-out_forwards]"
               style={{ animationDelay: '0.25s', animationFillMode: 'backwards' }}
             >
               <div className="flex items-center gap-2 mb-4">
@@ -261,7 +263,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
         </div>
       )}
 
-      <div className="border-t border-stone-200/60 pt-6 space-y-4">
+      <div className="border-t border-border-default pt-6 space-y-4">
         <button
           type="button"
           onClick={() => setShowGuide((v) => !v)}
@@ -304,7 +306,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
                 </ul>
               </div>
 
-              <div className="bg-white/80 border border-stone-200/60 rounded-2xl overflow-hidden">
+              <Card variant="elevated" className="overflow-hidden">
                 <div className="px-5 py-3 border-b border-stone-100 bg-stone-50/50">
                   <p className="text-sm font-bold text-stone-600">{t('kinship.referenceTable')}</p>
                 </div>
@@ -319,7 +321,7 @@ export default function KinshipFinder({ persons, relationships }: Props) {
                     </div>
                   ))}
                 </div>
-              </div>
+              </Card>
             </div>
           </div>
         )}
