@@ -83,7 +83,7 @@ export function ModalCloseButton({ onClick, label, className }: ModalCloseButton
       type="button"
       onClick={onClick}
       className={cn(
-        'size-10 flex items-center justify-center bg-stone-100/80 backdrop-blur-md text-stone-600 rounded-full hover:bg-stone-200 hover:text-stone-900 shadow-sm border border-stone-200/50 transition-colors',
+        'size-10 flex items-center justify-center bg-surface-muted/80 backdrop-blur-md text-text-secondary rounded-full hover:bg-surface-muted hover:text-text-primary shadow-sm border border-border-default transition-colors',
         className
       )}
       aria-label={label}

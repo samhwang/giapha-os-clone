@@ -43,6 +43,32 @@ describe('Input', () => {
     expect(onChange).toHaveBeenCalled();
   });
 
+  it('sets aria-invalid when error is present', () => {
+    render(<Input error="Required" placeholder="input" />);
+    expect(screen.getByPlaceholderText('input')).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('does not set aria-invalid when no error', () => {
+    render(<Input placeholder="input" />);
+    expect(screen.getByPlaceholderText('input')).not.toHaveAttribute('aria-invalid');
+  });
+
+  it('associates error message via aria-describedby', () => {
+    render(<Input error="Required field" placeholder="input" />);
+    const input = screen.getByPlaceholderText('input');
+    const errorId = input.getAttribute('aria-describedby');
+    expect(errorId).toBeTruthy();
+    const errorEl = document.getElementById(errorId as string);
+    expect(errorEl).toHaveTextContent('Required field');
+  });
+
+  it('generates id for label association when no id provided', () => {
+    render(<Input label="Name" placeholder="input" />);
+    const input = screen.getByPlaceholderText('input');
+    expect(input.id).toBeTruthy();
+    expect(screen.getByLabelText('Name')).toBe(input);
+  });
+
   it('applies custom className', () => {
     render(<Input placeholder="input" className="w-64" />);
     expect(screen.getByPlaceholderText('input')).toHaveClass('w-64');

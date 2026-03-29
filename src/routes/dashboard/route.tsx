@@ -50,7 +50,7 @@ function InactiveAccountPage() {
         </div>
       </header>
       <main className="flex-1 flex flex-col items-center justify-center p-4">
-        <div className="max-w-md w-full text-center bg-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-sm border border-stone-200">
+        <div className="max-w-md w-full text-center bg-surface-primary p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-card border border-border-default">
           <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="size-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Account locked">
               <title>Account locked</title>

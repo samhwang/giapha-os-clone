@@ -56,6 +56,28 @@ describe('Modal', () => {
     expect(backdrop).not.toBeInTheDocument();
   });
 
+  it('calls onClose when Escape key is pressed', () => {
+    const onClose = vi.fn();
+    render(
+      <Modal isOpen onClose={onClose}>
+        <div>Content</div>
+      </Modal>
+    );
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('does not register escape handler when onClose is not provided', () => {
+    const { unmount } = render(
+      <Modal isOpen>
+        <div>Content</div>
+      </Modal>
+    );
+    // Should not throw — just verifying no error when Escape is pressed without onClose
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    unmount();
+  });
+
   it('calls onClose when backdrop is clicked', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
