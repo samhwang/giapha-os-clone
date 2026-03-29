@@ -4,6 +4,12 @@ import type { Person } from '../../members/types';
 import type { Relationship } from '../../relationships/types';
 import type { CustomEventExport, PersonDetailsPrivateExport } from '../types';
 
+export const UTF8_BOM = '\uFEFF';
+
+function stripBom(text: string): string {
+  return text.startsWith(UTF8_BOM) ? text.slice(1) : text;
+}
+
 export async function exportToCsvZip(data: {
   persons: Person[];
   relationships: Relationship[];
@@ -11,14 +17,14 @@ export async function exportToCsvZip(data: {
   customEvents?: CustomEventExport[];
 }): Promise<Blob> {
   const zip = new JSZip();
-  zip.file('persons.csv', Papa.unparse(data.persons));
-  zip.file('relationships.csv', Papa.unparse(data.relationships));
+  zip.file('persons.csv', UTF8_BOM + Papa.unparse(data.persons));
+  zip.file('relationships.csv', UTF8_BOM + Papa.unparse(data.relationships));
 
   if (data.personDetailsPrivate?.length) {
-    zip.file('person_details_private.csv', Papa.unparse(data.personDetailsPrivate));
+    zip.file('person_details_private.csv', UTF8_BOM + Papa.unparse(data.personDetailsPrivate));
   }
   if (data.customEvents?.length) {
-    zip.file('custom_events.csv', Papa.unparse(data.customEvents));
+    zip.file('custom_events.csv', UTF8_BOM + Papa.unparse(data.customEvents));
   }
 
   return zip.generateAsync({ type: 'blob' });
@@ -40,13 +46,16 @@ export async function parseCsvZip(zipBlob: Blob): Promise<{
     throw new Error('Invalid ZIP: missing persons.csv or relationships.csv');
   }
 
-  const personsParsed = Papa.parse<Partial<Person>>(await personsFile.async('text'), {
+  const personsCsvRaw = await personsFile.async('text');
+  const relationshipsCsvRaw = await relationshipsFile.async('text');
+
+  const personsParsed = Papa.parse<Partial<Person>>(stripBom(personsCsvRaw), {
     header: true,
     skipEmptyLines: true,
     dynamicTyping: true,
   });
 
-  const relationshipsParsed = Papa.parse<Partial<Relationship>>(await relationshipsFile.async('text'), {
+  const relationshipsParsed = Papa.parse<Partial<Relationship>>(stripBom(relationshipsCsvRaw), {
     header: true,
     skipEmptyLines: true,
     dynamicTyping: true,
@@ -64,7 +73,7 @@ export async function parseCsvZip(zipBlob: Blob): Promise<{
 
   const privateFile = loadedZip.file('person_details_private.csv');
   if (privateFile) {
-    const parsed = Papa.parse<Partial<PersonDetailsPrivateExport>>(await privateFile.async('text'), {
+    const parsed = Papa.parse<Partial<PersonDetailsPrivateExport>>(stripBom(await privateFile.async('text')), {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: true,
@@ -74,7 +83,7 @@ export async function parseCsvZip(zipBlob: Blob): Promise<{
 
   const eventsFile = loadedZip.file('custom_events.csv');
   if (eventsFile) {
-    const parsed = Papa.parse<Partial<CustomEventExport>>(await eventsFile.async('text'), {
+    const parsed = Papa.parse<Partial<CustomEventExport>>(stripBom(await eventsFile.async('text')), {
       header: true,
       skipEmptyLines: true,
       dynamicTyping: true,

@@ -1,13 +1,13 @@
 # Tutorial: Discover Vietnamese Kinship Terms
 
-By the end of this tutorial, you will understand how Vietnamese kinship terms work and how to use the Kinship Finder to look up relationships between any two family members.
+By the end of this tutorial, you will understand how Vietnamese kinship terms work and how to use Kinship Lookup to look up relationships between any two family members.
 
 ## Prerequisites
 
 - Completed the [Build Your First Family Tree](./01-family-tree.md) tutorial (you need at least 4 members across 3 generations with relationships)
 - You are logged in and on the dashboard
 
-## 1. Open the Kinship Finder
+## 1. Open Kinship Lookup
 
 1. From the dashboard, click the **Kinship Lookup** card
 2. You should see a page titled **Kinship Lookup** with two person selectors side by side
@@ -90,7 +90,7 @@ Create the parent-child relationship:
 
 ## 8. Compare Paternal vs. Maternal Terms
 
-Return to the Kinship Finder:
+Return to Kinship Lookup:
 
 1. Select **Member A**: `Nguyễn Văn A` (paternal grandfather)
 2. Select **Member B**: `Nguyễn Thị D`

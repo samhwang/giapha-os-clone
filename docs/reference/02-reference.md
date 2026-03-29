@@ -11,7 +11,7 @@ Lookup tables for tech stack, project structure, routes, environment variables, 
 | Routing | [TanStack Router](https://tanstack.com/router/latest) | latest |
 | Forms | [TanStack Form](https://tanstack.com/form/latest) | latest |
 | Server State | [TanStack Query](https://tanstack.com/query/latest) | 5.x |
-| Database | [PostgreSQL](https://www.postgresql.org/) | 15+ |
+| Database | [PostgreSQL](https://www.postgresql.org/) | 17+ |
 | ORM | [Prisma](https://www.prisma.io/) | 7.x |
 | Auth | [Better Auth](https://www.better-auth.com/) | latest |
 | Storage | [unstorage](https://unstorage.unjs.io/) (local fs / S3-compatible) | latest |

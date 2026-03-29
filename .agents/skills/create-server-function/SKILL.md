@@ -59,20 +59,7 @@ export const createItemFn = createServerFn({ method: 'POST' })
   })
 ```
 
-### Step 3: Register in Context (if new feature)
-
-Add to `src/lib/get-server-context.tsx`:
-```typescript
-import * as itemFns from '../../items/server/item'
-
-export function getServerRouteHelpers() {
-  return {
-    items: itemFns,
-  }
-}
-```
-
-### Step 4: Create Tests
+### Step 3: Create Tests
 
 Create: `src/*/server/[feature].test.ts`
 

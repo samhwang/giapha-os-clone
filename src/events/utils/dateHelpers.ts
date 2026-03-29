@@ -1,6 +1,7 @@
 import { Lunar, Solar } from 'lunar-javascript';
 import { getUserTimeZone, nowInTimeZone } from '../../lib/date';
 import { logger } from '../../lib/logger';
+import type { EventType } from '../types';
 
 interface FormatDisplayDateInput {
   year: number | null;
@@ -198,6 +199,29 @@ function ganZhiToVietnamese(ganZhi: string): string {
   const can = THIEN_CAN[ganZhi[0]] ?? ganZhi[0];
   const chi = DIA_CHI[ganZhi[1]] ?? ganZhi[1];
   return `${can} ${chi}`;
+}
+
+const VIETNAMESE_WEEKDAYS = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+
+interface FormatEventDateLabelInput {
+  nextOccurrence: Date;
+  eventDateLabel: string;
+  type: EventType;
+}
+
+export function formatEventDateLabel({ nextOccurrence, eventDateLabel, type }: FormatEventDateLabelInput): string {
+  const dayOfWeek = VIETNAMESE_WEEKDAYS[nextOccurrence.getDay()];
+  const day = nextOccurrence.getDate().toString().padStart(2, '0');
+  const month = (nextOccurrence.getMonth() + 1).toString().padStart(2, '0');
+
+  let label = `${dayOfWeek}, ngày ${day}/${month}`;
+  if (type === 'custom_event') {
+    label += `/${nextOccurrence.getFullYear()}`;
+  }
+  if (type === 'death_anniversary') {
+    label += ` (Âm lịch: ${eventDateLabel.replace(/\s*ÂL$/, '')})`;
+  }
+  return label;
 }
 
 interface TodayLunarInfo {

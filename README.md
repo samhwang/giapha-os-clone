@@ -16,7 +16,7 @@ This is a mainly Vietnamese app. It does support English, but only for usage pur
 
 ## Features
 
-- Family tree visualization (tree, mindmap, and list views)
+- Family tree visualization (tree, mindmap, bubble map, and list views)
 - Member management with avatar uploads
 - Vietnamese kinship calculator (automatic relationship naming)
 - Lunar calendar integration for death anniversaries

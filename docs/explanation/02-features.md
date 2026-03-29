@@ -49,9 +49,9 @@ Vietnamese kinship terms are based on generation difference, gender, and lineage
 | +1 | con | con |
 | +2 | cháu | cháu |
 
-### Kinship Finder
+### Kinship Lookup
 
-The Kinship Finder tool at `/dashboard/kinship` allows users to select two people and see how they are related, including the Vietnamese terms each would use.
+The Kinship Lookup tool at `/dashboard/kinship` allows users to select two people and see how they are related, including the Vietnamese terms each would use.
 
 ## Events
 

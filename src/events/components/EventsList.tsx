@@ -7,7 +7,7 @@ import { Badge } from '../../ui/common/Badge';
 import { EmptyState } from '../../ui/common/EmptyState';
 import { cn } from '../../ui/utils/cn';
 import type { CustomEventRecord, EventType, FamilyEvent } from '../types';
-import { getTodayLunar, getZodiacSign } from '../utils/dateHelpers';
+import { formatEventDateLabel, getTodayLunar, getZodiacSign } from '../utils/dateHelpers';
 import { computeEvents } from '../utils/eventHelpers';
 import CustomEventModal from './CustomEventModal';
 
@@ -64,6 +64,7 @@ function EventCard({ event, index, onCustomEventClick }: EventCardProps) {
   const isToday = event.daysUntil === 0;
   const isSoon = event.daysUntil > 0 && event.daysUntil <= 7;
   const yearsInfo = computeYearsInfo(event, t);
+  const dateLabel = formatEventDateLabel(event);
   const { setMemberModalId } = useDashboardStore();
 
   const handleClick = () => {
@@ -130,7 +131,7 @@ function EventCard({ event, index, onCustomEventClick }: EventCardProps) {
           <p className="text-sm text-stone-500 flex items-center gap-1.5 leading-tight">
             <CalendarDays className="size-3.5 shrink-0" />
             {isCustom ? t('events.customEvent') : isBirthday ? t('events.birthday') : t('events.deathAnniversary')} —{' '}
-            <span className="font-medium text-stone-600">{event.eventDateLabel}</span>
+            <span className="font-medium text-stone-600">{dateLabel}</span>
             {event.originYear && !isCustom && <span className="text-stone-400">({event.originYear})</span>}
           </p>
           {event.location && (

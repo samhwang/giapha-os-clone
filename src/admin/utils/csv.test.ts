@@ -4,14 +4,18 @@ import { describe, expect, it } from 'vitest';
 import { createPerson, mockPersons, mockRelationships } from '../../../test/fixtures';
 import type { Person } from '../../members/types';
 import type { Relationship } from '../../relationships/types';
-import { exportToCsvZip, parseCsvZip } from './csv';
+import { exportToCsvZip, parseCsvZip, UTF8_BOM } from './csv';
 
 // JSZip in Node doesn't support Blob round-trips, so we test the CSV logic
 // (Papa.unparse → zip → extract → Papa.parse) using ArrayBuffer instead.
 
+function stripBom(text: string): string {
+  return text.startsWith(UTF8_BOM) ? text.slice(1) : text;
+}
+
 async function exportToZipBuffer(data: { persons: Person[]; relationships: Relationship[] }): Promise<ArrayBuffer> {
-  const personsCsv = Papa.unparse(data.persons);
-  const relationshipsCsv = Papa.unparse(data.relationships);
+  const personsCsv = UTF8_BOM + Papa.unparse(data.persons);
+  const relationshipsCsv = UTF8_BOM + Papa.unparse(data.relationships);
   const zip = new JSZip();
   zip.file('persons.csv', personsCsv);
   zip.file('relationships.csv', relationshipsCsv);
@@ -24,8 +28,8 @@ async function parseZipBuffer(buf: ArrayBuffer) {
   const personsFile = loaded.file('persons.csv');
   const relationshipsFile = loaded.file('relationships.csv');
   if (!personsFile || !relationshipsFile) throw new Error('Invalid ZIP: missing persons.csv or relationships.csv');
-  const personsCsv = await personsFile.async('text');
-  const relationshipsCsv = await relationshipsFile.async('text');
+  const personsCsv = stripBom(await personsFile.async('text'));
+  const relationshipsCsv = stripBom(await relationshipsFile.async('text'));
   return {
     persons: Papa.parse<Partial<Person>>(personsCsv, { header: true, skipEmptyLines: true, dynamicTyping: true }).data,
     relationships: Papa.parse<Partial<Relationship>>(relationshipsCsv, { header: true, skipEmptyLines: true, dynamicTyping: true }).data,
@@ -88,6 +92,31 @@ describe('CSV export/import via zip', () => {
     zip.file('wrong.csv', 'data');
     const buf = await zip.generateAsync({ type: 'arraybuffer' });
     await expect(parseZipBuffer(buf)).rejects.toThrow('Invalid ZIP: missing persons.csv or relationships.csv');
+  });
+});
+
+describe('UTF-8 BOM handling', () => {
+  it('exported CSVs start with UTF-8 BOM', async () => {
+    const blob = await exportToCsvZip({
+      persons: mockPersons as Person[],
+      relationships: mockRelationships as Relationship[],
+    });
+    const zip = new JSZip();
+    const loaded = await zip.loadAsync(await blob.arrayBuffer());
+    const personsCsv = await loaded.file('persons.csv')!.async('text');
+    const relationshipsCsv = await loaded.file('relationships.csv')!.async('text');
+    expect(personsCsv.startsWith(UTF8_BOM)).toBe(true);
+    expect(relationshipsCsv.startsWith(UTF8_BOM)).toBe(true);
+  });
+
+  it('parseCsvZip strips BOM and parses correctly', async () => {
+    const blob = await exportToCsvZip({
+      persons: mockPersons as Person[],
+      relationships: mockRelationships as Relationship[],
+    });
+    const result = await parseCsvZip((await blob.arrayBuffer()) as unknown as Blob);
+    expect(result.persons).toHaveLength(mockPersons.length);
+    expect(result.persons[0].fullName).toBe((mockPersons as Person[])[0].fullName);
   });
 });
 

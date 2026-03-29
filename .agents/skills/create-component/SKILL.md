@@ -25,7 +25,7 @@ When user asks to:
 
 ### Step 1: Determine Component Location
 
-- **Shared/reusable** → `src/components/ui/` or `src/components/`
+- **Shared/reusable** → `src/ui/common/`
 - **Feature-specific** → Co-locate with route (e.g., `src/routes/members/components/`)
 - **Complex features** → `src/*/components/`
 
@@ -214,4 +214,4 @@ Input.displayName = 'Input'
 - Co-locate tests next to components
 - Use semantic HTML elements
 - Keep components small and focused
-- Extract reusable parts to `src/components/ui/`
+- Extract reusable parts to `src/ui/common/`

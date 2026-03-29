@@ -6,7 +6,7 @@ TL;DR: Clone the repo, install dependencies, start Docker services, run migratio
 
 - **[Docker](https://www.docker.com/)** & Docker Compose - for PostgreSQL
 - **[pnpm](https://pnpm.io/)** - package manager
-- **[Node.js](https://nodejs.org/)** 20+ - runtime
+- **[Node.js](https://nodejs.org/)** 24+ - runtime
 
 ## Installation
 
