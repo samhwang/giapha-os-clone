@@ -1,4 +1,4 @@
-import { forwardRef, type InputHTMLAttributes, type ReactNode } from 'react';
+import { forwardRef, type InputHTMLAttributes, type ReactNode, useId } from 'react';
 import { cn } from '../utils/cn';
 
 const INPUT_BASE =
@@ -10,7 +10,10 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   leftIcon?: ReactNode;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, leftIcon, className, id, ...props }, ref): ReactNode => {
+export const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, leftIcon, className, id: externalId, ...props }, ref): ReactNode => {
+  const generatedId = useId();
+  const id = externalId ?? generatedId;
+
   return (
     <div className="space-y-1">
       {label && (
