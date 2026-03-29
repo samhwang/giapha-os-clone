@@ -13,11 +13,12 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 export const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, leftIcon, className, id: externalId, ...props }, ref): ReactNode => {
   const generatedId = useId();
   const id = externalId ?? generatedId;
+  const errorId = error ? `${id}-error` : undefined;
 
   return (
     <div className="space-y-1">
       {label && (
-        <label htmlFor={id} className="block text-sm font-semibold text-text-label">
+        <label htmlFor={id} className="text-label">
           {label}
         </label>
       )}
@@ -26,6 +27,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, l
         <input
           ref={ref}
           id={id}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={errorId}
           className={cn(
             INPUT_BASE,
             leftIcon ? 'pl-10 pr-4 py-2.5' : 'px-4 py-3',
@@ -35,7 +38,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, l
           {...props}
         />
       </div>
-      {error && <p className="text-sm text-rose-600 font-medium">{error}</p>}
+      {error && (
+        <p id={errorId} className="text-sm text-rose-600 font-medium">
+          {error}
+        </p>
+      )}
     </div>
   );
 });

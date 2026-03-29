@@ -4,14 +4,14 @@ import { getGenderStyle } from './styles';
 describe('getGenderStyle', () => {
   it('should return male styles for male gender', () => {
     const result = getGenderStyle('male');
-    expect(result).toContain('bg-sky-100');
-    expect(result).toContain('text-sky-600');
+    expect(result).toContain('bg-gender-male-bg');
+    expect(result).toContain('text-gender-male-text');
   });
 
   it('should return female styles for female gender', () => {
     const result = getGenderStyle('female');
-    expect(result).toContain('bg-rose-100');
-    expect(result).toContain('text-rose-600');
+    expect(result).toContain('bg-gender-female-bg');
+    expect(result).toContain('text-gender-female-text');
   });
 
   it('should return neutral styles for other gender', () => {

@@ -17,10 +17,16 @@ export function Modal({ isOpen, onClose, children }: ModalProps): ReactNode {
     previousOverflow.current = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
+    const handleEscape = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape' && onClose) onClose();
+    };
+    document.addEventListener('keydown', handleEscape);
+
     return () => {
       document.body.style.overflow = previousOverflow.current;
+      document.removeEventListener('keydown', handleEscape);
     };
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -47,6 +53,8 @@ const MAX_WIDTH_MAP = {
 export function ModalPanel({ children, maxWidth = '4xl', className }: ModalPanelProps): ReactNode {
   return (
     <div
+      role="dialog"
+      aria-modal="true"
       className={cn(
         'relative bg-surface-panel backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-border-default animate-[scale-in_0.2s_ease-out_forwards]',
         MAX_WIDTH_MAP[maxWidth],

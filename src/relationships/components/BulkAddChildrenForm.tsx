@@ -140,6 +140,7 @@ export default function BulkAddChildrenForm({ onSubmit, onCancel, processing, sp
         </div>
 
         <div className="flex gap-2 pt-4 border-t border-stone-200">
+          {/* custom: sky submit button matches the children form's sky-themed section */}
           <Button
             size="sm"
             onClick={handleSubmit}

@@ -78,6 +78,7 @@ export default function QuickAddSpouseForm({ onSubmit, onCancel, processing, per
           })}
         </p>
         <div className="flex gap-2 pt-2">
+          {/* custom: solid rose submit button matches the spouse form's rose-themed section */}
           <Button
             variant="danger"
             size="sm"

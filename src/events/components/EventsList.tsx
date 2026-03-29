@@ -111,6 +111,7 @@ function EventCard({ event, index, onCustomEventClick }: EventCardProps) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <p className="font-semibold text-stone-800 truncate group-hover:text-amber-700 transition-colors">{event.personName}</p>
+          {/* custom: indigo zodiac badge — one-off color not warranting a Badge variant */}
           {isBirthday && event.originDay && event.originMonth && getZodiacSign(event.originDay, event.originMonth) && (
             <Badge
               size="sm"

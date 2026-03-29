@@ -14,7 +14,7 @@ export default function AuthField({ label, type, leftIcon, placeholder }: AuthFi
   const field = useFieldContext<string>();
   return (
     <div className="relative">
-      <label htmlFor={field.name} className="block text-sm-plus font-semibold text-stone-600 mb-1.5 ml-1">
+      <label htmlFor={field.name} className="text-label ml-1">
         {label}
       </label>
       <div className="relative flex items-center group">
@@ -25,7 +25,7 @@ export default function AuthField({ label, type, leftIcon, placeholder }: AuthFi
           type={type}
           autoComplete={field.name}
           required
-          className={cn(INPUT_BASE, 'bg-white/50 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] focus:border-amber-400 focus:ring-amber-400 pl-11 pr-4 py-3.5')}
+          className={cn(INPUT_BASE, 'bg-white/50 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] pl-11 pr-4 py-3.5')}
           placeholder={placeholder}
           value={field.state.value}
           onChange={(e) => field.handleChange(e.target.value)}
