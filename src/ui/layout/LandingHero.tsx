@@ -1,8 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { ArrowRight, Network, ShieldCheck, Sparkles, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { cardVariants } from '../common/Card';
-import { cn } from '../utils/cn';
 
 interface LandingHeroProps {
   siteName: string;
@@ -58,13 +56,11 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
             title: t('landing.featureSecurityTitle'),
             desc: t('landing.featureSecurityDesc'),
           },
+          // custom: landing hero feature card — unique glass effect, hover shadows, and rounded-3xl not covered by Card variants
         ].map((feature, index) => (
           <div
             key={feature.title}
-            className={cn(
-              cardVariants({ variant: 'glass' }),
-              'bg-white/70 backdrop-blur-xl p-8 rounded-3xl border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:bg-white transition-all duration-500 flex flex-col items-start group relative animate-fade-in-up'
-            )}
+            className="bg-white/70 backdrop-blur-xl p-8 rounded-3xl border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:bg-white transition-all duration-500 flex flex-col items-start group relative overflow-hidden animate-fade-in-up"
             style={{ animationDelay: `${index * 0.15 + 0.3}s`, animationFillMode: 'forwards', opacity: 0 }}
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-amber-100/50 to-transparent rounded-bl-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

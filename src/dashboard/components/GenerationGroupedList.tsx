@@ -117,7 +117,8 @@ function FamilyGroup({
   const coupleGroups = buildCoupleGroups(famPersons, spousesOf);
 
   return (
-    <Card variant="elevated" className="relative bg-white rounded-[2.5rem] p-5 sm:p-8 border-stone-300">
+    // custom: larger radius for family group containers
+    <Card variant="elevated" className="relative p-5 sm:p-8 rounded-[2.5rem]">
       {label && (
         <div className="absolute -top-3 left-8 px-3 py-0.5 bg-stone-100 text-xs font-bold text-stone-600 tracking-widest border border-stone-300 rounded-full shadow-sm z-20">
           {label}

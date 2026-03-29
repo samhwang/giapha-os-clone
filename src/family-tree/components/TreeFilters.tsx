@@ -1,7 +1,6 @@
 import { Filter } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card } from '../../ui/common/Card';
 import { cn } from '../../ui/utils/cn';
 import type { TreeFilterOptions } from '../utils/treeHelpers';
 
@@ -67,8 +66,9 @@ export default function TreeFilters({ filters, onToggle }: TreeFiltersProps) {
         <span className="hidden sm:inline">{t('tree.filter')}</span>
       </button>
 
+      {/* custom: dropdown panel — not a semantic card, needs panel-specific positioning and shadow */}
       {showFilters && (
-        <Card className="absolute top-full right-0 mt-2 w-52 bg-surface-panel backdrop-blur-xl shadow-xl p-4 flex flex-col gap-3 z-50 animate-[fade-in_0.15s_ease-out_forwards]">
+        <div className="absolute top-full right-0 mt-2 w-52 bg-surface-panel backdrop-blur-xl shadow-xl border border-border-default rounded-card p-4 flex flex-col gap-3 z-50 animate-[fade-in_0.15s_ease-out_forwards]">
           {filterOptions.map(({ key, label }) => (
             <label key={key} className="flex items-center gap-2.5 text-sm font-medium text-stone-700 cursor-pointer select-none">
               <input
@@ -80,7 +80,7 @@ export default function TreeFilters({ filters, onToggle }: TreeFiltersProps) {
               {label}
             </label>
           ))}
-        </Card>
+        </div>
       )}
     </div>
   );
