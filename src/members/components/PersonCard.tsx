@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import Avatar from '../../ui/common/Avatar';
+import { Badge } from '../../ui/common/Badge';
+import { cardVariants } from '../../ui/common/Card';
 import InLawBadge from '../../ui/common/InLawBadge';
 import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
 import { cn } from '../../ui/utils/cn';
@@ -21,7 +23,8 @@ export default function PersonCard({ person }: PersonCardProps) {
       type="button"
       onClick={() => setMemberModalId(person.id)}
       className={cn(
-        'group block relative bg-white/60 backdrop-blur-md p-2 sm:p-4 rounded-2xl shadow-sm border border-stone-200/60 hover:border-amber-300 hover:shadow-md hover:bg-white/90 transition-all duration-300 overflow-hidden text-left w-full',
+        cardVariants({ variant: 'glass', interactive: true }),
+        'group block relative p-2 sm:p-4 text-left w-full',
         person.isDeceased && 'opacity-80 grayscale-[0.3]'
       )}
     >
@@ -31,7 +34,7 @@ export default function PersonCard({ person }: PersonCardProps) {
             gender={person.gender}
             avatarUrl={person.avatarUrl}
             fullName={person.fullName}
-            className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105 text-xl font-bold"
+            className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 shadow-lg ring-2 ring-white transition-transform duration-default group-hover:scale-105 text-xl font-bold"
           />
           <div
             className={cn(
@@ -71,20 +74,10 @@ export default function PersonCard({ person }: PersonCardProps) {
             <div className="flex flex-wrap items-center gap-1.5 shrink-0 mt-2">
               {person.isInLaw && <InLawBadge size="md" gender={person.gender} />}
               {person.birthOrder != null && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-2xs sm:text-xs-plus font-bold bg-amber-50 text-amber-700 border border-amber-200/60 uppercase tracking-widest shadow-xs">
-                  {person.birthOrder === 1 ? t('member.birthOrderFirst') : t('member.birthOrderN', { order: person.birthOrder })}
-                </span>
+                <Badge color="amber">{person.birthOrder === 1 ? t('member.birthOrderFirst') : t('member.birthOrderN', { order: person.birthOrder })}</Badge>
               )}
-              {person.generation != null && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-2xs sm:text-xs-plus font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 uppercase tracking-widest shadow-xs">
-                  {t('stats.generationLabel', { gen: person.generation })}
-                </span>
-              )}
-              {person.isDeceased && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-2xs sm:text-xs-plus font-bold bg-stone-100 text-stone-500 uppercase tracking-widest border border-stone-200/60 shadow-xs">
-                  {t('member.filterDeceased')}
-                </span>
-              )}
+              {person.generation != null && <Badge color="emerald">{t('stats.generationLabel', { gen: person.generation })}</Badge>}
+              {person.isDeceased && <Badge color="stone">{t('member.filterDeceased')}</Badge>}
             </div>
           )}
         </div>
