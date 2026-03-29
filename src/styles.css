@@ -61,12 +61,12 @@
   --gender-female-from: var(--color-rose-400);
   --gender-female-to: var(--color-rose-500);
 
-  /* Effects */
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05); /* ~shadow-sm */
-  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08); /* ~shadow-md */
-  --radius-card: 1rem; /* rounded-2xl */
-  --radius-input: 0.75rem; /* rounded-xl */
-  --radius-badge: 0.375rem; /* rounded-md */
+  /* Effects (prefixed to avoid collision with @theme registration names) */
+  --effect-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05); /* ~shadow-sm */
+  --effect-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08); /* ~shadow-md */
+  --effect-radius-card: 1rem; /* rounded-2xl */
+  --effect-radius-input: 0.75rem; /* rounded-xl */
+  --effect-radius-badge: 0.375rem; /* rounded-md */
 }
 
 @theme inline {
@@ -138,11 +138,11 @@
   --color-gender-female-text: var(--gender-female-text);
 
   /* Effects */
-  --shadow-card: var(--shadow-card);
-  --shadow-card-hover: var(--shadow-card-hover);
-  --radius-card: var(--radius-card);
-  --radius-input: var(--radius-input);
-  --radius-badge: var(--radius-badge);
+  --shadow-card: var(--effect-shadow-card);
+  --shadow-card-hover: var(--effect-shadow-card-hover);
+  --radius-card: var(--effect-radius-card);
+  --radius-input: var(--effect-radius-input);
+  --radius-badge: var(--effect-radius-badge);
 
   --animate-fade-in: fade-in 0.8s ease-out forwards;
   --animate-fade-in-up: fade-in-up 0.8s ease-out forwards;
