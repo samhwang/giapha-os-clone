@@ -76,6 +76,16 @@ describe('Button', () => {
     expect(button).toHaveClass('disabled:opacity-50');
   });
 
+  it('defaults to type="button"', () => {
+    render(<Button>Default</Button>);
+    expect(screen.getByRole('button')).toHaveAttribute('type', 'button');
+  });
+
+  it('allows type="submit" override', () => {
+    render(<Button type="submit">Submit</Button>);
+    expect(screen.getByRole('button')).toHaveAttribute('type', 'submit');
+  });
+
   it('calls onClick handler', async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();

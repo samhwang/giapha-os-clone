@@ -17,7 +17,7 @@ const SIZE_MAP = {
 
 export function ProgressBar({ value, max, color = 'bg-amber-400', size = 'md', delay = 0, className }: ProgressBarProps): ReactNode {
   const rawPercentage = max > 0 ? (value / max) * 100 : 0;
-  const percentage = Math.min(100, Math.max(0, rawPercentage));
+  const percentage = Number.isFinite(rawPercentage) ? Math.min(100, Math.max(0, rawPercentage)) : 0;
 
   return (
     <div

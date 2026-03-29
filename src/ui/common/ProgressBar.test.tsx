@@ -43,6 +43,24 @@ describe('ProgressBar', () => {
     expect(bar).toHaveStyle({ transitionDelay: '0.5s' });
   });
 
+  it('clamps value exceeding max to 100%', () => {
+    const { container } = render(<ProgressBar value={150} max={100} />);
+    const bar = container.querySelector('.rounded-full.transition-all');
+    expect(bar).toHaveStyle({ width: '100%' });
+  });
+
+  it('clamps negative value to 0%', () => {
+    const { container } = render(<ProgressBar value={-10} max={100} />);
+    const bar = container.querySelector('.rounded-full.transition-all');
+    expect(bar).toHaveStyle({ width: '0%' });
+  });
+
+  it('renders 0% for NaN value', () => {
+    const { container } = render(<ProgressBar value={Number.NaN} max={100} />);
+    const bar = container.querySelector('.rounded-full.transition-all');
+    expect(bar).toHaveStyle({ width: '0%' });
+  });
+
   it('applies custom className', () => {
     const { container } = render(<ProgressBar value={50} max={100} className="mt-4" />);
     expect(container.firstChild).toHaveClass('mt-4');

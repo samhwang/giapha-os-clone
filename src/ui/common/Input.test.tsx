@@ -48,9 +48,11 @@ describe('Input', () => {
     expect(screen.getByPlaceholderText('input')).toHaveAttribute('aria-invalid', 'true');
   });
 
-  it('does not set aria-invalid when no error', () => {
+  it('does not set aria-invalid or aria-describedby when no error', () => {
     render(<Input placeholder="input" />);
-    expect(screen.getByPlaceholderText('input')).not.toHaveAttribute('aria-invalid');
+    const input = screen.getByPlaceholderText('input');
+    expect(input).not.toHaveAttribute('aria-invalid');
+    expect(input).not.toHaveAttribute('aria-describedby');
   });
 
   it('associates error message via aria-describedby', () => {

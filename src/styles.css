@@ -54,12 +54,8 @@
   /* Gender */
   --gender-male-bg: var(--color-sky-100);
   --gender-male-text: var(--color-sky-600);
-  --gender-male-from: var(--color-sky-400);
-  --gender-male-to: var(--color-sky-500);
   --gender-female-bg: var(--color-rose-100);
   --gender-female-text: var(--color-rose-600);
-  --gender-female-from: var(--color-rose-400);
-  --gender-female-to: var(--color-rose-500);
 
   /* Effects (prefixed to avoid collision with @theme registration names) */
   --effect-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05); /* ~shadow-sm */
