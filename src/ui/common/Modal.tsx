@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { type ReactNode, useEffect } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 import { cn } from '../utils/cn';
 
 interface ModalProps {
@@ -9,22 +9,24 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, children }: ModalProps): ReactNode {
+  const previousOverflow = useRef<string>('');
+
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    if (!isOpen) return;
+
+    previousOverflow.current = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = previousOverflow.current;
     };
   }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 sm:p-6 bg-surface-overlay backdrop-blur-sm animate-[fade-in_0.2s_ease-out_forwards]">
-      {onClose && <button type="button" className="absolute inset-0 cursor-pointer" onClick={onClose} aria-label="Close overlay" />}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-surface-overlay backdrop-blur-sm animate-[fade-in_0.2s_ease-out_forwards]">
+      {onClose && <button type="button" tabIndex={-1} aria-hidden="true" className="absolute inset-0 cursor-pointer" onClick={onClose} />}
       {children}
     </div>
   );
@@ -58,11 +60,11 @@ export function ModalPanel({ children, maxWidth = '4xl', className }: ModalPanel
 
 interface ModalCloseButtonProps {
   onClick: () => void;
-  label?: string;
+  label: string;
   className?: string;
 }
 
-export function ModalCloseButton({ onClick, label = 'Close', className }: ModalCloseButtonProps): ReactNode {
+export function ModalCloseButton({ onClick, label, className }: ModalCloseButtonProps): ReactNode {
   return (
     <button
       type="button"

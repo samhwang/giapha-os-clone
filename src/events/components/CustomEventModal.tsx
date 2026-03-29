@@ -91,7 +91,7 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalPanel maxWidth="2xl">
         <div className="absolute top-4 right-4 sm:top-5 sm:right-5 z-20">
-          <ModalCloseButton onClick={onClose} />
+          <ModalCloseButton onClick={onClose} label={t('common.close')} />
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 sm:px-8 pt-16 pb-8">

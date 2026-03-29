@@ -22,7 +22,8 @@ describe('Modal', () => {
     expect(screen.getByText('Content')).toBeInTheDocument();
   });
 
-  it('locks body scroll when open', () => {
+  it('locks body scroll when open and restores on unmount', () => {
+    document.body.style.overflow = 'auto';
     const { unmount } = render(
       <Modal isOpen>
         <div>Content</div>
@@ -31,37 +32,40 @@ describe('Modal', () => {
     expect(document.body.style.overflow).toBe('hidden');
 
     unmount();
-    expect(document.body.style.overflow).toBe('unset');
+    expect(document.body.style.overflow).toBe('auto');
   });
 
-  it('renders backdrop button when onClose is provided', () => {
+  it('renders backdrop when onClose is provided', () => {
     const onClose = vi.fn();
-    render(
+    const { container } = render(
       <Modal isOpen onClose={onClose}>
         <div>Content</div>
       </Modal>
     );
-    expect(screen.getByLabelText('Close overlay')).toBeInTheDocument();
+    const backdrop = container.querySelector('[aria-hidden="true"]');
+    expect(backdrop).toBeInTheDocument();
   });
 
-  it('does not render backdrop button when onClose is not provided', () => {
-    render(
+  it('does not render backdrop when onClose is not provided', () => {
+    const { container } = render(
       <Modal isOpen>
         <div>Content</div>
       </Modal>
     );
-    expect(screen.queryByLabelText('Close overlay')).not.toBeInTheDocument();
+    const backdrop = container.querySelector('[aria-hidden="true"]');
+    expect(backdrop).not.toBeInTheDocument();
   });
 
   it('calls onClose when backdrop is clicked', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
-    render(
+    const { container } = render(
       <Modal isOpen onClose={onClose}>
         <div>Content</div>
       </Modal>
     );
-    await user.click(screen.getByLabelText('Close overlay'));
+    const backdrop = container.querySelector('[aria-hidden="true"]') as HTMLElement;
+    await user.click(backdrop);
     expect(onClose).toHaveBeenCalledOnce();
   });
 });
@@ -89,8 +93,8 @@ describe('ModalPanel', () => {
 });
 
 describe('ModalCloseButton', () => {
-  it('renders with default label', () => {
-    render(<ModalCloseButton onClick={vi.fn()} />);
+  it('renders with required label', () => {
+    render(<ModalCloseButton onClick={vi.fn()} label="Close" />);
     expect(screen.getByLabelText('Close')).toBeInTheDocument();
   });
 
@@ -102,7 +106,7 @@ describe('ModalCloseButton', () => {
   it('calls onClick when clicked', async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
-    render(<ModalCloseButton onClick={onClick} />);
+    render(<ModalCloseButton onClick={onClick} label="Close" />);
     await user.click(screen.getByLabelText('Close'));
     expect(onClick).toHaveBeenCalledOnce();
   });
