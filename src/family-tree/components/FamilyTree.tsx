@@ -78,7 +78,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: FamilyT
           <div
             className={cn(
               'flex relative z-10 items-stretch h-full',
-              showAvatar && 'bg-white rounded-2xl shadow-md border border-stone-200/80 transition-opacity'
+              showAvatar && 'bg-white rounded-2xl shadow-md border border-border-strong transition-opacity'
             )}
           >
             <FamilyNodeCard person={data.person} />
@@ -103,7 +103,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: FamilyT
                   e.stopPropagation();
                   toggleCollapse(personId);
                 }}
-                className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white border border-stone-200/80 rounded-full size-6 flex items-center justify-center shadow-md z-20 text-stone-500 hover:text-amber-600 hover:border-amber-300 transition-colors cursor-pointer"
+                className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white border border-border-strong rounded-full size-6 flex items-center justify-center shadow-md z-20 text-stone-500 hover:text-amber-600 hover:border-amber-300 transition-colors cursor-pointer"
                 title={isCollapsed ? t('tree.expand') : t('tree.collapse')}
               >
                 {isCollapsed ? <Plus className="w-3.5 h-3.5" /> : <Minus className="w-3.5 h-3.5" />}
@@ -133,7 +133,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: FamilyT
         <button
           type="button"
           onClick={centerTree}
-          className="flex items-center justify-center size-10 rounded-full bg-white/80 backdrop-blur-md shadow-sm border border-stone-200/60 text-stone-600 hover:bg-white hover:text-stone-900 hover:shadow-md transition-all"
+          className="flex items-center justify-center size-10 rounded-full bg-surface-elevated backdrop-blur-md shadow-sm border border-border-default text-stone-600 hover:bg-white hover:text-stone-900 hover:shadow-md transition-all"
           title={t('tree.center')}
         >
           <Crosshair className="size-4" />
@@ -153,7 +153,7 @@ export default function FamilyTree({ personsMap, relationships, roots }: FamilyT
       >
         <div
           id="export-container"
-          className={cn('w-max min-w-full mx-auto p-4', styles.tree, 'transition-all duration-200', isDragging && 'opacity-90')}
+          className={cn('w-max min-w-full mx-auto p-4', styles.tree, 'transition-all duration-fast', isDragging && 'opacity-90')}
           style={{ transform: `scale(${scale})`, transformOrigin: 'top center' }}
         >
           <ul>

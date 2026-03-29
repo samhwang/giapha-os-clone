@@ -185,7 +185,7 @@ export default function BubbleMapTree({ personsMap, relationships, roots }: Bubb
   }, [nodes, links, showAvatar]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-stone-50 rounded-2xl border border-stone-200/60 shadow-inner">
+    <div className="absolute inset-0 overflow-hidden bg-stone-50 rounded-2xl border border-border-default shadow-inner">
       <div ref={containerRef} className="w-full h-full">
         <svg ref={svgRef} className="w-full h-full block" />
       </div>

@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Gender } from '../../members/types';
+import { Button } from '../../ui/common/Button';
+import { INPUT_BASE } from '../../ui/common/Input';
+import { cn } from '../../ui/utils/cn';
 
 interface BulkChild {
   name: string;
@@ -46,7 +49,7 @@ export default function BulkAddChildrenForm({ onSubmit, onCancel, processing, sp
             id="bulkSpouse"
             value={selectedSpouseId}
             onChange={(e) => setSelectedSpouseId(e.target.value)}
-            className="flex-1 bg-white text-stone-900 text-sm rounded-md sm:rounded-lg border-stone-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2 sm:p-2.5 border transition-colors"
+            className={cn(INPUT_BASE, 'flex-1 text-sm rounded-md sm:rounded-lg p-2 sm:p-2.5 focus:border-sky-500 focus:ring-sky-500')}
           >
             <option value="unknown">{t('relationship.unknownParent')}</option>
             {spouses.map((spouse) => (
@@ -72,7 +75,7 @@ export default function BulkAddChildrenForm({ onSubmit, onCancel, processing, sp
                   newBulk[index].name = e.target.value;
                   setBulkChildren(newBulk);
                 }}
-                className="flex-2 bg-white text-stone-900 placeholder-stone-400 text-sm rounded-md border-stone-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2 border"
+                className={cn(INPUT_BASE, 'flex-2 text-sm rounded-md p-2 focus:border-sky-500 focus:ring-sky-500')}
               />
               <select
                 value={child.gender}
@@ -81,7 +84,7 @@ export default function BulkAddChildrenForm({ onSubmit, onCancel, processing, sp
                   newBulk[index].gender = e.target.value as Gender;
                   setBulkChildren(newBulk);
                 }}
-                className="flex-1 bg-white text-stone-900 text-sm rounded-md border-stone-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2 border"
+                className={cn(INPUT_BASE, 'flex-1 text-sm rounded-md p-2 focus:border-sky-500 focus:ring-sky-500')}
               >
                 <option value={Gender.enum.male}>{t('common.male')}</option>
                 <option value={Gender.enum.female}>{t('common.female')}</option>
@@ -96,7 +99,7 @@ export default function BulkAddChildrenForm({ onSubmit, onCancel, processing, sp
                   newBulk[index].birthYear = e.target.value;
                   setBulkChildren(newBulk);
                 }}
-                className="flex-1 bg-white text-stone-900 placeholder-stone-400 text-sm rounded-md border-stone-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2 border w-24"
+                className={cn(INPUT_BASE, 'flex-1 text-sm rounded-md p-2 focus:border-sky-500 focus:ring-sky-500 w-24')}
               />
               <input
                 type="number"
@@ -107,7 +110,7 @@ export default function BulkAddChildrenForm({ onSubmit, onCancel, processing, sp
                   newBulk[index].birthOrder = e.target.value;
                   setBulkChildren(newBulk);
                 }}
-                className="bg-white text-stone-900 placeholder-stone-400 text-sm rounded-md border-stone-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 p-2 border w-16"
+                className={cn(INPUT_BASE, 'text-sm rounded-md p-2 focus:border-sky-500 focus:ring-sky-500 w-16')}
               />
               <button
                 type="button"
@@ -137,21 +140,18 @@ export default function BulkAddChildrenForm({ onSubmit, onCancel, processing, sp
         </div>
 
         <div className="flex gap-2 pt-4 border-t border-stone-200">
-          <button
-            type="button"
+          {/* custom: sky submit button matches the children form's sky-themed section */}
+          <Button
+            size="sm"
             onClick={handleSubmit}
             disabled={processing || bulkChildren.every((c) => c.name.trim() === '')}
-            className="flex-1 bg-sky-600 text-white py-2 sm:py-2.5 rounded-md sm:rounded-lg text-sm font-medium hover:bg-sky-700 disabled:opacity-50 transition-colors"
+            className="flex-1 bg-sky-600 hover:bg-sky-700 text-white border-transparent rounded-md sm:rounded-lg"
           >
             {processing ? t('common.saving') : t('relationship.saveAll')}
-          </button>
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="px-4 py-2 sm:py-2.5 bg-white border border-stone-300 text-stone-700 rounded-md sm:rounded-lg text-sm hover:bg-stone-50 transition-colors"
-          >
+          </Button>
+          <Button size="sm" onClick={handleCancel} className="rounded-md sm:rounded-lg">
             {t('common.cancel')}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -12,7 +12,7 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
   return (
     <div className="max-w-5xl text-center space-y-12 w-full relative z-10">
       <div className="space-y-6 sm:space-y-8 flex flex-col items-center animate-fade-in-up">
-        <div className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-amber-800 bg-white/60 backdrop-blur-md rounded-full shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-amber-200/50 relative overflow-hidden group hover:scale-105 transition-transform duration-300">
+        <div className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-amber-800 bg-surface-glass backdrop-blur-md rounded-full shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-amber-200/50 relative overflow-hidden group hover:scale-105 transition-transform duration-default">
           <Sparkles className="size-4 text-amber-500" />
           {t('landing.tagline')}
           <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
@@ -30,7 +30,7 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
 
         <Link
           to="/login"
-          className="group inline-flex items-center justify-center gap-2 px-8 py-4 sm:px-10 sm:py-5 text-base sm:text-lg font-bold text-white bg-stone-900 border border-stone-800 hover:bg-stone-800 hover:border-stone-700 rounded-2xl shadow-xl shadow-stone-900/10 hover:shadow-2xl hover:shadow-stone-900/20 transition-all duration-300 hover:-translate-y-1 active:translate-y-0 w-full sm:w-auto overflow-hidden relative"
+          className="group inline-flex items-center justify-center gap-2 px-8 py-4 sm:px-10 sm:py-5 text-base sm:text-lg font-bold text-white bg-stone-900 border border-stone-800 hover:bg-stone-800 hover:border-stone-700 rounded-2xl shadow-xl shadow-stone-900/10 hover:shadow-2xl hover:shadow-stone-900/20 transition-all duration-default hover:-translate-y-1 active:translate-y-0 w-full sm:w-auto overflow-hidden relative"
         >
           <span className="relative z-10 flex items-center gap-3">
             {t('auth.loginToView')}
@@ -56,6 +56,7 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
             title: t('landing.featureSecurityTitle'),
             desc: t('landing.featureSecurityDesc'),
           },
+          // custom: landing hero feature card — unique glass effect, hover shadows, and rounded-3xl not covered by Card variants
         ].map((feature, index) => (
           <div
             key={feature.title}
@@ -64,7 +65,7 @@ export default function LandingHero({ siteName }: LandingHeroProps) {
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-amber-100/50 to-transparent rounded-bl-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-            <div className="p-3.5 bg-white rounded-2xl mb-6 shadow-sm ring-1 ring-stone-100 group-hover:scale-110 group-hover:shadow-md transition-all duration-300 relative z-10">
+            <div className="p-3.5 bg-white rounded-2xl mb-6 shadow-sm ring-1 ring-stone-100 group-hover:scale-110 group-hover:shadow-md transition-all duration-default relative z-10">
               {feature.icon}
             </div>
             <h3 className="text-xl sm:text-2xl font-bold text-stone-800 mb-3 font-serif relative z-10 group-hover:text-amber-900 transition-colors">

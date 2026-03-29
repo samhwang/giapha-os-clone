@@ -8,6 +8,61 @@
   --foreground: #171717;
   --font-inter: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --font-playfair: "Playfair Display Variable", Georgia, serif;
+
+  /* Surface */
+  --surface-primary: var(--color-white);
+  --surface-glass: rgba(255, 255, 255, 0.6); /* white/60 */
+  --surface-glass-hover: rgba(255, 255, 255, 0.9); /* white/90 */
+  --surface-elevated: rgba(255, 255, 255, 0.8); /* white/80 */
+  --surface-panel: rgba(255, 255, 255, 0.95); /* white/95 */
+  --surface-muted: var(--color-stone-50);
+  --surface-overlay: rgba(28, 25, 23, 0.4); /* stone-900/40 */
+
+  /* Border */
+  --border-default: rgba(214, 211, 209, 0.6); /* stone-300/60 */
+  --border-strong: rgba(214, 211, 209, 0.8); /* stone-300/80 */
+  --border-hover: var(--color-amber-300);
+
+  /* Text */
+  --text-primary: var(--color-stone-900);
+  --text-heading: var(--color-stone-800);
+  --text-label: var(--color-stone-700);
+  --text-secondary: var(--color-stone-500);
+  --text-muted: var(--color-stone-400);
+
+  /* Focus ring */
+  --ring-primary: var(--color-amber-500);
+  --ring-primary-bg: rgba(245, 158, 11, 0.2); /* amber-500/20 */
+
+  /* Transition durations */
+  --duration-fast: 200ms;
+  --duration-default: 300ms;
+  --duration-slow: 500ms;
+
+  /* Accent */
+  --accent: var(--color-amber-600);
+  --accent-hover: var(--color-amber-700);
+  --accent-bg: var(--color-amber-50);
+  --accent-ring: rgba(252, 211, 77, 0.5); /* amber-300/50 */
+
+  /* Status */
+  --status-alive: var(--color-emerald-400);
+  --status-alive-glow: rgba(52, 211, 153, 0.6); /* emerald-400/60 */
+  --status-deceased: var(--color-amber-400);
+  --status-deceased-glow: rgba(251, 191, 36, 0.6); /* amber-400/60 */
+
+  /* Gender */
+  --gender-male-bg: var(--color-sky-100);
+  --gender-male-text: var(--color-sky-600);
+  --gender-female-bg: var(--color-rose-100);
+  --gender-female-text: var(--color-rose-600);
+
+  /* Effects (prefixed to avoid collision with @theme registration names) */
+  --effect-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05); /* ~shadow-sm */
+  --effect-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08); /* ~shadow-md */
+  --effect-radius-card: 1rem; /* rounded-2xl */
+  --effect-radius-input: 0.75rem; /* rounded-xl */
+  --effect-radius-badge: 0.375rem; /* rounded-md */
 }
 
 @theme inline {
@@ -31,6 +86,59 @@
 
   --min-width-80: 320px;
   --max-width-80: 320px;
+
+  /* Surface */
+  --color-surface-primary: var(--surface-primary);
+  --color-surface-glass: var(--surface-glass);
+  --color-surface-glass-hover: var(--surface-glass-hover);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-panel: var(--surface-panel);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-overlay: var(--surface-overlay);
+
+  /* Border */
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+  --color-border-hover: var(--border-hover);
+
+  /* Text */
+  --color-text-primary: var(--text-primary);
+  --color-text-heading: var(--text-heading);
+  --color-text-label: var(--text-label);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  /* Focus ring */
+  --color-ring-primary: var(--ring-primary);
+  --color-ring-primary-bg: var(--ring-primary-bg);
+
+  /* Transition durations */
+  --transition-duration-fast: var(--duration-fast);
+  --transition-duration-default: var(--duration-default);
+  --transition-duration-slow: var(--duration-slow);
+
+  /* Accent */
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-bg: var(--accent-bg);
+  --color-accent-ring: var(--accent-ring);
+
+  /* Status */
+  --color-status-alive: var(--status-alive);
+  --color-status-deceased: var(--status-deceased);
+
+  /* Gender */
+  --color-gender-male-bg: var(--gender-male-bg);
+  --color-gender-male-text: var(--gender-male-text);
+  --color-gender-female-bg: var(--gender-female-bg);
+  --color-gender-female-text: var(--gender-female-text);
+
+  /* Effects */
+  --shadow-card: var(--effect-shadow-card);
+  --shadow-card-hover: var(--effect-shadow-card-hover);
+  --radius-card: var(--effect-radius-card);
+  --radius-input: var(--effect-radius-input);
+  --radius-badge: var(--effect-radius-badge);
 
   --animate-fade-in: fade-in 0.8s ease-out forwards;
   --animate-fade-in-up: fade-in-up 0.8s ease-out forwards;
@@ -73,6 +181,58 @@ body {
   color: var(--foreground);
 }
 
+/* ── Typography utilities ── */
+
+.text-heading-page {
+  @apply text-xl sm:text-2xl font-serif font-bold text-text-heading;
+}
+
+.text-heading-section {
+  @apply text-lg sm:text-xl font-serif font-bold text-text-heading;
+}
+
+.text-heading-card {
+  @apply text-base font-bold text-text-label;
+}
+
+.text-label {
+  @apply block text-sm font-semibold text-text-label mb-1.5;
+}
+
+.text-overline {
+  @apply text-xs font-bold text-text-muted uppercase tracking-widest;
+}
+
+.text-description {
+  @apply text-sm text-text-secondary;
+}
+
+.text-caption {
+  @apply text-xs text-text-muted;
+}
+
+/* ── Layout utilities ── */
+
+.layout-page {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.layout-section {
+  @apply space-y-6;
+}
+
+.layout-section-lg {
+  @apply space-y-8;
+}
+
+.layout-card-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+.layout-grid-2 {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+}
+
 /* Fix iOS auto-zoom when focusing on inputs */
 @media screen and (max-width: 768px) {
   input,
@@ -85,16 +245,4 @@ body {
 button,
 a {
   cursor: pointer;
-}
-
-.btn {
-  @apply inline-flex items-center px-5 py-2.5 border border-stone-200/80 text-sm font-medium rounded-full shadow-sm hover:shadow-md text-stone-600 bg-linear-to-r bg-white hover:bg-stone-50 transition-all duration-300 hover:-translate-y-0.5 justify-center shrink-0 gap-1.5;
-}
-
-.btn-primary {
-  @apply inline-flex items-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-full shadow-sm hover:shadow-md text-white bg-linear-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 transition-all duration-300 hover:-translate-y-0.5 justify-center shrink-0 gap-1.5;
-}
-
-.btn-secondary {
-  @apply inline-flex items-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-full shadow-sm hover:shadow-md text-white bg-linear-to-r from-stone-600 to-stone-700 hover:from-stone-700 hover:to-stone-800 transition-all duration-300 hover:-translate-y-0.5 justify-center shrink-0 gap-1.5;
 }

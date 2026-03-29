@@ -37,11 +37,11 @@ function InactiveAccountPage() {
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 flex flex-col font-sans">
-      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-stone-200 shadow-sm transition-all duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-surface-elevated backdrop-blur-md border-b border-stone-200 shadow-sm transition-all duration-fast">
+        <div className="layout-page h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/" className="group flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-serif font-bold text-stone-800 group-hover:text-amber-700 transition-colors">{clientEnv.SITE_NAME}</h1>
+              <h1 className="text-heading-page group-hover:text-amber-700 transition-colors">{clientEnv.SITE_NAME}</h1>
             </Link>
           </div>
           <div className="w-32">
@@ -50,7 +50,7 @@ function InactiveAccountPage() {
         </div>
       </header>
       <main className="flex-1 flex flex-col items-center justify-center p-4">
-        <div className="max-w-md w-full text-center bg-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-sm border border-stone-200">
+        <div className="max-w-md w-full text-center bg-surface-primary p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-card border border-border-default">
           <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="size-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Account locked">
               <title>Account locked</title>

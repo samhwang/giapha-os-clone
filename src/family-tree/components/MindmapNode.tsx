@@ -5,6 +5,7 @@ import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import { Gender, type Person } from '../../members/types';
 import type { Relationship } from '../../relationships/types';
 import Avatar from '../../ui/common/Avatar';
+import { cardVariants } from '../../ui/common/Card';
 import InLawBadge from '../../ui/common/InLawBadge';
 import { cn } from '../../ui/utils/cn';
 import type { AdjacencyLists, TreeFilterOptions } from '../utils/treeHelpers';
@@ -109,7 +110,8 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
           role="button"
           tabIndex={0}
           className={cn(
-            'group/card relative flex flex-wrap items-center gap-2 bg-white/60 backdrop-blur-md rounded-2xl border border-stone-200/60 p-2 sm:p-2.5 shadow-sm hover:border-amber-300 hover:shadow-md hover:bg-white/90 transition-all duration-300 overflow-hidden cursor-pointer animate-[fade-in_0.3s_ease-out_forwards]',
+            cardVariants({ variant: 'glass', interactive: true }),
+            'group/card relative flex flex-wrap items-center gap-2 p-2 sm:p-2.5 cursor-pointer animate-[fade-in_0.3s_ease-out_forwards]',
             data.person.isDeceased && 'opacity-80 grayscale-[0.3]'
           )}
           onClick={() => ctx.setMemberModalId(data.person.id)}
@@ -128,7 +130,7 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
                     gender={data.person.gender}
                     avatarUrl={data.person.avatarUrl}
                     fullName={data.person.fullName}
-                    className="size-10 text-xs font-bold shadow-md ring-2 ring-white transition-transform duration-300 group-hover/card:scale-105"
+                    className="size-10 text-xs font-bold shadow-md ring-2 ring-white transition-transform duration-default group-hover/card:scale-105"
                   />
                 </div>
               )}
@@ -183,7 +185,7 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
                       ctx.setMemberModalId(spouseData.person.id);
                     }}
                     className={cn(
-                      'flex flex-col items-center gap-1 bg-stone-50/50 hover:bg-white rounded-xl p-1.5 border border-stone-200/60 hover:border-amber-300 transition-all shadow-sm hover:shadow-md group/spouse cursor-pointer',
+                      'flex flex-col items-center gap-1 bg-stone-50/50 hover:bg-white rounded-xl p-1.5 border border-border-default hover:border-amber-300 transition-all shadow-sm hover:shadow-md group/spouse cursor-pointer',
                       spouseData.person.isDeceased && 'opacity-80 grayscale-[0.3]'
                     )}
                     title={spouseData.note || (spouseData.person.gender === Gender.enum.male ? ctx.t('tree.husband') : ctx.t('tree.wife'))}
@@ -193,7 +195,7 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
                         gender={spouseData.person.gender}
                         avatarUrl={spouseData.person.avatarUrl}
                         fullName={spouseData.person.fullName}
-                        className="size-8 text-2xs font-bold shadow-sm ring-2 ring-white transition-transform duration-300 group-hover/spouse:scale-105"
+                        className="size-8 text-2xs font-bold shadow-sm ring-2 ring-white transition-transform duration-default group-hover/spouse:scale-105"
                       />
                     )}
                     <span className="text-2xs font-bold text-stone-600 truncate max-w-12.5 text-center">{spouseData.person.fullName.split(' ').pop()}</span>

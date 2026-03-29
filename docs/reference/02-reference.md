@@ -69,11 +69,11 @@ src/
 │   ├── about.tsx       # About page (/about)
 │   ├── dashboard/      # Protected routes (/dashboard/*)
 │   └── api/            # API routes (auth, uploads)
-├── ui/                 # Shared UI components
-│   ├── common/         # LanguageSwitcher, ExportButton
+├── ui/                 # Shared UI components and design system
+│   ├── common/         # Card, Badge, Modal, Button, Input, EmptyState, ProgressBar, Avatar, Checkbox, InLawBadge, LanguageSwitcher, ExportButton
 │   ├── icons/          # GenderIcons, DefaultAvatar
 │   ├── layout/         # Footer, HeaderMenu, LogoutButton, LandingHero
-│   └── utils/          # cn() utility, gender style helpers
+│   └── utils/          # cn() class merge utility, gender style helpers
 ├── database/           # Database layer
 │   ├── generated/prisma/  # Prisma generated types (auto-generated)
 │   ├── lib/
@@ -118,15 +118,73 @@ src/{domain}/
 └── utils/          # Pure utility functions
 ```
 
-### Shared UI Components
+### Shared UI Components (Design System)
 
 ```
 src/ui/
-├── common/       # LanguageSwitcher, ExportButton
+├── common/       # Reusable CVA-based components
+│   ├── Card.tsx         # Glass/elevated card variants (uses surface tokens)
+│   ├── Badge.tsx        # Color-coded badges (amber, emerald, stone, sky, rose)
+│   ├── Modal.tsx        # Modal, ModalPanel, ModalCloseButton compound components
+│   ├── Button.tsx       # default/primary/secondary/ghost/danger/dark variants, sm/md/lg/xl sizes
+│   ├── Input.tsx        # Form input with label, error, left icon (uses ring/text tokens)
+│   ├── EmptyState.tsx   # Empty state with icon, title, description, action
+│   ├── ProgressBar.tsx  # Animated progress bar with sm/md sizes
+│   ├── Avatar.tsx       # Gender-based gradient avatar
+│   ├── InLawBadge.tsx   # In-law badge (wraps Badge)
+│   ├── Checkbox.tsx     # Custom checkbox
+│   ├── ExportButton.tsx # Export functionality
+│   └── LanguageSwitcher.tsx
 ├── icons/        # GenderIcons, DefaultAvatar
 ├── layout/       # Footer, HeaderMenu, LogoutButton, LandingHero
 └── utils/        # cn() class merge utility, gender style helpers
 ```
+
+### Design Tokens
+
+Semantic design tokens are defined as CSS custom properties in `src/styles.css` and registered in Tailwind's `@theme inline` block. Components use the generated utility classes.
+
+| Token Category | Example Variables | Tailwind Utilities |
+|---------------|-------------------|-------------------|
+| Surface | `--surface-glass`, `--surface-elevated`, `--surface-panel`, `--surface-muted` | `bg-surface-glass`, `bg-surface-elevated`, `bg-surface-panel` |
+| Border | `--border-default`, `--border-strong`, `--border-hover` | `border-border-default`, `border-border-strong` |
+| Text | `--text-primary`, `--text-heading`, `--text-label`, `--text-secondary`, `--text-muted` | `text-text-primary`, `text-text-heading`, `text-text-label` |
+| Accent | `--accent`, `--accent-hover`, `--accent-bg`, `--accent-ring` | `bg-accent`, `text-accent-hover` |
+| Focus Ring | `--ring-primary`, `--ring-primary-bg` | `focus:border-ring-primary`, `focus:ring-ring-primary-bg` |
+| Status | `--status-alive`, `--status-deceased` | `bg-status-alive`, `bg-status-deceased` |
+| Gender | `--gender-male-bg`, `--gender-female-text` | `bg-gender-male-bg`, `text-gender-female-text` |
+| Effects | `--shadow-card`, `--shadow-card-hover`, `--radius-card`, `--radius-input`, `--radius-badge` | `shadow-card`, `rounded-card`, `rounded-input` |
+| Transitions | `--duration-fast` (200ms), `--duration-default` (300ms), `--duration-slow` (500ms) | `duration-fast`, `duration-default`, `duration-slow` |
+
+### Typography Utilities
+
+Defined in `src/styles.css` using `@apply` with semantic color tokens:
+
+| Class | Usage | Properties |
+|-------|-------|------------|
+| `text-heading-page` | Page titles | `text-xl sm:text-2xl font-serif font-bold text-text-heading` |
+| `text-heading-section` | Form/modal section titles | `text-lg sm:text-xl font-serif font-bold text-text-heading` |
+| `text-heading-card` | Card/stats section titles | `text-base font-bold text-text-label` |
+| `text-label` | Form labels | `block text-sm font-semibold text-text-label mb-1.5` |
+| `text-overline` | Uppercase section labels | `text-xs font-bold text-text-muted uppercase tracking-widest` |
+| `text-description` | Description/meta text | `text-sm text-text-secondary` |
+| `text-caption` | Muted captions | `text-xs text-text-muted` |
+
+### Layout Utilities
+
+| Class | Usage | Properties |
+|-------|-------|------------|
+| `layout-page` | Page width container | `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8` |
+| `layout-section` | Standard section spacing | `space-y-6` |
+| `layout-section-lg` | Large section spacing | `space-y-8` |
+| `layout-card-grid` | 3-column responsive grid | `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6` |
+| `layout-grid-2` | 2-column responsive grid | `grid grid-cols-1 md:grid-cols-2 gap-6` |
+
+### Custom Class Policy
+
+Screens and components should use design system tokens, components, and utility classes. Any custom Tailwind class that deviates from the design system must be a deliberate choice with a `/* custom: reason */` comment explaining why.
+
+To add dark mode or custom themes, override the `:root` variables under a `[data-theme="dark"]` selector.
 
 ## Route Map
 
