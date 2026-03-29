@@ -20,7 +20,13 @@ export function ProgressBar({ value, max, color = 'bg-amber-400', size = 'md', d
   const percentage = Math.min(100, Math.max(0, rawPercentage));
 
   return (
-    <div className={cn('bg-surface-muted rounded-full overflow-hidden', SIZE_MAP[size], className)}>
+    <div
+      role="progressbar"
+      aria-valuemin={0}
+      aria-valuemax={max}
+      aria-valuenow={value}
+      className={cn('bg-surface-muted rounded-full overflow-hidden', SIZE_MAP[size], className)}
+    >
       <div
         className={cn('h-full rounded-full transition-all duration-[600ms] ease-out', color)}
         style={{ width: `${percentage}%`, transitionDelay: delay > 0 ? `${delay}s` : undefined }}

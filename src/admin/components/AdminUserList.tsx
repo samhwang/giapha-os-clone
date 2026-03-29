@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { UserRole } from '../../auth/types';
 import { Button } from '../../ui/common/Button';
 import { Card } from '../../ui/common/Card';
-import { Modal, ModalPanel } from '../../ui/common/Modal';
+import { Modal, ModalCloseButton, ModalPanel } from '../../ui/common/Modal';
 import { cn } from '../../ui/utils/cn';
 import { useAdminForm } from '../hooks/useAdminForm';
 import { changeRole, createUser, deleteUser, toggleStatus } from '../server/user';
@@ -246,13 +246,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
         <ModalPanel maxWidth="md" className="rounded-2xl">
           <div className="px-6 py-5 border-b border-stone-100/80 flex justify-between items-center bg-stone-50/50">
             <h3 className="text-xl font-serif font-bold text-stone-800">{t('admin.createTitle')}</h3>
-            <button
-              type="button"
-              onClick={() => setIsCreateModalOpen(false)}
-              className="text-stone-400 hover:text-stone-600 transition-colors size-8 flex items-center justify-center hover:bg-stone-100 rounded-full"
-            >
-              ✕
-            </button>
+            <ModalCloseButton onClick={() => setIsCreateModalOpen(false)} label={t('common.close')} className="size-8" />
           </div>
 
           <form

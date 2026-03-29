@@ -17,14 +17,19 @@ export function Modal({ isOpen, onClose, children }: ModalProps): ReactNode {
     previousOverflow.current = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
-    const handleEscape = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape' && onClose) onClose();
-    };
-    document.addEventListener('keydown', handleEscape);
+    if (onClose) {
+      const handleEscape = (e: KeyboardEvent): void => {
+        if (e.key === 'Escape') onClose();
+      };
+      document.addEventListener('keydown', handleEscape);
+      return () => {
+        document.body.style.overflow = previousOverflow.current;
+        document.removeEventListener('keydown', handleEscape);
+      };
+    }
 
     return () => {
       document.body.style.overflow = previousOverflow.current;
-      document.removeEventListener('keydown', handleEscape);
     };
   }, [isOpen, onClose]);
 

@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { INPUT_BASE } from '../../ui/common/Input';
 import { Modal, ModalCloseButton, ModalPanel } from '../../ui/common/Modal';
 import { cn } from '../../ui/utils/cn';
 import { useCustomEventForm } from '../hooks/useCustomEventForm';
@@ -83,9 +84,7 @@ export default function CustomEventModal({ isOpen, onClose, onSuccess, eventToEd
     deleteMutation.mutate(eventToEdit.id);
   };
 
-  const inputClasses = cn(
-    'bg-white text-stone-900 placeholder-stone-500 block w-full rounded-xl border border-stone-300 shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:bg-white text-sm px-4 py-3 transition-all outline-none'
-  );
+  const inputClasses = cn(INPUT_BASE, 'px-4 py-3');
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
