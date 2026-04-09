@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { getGenderStyle } from './styles';
 
 describe('getGenderStyle', () => {

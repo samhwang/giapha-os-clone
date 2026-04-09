@@ -1,9 +1,11 @@
 import JSZip from 'jszip';
 import Papa from 'papaparse';
 import { describe, expect, it } from 'vitest';
-import { createPerson, mockPersons, mockRelationships } from '../../../test/fixtures';
+
 import type { Person } from '../../members/types';
 import type { Relationship } from '../../relationships/types';
+
+import { createPerson, mockPersons, mockRelationships } from '../../../test/fixtures';
 import { exportToCsvZip, parseCsvZip, UTF8_BOM } from './csv';
 
 // JSZip in Node doesn't support Blob round-trips, so we test the CSV logic
@@ -31,8 +33,16 @@ async function parseZipBuffer(buf: ArrayBuffer) {
   const personsCsv = stripBom(await personsFile.async('text'));
   const relationshipsCsv = stripBom(await relationshipsFile.async('text'));
   return {
-    persons: Papa.parse<Partial<Person>>(personsCsv, { header: true, skipEmptyLines: true, dynamicTyping: true }).data,
-    relationships: Papa.parse<Partial<Relationship>>(relationshipsCsv, { header: true, skipEmptyLines: true, dynamicTyping: true }).data,
+    persons: Papa.parse<Partial<Person>>(personsCsv, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+    }).data,
+    relationships: Papa.parse<Partial<Relationship>>(relationshipsCsv, {
+      header: true,
+      skipEmptyLines: true,
+      dynamicTyping: true,
+    }).data,
   };
 }
 
@@ -133,7 +143,14 @@ describe('exportToCsvZip / parseCsvZip (actual functions)', () => {
     const blob = await exportToCsvZip({
       persons: mockPersons as Person[],
       relationships: mockRelationships as Relationship[],
-      personDetailsPrivate: [{ personId: 'p1', phoneNumber: '0901234567', occupation: 'Engineer', currentResidence: 'HN' }],
+      personDetailsPrivate: [
+        {
+          personId: 'p1',
+          phoneNumber: '0901234567',
+          occupation: 'Engineer',
+          currentResidence: 'HN',
+        },
+      ],
     });
     expect(blob.size).toBeGreaterThan(0);
   });
@@ -142,7 +159,16 @@ describe('exportToCsvZip / parseCsvZip (actual functions)', () => {
     const blob = await exportToCsvZip({
       persons: mockPersons as Person[],
       relationships: mockRelationships as Relationship[],
-      customEvents: [{ id: 'e1', name: 'Wedding', eventDate: '2024-01-01', location: 'HN', content: 'Test', createdBy: 'admin' }],
+      customEvents: [
+        {
+          id: 'e1',
+          name: 'Wedding',
+          eventDate: '2024-01-01',
+          location: 'HN',
+          content: 'Test',
+          createdBy: 'admin',
+        },
+      ],
     });
     expect(blob.size).toBeGreaterThan(0);
   });
@@ -163,7 +189,14 @@ describe('exportToCsvZip / parseCsvZip (actual functions)', () => {
     const exportBlob = await exportToCsvZip({
       persons: mockPersons as Person[],
       relationships: mockRelationships as Relationship[],
-      personDetailsPrivate: [{ personId: 'p1', phoneNumber: '0901234567', occupation: 'Engineer', currentResidence: 'HN' }],
+      personDetailsPrivate: [
+        {
+          personId: 'p1',
+          phoneNumber: '0901234567',
+          occupation: 'Engineer',
+          currentResidence: 'HN',
+        },
+      ],
     });
     const result = await parseCsvZip((await exportBlob.arrayBuffer()) as unknown as Blob);
     expect(result.personDetailsPrivate).toHaveLength(1);
@@ -174,7 +207,16 @@ describe('exportToCsvZip / parseCsvZip (actual functions)', () => {
     const exportBlob = await exportToCsvZip({
       persons: mockPersons as Person[],
       relationships: mockRelationships as Relationship[],
-      customEvents: [{ id: 'e1', name: 'Wedding', eventDate: '2024-01-01', location: 'HN', content: 'Test', createdBy: 'admin' }],
+      customEvents: [
+        {
+          id: 'e1',
+          name: 'Wedding',
+          eventDate: '2024-01-01',
+          location: 'HN',
+          content: 'Test',
+          createdBy: 'admin',
+        },
+      ],
     });
     const result = await parseCsvZip((await exportBlob.arrayBuffer()) as unknown as Blob);
     expect(result.customEvents).toHaveLength(1);

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { Gender, type Person } from '../../members/types';
 import { type Relationship, RelationshipType } from '../../relationships/types';
 import { buildGraphData } from './bubbleMapHelpers';
@@ -59,7 +60,11 @@ describe('buildGraphData', () => {
   it('creates links between parent and child', () => {
     const parent = makePerson({ id: 'p1', fullName: 'Parent' });
     const child = makePerson({ id: 'c1', fullName: 'Child' });
-    const rel = makeRel({ personAId: 'p1', personBId: 'c1', type: RelationshipType.enum.biological_child });
+    const rel = makeRel({
+      personAId: 'p1',
+      personBId: 'c1',
+      type: RelationshipType.enum.biological_child,
+    });
     const personsMap = new Map([
       ['p1', parent],
       ['c1', child],
@@ -77,7 +82,11 @@ describe('buildGraphData', () => {
   it('groups spouses into a single node', () => {
     const husband = makePerson({ id: 'h1', fullName: 'Husband', gender: Gender.enum.male });
     const wife = makePerson({ id: 'w1', fullName: 'Wife', gender: Gender.enum.female });
-    const marriage = makeRel({ personAId: 'h1', personBId: 'w1', type: RelationshipType.enum.marriage });
+    const marriage = makeRel({
+      personAId: 'h1',
+      personBId: 'w1',
+      type: RelationshipType.enum.marriage,
+    });
     const personsMap = new Map([
       ['h1', husband],
       ['w1', wife],

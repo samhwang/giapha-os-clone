@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+
 import { UserRole } from '../../auth/types';
 import { getDbClient } from '../../database/lib/client';
 import { deleteAllUsers, deleteUser, findAllUsers, findUserByEmail, updateUser } from '../repository/user';

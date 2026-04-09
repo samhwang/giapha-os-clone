@@ -20,7 +20,7 @@ services:
       # - postgres_data:/var/lib/postgresql/data
 
       # Bind mount (uncomment and customize path)
-      - "./data/postgres:/var/lib/postgresql/data"
+      - './data/postgres:/var/lib/postgresql/data'
 
   app:
     volumes:
@@ -28,7 +28,7 @@ services:
       # - uploads_data:/app/uploads
 
       # Bind mount (uncomment and customize path)
-      - "./data/uploads:/app/uploads"
+      - './data/uploads:/app/uploads'
 ```
 
 Create the directories if using bind mounts:
@@ -62,10 +62,10 @@ To run [SeaweedFS](https://github.com/seaweedfs/seaweedfs) alongside your app, u
 ```yaml
 seaweedfs:
   image: chrislusf/seaweedfs:latest
-  command: "server -s3 -dir=/data"
+  command: 'server -s3 -dir=/data'
   ports:
-    - "8333:8333"
-    - "9333:9333"
+    - '8333:8333'
+    - '9333:9333'
   volumes:
     - seaweedfs_data:/data
   restart: unless-stopped
@@ -100,7 +100,7 @@ Update your environment variables to match the new provider:
 ```yaml
 # Switch to S3-compatible
 - STORAGE_PROVIDER=s3
-- S3_ENDPOINT=http://seaweedfs:8333   # your provider's endpoint
+- S3_ENDPOINT=http://seaweedfs:8333 # your provider's endpoint
 - S3_BUCKET=giapha
 # ... other S3 vars
 
@@ -114,8 +114,9 @@ Verify that avatars display correctly in the application. No database changes ar
 ## Avatar Upload
 
 Members can upload avatars:
-- Supported formats: JPG, PNG, WebP
-- Max size: 5MB
+
+- Supported formats: JPG, PNG, GIF, WebP
+- Max size: 2MB
 - Stored in `avatars/{personId}/` directory (relative to storage root)
 
 See the [Storage Providers](../reference/02-reference.md#storage-providers) reference for provider-specific CLI tools and documentation links.

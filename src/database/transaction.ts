@@ -1,4 +1,5 @@
 import type { TransactionClient } from './generated/prisma/internal/prismaNamespace';
+
 import { getDbClient } from './lib/client';
 
 export type DbClient = TransactionClient;

@@ -1,5 +1,6 @@
 import { Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
 import { type Language, supportedLanguages } from '../../i18n/lib';
 import { cn } from '../utils/cn';
 
@@ -13,8 +14,13 @@ export default function LanguageSwitcher({ className = '' }: LanguageSwitcherPro
   const { i18n, t } = useTranslation();
 
   const switchLanguage = (lang: Language) => {
-    cookieStore.set({ name: 'lang', value: lang, path: '/', expires: Date.now() + ONE_YEAR_MS });
-    i18n.changeLanguage(lang);
+    void cookieStore.set({
+      name: 'lang',
+      value: lang,
+      path: '/',
+      expires: Date.now() + ONE_YEAR_MS,
+    });
+    void i18n.changeLanguage(lang);
   };
 
   const nextLang = supportedLanguages.find((l) => l !== i18n.language) ?? 'en';
@@ -23,7 +29,7 @@ export default function LanguageSwitcher({ className = '' }: LanguageSwitcherPro
     <button
       type="button"
       onClick={() => switchLanguage(nextLang)}
-      className={cn('flex items-center gap-1.5 text-sm font-medium text-stone-600 hover:text-amber-700 transition-colors', className)}
+      className={cn('flex items-center gap-1.5 text-sm font-medium text-stone-600 transition-colors hover:text-amber-700', className)}
       title={t(`language.${nextLang}`)}
     >
       <Globe className="size-4" />

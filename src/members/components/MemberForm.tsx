@@ -4,6 +4,7 @@ import { AlertCircle, Briefcase, Image as ImageIcon, Loader2, Lock, MapPin, Phon
 import { Lunar, Solar } from 'lunar-javascript';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { logger } from '../../lib/logger';
 import Avatar from '../../ui/common/Avatar';
 import { Button } from '../../ui/common/Button';
@@ -161,7 +162,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
 
         if (onSuccess) return onSuccess(personId);
         await router.invalidate();
-        navigate({ to: '/dashboard/members/$id', params: { id: personId } });
+        void navigate({ to: '/dashboard/members/$id', params: { id: personId } });
       } catch (err) {
         logger.error('Error saving member:', err);
         setError(err instanceof Error ? err.message : t('member.saveError'));
@@ -213,7 +214,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
   };
 
   const inputClasses = cn(
-    'bg-white text-stone-900 placeholder-stone-500 block w-full rounded-xl border border-stone-300 shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 focus:bg-white text-sm px-4 py-3 transition-all outline-none'
+    'block w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-sm text-stone-900 placeholder-stone-500 shadow-sm transition-all outline-none focus:border-amber-500 focus:bg-white focus:ring-2 focus:ring-amber-500/20'
   );
 
   return (
@@ -222,15 +223,15 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        form.handleSubmit();
+        void form.handleSubmit();
       }}
     >
-      <Card variant="elevated" className="p-5 sm:p-8 animate-[fade-in-up_0.3s_ease-out_forwards]">
-        <h3 className="text-heading-section mb-6 border-b border-stone-100 pb-4 flex items-center gap-2">
+      <Card variant="elevated" className="animate-[fade-in-up_0.3s_ease-out_forwards] p-5 sm:p-8">
+        <h3 className="text-heading-section mb-6 flex items-center gap-2 border-b border-stone-100 pb-4">
           <User className="size-5 text-amber-600" />
           {t('member.generalInfo')}
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="md:col-span-2">
             <label htmlFor="fullName" className="text-label">
               {t('member.fullName')} <span className="text-red-500">*</span>
@@ -293,7 +294,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             </form.AppField>
           </div>
 
-          <div className="flex items-center sm:mt-7 mt-2">
+          <div className="mt-2 flex items-center sm:mt-7">
             <form.AppField name="isInLaw">
               {(field) => <Checkbox checked={field.state.value} onChange={(val) => field.handleChange(val)} label={t('member.isInLaw')} />}
             </form.AppField>
@@ -316,7 +317,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                 />
               )}
             </form.AppField>
-            <p className="mt-1.5 text-xs text-stone-400 flex items-center gap-1">
+            <p className="mt-1.5 flex items-center gap-1 text-xs text-stone-400">
               <span>💡</span> {t('member.birthOrderHint')}
             </p>
           </div>
@@ -338,23 +339,23 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                 />
               )}
             </form.AppField>
-            <p className="mt-1.5 text-xs text-stone-400 flex items-center gap-1">
+            <p className="mt-1.5 flex items-center gap-1 text-xs text-stone-400">
               <span>💡</span> {t('member.generationHint')}
             </p>
           </div>
 
-          <div className="md:col-span-2 mt-2">
-            <label htmlFor="avatarFile" className="block text-sm font-semibold text-stone-700 mb-2.5">
+          <div className="mt-2 md:col-span-2">
+            <label htmlFor="avatarFile" className="mb-2.5 block text-sm font-semibold text-stone-700">
               {t('member.avatar')}
             </label>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 bg-stone-50/50 p-4 rounded-xl border border-stone-100">
+            <div className="flex flex-col items-start gap-5 rounded-xl border border-stone-100 bg-stone-50/50 p-4 sm:flex-row sm:items-center">
               <Avatar
                 gender={gender}
                 avatarUrl={avatarPreview}
                 fullName={fullName}
-                className="w-20 h-20 sm:w-24 sm:h-24 text-xl font-bold shrink-0 shadow-md border-4 border-white"
+                className="h-20 w-20 shrink-0 border-4 border-white text-xl font-bold shadow-md sm:h-24 sm:w-24"
               />
-              <div className="flex-1 w-full">
+              <div className="w-full flex-1">
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="relative">
                     <input
@@ -367,11 +368,11 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                           selectFile(file);
                         }
                       }}
-                      className="absolute inset-0 w-full h-full opacity-0"
+                      className="absolute inset-0 h-full w-full opacity-0"
                     />
                     <button
                       type="button"
-                      className="flex items-center gap-2 text-sm font-medium px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200/50 hover:bg-amber-100 hover:border-amber-300 transition-colors rounded-lg"
+                      className="flex items-center gap-2 rounded-lg border border-amber-200/50 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 transition-colors hover:border-amber-300 hover:bg-amber-100"
                     >
                       <ImageIcon className="size-4" />
                       {t('member.choosePhoto')}
@@ -384,15 +385,15 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                         form.setFieldValue('avatarUrl', '');
                         clearAvatar();
                       }}
-                      className="flex items-center gap-2 text-sm text-rose-600 hover:text-rose-700 font-medium px-4 py-2 border border-rose-200 rounded-lg bg-rose-50 hover:bg-rose-100 transition-colors"
+                      className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-100 hover:text-rose-700"
                     >
                       <Trash2 className="size-4" />
                       {t('member.removePhoto')}
                     </button>
                   )}
                 </div>
-                <p className="mt-2.5 text-xs text-stone-500 flex items-center gap-1.5">
-                  <AlertCircle className="w-3.5 h-3.5 text-stone-400" />
+                <p className="mt-2.5 flex items-center gap-1.5 text-xs text-stone-500">
+                  <AlertCircle className="h-3.5 w-3.5 text-stone-400" />
                   {t('member.photoHint')}
                 </p>
               </div>
@@ -445,7 +446,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             </div>
           </div>
 
-          <div className="md:col-span-2 bg-stone-50/50 p-5 rounded-2xl border border-border-default shadow-xs">
+          <div className="rounded-2xl border border-border-default bg-stone-50/50 p-5 shadow-xs md:col-span-2">
             <div className="flex flex-col gap-4">
               <form.AppField name="isDeceased">
                 {(field) => (
@@ -471,14 +472,14 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
             </div>
 
             {isDeceased && (
-              <div className="overflow-hidden animate-[fade-in_0.3s_ease-out_forwards]">
-                <p className="text-sm-plus text-stone-500 mb-4 italic">{t('member.deathDateHint')}</p>
+              <div className="animate-[fade-in_0.3s_ease-out_forwards] overflow-hidden">
+                <p className="mb-4 text-sm-plus text-stone-500 italic">{t('member.deathDateHint')}</p>
 
                 <div>
-                  <label htmlFor="deathLunarDay" className="block text-sm font-semibold text-stone-700 mb-2">
+                  <label htmlFor="deathLunarDay" className="mb-2 block text-sm font-semibold text-stone-700">
                     {t('member.deathDateLunar')}
                   </label>
-                  <div className="grid grid-cols-3 gap-3 mb-4">
+                  <div className="mb-4 grid grid-cols-3 gap-3">
                     <form.AppField name="deathLunarDay">
                       {(field) => (
                         <input
@@ -530,7 +531,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                 </div>
 
                 <div>
-                  <label htmlFor="deathSolarDay" className="block text-sm font-semibold text-stone-700 mb-2">
+                  <label htmlFor="deathSolarDay" className="mb-2 block text-sm font-semibold text-stone-700">
                     {t('member.deathDateSolar')}
                   </label>
                   <div className="grid grid-cols-3 gap-3 pt-1">
@@ -609,22 +610,22 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
 
       {isAdmin && (
         <div
-          className="bg-linear-to-br from-amber-50/80 to-stone-50/80 backdrop-blur-md p-5 sm:p-8 rounded-2xl border border-amber-200/50 shadow-sm relative overflow-hidden animate-[fade-in-up_0.3s_ease-out_forwards]"
+          className="relative animate-[fade-in-up_0.3s_ease-out_forwards] overflow-hidden rounded-2xl border border-amber-200/50 bg-linear-to-br from-amber-50/80 to-stone-50/80 p-5 shadow-sm backdrop-blur-md sm:p-8"
           style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}
         >
-          <Lock className="absolute -right-6 -bottom-6 w-32 h-32 text-amber-500/5 rotate-12" />
-          <h3 className="text-lg sm:text-xl font-serif font-bold text-amber-900 mb-6 border-b border-amber-200/50 pb-4 flex items-center gap-2 relative z-10">
-            <span className="p-1.5 bg-amber-100/80 text-amber-700 rounded-lg shadow-xs">
+          <Lock className="absolute -right-6 -bottom-6 h-32 w-32 rotate-12 text-amber-500/5" />
+          <h3 className="relative z-10 mb-6 flex items-center gap-2 border-b border-amber-200/50 pb-4 font-serif text-lg font-bold text-amber-900 sm:text-xl">
+            <span className="rounded-lg bg-amber-100/80 p-1.5 text-amber-700 shadow-xs">
               <Lock className="size-4" />
             </span>
             <span>{t('member.privateInfo')}</span>
-            <span className="text-2xs ml-auto sm:ml-2 font-bold bg-amber-200/80 text-amber-800 uppercase tracking-wider px-2.5 py-1 rounded-md shadow-xs border border-amber-300/60">
+            <span className="ml-auto rounded-md border border-amber-300/60 bg-amber-200/80 px-2.5 py-1 text-2xs font-bold tracking-wider text-amber-800 uppercase shadow-xs sm:ml-2">
               {t('member.adminOnly')}
             </span>
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+          <div className="relative z-10 grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
-              <label htmlFor="phoneNumber" className="flex items-center gap-1.5 text-sm font-semibold text-amber-900/80 mb-1.5">
+              <label htmlFor="phoneNumber" className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-amber-900/80">
                 <Phone className="size-4" /> {t('member.phone')}
               </label>
               <form.AppField name="phoneNumber">
@@ -636,19 +637,19 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
                     onChange={(e) => field.handleChange(e.target.value)}
                     disabled={isDeceased}
                     placeholder={t('member.phonePlaceholder')}
-                    className={cn(inputClasses, 'disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed')}
+                    className={cn(inputClasses, 'disabled:cursor-not-allowed disabled:bg-stone-100 disabled:text-stone-400')}
                   />
                 )}
               </form.AppField>
               {isDeceased && (
-                <p className="text-xs-plus font-medium text-rose-500 mt-1.5 flex items-center gap-1">
+                <p className="mt-1.5 flex items-center gap-1 text-xs-plus font-medium text-rose-500">
                   <AlertCircle className="size-3" />
                   {t('member.phoneDeceasedError')}
                 </p>
               )}
             </div>
             <div>
-              <label htmlFor="occupation" className="flex items-center gap-1.5 text-sm font-semibold text-amber-900/80 mb-1.5">
+              <label htmlFor="occupation" className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-amber-900/80">
                 <Briefcase className="size-4" /> {t('member.occupation')}
               </label>
               <form.AppField name="occupation">
@@ -665,7 +666,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
               </form.AppField>
             </div>
             <div className="md:col-span-2">
-              <label htmlFor="currentResidence" className="flex items-center gap-1.5 text-sm font-semibold text-amber-900/80 mb-1.5">
+              <label htmlFor="currentResidence" className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-amber-900/80">
                 <MapPin className="size-4" /> {t('member.currentResidence')}
               </label>
               <form.AppField name="currentResidence">
@@ -686,8 +687,8 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
       )}
 
       {error && (
-        <div className="text-rose-700 text-sm font-medium bg-rose-50 border border-rose-200 p-4 rounded-xl flex items-start gap-3 shadow-sm animate-[fade-in-up_0.3s_ease-out_forwards]">
-          <AlertCircle className="size-5 shrink-0 mt-0.5" />
+        <div className="flex animate-[fade-in-up_0.3s_ease-out_forwards] items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-medium text-rose-700 shadow-sm">
+          <AlertCircle className="mt-0.5 size-5 shrink-0" />
           <p>{error}</p>
         </div>
       )}
@@ -695,8 +696,8 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
       <form.Subscribe selector={(state) => state.errors}>
         {(errors) =>
           errors.length > 0 && (
-            <div className="text-rose-700 text-sm font-medium bg-rose-50 border border-rose-200 p-4 rounded-xl flex items-start gap-3 shadow-sm animate-[fade-in-up_0.3s_ease-out_forwards]">
-              <AlertCircle className="size-5 shrink-0 mt-0.5" />
+            <div className="flex animate-[fade-in-up_0.3s_ease-out_forwards] items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-medium text-rose-700 shadow-sm">
+              <AlertCircle className="mt-0.5 size-5 shrink-0" />
               <p>{errors.join(', ')}</p>
             </div>
           )
@@ -704,7 +705,7 @@ export default function MemberForm({ initialData, isEditing = false, isAdmin = f
       </form.Subscribe>
 
       <div
-        className="flex justify-end gap-3 sm:gap-4 pt-6 animate-[fade-in-up_0.3s_ease-out_forwards]"
+        className="flex animate-[fade-in-up_0.3s_ease-out_forwards] justify-end gap-3 pt-6 sm:gap-4"
         style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}
       >
         <Button onClick={() => (onCancel ? onCancel() : window.history.back())}>{t('member.cancelButton')}</Button>

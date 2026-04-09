@@ -1,4 +1,5 @@
 import { createMiddleware } from '@tanstack/react-start';
+
 import { ensureAdmin, ensureAuthenticated, ensureEditor } from './lib';
 
 export const isAuthenticatedMiddleware = createMiddleware({ type: 'function' }).server(async ({ next }) => {

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { defaultLanguage, supportedLanguages } from '../lib/index';
 
 function detectLanguage(cookie: string, acceptLanguage: string): string {

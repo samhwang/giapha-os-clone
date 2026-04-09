@@ -17,6 +17,7 @@ Create unit and browser tests using Vitest and React Testing Library following B
 ## Trigger Condition
 
 When user asks to:
+
 - Write tests
 - Add test coverage
 - Create test file
@@ -26,6 +27,7 @@ When user asks to:
 ### Step 1: Determine Test Location
 
 Tests are co-located with source files:
+
 - `src/utils/date.ts` → `src/utils/date.test.ts`
 - `src/components/Button.tsx` → `src/components/Button.test.tsx`
 - `src/server/functions/member.ts` → `src/server/functions/member.test.ts`
@@ -39,27 +41,28 @@ Tests are co-located with source files:
 ### Step 3: Write Tests
 
 Use Given-When-Then pattern:
+
 ```typescript
 describe('functionName', () => {
   describe('given valid input', () => {
     it('should return expected output', () => {
       // given
-      const input = 'value'
-      
+      const input = 'value';
+
       // when
-      const result = functionName(input)
-      
+      const result = functionName(input);
+
       // then
-      expect(result).toBe('expected')
-    })
-  })
-  
+      expect(result).toBe('expected');
+    });
+  });
+
   describe('given invalid input', () => {
     it('should throw error', () => {
-      expect(() => functionName(null)).toThrow()
-    })
-  })
-})
+      expect(() => functionName(null)).toThrow();
+    });
+  });
+});
 ```
 
 ### Step 4: Run Tests
@@ -84,105 +87,109 @@ pnpm test:run    # Single run
 
 ```typescript
 // src/utils/date.test.ts
-import { describe, it, expect } from 'vitest'
-import { formatVietnameseDate } from './date'
+import { describe, it, expect } from 'vitest';
+import { formatVietnameseDate } from './date';
 
 describe('formatVietnameseDate', () => {
   describe('given a valid date', () => {
     it('should format as DD/MM/YYYY', () => {
-      const date = new Date('2024-01-15')
-      const result = formatVietnameseDate(date)
-      expect(result).toBe('15/01/2024')
-    })
-  })
-  
+      const date = new Date('2024-01-15');
+      const result = formatVietnameseDate(date);
+      expect(result).toBe('15/01/2024');
+    });
+  });
+
   describe('given an invalid date', () => {
     it('should throw error', () => {
-      expect(() => formatVietnameseDate(null as any)).toThrow()
-    })
-  })
-})
+      expect(() => formatVietnameseDate(null as any)).toThrow();
+    });
+  });
+});
 ```
 
 ### Server Function Test (using repository functions + Testcontainers)
 
 ```typescript
 // src/members/server/member.test.ts
-import { beforeEach, describe, expect, it } from 'vitest'
-import { createPerson, deleteAllPersons, findPersonById } from '../repository/person'
-import { Gender } from '../types'
+import { beforeEach, describe, expect, it } from 'vitest';
+import { createPerson, deleteAllPersons, findPersonById } from '../repository/person';
+import { Gender } from '../types';
 
 describe('createPerson (inner logic)', () => {
   beforeEach(async () => {
-    await deleteAllPersons()
-  })
+    await deleteAllPersons();
+  });
 
   it('should create a person', async () => {
     const result = await createPerson({
       data: { fullName: 'Nguyễn Văn A', gender: Gender.enum.male },
-    })
+    });
 
-    expect(result.fullName).toBe('Nguyễn Văn A')
-    expect(result.id).toBeDefined()
-  })
+    expect(result.fullName).toBe('Nguyễn Văn A');
+    expect(result.id).toBeDefined();
+  });
 
   it('should return null for non-existent person', async () => {
-    const result = await findPersonById(crypto.randomUUID())
-    expect(result).toBeNull()
-  })
-})
+    const result = await findPersonById(crypto.randomUUID());
+    expect(result).toBeNull();
+  });
+});
 ```
 
 ### Component Test (React Testing Library)
 
 ```tsx
 // src/components/Button.test.tsx
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { Button } from './Button'
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Button } from './Button';
 
 describe('Button', () => {
   describe('given default props', () => {
     it('should render children', () => {
-      render(<Button>Click me</Button>)
-      expect(screen.getByRole('button')).toHaveTextContent('Click me')
-    })
-  })
-  
+      render(<Button>Click me</Button>);
+      expect(screen.getByRole('button')).toHaveTextContent('Click me');
+    });
+  });
+
   describe('given onClick handler', () => {
     it('should call handler when clicked', async () => {
-      const user = userEvent.setup()
-      const handler = vi.fn()
-      render(<Button onClick={handler}>Click me</Button>)
-      
-      await user.click(screen.getByRole('button'))
-      
-      expect(handler).toHaveBeenCalledTimes(1)
-    })
-  })
-  
+      const user = userEvent.setup();
+      const handler = vi.fn();
+      render(<Button onClick={handler}>Click me</Button>);
+
+      await user.click(screen.getByRole('button'));
+
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('given disabled prop', () => {
     it('should not call handler when clicked', async () => {
-      const user = userEvent.setup()
-      const handler = vi.fn()
-      render(<Button disabled onClick={handler}>Click me</Button>)
-      
-      await user.click(screen.getByRole('button'))
-      
-      expect(handler).not.toHaveBeenCalled()
-    })
-  })
-})
+      const user = userEvent.setup();
+      const handler = vi.fn();
+      render(
+        <Button disabled onClick={handler}>
+          Click me
+        </Button>
+      );
+
+      await user.click(screen.getByRole('button'));
+
+      expect(handler).not.toHaveBeenCalled();
+    });
+  });
+});
 ```
 
 ### Integration Test (Browser)
 
 ```tsx
 // src/routes/members.test.tsx
-import { describe, it, expect } from 'vitest'
-import { setup, createRouter } from '@testing-library/react'
-import MembersPage from './members'
+import { describe, it, expect } from 'vitest';
+import { setup, createRouter } from '@testing-library/react';
+import MembersPage from './members';
 
 describe('MembersPage', () => {
   it('should display members list', async () => {
@@ -190,11 +197,11 @@ describe('MembersPage', () => {
       router: {
         loader: () => ({ members: [{ id: '1', firstName: 'Minh' }] }),
       },
-    })
-    
-    expect(screen.getByText('Minh')).toBeInTheDocument()
-  })
-})
+    });
+
+    expect(screen.getByText('Minh')).toBeInTheDocument();
+  });
+});
 ```
 
 ## Testing Library Best Practices

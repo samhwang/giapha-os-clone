@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+
 import { Card } from './Card';
 
 describe('Card', () => {
@@ -31,7 +32,7 @@ describe('Card', () => {
   });
 
   it('applies custom className', () => {
-    const { container } = render(<Card className="p-4 w-full">Content</Card>);
+    const { container } = render(<Card className="w-full p-4">Content</Card>);
     expect(container.firstChild).toHaveClass('p-4');
     expect(container.firstChild).toHaveClass('w-full');
   });

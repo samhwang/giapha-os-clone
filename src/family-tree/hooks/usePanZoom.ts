@@ -39,7 +39,10 @@ export function usePanZoom(containerRef: RefObject<HTMLDivElement | null>): PanZ
     hasDraggedRef.current = false;
     setDragStart({ x: e.pageX, y: e.pageY });
     if (containerRef.current) {
-      setScrollStart({ left: containerRef.current.scrollLeft, top: containerRef.current.scrollTop });
+      setScrollStart({
+        left: containerRef.current.scrollLeft,
+        top: containerRef.current.scrollTop,
+      });
     }
   };
 

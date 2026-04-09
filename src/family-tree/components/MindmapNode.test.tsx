@@ -1,10 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+
+import type { AdjacencyLists, SpouseData, TreeFilterOptions } from '../utils/treeHelpers';
+
 import { createPerson } from '../../../test/fixtures';
 import { t } from '../../../test/i18n';
 import { Gender } from '../../members/types';
-import type { AdjacencyLists, SpouseData, TreeFilterOptions } from '../utils/treeHelpers';
 import { type MindmapContextData, MindmapNode } from './MindmapNode';
 
 const defaultFilters: TreeFilterOptions = {
@@ -93,7 +95,12 @@ describe('MindmapNode', () => {
   });
 
   it('renders InLawBadge for in-law persons', () => {
-    const person = createPerson({ id: 'p1', fullName: 'Trần Thị C', gender: Gender.enum.female, isInLaw: true });
+    const person = createPerson({
+      id: 'p1',
+      fullName: 'Trần Thị C',
+      gender: Gender.enum.female,
+      isInLaw: true,
+    });
     const personsMap = new Map([['p1', person]]);
     const ctx = buildCtx({ personsMap, adj: buildAdj() });
 
@@ -103,7 +110,12 @@ describe('MindmapNode', () => {
   });
 
   it('renders InLawBadge for male in-law', () => {
-    const person = createPerson({ id: 'p1', fullName: 'Nguyễn Văn D', gender: Gender.enum.male, isInLaw: true });
+    const person = createPerson({
+      id: 'p1',
+      fullName: 'Nguyễn Văn D',
+      gender: Gender.enum.male,
+      isInLaw: true,
+    });
     const personsMap = new Map([['p1', person]]);
     const ctx = buildCtx({ personsMap, adj: buildAdj() });
 

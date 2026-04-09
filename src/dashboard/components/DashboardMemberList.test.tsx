@@ -1,7 +1,9 @@
+import type { ReactNode } from 'react';
+
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { createPerson, createRelationship } from '../../../test/fixtures';
 import { t } from '../../../test/i18n';
 import { Gender } from '../../members/types';
@@ -224,9 +226,25 @@ describe('DashboardMemberList', () => {
 
   it('renders GenerationGroupedList when sort option includes generation', async () => {
     const user = userEvent.setup();
-    const parent = createPerson({ id: 'parent-1', fullName: 'Cha', gender: Gender.enum.male, generation: 1 });
-    const child = createPerson({ id: 'child-1', fullName: 'Con', gender: Gender.enum.male, generation: 2 });
-    const relationships = [createRelationship({ type: RelationshipType.enum.biological_child, personAId: parent.id, personBId: child.id })];
+    const parent = createPerson({
+      id: 'parent-1',
+      fullName: 'Cha',
+      gender: Gender.enum.male,
+      generation: 1,
+    });
+    const child = createPerson({
+      id: 'child-1',
+      fullName: 'Con',
+      gender: Gender.enum.male,
+      generation: 2,
+    });
+    const relationships = [
+      createRelationship({
+        type: RelationshipType.enum.biological_child,
+        personAId: parent.id,
+        personBId: child.id,
+      }),
+    ];
 
     render(<DashboardMemberList initialPersons={[parent, child]} relationships={relationships} />);
 

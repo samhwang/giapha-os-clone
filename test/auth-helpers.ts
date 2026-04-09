@@ -1,6 +1,8 @@
 import type { LoginResult, TestCookie, TestHelpers } from 'better-auth/plugins';
-import { auth } from '../src/auth/server';
+
 import type { UserRole } from '../src/auth/types';
+
+import { auth } from '../src/auth/server';
 
 let _test: TestHelpers | null = null;
 

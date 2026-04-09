@@ -1,5 +1,6 @@
 import '@dotenvx/dotenvx/config';
 import { PrismaPg } from '@prisma/adapter-pg';
+
 import { PrismaClient } from '../src/database/generated/prisma/client';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
@@ -410,16 +411,66 @@ async function main() {
   // ============================================================
   await db.personDetailsPrivate.createMany({
     data: [
-      { personId: tri.id, phoneNumber: '09xx xxx 001', occupation: 'Kỹ sư xây dựng (đã nghỉ hưu)', currentResidence: 'Hà Đông, Hà Nội' },
-      { personId: diuHien.id, phoneNumber: '09xx xxx 002', occupation: 'Giáo viên Văn (đã nghỉ hưu)', currentResidence: 'Hà Đông, Hà Nội' },
-      { personId: cam.id, phoneNumber: '09xx xxx 003', occupation: 'Bác sĩ Nhi khoa', currentResidence: 'Đống Đa, Hà Nội' },
-      { personId: mocChu.id, phoneNumber: '09xx xxx 005', occupation: 'Chủ xưởng mộc', currentResidence: 'Hà Đông, Hà Nội' },
-      { personId: tue.id, phoneNumber: '09xx xxx 007', occupation: 'Kỹ sư Tin học', currentResidence: 'Quận 7, TP.HCM' },
-      { personId: triMinh.id, phoneNumber: '09xx xxx 101', occupation: 'Lập trình viên Fullstack', currentResidence: 'Cầu Giấy, Hà Nội' },
-      { personId: myDuyen.id, phoneNumber: '09xx xxx 102', occupation: 'Nhà thiết kế UI/UX', currentResidence: 'Cầu Giấy, Hà Nội' },
-      { personId: triNgoc.id, phoneNumber: '09xx xxx 103', occupation: 'Nghiên cứu sinh Tiến sĩ', currentResidence: 'Đống Đa, Hà Nội' },
-      { personId: vanLien.id, phoneNumber: '09xx xxx 105', occupation: 'Dược sĩ bệnh viện', currentResidence: 'Thanh Xuân, Hà Nội' },
-      { personId: vanHao.id, phoneNumber: '09xx xxx 106', occupation: 'Phi công hàng không', currentResidence: 'Long Biên, Hà Nội' },
+      {
+        personId: tri.id,
+        phoneNumber: '09xx xxx 001',
+        occupation: 'Kỹ sư xây dựng (đã nghỉ hưu)',
+        currentResidence: 'Hà Đông, Hà Nội',
+      },
+      {
+        personId: diuHien.id,
+        phoneNumber: '09xx xxx 002',
+        occupation: 'Giáo viên Văn (đã nghỉ hưu)',
+        currentResidence: 'Hà Đông, Hà Nội',
+      },
+      {
+        personId: cam.id,
+        phoneNumber: '09xx xxx 003',
+        occupation: 'Bác sĩ Nhi khoa',
+        currentResidence: 'Đống Đa, Hà Nội',
+      },
+      {
+        personId: mocChu.id,
+        phoneNumber: '09xx xxx 005',
+        occupation: 'Chủ xưởng mộc',
+        currentResidence: 'Hà Đông, Hà Nội',
+      },
+      {
+        personId: tue.id,
+        phoneNumber: '09xx xxx 007',
+        occupation: 'Kỹ sư Tin học',
+        currentResidence: 'Quận 7, TP.HCM',
+      },
+      {
+        personId: triMinh.id,
+        phoneNumber: '09xx xxx 101',
+        occupation: 'Lập trình viên Fullstack',
+        currentResidence: 'Cầu Giấy, Hà Nội',
+      },
+      {
+        personId: myDuyen.id,
+        phoneNumber: '09xx xxx 102',
+        occupation: 'Nhà thiết kế UI/UX',
+        currentResidence: 'Cầu Giấy, Hà Nội',
+      },
+      {
+        personId: triNgoc.id,
+        phoneNumber: '09xx xxx 103',
+        occupation: 'Nghiên cứu sinh Tiến sĩ',
+        currentResidence: 'Đống Đa, Hà Nội',
+      },
+      {
+        personId: vanLien.id,
+        phoneNumber: '09xx xxx 105',
+        occupation: 'Dược sĩ bệnh viện',
+        currentResidence: 'Thanh Xuân, Hà Nội',
+      },
+      {
+        personId: vanHao.id,
+        phoneNumber: '09xx xxx 106',
+        occupation: 'Phi công hàng không',
+        currentResidence: 'Long Biên, Hà Nội',
+      },
     ],
   });
 
@@ -442,7 +493,11 @@ async function main() {
     [mocBa.id, vien.id],
   ];
   await db.relationship.createMany({
-    data: gen1to2.map(([a, b]) => ({ type: 'biological_child' as const, personAId: a, personBId: b })),
+    data: gen1to2.map(([a, b]) => ({
+      type: 'biological_child' as const,
+      personAId: a,
+      personBId: b,
+    })),
   });
 
   // Gen 2 marriages
@@ -463,7 +518,11 @@ async function main() {
     [diu.id, mocChu.id],
   ];
   await db.relationship.createMany({
-    data: gen2to3North.map(([a, b]) => ({ type: 'biological_child' as const, personAId: a, personBId: b })),
+    data: gen2to3North.map(([a, b]) => ({
+      type: 'biological_child' as const,
+      personAId: a,
+      personBId: b,
+    })),
   });
 
   // Gen 2 → Gen 3 (Vien & Kheo branch)
@@ -474,7 +533,11 @@ async function main() {
     [kheo.id, thanh.id],
   ];
   await db.relationship.createMany({
-    data: gen2to3South.map(([a, b]) => ({ type: 'biological_child' as const, personAId: a, personBId: b })),
+    data: gen2to3South.map(([a, b]) => ({
+      type: 'biological_child' as const,
+      personAId: a,
+      personBId: b,
+    })),
   });
 
   // Gen 3 marriages
@@ -497,7 +560,11 @@ async function main() {
     [diuHien.id, triKhang.id],
   ];
   await db.relationship.createMany({
-    data: gen3to4Tri.map(([a, b]) => ({ type: 'biological_child' as const, personAId: a, personBId: b })),
+    data: gen3to4Tri.map(([a, b]) => ({
+      type: 'biological_child' as const,
+      personAId: a,
+      personBId: b,
+    })),
   });
 
   // Gen 3 → Gen 4 (Cam & Chinh children)
@@ -508,7 +575,11 @@ async function main() {
     [chinh.id, vanHao.id],
   ];
   await db.relationship.createMany({
-    data: gen3to4Cam.map(([a, b]) => ({ type: 'biological_child' as const, personAId: a, personBId: b })),
+    data: gen3to4Cam.map(([a, b]) => ({
+      type: 'biological_child' as const,
+      personAId: a,
+      personBId: b,
+    })),
   });
 
   // Gen 3 → Gen 4 (Moc & Lam children)
@@ -519,7 +590,11 @@ async function main() {
     [lam.id, mocNgan.id],
   ];
   await db.relationship.createMany({
-    data: gen3to4Moc.map(([a, b]) => ({ type: 'biological_child' as const, personAId: a, personBId: b })),
+    data: gen3to4Moc.map(([a, b]) => ({
+      type: 'biological_child' as const,
+      personAId: a,
+      personBId: b,
+    })),
   });
 
   // Gen 3 → Gen 4 (Tue - HCM)
@@ -535,7 +610,11 @@ async function main() {
     [kien.id, vanKy.id],
   ];
   await db.relationship.createMany({
-    data: gen3to4Thanh.map(([a, b]) => ({ type: 'biological_child' as const, personAId: a, personBId: b })),
+    data: gen3to4Thanh.map(([a, b]) => ({
+      type: 'biological_child' as const,
+      personAId: a,
+      personBId: b,
+    })),
   });
 
   // Gen 4 marriage

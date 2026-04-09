@@ -1,12 +1,14 @@
 import * as d3 from 'd3';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import type { Relationship } from '../../relationships/types';
+import type { GraphLink, GraphNode } from '../utils/bubbleMapHelpers';
+
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { logger } from '../../lib/logger';
 import { Gender, type Person } from '../../members/types';
-import type { Relationship } from '../../relationships/types';
 import { AVATAR_VERSION } from '../../ui/icons/DefaultAvatar';
-import type { GraphLink, GraphNode } from '../utils/bubbleMapHelpers';
 import { buildGraphData } from '../utils/bubbleMapHelpers';
 import { buildAdjacencyLists } from '../utils/treeHelpers';
 
@@ -62,12 +64,9 @@ export default function BubbleMapTree({ personsMap, relationships, roots }: Bubb
         .on('zoom', (event) => {
           g.attr('transform', event.transform);
         });
-      svg.call(zoom as unknown as (selection: d3.Selection<SVGSVGElement, unknown, null, undefined>) => void);
-      svg.call(
-        zoom.translateTo as unknown as (selection: d3.Selection<SVGSVGElement, unknown, null, undefined>, x: number, y: number) => void,
-        width / 2,
-        height / 2
-      );
+      svg.call(zoom);
+      // oxlint-disable-next-line typescript-eslint/unbound-method -- d3 zoom API binds via svg.call()
+      svg.call(zoom.translateTo, width / 2, height / 2);
 
       // Force simulation
       const simulation = d3
@@ -195,16 +194,16 @@ export default function BubbleMapTree({ personsMap, relationships, roots }: Bubb
 
   if (error) {
     return (
-      <div className="absolute inset-0 overflow-hidden bg-stone-50 rounded-2xl border border-border-default shadow-inner flex items-center justify-center p-4 text-center">
+      <div className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-2xl border border-border-default bg-stone-50 p-4 text-center shadow-inner">
         <span className="text-text-muted">{t('error.tree.renderFailed', { message: error.message })}</span>
       </div>
     );
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-stone-50 rounded-2xl border border-border-default shadow-inner">
-      <div ref={containerRef} className="w-full h-full">
-        <svg ref={svgRef} className="w-full h-full block" />
+    <div className="absolute inset-0 overflow-hidden rounded-2xl border border-border-default bg-stone-50 shadow-inner">
+      <div ref={containerRef} className="h-full w-full">
+        <svg ref={svgRef} className="block h-full w-full" />
       </div>
     </div>
   );

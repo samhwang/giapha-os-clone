@@ -108,10 +108,10 @@ Same generation difference, same gender — but different terms based on which s
 
 Vietnamese kinship terms depend on three factors:
 
-| Factor | Effect |
-|--------|--------|
+| Factor                    | Effect                                                         |
+| ------------------------- | -------------------------------------------------------------- |
 | **Generation difference** | Determines the base term (grandparent, parent, sibling, child) |
-| **Gender** | Distinguishes male/female variants (ông/bà, cha/mẹ, anh/chị) |
-| **Lineage side** | Distinguishes paternal (nội) from maternal (ngoại) |
+| **Gender**                | Distinguishes male/female variants (ông/bà, cha/mẹ, anh/chị)   |
+| **Lineage side**          | Distinguishes paternal (nội) from maternal (ngoại)             |
 
 For the full terminology table, see [Features — Kinship Calculation](../explanation/02-features.md#kinship-calculation). To learn about tracking family events, continue to the [next tutorial](./03-events.md).

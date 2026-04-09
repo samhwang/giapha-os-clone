@@ -47,6 +47,7 @@ docker compose up -d
 ```
 
 This starts:
+
 - **PostgreSQL** on port 5432
 
 File uploads are stored locally under `UPLOAD_DIR` (default `./uploads`), which is created automatically.

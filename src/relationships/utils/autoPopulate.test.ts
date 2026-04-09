@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { getAutoPopulatedFields } from './autoPopulate';
 
 describe('getAutoPopulatedFields', () => {

@@ -76,7 +76,14 @@ function resolveBloodTerms({ depthA, depthB, personA, personB, pathA, pathB }: R
   const needsSwap = (depthA === DEPTH_SIBLING && depthB > DEPTH_SIBLING) || (depthA > DEPTH_SIBLING && depthB > DEPTH_SIBLING && depthA < depthB);
 
   if (needsSwap) {
-    const [bCallsA, aCallsB, desc] = resolveBloodTerms({ depthA: depthB, depthB: depthA, personA: personB, personB: personA, pathA: pathB, pathB: pathA });
+    const [bCallsA, aCallsB, desc] = resolveBloodTerms({
+      depthA: depthB,
+      depthB: depthA,
+      personA: personB,
+      personB: personA,
+      pathA: pathB,
+      pathB: pathA,
+    });
     return [aCallsB, bCallsA, desc];
   }
 

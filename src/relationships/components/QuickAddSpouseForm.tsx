@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { Gender } from '../../members/types';
 import { Button } from '../../ui/common/Button';
 import { INPUT_BASE } from '../../ui/common/Input';
@@ -19,7 +20,7 @@ export default function QuickAddSpouseForm({ onSubmit, onCancel, processing, per
   const [note, setNote] = useState('');
 
   const handleSubmit = () => {
-    onSubmit({ name, birthYear, note });
+    void onSubmit({ name, birthYear, note });
   };
 
   const handleCancel = () => {
@@ -30,11 +31,11 @@ export default function QuickAddSpouseForm({ onSubmit, onCancel, processing, per
   };
 
   return (
-    <div className="mt-4 bg-rose-50/50 p-4 sm:p-5 rounded-xl border border-rose-200 shadow-sm">
-      <h4 className="font-bold text-rose-800 mb-3 text-sm">{t('relationship.quickAddSpouse')}</h4>
+    <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50/50 p-4 shadow-sm sm:p-5">
+      <h4 className="mb-3 text-sm font-bold text-rose-800">{t('relationship.quickAddSpouse')}</h4>
       <div className="space-y-3">
         <div>
-          <label htmlFor="spouseName" className="block text-xs font-medium text-rose-700 mb-1">
+          <label htmlFor="spouseName" className="mb-1 block text-xs font-medium text-rose-700">
             {t('relationship.fullNameRequired')}
           </label>
           <input
@@ -43,11 +44,11 @@ export default function QuickAddSpouseForm({ onSubmit, onCancel, processing, per
             placeholder={t('member.fullNamePlaceholder')}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className={cn(INPUT_BASE, 'text-sm rounded-md sm:rounded-lg p-2 sm:p-2.5 focus:border-rose-500 focus:ring-rose-500')}
+            className={cn(INPUT_BASE, 'rounded-md p-2 text-sm focus:border-rose-500 focus:ring-rose-500 sm:rounded-lg sm:p-2.5')}
           />
         </div>
         <div>
-          <label htmlFor="spouseBirthYear" className="block text-xs font-medium text-rose-700 mb-1">
+          <label htmlFor="spouseBirthYear" className="mb-1 block text-xs font-medium text-rose-700">
             {t('relationship.birthYearOptional')}
           </label>
           <input
@@ -56,11 +57,11 @@ export default function QuickAddSpouseForm({ onSubmit, onCancel, processing, per
             placeholder={t('relationship.birthYearPlaceholder')}
             value={birthYear}
             onChange={(e) => setBirthYear(e.target.value)}
-            className={cn(INPUT_BASE, 'text-sm rounded-md sm:rounded-lg p-2 sm:p-2.5 focus:border-rose-500 focus:ring-rose-500')}
+            className={cn(INPUT_BASE, 'rounded-md p-2 text-sm focus:border-rose-500 focus:ring-rose-500 sm:rounded-lg sm:p-2.5')}
           />
         </div>
         <div>
-          <label htmlFor="spouseRelNote" className="block text-xs font-medium text-rose-700 mb-1">
+          <label htmlFor="spouseRelNote" className="mb-1 block text-xs font-medium text-rose-700">
             {t('relationship.spouseNoteLabel')}
           </label>
           <input
@@ -69,10 +70,10 @@ export default function QuickAddSpouseForm({ onSubmit, onCancel, processing, per
             placeholder={t('relationship.spouseNotePlaceholder')}
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className={cn(INPUT_BASE, 'text-sm rounded-md sm:rounded-lg p-2 sm:p-2.5 focus:border-rose-500 focus:ring-rose-500')}
+            className={cn(INPUT_BASE, 'rounded-md p-2 text-sm focus:border-rose-500 focus:ring-rose-500 sm:rounded-lg sm:p-2.5')}
           />
         </div>
-        <p className="text-xs text-stone-500 italic mt-1">
+        <p className="mt-1 text-xs text-stone-500 italic">
           {t('relationship.autoGenderNote', {
             gender: personGender === Gender.enum.male ? t('common.female') : personGender === Gender.enum.female ? t('common.male') : t('common.female'),
           })}
@@ -84,7 +85,7 @@ export default function QuickAddSpouseForm({ onSubmit, onCancel, processing, per
             size="sm"
             onClick={handleSubmit}
             disabled={!name.trim() || processing}
-            className="flex-1 bg-rose-600 hover:bg-rose-700 text-white rounded-md sm:rounded-lg"
+            className="flex-1 rounded-md bg-rose-600 text-white hover:bg-rose-700 sm:rounded-lg"
           >
             {processing ? t('common.saving') : t('common.save')}
           </Button>

@@ -1,7 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { createPerson } from '../../../test/fixtures';
+
 import type { Person } from '../../members/types';
+
+import { createPerson } from '../../../test/fixtures';
 import GenerationGroupedList from './GenerationGroupedList';
 
 function buildMaps(persons: Person[]) {
@@ -18,15 +20,27 @@ const t = (key: string, opts?: Record<string, unknown>) => {
   if (key === 'member.childrenOf') return 'Children of';
   if (key === 'member.family') return 'Family';
   if (key === 'member.unknownGeneration') return 'Unknown Generation';
-  if (key === 'stats.generationLabel') return `Generation ${opts?.gen}`;
+  if (key === 'stats.generationLabel') return `Generation ${String(opts?.gen)}`;
   return key;
 };
 
 describe('GenerationGroupedList', () => {
   it('renders persons grouped by generation', () => {
     const persons = [
-      createPerson({ id: 'g1', fullName: 'Grandparent', generation: 1, gender: 'male', isInLaw: false }),
-      createPerson({ id: 'g2', fullName: 'Parent', generation: 2, gender: 'female', isInLaw: false }),
+      createPerson({
+        id: 'g1',
+        fullName: 'Grandparent',
+        generation: 1,
+        gender: 'male',
+        isInLaw: false,
+      }),
+      createPerson({
+        id: 'g2',
+        fullName: 'Parent',
+        generation: 2,
+        gender: 'female',
+        isInLaw: false,
+      }),
       createPerson({ id: 'g3', fullName: 'Child', generation: 3, gender: 'male', isInLaw: false }),
     ];
     const { parentsOf, spousesOf } = buildMaps(persons);
@@ -41,7 +55,13 @@ describe('GenerationGroupedList', () => {
 
   it('renders in descending generation order when sortOption is generation_desc', () => {
     const persons = [
-      createPerson({ id: 'g1', fullName: 'Grandparent', generation: 1, gender: 'male', isInLaw: false }),
+      createPerson({
+        id: 'g1',
+        fullName: 'Grandparent',
+        generation: 1,
+        gender: 'male',
+        isInLaw: false,
+      }),
       createPerson({ id: 'g3', fullName: 'Child', generation: 3, gender: 'male', isInLaw: false }),
     ];
     const { parentsOf, spousesOf } = buildMaps(persons);
@@ -67,7 +87,15 @@ describe('GenerationGroupedList', () => {
   });
 
   it('renders generation 0 as Unknown Generation', () => {
-    const persons = [createPerson({ id: 'u1', fullName: 'Unknown', generation: null, gender: 'male', isInLaw: false })];
+    const persons = [
+      createPerson({
+        id: 'u1',
+        fullName: 'Unknown',
+        generation: null,
+        gender: 'male',
+        isInLaw: false,
+      }),
+    ];
     const { parentsOf, spousesOf } = buildMaps(persons);
     const withFamily = persons.map((p) => ({ ...p, _familyId: `fam-${p.id}` }));
 
@@ -77,8 +105,20 @@ describe('GenerationGroupedList', () => {
   });
 
   it('renders persons from mock dataset', () => {
-    const p1 = createPerson({ id: 'a', fullName: 'Alice', generation: 1, gender: 'male', isInLaw: false });
-    const p2 = createPerson({ id: 'b', fullName: 'Bob', generation: 1, gender: 'female', isInLaw: true });
+    const p1 = createPerson({
+      id: 'a',
+      fullName: 'Alice',
+      generation: 1,
+      gender: 'male',
+      isInLaw: false,
+    });
+    const p2 = createPerson({
+      id: 'b',
+      fullName: 'Bob',
+      generation: 1,
+      gender: 'female',
+      isInLaw: true,
+    });
     const persons = [p1, p2];
     const { parentsOf, spousesOf } = buildMaps(persons);
     const withFamily = persons.map((p) => ({ ...p, _familyId: 'fam-1' }));

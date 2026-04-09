@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+
 import { ERRORS } from '../../lib/errors';
 import { createPerson, deleteAllPersons } from '../../members/repository/person';
 import { Gender } from '../../members/types';
@@ -23,7 +24,11 @@ describe('createRelationship (inner logic)', () => {
     const personA = await createPerson({ fullName: 'Person A', gender: Gender.enum.male });
     const personB = await createPerson({ fullName: 'Person B', gender: Gender.enum.female });
 
-    const result = await createRelationship({ type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id });
+    const result = await createRelationship({
+      type: RelationshipType.enum.marriage,
+      personAId: personA.id,
+      personBId: personB.id,
+    });
 
     expect(result.type).toBe('marriage');
     expect(result.personAId).toBe(personA.id);
@@ -44,9 +49,17 @@ describe('createRelationship (inner logic)', () => {
     const personA = await createPerson({ fullName: 'Parent', gender: Gender.enum.male });
     const personB = await createPerson({ fullName: 'Child', gender: Gender.enum.female });
 
-    await createRelationship({ type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personB.id });
+    await createRelationship({
+      type: RelationshipType.enum.biological_child,
+      personAId: personA.id,
+      personBId: personB.id,
+    });
 
-    const existing = await findRelationshipByParticipants({ personAId: personA.id, personBId: personB.id, type: RelationshipType.enum.biological_child });
+    const existing = await findRelationshipByParticipants({
+      personAId: personA.id,
+      personBId: personB.id,
+      type: RelationshipType.enum.biological_child,
+    });
 
     expect(existing).not.toBeNull();
   });
@@ -55,9 +68,17 @@ describe('createRelationship (inner logic)', () => {
     const personA = await createPerson({ fullName: 'A', gender: Gender.enum.male });
     const personB = await createPerson({ fullName: 'B', gender: Gender.enum.female });
 
-    await createRelationship({ type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personB.id });
+    await createRelationship({
+      type: RelationshipType.enum.biological_child,
+      personAId: personA.id,
+      personBId: personB.id,
+    });
 
-    const reversed = await findRelationshipByParticipants({ personAId: personB.id, personBId: personA.id, type: RelationshipType.enum.biological_child });
+    const reversed = await findRelationshipByParticipants({
+      personAId: personB.id,
+      personBId: personA.id,
+      type: RelationshipType.enum.biological_child,
+    });
 
     expect(reversed).not.toBeNull();
   });
@@ -73,11 +94,19 @@ describe('deleteRelationship (inner logic)', () => {
     const personA = await createPerson({ fullName: 'A', gender: Gender.enum.male });
     const personB = await createPerson({ fullName: 'B', gender: Gender.enum.female });
 
-    const rel = await createRelationship({ type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id });
+    const rel = await createRelationship({
+      type: RelationshipType.enum.marriage,
+      personAId: personA.id,
+      personBId: personB.id,
+    });
 
     await deleteRelationship(rel.id);
 
-    const found = await findRelationshipByParticipants({ personAId: personA.id, personBId: personB.id, type: RelationshipType.enum.marriage });
+    const found = await findRelationshipByParticipants({
+      personAId: personA.id,
+      personBId: personB.id,
+      type: RelationshipType.enum.marriage,
+    });
     expect(found).toBeNull();
   });
 });
@@ -95,7 +124,11 @@ describe('getRelationships (inner logic)', () => {
 
     await createManyRelationships([
       { type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id },
-      { type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personC.id },
+      {
+        type: RelationshipType.enum.biological_child,
+        personAId: personA.id,
+        personBId: personC.id,
+      },
     ]);
 
     const result = await findAllRelationships();
@@ -119,7 +152,11 @@ describe('getRelationshipsForPerson (inner logic)', () => {
 
     await createManyRelationships([
       { type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id },
-      { type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personC.id },
+      {
+        type: RelationshipType.enum.biological_child,
+        personAId: personA.id,
+        personBId: personC.id,
+      },
     ]);
 
     const result = await findRelationshipsForPerson(personA.id);
@@ -153,7 +190,11 @@ describe('relationship server wrapper guards', () => {
     const personA = await createPerson({ fullName: 'Parent', gender: Gender.enum.male });
     const personB = await createPerson({ fullName: 'Child', gender: Gender.enum.female });
 
-    await createRelationship({ type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personB.id });
+    await createRelationship({
+      type: RelationshipType.enum.biological_child,
+      personAId: personA.id,
+      personBId: personB.id,
+    });
 
     const existing = await findRelationshipByParticipants({
       personAId: personA.id,
@@ -169,7 +210,11 @@ describe('relationship server wrapper guards', () => {
     const personA = await createPerson({ fullName: 'A', gender: Gender.enum.male });
     const personB = await createPerson({ fullName: 'B', gender: Gender.enum.female });
 
-    await createRelationship({ type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personB.id });
+    await createRelationship({
+      type: RelationshipType.enum.biological_child,
+      personAId: personA.id,
+      personBId: personB.id,
+    });
 
     const reversed = await findRelationshipByParticipants({
       personAId: personB.id,
@@ -191,7 +236,11 @@ describe('relationship server wrapper guards', () => {
     const personA = await createPerson({ fullName: 'A', gender: Gender.enum.male });
     const personB = await createPerson({ fullName: 'B', gender: Gender.enum.female });
 
-    const rel = await createRelationship({ type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id });
+    const rel = await createRelationship({
+      type: RelationshipType.enum.marriage,
+      personAId: personA.id,
+      personBId: personB.id,
+    });
     expect(rel.id).toBeDefined();
 
     await deleteRelationship(rel.id);

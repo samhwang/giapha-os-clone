@@ -6,8 +6,9 @@ import type {
   PersonDetailsPrivateUpdateInput,
   PersonUpdateInput,
 } from '../../database/generated/prisma/models';
-import { getDbClient } from '../../database/lib/client';
 import type { DbClient } from '../../database/transaction';
+
+import { getDbClient } from '../../database/lib/client';
 import { resolveAvatarUrl } from '../../lib/storage';
 
 function withResolvedAvatar<T extends { avatarUrl: string | null }>(person: T): T {
@@ -99,7 +100,14 @@ export function createManyPersonDetailsPrivate(
   return client.personDetailsPrivate.createMany({ data });
 }
 
-export function batchUpdatePersons(updates: Array<{ id: string; generation: number | null; birthOrder: number | null; isInLaw?: boolean }>) {
+export function batchUpdatePersons(
+  updates: Array<{
+    id: string;
+    generation: number | null;
+    birthOrder: number | null;
+    isInLaw?: boolean;
+  }>
+) {
   const db = getDbClient();
   return db.$transaction(
     updates.map((u) =>

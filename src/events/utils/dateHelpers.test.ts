@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { calculateAge, formatDisplayDate, getLunarDateString, getTodayLunar, getZodiacAnimal, getZodiacSign } from './dateHelpers';
 
 describe('formatDisplayDate', () => {
@@ -81,26 +82,58 @@ describe('calculateAge', () => {
 
   describe('when person is living', () => {
     it('should calculate age from birth year to current year', () => {
-      const result = calculateAge({ birthYear: 1990, birthMonth: null, birthDay: null, deathYear: null, deathMonth: null, deathDay: null });
+      const result = calculateAge({
+        birthYear: 1990,
+        birthMonth: null,
+        birthDay: null,
+        deathYear: null,
+        deathMonth: null,
+        deathDay: null,
+      });
       expect(result).toEqual({ age: 35, isDeceased: false });
     });
   });
 
   describe('when person is deceased', () => {
     it('should calculate age at death', () => {
-      const result = calculateAge({ birthYear: 1902, birthMonth: null, birthDay: null, deathYear: 1975, deathMonth: null, deathDay: null, isDeceased: true });
+      const result = calculateAge({
+        birthYear: 1902,
+        birthMonth: null,
+        birthDay: null,
+        deathYear: 1975,
+        deathMonth: null,
+        deathDay: null,
+        isDeceased: true,
+      });
       expect(result).toEqual({ age: 73, isDeceased: true });
     });
   });
 
   describe('when birth year is null', () => {
     it('should return null', () => {
-      expect(calculateAge({ birthYear: null, birthMonth: null, birthDay: null, deathYear: null, deathMonth: null, deathDay: null })).toBeNull();
+      expect(
+        calculateAge({
+          birthYear: null,
+          birthMonth: null,
+          birthDay: null,
+          deathYear: null,
+          deathMonth: null,
+          deathDay: null,
+        })
+      ).toBeNull();
     });
 
     it('should return null even if death year is provided', () => {
       expect(
-        calculateAge({ birthYear: null, birthMonth: null, birthDay: null, deathYear: 2020, deathMonth: null, deathDay: null, isDeceased: true })
+        calculateAge({
+          birthYear: null,
+          birthMonth: null,
+          birthDay: null,
+          deathYear: 2020,
+          deathMonth: null,
+          deathDay: null,
+          isDeceased: true,
+        })
       ).toBeNull();
     });
   });

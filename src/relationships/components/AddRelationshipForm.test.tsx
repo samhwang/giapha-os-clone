@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { createPerson } from '../../../test/fixtures';
 import { t } from '../../../test/i18n';
 import { Gender } from '../../members/types';
@@ -64,7 +65,9 @@ describe('AddRelationshipForm', () => {
 
     await user.click(screen.getByText('Trần Thị B'));
 
-    const saveButton = screen.getByRole('button', { name: new RegExp(`^${t('common.save')}$`, 'i') });
+    const saveButton = screen.getByRole('button', {
+      name: new RegExp(`^${t('common.save')}$`, 'i'),
+    });
     expect(saveButton).not.toBeDisabled();
   });
 

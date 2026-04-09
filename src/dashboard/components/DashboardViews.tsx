@@ -1,10 +1,12 @@
 import { lazy, Suspense, useMemo } from 'react';
+
 import FamilyTree from '../../family-tree/components/FamilyTree';
 import MindmapTree from '../../family-tree/components/MindmapTree';
 
 const BubbleMapTree = lazy(() => import('../../family-tree/components/BubbleMapTree'));
 
 import type { Person } from '../../members/types';
+
 import { type Relationship, RelationshipType } from '../../relationships/types';
 import ExportButton from '../../ui/common/ExportButton';
 import { useDashboardStore } from '../store/dashboardStore';
@@ -54,9 +56,9 @@ export default function DashboardViews({ persons, relationships }: DashboardView
   const activeRootId = rootId || defaultRootId;
 
   return (
-    <main className="flex-1 overflow-auto bg-stone-50/50 flex flex-col">
+    <main className="flex flex-1 flex-col overflow-auto bg-stone-50/50">
       {currentView !== 'list' && persons.length > 0 && activeRootId && (
-        <div className="layout-page pt-6 pb-2 w-full flex flex-wrap items-center justify-center gap-4 relative z-20">
+        <div className="layout-page relative z-20 flex w-full flex-wrap items-center justify-center gap-4 pt-6 pb-2">
           <RootSelector persons={persons} currentRootId={activeRootId} />
           <div className="flex items-center gap-2">
             <AvatarToggle />
@@ -66,12 +68,12 @@ export default function DashboardViews({ persons, relationships }: DashboardView
       )}
 
       {currentView === 'list' && (
-        <div className="layout-page py-8 w-full relative z-10">
+        <div className="layout-page relative z-10 w-full py-8">
           <DashboardMemberList initialPersons={persons} relationships={relationships} />
         </div>
       )}
 
-      <div className="flex-1 w-full relative z-10">
+      <div className="relative z-10 w-full flex-1">
         {currentView === 'tree' && <FamilyTree personsMap={personsMap} relationships={relationships} roots={roots} />}
         {currentView === 'mindmap' && <MindmapTree personsMap={personsMap} relationships={relationships} roots={roots} />}
         {currentView === 'bubble' && (

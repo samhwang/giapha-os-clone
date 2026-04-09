@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+
 import { createPerson, deleteAllPersons, findAllPersons } from '../../members/repository/person';
 import { Gender } from '../../members/types';
 import { createRelationship, deleteAllRelationships, findAllRelationships } from '../../relationships/repository/relationship';
@@ -13,7 +14,11 @@ describe('exportData (inner logic)', () => {
   it('should return backup payload with persons and relationships', async () => {
     const personA = await createPerson({ fullName: 'Nguyễn Vạn', gender: Gender.enum.male });
     const personB = await createPerson({ fullName: 'Trần Thị', gender: Gender.enum.female });
-    await createRelationship({ type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id });
+    await createRelationship({
+      type: RelationshipType.enum.marriage,
+      personAId: personA.id,
+      personBId: personB.id,
+    });
 
     const persons = await findAllPersons();
     const relationships = await findAllRelationships();
@@ -49,7 +54,11 @@ describe('importData (inner logic)', () => {
 
     const personA = await createPerson({ fullName: 'Nguyễn Vạn', gender: Gender.enum.male });
     const personB = await createPerson({ fullName: 'Nguyễn Thị', gender: Gender.enum.female });
-    await createRelationship({ type: RelationshipType.enum.biological_child, personAId: personA.id, personBId: personB.id });
+    await createRelationship({
+      type: RelationshipType.enum.biological_child,
+      personAId: personA.id,
+      personBId: personB.id,
+    });
 
     const persons = await findAllPersons();
     const relationships = await findAllRelationships();

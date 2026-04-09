@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
+
 import { t } from '../../../test/i18n';
 import { useDashboardStore } from '../store/dashboardStore';
 import ViewToggle from './ViewToggle';

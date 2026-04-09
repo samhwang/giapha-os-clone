@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+
 import { cn } from '../utils/cn';
 
 interface ProgressBarProps {
@@ -25,7 +26,7 @@ export function ProgressBar({ value, max, color = 'bg-amber-400', size = 'md', d
       aria-valuemin={0}
       aria-valuemax={max}
       aria-valuenow={value}
-      className={cn('bg-surface-muted rounded-full overflow-hidden', SIZE_MAP[size], className)}
+      className={cn('overflow-hidden rounded-full bg-surface-muted', SIZE_MAP[size], className)}
     >
       <div
         className={cn('h-full rounded-full transition-all duration-[600ms] ease-out', color)}

@@ -1,4 +1,5 @@
 import * as z from 'zod';
+
 import type { UserRole as PrismaUserRole } from '../database/generated/prisma/enums';
 
 export const UserRole = z.enum(['admin', 'editor', 'member']);

@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
+
 import { useTranslation } from 'react-i18next';
+
 import { Gender } from '../../members/types';
 import { Badge } from './Badge';
 

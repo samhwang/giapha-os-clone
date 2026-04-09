@@ -1,6 +1,8 @@
-import { screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
+
+import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+
 import { t } from '../../../test/i18n';
 import { renderWithProviders } from '../../../test/render-wrapper';
 import LandingHero from './LandingHero';

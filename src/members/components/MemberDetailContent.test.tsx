@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { useEffect } from 'react';
 import { describe, expect, it, vi } from 'vitest';
+
 import { createPerson } from '../../../test/fixtures';
 import { t } from '../../../test/i18n';
 import { Gender } from '../types';
@@ -72,7 +73,11 @@ describe('MemberDetailContent', () => {
   });
 
   it('shows private info section for admin', () => {
-    const privateData = { phoneNumber: '0912345678', occupation: 'Kỹ sư', currentResidence: 'TP.HCM' };
+    const privateData = {
+      phoneNumber: '0912345678',
+      occupation: 'Kỹ sư',
+      currentResidence: 'TP.HCM',
+    };
     render(<MemberDetailContent person={basePerson} privateData={privateData} isAdmin={true} />);
     expect(screen.getByText('0912345678')).toBeInTheDocument();
     expect(screen.getByText('Kỹ sư')).toBeInTheDocument();

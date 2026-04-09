@@ -1,7 +1,9 @@
+import type { ReactNode } from 'react';
+
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { createPerson } from '../../../test/fixtures';
 import { t } from '../../../test/i18n';
 import { queryWrapper as wrapper } from '../../../test/render-wrapper';
@@ -326,7 +328,11 @@ describe('MemberDetailModal', () => {
     useDashboardStore.getState().setMemberModalId('person-1');
     mockGetPersonById.mockResolvedValue({
       ...createPerson({ id: 'person-1', fullName: 'Test Person' }),
-      privateDetails: { phoneNumber: '0123456789', occupation: 'Engineer', currentResidence: 'HCMC' },
+      privateDetails: {
+        phoneNumber: '0123456789',
+        occupation: 'Engineer',
+        currentResidence: 'HCMC',
+      },
     });
 
     render(<MemberDetailModal isAdmin={true} />, { wrapper });

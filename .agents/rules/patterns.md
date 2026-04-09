@@ -119,9 +119,9 @@ All query keys live in `src/lib/queryKeys.ts`:
 import { queryKeys } from '../../lib/queryKeys';
 
 // Usage
-queryKeys.persons.all        // ['persons']
-queryKeys.persons.detail(id) // ['person', id]
-queryKeys.relationships.forPerson(personId) // ['relationships', personId]
+queryKeys.persons.all; // ['persons']
+queryKeys.persons.detail(id); // ['person', id]
+queryKeys.relationships.forPerson(personId); // ['relationships', personId]
 ```
 
 Always use factory keys — never hand-write key arrays.
@@ -165,11 +165,11 @@ const handleChange = useCallback(() => {
 
 ### When to Use What
 
-| Scenario | Approach |
-|----------|----------|
-| Data loaded in route loader, no client-side refetch needed | `Route.useLoaderData()` only |
-| Data fetched on demand (modals, conditional UI) | `useQuery` with `enabled` flag |
-| Write operations (create, update, delete) | `useMutation` + `invalidateQueries` or `router.invalidate()` |
+| Scenario                                                   | Approach                                                     |
+| ---------------------------------------------------------- | ------------------------------------------------------------ |
+| Data loaded in route loader, no client-side refetch needed | `Route.useLoaderData()` only                                 |
+| Data fetched on demand (modals, conditional UI)            | `useQuery` with `enabled` flag                               |
+| Write operations (create, update, delete)                  | `useMutation` + `invalidateQueries` or `router.invalidate()` |
 
 ## TanStack Router
 
@@ -186,7 +186,9 @@ Use `$param` prefix for dynamic segments:
 import { Link, useNavigate } from '@tanstack/react-router';
 
 // Declarative
-<Link to="/dashboard/members/$id" params={{ id: person.id }}>View</Link>
+<Link to="/dashboard/members/$id" params={{ id: person.id }}>
+  View
+</Link>;
 
 // Programmatic
 const navigate = useNavigate();
@@ -199,8 +201,8 @@ navigate({ to: '/dashboard/members/$id', params: { id } });
 // In route definition
 export const Route = createFileRoute('/dashboard/')({
   validateSearch: (search) => ({
-    view: search.view as 'tree' | 'list' | 'mindmap' ?? 'tree',
-    root: search.root as string ?? null,
+    view: (search.view as 'tree' | 'list' | 'mindmap') ?? 'tree',
+    root: (search.root as string) ?? null,
   }),
 });
 
@@ -232,7 +234,7 @@ export const { fieldContext, formContext, useFieldContext } = createFormHookCont
 export const { useAppForm: useAdminForm } = createFormHook({
   fieldContext,
   formContext,
-  fieldComponents: {},  // Add custom field components if needed
+  fieldComponents: {}, // Add custom field components if needed
   formComponents: {},
 });
 ```
@@ -303,7 +305,7 @@ export default function LoginForm() {
       password: '',
     },
     validators: {
-      onSubmit: Login,  // Validators needed for external API
+      onSubmit: Login, // Validators needed for external API
     },
     onSubmit: async ({ value }) => {
       await authClient.signIn.email({ email: value.email, password: value.password });
@@ -366,8 +368,7 @@ Each function accepts an optional `client` parameter (defaults to `getDbClient()
 ### Error Handling
 
 ```tsx
-import { Prisma } from '../../database/generated/prisma/client'
-
+import { Prisma } from '../../database/generated/prisma/client';
 
 try {
   await createPerson({ data });

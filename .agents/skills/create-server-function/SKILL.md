@@ -17,6 +17,7 @@ Create a new server function with Zod validation, Prisma integration, and Better
 ## Trigger Condition
 
 When user asks to:
+
 - Create API endpoint
 - Add CRUD operations
 - Create server function in `src/*/server/`
@@ -26,6 +27,7 @@ When user asks to:
 ### Step 1: Choose Location
 
 Server functions live in feature directories:
+
 - Member-related → `src/members/server/`
 - Admin-related → `src/admin/server/`
 - Relationship-related → `src/relationships/server/`
@@ -36,27 +38,26 @@ Server functions live in feature directories:
 Create `src/*/server/[feature].ts`:
 
 ```typescript
-import { createServerFn } from '@tanstack/react-start'
-import * as z from 'zod'
-import { isEditorMiddleware } from '../../auth/server/middleware'
+import { createServerFn } from '@tanstack/react-start';
+import * as z from 'zod';
+import { isEditorMiddleware } from '../../auth/server/middleware';
 // Import repository functions for the relevant entity
-import { findAllItems, createItem } from '../repository/item'
+import { findAllItems, createItem } from '../repository/item';
 
 const CreateItemPayload = z.object({
   name: z.string().min(1),
-})
+});
 
-export const getItems = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    return findAllItems()
-  })
+export const getItems = createServerFn({ method: 'GET' }).handler(async () => {
+  return findAllItems();
+});
 
 export const createItemFn = createServerFn({ method: 'POST' })
   .inputValidator(CreateItemPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    return createItem({ data })
-  })
+    return createItem({ data });
+  });
 ```
 
 ### Step 3: Create Tests
@@ -77,56 +78,56 @@ Create: `src/*/server/[feature].test.ts`
 ### Read Function
 
 ```typescript
-import { createServerFn } from '@tanstack/react-start'
-import * as z from 'zod'
-import { findPersonById } from '../repository/person'
+import { createServerFn } from '@tanstack/react-start';
+import * as z from 'zod';
+import { findPersonById } from '../repository/person';
 
-const IdPayload = z.object({ id: z.uuid() })
+const IdPayload = z.object({ id: z.uuid() });
 
 export const getPersonById = createServerFn({ method: 'GET' })
   .inputValidator(IdPayload)
   .handler(async ({ data }) => {
-    return findPersonById(data.id)
-  })
+    return findPersonById(data.id);
+  });
 ```
 
 ### Write Function (with Auth)
 
 ```typescript
-import { createServerFn } from '@tanstack/react-start'
-import * as z from 'zod'
-import { isEditorMiddleware } from '../../auth/server/middleware'
-import { createPerson } from '../repository/person'
+import { createServerFn } from '@tanstack/react-start';
+import * as z from 'zod';
+import { isEditorMiddleware } from '../../auth/server/middleware';
+import { createPerson } from '../repository/person';
 
 const CreatePersonPayload = z.object({
   fullName: z.string().min(1),
   gender: z.enum(['male', 'female', 'other']),
-})
+});
 
 export const createPersonFn = createServerFn({ method: 'POST' })
   .inputValidator(CreatePersonPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
-    return createPerson({ data })
-  })
+    return createPerson({ data });
+  });
 ```
 
 ### Transaction Example
 
 ```typescript
-import { createServerFn } from '@tanstack/react-start'
-import { isAdminMiddleware } from '../../auth/server/middleware'
-import { deleteAllPersons, createManyPersons } from '../repository/person'
-import { withTransaction } from '../../database/transaction'
+import { createServerFn } from '@tanstack/react-start';
+import { isAdminMiddleware } from '../../auth/server/middleware';
+import { deleteAllPersons, createManyPersons } from '../repository/person';
+import { withTransaction } from '../../database/transaction';
 
 export const importData = createServerFn({ method: 'POST' })
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
     await withTransaction(async (tx) => {
-      await deleteAllPersons(tx)
-      await createManyPersons(data.persons, tx)
-    })
-  })
+      await deleteAllPersons(tx);
+      await createManyPersons(data.persons, tx);
+    });
+  });
 ```
 
 ## Notes

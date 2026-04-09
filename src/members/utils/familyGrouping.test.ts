@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest';
+
+import type { Person } from '../types';
+
 import {
   binhThiMoc,
   camThiDiu,
@@ -14,7 +17,6 @@ import {
   vanThiCam,
   vanTriMinh,
 } from '../../../test/fixtures';
-import type { Person } from '../types';
 import { buildCoupleGroups, buildFamilyGroupedSort, getGroupId, sortFamilyMembers } from './familyGrouping';
 
 // Helper to build Maps from mock data

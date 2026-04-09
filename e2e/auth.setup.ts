@@ -1,6 +1,8 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { test as setup } from '@playwright/test';
 import type { TestHelpers } from 'better-auth/plugins';
+
+import { test as setup } from '@playwright/test';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+
 import { auth } from '../src/auth/server';
 import { SEED_DATA_PATH, type SeedData } from './e2e-seed-data';
 

@@ -1,5 +1,6 @@
 import { Minus, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
 import { cardVariants } from '../../ui/common/Card';
 import { cn } from '../../ui/utils/cn';
 
@@ -16,11 +17,11 @@ export default function ZoomControls({ scale, onZoomIn, onZoomOut, onResetZoom, 
   const { t } = useTranslation();
 
   return (
-    <div className={cn(cardVariants({ variant: 'elevated' }), 'flex items-center rounded-full h-10')}>
+    <div className={cn(cardVariants({ variant: 'elevated' }), 'flex h-10 items-center rounded-full')}>
       <button
         type="button"
         onClick={onZoomOut}
-        className="px-3 h-full hover:bg-stone-100/50 text-stone-600 transition-colors disabled:opacity-50"
+        className="h-full px-3 text-stone-600 transition-colors hover:bg-stone-100/50 disabled:opacity-50"
         title={t('tree.zoomOut')}
         disabled={scale <= min}
       >
@@ -29,7 +30,7 @@ export default function ZoomControls({ scale, onZoomIn, onZoomOut, onResetZoom, 
       <button
         type="button"
         onClick={onResetZoom}
-        className="px-2 h-full hover:bg-stone-100/50 text-stone-600 transition-colors text-xs font-medium min-w-12.5 text-center border-x border-stone-200/50"
+        className="h-full min-w-12.5 border-x border-stone-200/50 px-2 text-center text-xs font-medium text-stone-600 transition-colors hover:bg-stone-100/50"
         title={t('tree.zoomReset')}
       >
         {Math.round(scale * 100)}%
@@ -37,7 +38,7 @@ export default function ZoomControls({ scale, onZoomIn, onZoomOut, onResetZoom, 
       <button
         type="button"
         onClick={onZoomIn}
-        className="px-3 h-full hover:bg-stone-100/50 text-stone-600 transition-colors disabled:opacity-50"
+        className="h-full px-3 text-stone-600 transition-colors hover:bg-stone-100/50 disabled:opacity-50"
         title={t('tree.zoomIn')}
         disabled={scale >= max}
       >

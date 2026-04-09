@@ -1,14 +1,17 @@
 import type { TFunction } from 'i18next';
+
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { memo, useState } from 'react';
+
+import type { Relationship } from '../../relationships/types';
+import type { AdjacencyLists, TreeFilterOptions } from '../utils/treeHelpers';
+
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import { Gender, type Person } from '../../members/types';
-import type { Relationship } from '../../relationships/types';
 import Avatar from '../../ui/common/Avatar';
 import { cardVariants } from '../../ui/common/Card';
 import InLawBadge from '../../ui/common/InLawBadge';
 import { cn } from '../../ui/utils/cn';
-import type { AdjacencyLists, TreeFilterOptions } from '../utils/treeHelpers';
 import { getFilteredTreeData } from '../utils/treeHelpers';
 
 export interface ExpandSignal {
@@ -83,35 +86,35 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
             }}
           />
           <div
-            className="absolute border-l-[1.5px] border-b-[1.5px] border-stone-300 rounded-bl-xl"
+            className="absolute rounded-bl-xl border-b-[1.5px] border-l-[1.5px] border-stone-300"
             style={{ left: '0', top: '24px', width: '24px', height: '24px' }}
           />
         </>
       )}
 
-      <div className="flex items-center gap-2 group relative z-10">
-        <div className="size-5 flex items-center justify-center shrink-0 z-10 bg-transparent">
+      <div className="group relative z-10 flex items-center gap-2">
+        <div className="z-10 flex size-5 shrink-0 items-center justify-center bg-transparent">
           {hasChildren && !ctx.hideExpandButtons ? (
             <button
               type="button"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="size-5 flex items-center justify-center bg-white hover:bg-amber-50 border border-stone-200 rounded shadow-sm text-stone-500 hover:text-amber-600 focus:outline-none transition-colors"
+              className="flex size-5 items-center justify-center rounded border border-stone-200 bg-white text-stone-500 shadow-sm transition-colors hover:bg-amber-50 hover:text-amber-600 focus:outline-none"
               aria-label={isExpanded ? ctx.t('tree.collapse') : ctx.t('tree.expand')}
             >
-              {isExpanded ? <ChevronDown strokeWidth={2.5} className="w-3.5 h-3.5" /> : <ChevronRight strokeWidth={2.5} className="w-3.5 h-3.5" />}
+              {isExpanded ? <ChevronDown strokeWidth={2.5} className="h-3.5 w-3.5" /> : <ChevronRight strokeWidth={2.5} className="h-3.5 w-3.5" />}
             </button>
           ) : (
-            <div className="w-1.5 h-1.5 rounded-full bg-stone-300 ring-2 ring-white" />
+            <div className="h-1.5 w-1.5 rounded-full bg-stone-300 ring-2 ring-white" />
           )}
         </div>
 
-        {/* biome-ignore lint/a11y/useSemanticElements: can't use <button> because spouse <button> elements are nested inside */}
+        {/* oxlint-disable jsx-a11y/prefer-tag-over-role -- can't use <button> because spouse <button> elements are nested inside */}
         <div
           role="button"
           tabIndex={0}
           className={cn(
             cardVariants({ variant: 'glass', interactive: true }),
-            'group/card relative flex flex-wrap items-center gap-2 p-2 sm:p-2.5 cursor-pointer animate-[fade-in_0.3s_ease-out_forwards]',
+            'group/card relative flex animate-[fade-in_0.3s_ease-out_forwards] cursor-pointer flex-wrap items-center gap-2 p-2 sm:p-2.5',
             data.person.isDeceased && 'opacity-80 grayscale-[0.3]'
           )}
           onClick={() => ctx.setMemberModalId(data.person.id)}
@@ -122,8 +125,8 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
             }
           }}
         >
-          <div className="flex items-center gap-2.5 relative z-10 w-full">
-            <div className="flex flex-1 items-center gap-2.5 min-w-0">
+          <div className="relative z-10 flex w-full items-center gap-2.5">
+            <div className="flex min-w-0 flex-1 items-center gap-2.5">
               {ctx.showAvatar && (
                 <div className="relative shrink-0">
                   <Avatar
@@ -134,13 +137,13 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
                   />
                 </div>
               )}
-              <div className="flex flex-col min-w-0 flex-1">
-                <span className="font-bold text-sm text-stone-900 group-hover/card:text-amber-700 transition-colors leading-tight truncate mb-0.5">
+              <div className="flex min-w-0 flex-1 flex-col">
+                <span className="mb-0.5 truncate text-sm leading-tight font-bold text-stone-900 transition-colors group-hover/card:text-amber-700">
                   {data.person.fullName}
                 </span>
-                <span className="text-xs-plus text-stone-500 font-medium truncate flex items-center gap-1">
+                <span className="flex items-center gap-1 truncate text-xs-plus font-medium text-stone-500">
                   <svg
-                    className="size-3 text-stone-400 shrink-0"
+                    className="size-3 shrink-0 text-stone-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -167,7 +170,7 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
                   </span>
                 </span>
                 {data.person.isInLaw && (
-                  <div className="flex flex-wrap items-center gap-1 mt-1.5 shrink-0">
+                  <div className="mt-1.5 flex shrink-0 flex-wrap items-center gap-1">
                     <InLawBadge size="sm" gender={data.person.gender} />
                   </div>
                 )}
@@ -175,7 +178,7 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
             </div>
 
             {data.spouses.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 ml-1 pl-2 relative before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-px before:h-[70%] before:bg-stone-200/80">
+              <div className="relative ml-1 flex flex-wrap gap-1.5 pl-2 before:absolute before:top-1/2 before:left-0 before:h-[70%] before:w-px before:-translate-y-1/2 before:bg-stone-200/80">
                 {data.spouses.map((spouseData) => (
                   <button
                     type="button"
@@ -185,7 +188,7 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
                       ctx.setMemberModalId(spouseData.person.id);
                     }}
                     className={cn(
-                      'flex flex-col items-center gap-1 bg-stone-50/50 hover:bg-white rounded-xl p-1.5 border border-border-default hover:border-amber-300 transition-all shadow-sm hover:shadow-md group/spouse cursor-pointer',
+                      'group/spouse flex cursor-pointer flex-col items-center gap-1 rounded-xl border border-border-default bg-stone-50/50 p-1.5 shadow-sm transition-all hover:border-amber-300 hover:bg-white hover:shadow-md',
                       spouseData.person.isDeceased && 'opacity-80 grayscale-[0.3]'
                     )}
                     title={spouseData.note || (spouseData.person.gender === Gender.enum.male ? ctx.t('tree.husband') : ctx.t('tree.wife'))}
@@ -198,7 +201,7 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
                         className="size-8 text-2xs font-bold shadow-sm ring-2 ring-white transition-transform duration-default group-hover/spouse:scale-105"
                       />
                     )}
-                    <span className="text-2xs font-bold text-stone-600 truncate max-w-12.5 text-center">{spouseData.person.fullName.split(' ').pop()}</span>
+                    <span className="max-w-12.5 truncate text-center text-2xs font-bold text-stone-600">{spouseData.person.fullName.split(' ').pop()}</span>
                   </button>
                 ))}
               </div>
@@ -208,7 +211,7 @@ export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLa
       </div>
 
       {hasChildren && isExpanded && (
-        <div className="origin-top relative z-0 -mt-4 pt-4 overflow-hidden animate-[fade-in_0.3s_ease-out_forwards]">
+        <div className="relative z-0 -mt-4 origin-top animate-[fade-in_0.3s_ease-out_forwards] overflow-hidden pt-4">
           <div className="pb-1">
             {data.children.map((child, index) => (
               <MindmapNode key={child.id} personId={child.id} level={level + 1} isLast={index === data.children.length - 1} ctx={ctx} />

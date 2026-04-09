@@ -1,7 +1,8 @@
 import '@dotenvx/dotenvx/config';
-import { mkdirSync, writeFileSync } from 'node:fs';
 import { test as setup } from '@playwright/test';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { mkdirSync, writeFileSync } from 'node:fs';
+
 import { auth } from '../src/auth/server';
 import { UserRole } from '../src/auth/types';
 import { PrismaClient } from '../src/database/generated/prisma/client';

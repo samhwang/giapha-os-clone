@@ -59,7 +59,11 @@ export function buildFamilyGroupedSort(
       const p1 = personMap.get(parents[0]);
       if (p1) parentBirthOrder = p1.birthOrder || FALLBACK_BIRTH_ORDER;
     }
-    return { parentBirthOrder, ownBirthOrder: coreMember.birthOrder || FALLBACK_BIRTH_ORDER, birthYear: coreMember.birthYear || FALLBACK_BIRTH_YEAR };
+    return {
+      parentBirthOrder,
+      ownBirthOrder: coreMember.birthOrder || FALLBACK_BIRTH_ORDER,
+      birthYear: coreMember.birthYear || FALLBACK_BIRTH_YEAR,
+    };
   };
 
   const sortedGroups = Array.from(families.entries()).sort((a, b) => {

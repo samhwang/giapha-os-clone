@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import * as z from 'zod';
+
 import { isEditorMiddleware } from '../../auth/server/middleware';
 import { ERRORS } from '../../lib/errors';
 import { deleteAvatar, uploadAvatar } from '../../lib/storage';
@@ -157,7 +158,12 @@ export const uploadPersonAvatar = createServerFn({ method: 'POST' })
     }
 
     const buffer = Buffer.from(data.base64, 'base64');
-    const key = await uploadAvatar({ buffer, personId: data.personId, filename: data.filename, contentType: data.contentType });
+    const key = await uploadAvatar({
+      buffer,
+      personId: data.personId,
+      filename: data.filename,
+      contentType: data.contentType,
+    });
 
     return updatePersonRepo({ id: data.personId, data: { avatarUrl: key } });
   });

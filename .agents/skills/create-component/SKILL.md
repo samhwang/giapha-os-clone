@@ -17,6 +17,7 @@ Create a new React component with proper structure, styling, and testing pattern
 ## Trigger Condition
 
 When user asks to:
+
 - Create a new component
 - Add UI element
 - Create React component in `src/components/`
@@ -35,8 +36,8 @@ Create `src/components/[ComponentName].tsx`:
 
 ```tsx
 interface ComponentNameProps {
-  title: string
-  children?: React.ReactNode
+  title: string;
+  children?: React.ReactNode;
 }
 
 export function ComponentName({ title, children }: ComponentNameProps) {
@@ -45,13 +46,14 @@ export function ComponentName({ title, children }: ComponentNameProps) {
       <h1>{title}</h1>
       {children}
     </div>
-  )
+  );
 }
 ```
 
 ### Step 3: Add Tailwind Styling
 
 Use Tailwind v4 classes:
+
 - Layout: `flex`, `grid`, `p-4`, `m-2`
 - Typography: `text-lg`, `font-bold`, `text-gray-700`
 - Colors: `bg-white`, `border`, `shadow-sm`
@@ -60,6 +62,7 @@ Use Tailwind v4 classes:
 ### Step 4: Add Animations (optional)
 
 Use Tailwind CSS animations (custom keyframes in `src/styles.css`):
+
 ```tsx
 // Fade in with slide up
 <div className="animate-[fade-in-up_0.3s_ease-out_forwards]">
@@ -89,123 +92,92 @@ For components with variants (e.g., Button, Input), use `cva` from [class-varian
 ### Button Component (with cva)
 
 ```tsx
-import { cva } from 'class-variance-authority'
-import { cn } from '../../ui/utils/cn'
+import { cva } from 'class-variance-authority';
+import { cn } from '../../ui/utils/cn';
 
-const buttonVariants = cva(
-  'inline-flex items-center justify-center font-medium rounded-lg transition-colors',
-  {
-    variants: {
-      variant: {
-        default: 'bg-emerald-600 text-white hover:bg-emerald-700',
-        secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200',
-        ghost: 'hover:bg-gray-100',
-        destructive: 'bg-red-600 text-white hover:bg-red-700',
-      },
-      size: {
-        default: 'px-4 py-2',
-        sm: 'px-3 py-1.5 text-sm',
-        lg: 'px-6 py-3 text-lg',
-      },
+const buttonVariants = cva('inline-flex items-center justify-center font-medium rounded-lg transition-colors', {
+  variants: {
+    variant: {
+      default: 'bg-emerald-600 text-white hover:bg-emerald-700',
+      secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200',
+      ghost: 'hover:bg-gray-100',
+      destructive: 'bg-red-600 text-white hover:bg-red-700',
     },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
+    size: {
+      default: 'px-4 py-2',
+      sm: 'px-3 py-1.5 text-sm',
+      lg: 'px-6 py-3 text-lg',
     },
-  }
-)
+  },
+  defaultVariants: {
+    variant: 'default',
+    size: 'default',
+  },
+});
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'secondary' | 'ghost' | 'destructive'
-  size?: 'default' | 'sm' | 'lg'
+  variant?: 'default' | 'secondary' | 'ghost' | 'destructive';
+  size?: 'default' | 'sm' | 'lg';
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant, size, className, children, ...props }, ref) => {
-    return (
-      <button
-        ref={ref}
-        className={cn(buttonVariants({ variant, size }), className)}
-        {...props}
-      >
-        {children}
-      </button>
-    )
-  }
-)
-Button.displayName = 'Button'
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ variant, size, className, children, ...props }, ref) => {
+  return (
+    <button ref={ref} className={cn(buttonVariants({ variant, size }), className)} {...props}>
+      {children}
+    </button>
+  );
+});
+Button.displayName = 'Button';
 ```
 
 ### Card Component (simple)
 
 ```tsx
-import { cn } from '../../ui/utils/cn'
+import { cn } from '../../ui/utils/cn';
 
 interface CardProps {
-  children: React.ReactNode
-  className?: string
+  children: React.ReactNode;
+  className?: string;
 }
 
 export function Card({ children, className = '' }: CardProps) {
-  return (
-    <div className={cn('bg-white rounded-xl border shadow-sm', className)}>
-      {children}
-    </div>
-  )
+  return <div className={cn('bg-white rounded-xl border shadow-sm', className)}>{children}</div>;
 }
 
 export function CardHeader({ children, className = '' }: CardProps) {
-  return (
-    <div className={cn('px-6 py-4 border-b', className)}>
-      {children}
-    </div>
-  )
+  return <div className={cn('px-6 py-4 border-b', className)}>{children}</div>;
 }
 
 export function CardContent({ children, className = '' }: CardProps) {
-  return (
-    <div className={cn('px-6 py-4', className)}>
-      {children}
-    </div>
-  )
+  return <div className={cn('px-6 py-4', className)}>{children}</div>;
 }
 ```
 
 ### Form Input
 
 ```tsx
-import { InputHTMLAttributes, forwardRef } from 'react'
-import { cn } from '../../ui/utils/cn'
+import { InputHTMLAttributes, forwardRef } from 'react';
+import { cn } from '../../ui/utils/cn';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string
-  error?: string
+  label?: string;
+  error?: string;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className, ...props }, ref) => {
-    return (
-      <div className="space-y-1">
-        {label && (
-          <label className="block text-sm font-medium text-gray-700">
-            {label}
-          </label>
-        )}
-        <input
-          ref={ref}
-          className={cn(
-            'w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500',
-            error && 'border-red-500',
-            className
-          )}
-          {...props}
-        />
-        {error && <p className="text-sm text-red-500">{error}</p>}
-      </div>
-    )
-  }
-)
-Input.displayName = 'Input'
+export const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, className, ...props }, ref) => {
+  return (
+    <div className="space-y-1">
+      {label && <label className="block text-sm font-medium text-gray-700">{label}</label>}
+      <input
+        ref={ref}
+        className={cn('w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500', error && 'border-red-500', className)}
+        {...props}
+      />
+      {error && <p className="text-sm text-red-500">{error}</p>}
+    </div>
+  );
+});
+Input.displayName = 'Input';
 ```
 
 ## Notes

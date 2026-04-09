@@ -62,11 +62,11 @@ You should see a green success message showing the number of imported persons an
 
 The app supports three export formats for different purposes:
 
-| Format | Best For | Contains |
-|--------|----------|----------|
-| **JSON** | Full backup and restore | All data (members, relationships, events) |
-| **CSV** | Spreadsheets and analysis | Member data in tabular format |
-| **[GEDCOM](https://en.wikipedia.org/wiki/GEDCOM)** | Sharing with other genealogy tools | Industry-standard family tree format |
+| Format                                             | Best For                           | Contains                                  |
+| -------------------------------------------------- | ---------------------------------- | ----------------------------------------- |
+| **JSON**                                           | Full backup and restore            | All data (members, relationships, events) |
+| **CSV**                                            | Spreadsheets and analysis          | Member data in tabular format             |
+| **[GEDCOM](https://en.wikipedia.org/wiki/GEDCOM)** | Sharing with other genealogy tools | Industry-standard family tree format      |
 
 JSON is the only format that supports round-trip import — export as JSON, then import the same file to restore everything.
 

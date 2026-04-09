@@ -1,10 +1,12 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
+
+import type { Person } from '../../members/types';
+
 import { vanCongGoc, vanCongThuan, vanThiBinh } from '../../../test/fixtures';
 import { t } from '../../../test/i18n';
 import { renderWithProviders } from '../../../test/render-wrapper';
-import type { Person } from '../../members/types';
 import { useDashboardStore } from '../store/dashboardStore';
 import RootSelector from './RootSelector';
 

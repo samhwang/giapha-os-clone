@@ -1,6 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { createRef, type MouseEvent, type RefObject } from 'react';
 import { describe, expect, it, vi } from 'vitest';
+
 import { usePanZoom } from './usePanZoom';
 
 function createContainerRef(): RefObject<HTMLDivElement | null> {
@@ -145,6 +146,7 @@ describe('usePanZoom mouse handlers', () => {
     const moveEvent = mockMouseEvent({ pageX: 80, pageY: 80 });
     act(() => result.current.handlers.handleMouseMove(moveEvent));
 
+    // oxlint-disable-next-line typescript-eslint/unbound-method -- vi.fn() mock
     expect(moveEvent.preventDefault).toHaveBeenCalled();
     // scrollStart (100) - dx (30) = 70
     expect(ref.current.scrollLeft).toBe(70);
@@ -175,8 +177,10 @@ describe('usePanZoom mouse handlers', () => {
     const clickEvent = mockMouseEvent();
     act(() => result.current.handlers.handleClickCapture(clickEvent));
 
+    /* oxlint-disable typescript-eslint/unbound-method -- vi.fn() mocks */
     expect(clickEvent.stopPropagation).toHaveBeenCalled();
     expect(clickEvent.preventDefault).toHaveBeenCalled();
+    /* oxlint-enable typescript-eslint/unbound-method */
   });
 
   it('handleClickCapture does not stop propagation without prior drag', () => {
@@ -186,8 +190,10 @@ describe('usePanZoom mouse handlers', () => {
     const clickEvent = mockMouseEvent();
     act(() => result.current.handlers.handleClickCapture(clickEvent));
 
+    /* oxlint-disable typescript-eslint/unbound-method -- vi.fn() mocks */
     expect(clickEvent.stopPropagation).not.toHaveBeenCalled();
     expect(clickEvent.preventDefault).not.toHaveBeenCalled();
+    /* oxlint-enable typescript-eslint/unbound-method */
   });
 
   it('handleMouseDown with container records scroll position', () => {

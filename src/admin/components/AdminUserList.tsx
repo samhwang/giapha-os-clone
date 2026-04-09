@@ -1,6 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import type { UserProfile } from '../types';
+
 import { UserRole } from '../../auth/types';
 import { Button } from '../../ui/common/Button';
 import { Card } from '../../ui/common/Card';
@@ -8,7 +11,6 @@ import { Modal, ModalCloseButton, ModalPanel } from '../../ui/common/Modal';
 import { cn } from '../../ui/utils/cn';
 import { useAdminForm } from '../hooks/useAdminForm';
 import { changeRole, createUser, deleteUser, toggleStatus } from '../server/user';
-import type { UserProfile } from '../types';
 
 interface AdminUserListProps {
   initialUsers: UserProfile[];
@@ -123,14 +125,14 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
   };
 
   return (
-    <div className="space-y-6 relative">
+    <div className="relative space-y-6">
       {notification && (
         <div
           className={cn(
-            'fixed top-1/2 left-1/2 z-100 px-6 py-3 rounded-xl shadow-lg border backdrop-blur-md flex items-center gap-3 min-w-[320px] max-w-[90vw] animate-[fade-in-up_0.3s_ease-out_forwards]',
-            notification.type === 'success' && 'bg-emerald-50/90 border-emerald-200 text-emerald-800',
-            notification.type === 'error' && 'bg-red-50/90 border-red-200 text-red-800',
-            notification.type === 'info' && 'bg-amber-50/90 border-amber-200 text-amber-800'
+            'fixed top-1/2 left-1/2 z-100 flex max-w-[90vw] min-w-[320px] animate-[fade-in-up_0.3s_ease-out_forwards] items-center gap-3 rounded-xl border px-6 py-3 shadow-lg backdrop-blur-md',
+            notification.type === 'success' && 'border-emerald-200 bg-emerald-50/90 text-emerald-800',
+            notification.type === 'error' && 'border-red-200 bg-red-50/90 text-red-800',
+            notification.type === 'info' && 'border-amber-200 bg-amber-50/90 text-amber-800'
           )}
         >
           <p className="text-sm font-medium">{notification.message}</p>
@@ -146,26 +148,26 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="uppercase tracking-wider border-b border-border-default bg-stone-50/50">
+            <thead className="border-b border-border-default bg-stone-50/50 tracking-wider uppercase">
               <tr>
-                <th className="px-6 py-4 text-stone-500 font-semibold text-xs">{t('admin.emailHeader')}</th>
-                <th className="px-6 py-4 text-stone-500 font-semibold text-xs">{t('admin.roleHeader')}</th>
-                <th className="px-6 py-4 text-stone-500 font-semibold text-xs">{t('admin.statusHeader')}</th>
-                <th className="px-6 py-4 text-stone-500 font-semibold text-xs">{t('admin.createdHeader')}</th>
-                <th className="px-6 py-4 text-stone-500 font-semibold text-xs text-right">{t('admin.actionsHeader')}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-stone-500">{t('admin.emailHeader')}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-stone-500">{t('admin.roleHeader')}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-stone-500">{t('admin.statusHeader')}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-stone-500">{t('admin.createdHeader')}</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-stone-500">{t('admin.actionsHeader')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
               {users.map((user) => (
-                <tr key={user.id} className="hover:bg-stone-50/80 transition-colors">
+                <tr key={user.id} className="transition-colors hover:bg-stone-50/80">
                   <td className="px-6 py-4 font-medium text-stone-900">{user.email}</td>
                   <td className="px-6 py-4">
                     <span
                       className={cn(
-                        'inline-flex items-center px-2 py-1 rounded-md text-xs font-medium',
-                        user.role === UserRole.enum.admin && 'bg-amber-100 text-amber-800 border border-amber-200',
-                        user.role === UserRole.enum.editor && 'bg-sky-100 text-sky-800 border border-sky-200',
-                        user.role === UserRole.enum.member && 'bg-stone-100 text-stone-600 border border-stone-200'
+                        'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium',
+                        user.role === UserRole.enum.admin && 'border border-amber-200 bg-amber-100 text-amber-800',
+                        user.role === UserRole.enum.editor && 'border border-sky-200 bg-sky-100 text-sky-800',
+                        user.role === UserRole.enum.member && 'border border-stone-200 bg-stone-100 text-stone-600'
                       )}
                     >
                       {t(`role.${user.role}`)}
@@ -174,15 +176,15 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                   <td className="px-6 py-4">
                     <span
                       className={cn(
-                        'inline-flex items-center px-2 py-1 rounded-md text-xs font-medium',
-                        user.isActive ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-red-100 text-red-800 border border-red-200'
+                        'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium',
+                        user.isActive ? 'border border-emerald-200 bg-emerald-100 text-emerald-800' : 'border border-red-200 bg-red-100 text-red-800'
                       )}
                     >
                       {user.isActive ? t('admin.active') : t('admin.pending')}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-stone-500">{new Date(user.createdAt).toLocaleDateString('vi-VN')}</td>
-                  <td className="px-6 py-4 text-right space-x-3">
+                  <td className="space-x-3 px-6 py-4 text-right">
                     {user.id !== currentUserId ? (
                       <>
                         {user.isActive ? (
@@ -190,7 +192,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                             type="button"
                             disabled={loadingId === user.id}
                             onClick={() => handleStatusChange(user.id, false)}
-                            className="text-stone-600 hover:text-stone-900 font-medium disabled:opacity-50"
+                            className="font-medium text-stone-600 hover:text-stone-900 disabled:opacity-50"
                           >
                             {t('admin.lock')}
                           </button>
@@ -199,7 +201,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                             type="button"
                             disabled={loadingId === user.id}
                             onClick={() => handleStatusChange(user.id, true)}
-                            className="text-emerald-600 hover:text-emerald-800 font-medium disabled:opacity-50"
+                            className="font-medium text-emerald-600 hover:text-emerald-800 disabled:opacity-50"
                           >
                             {t('admin.approve')}
                           </button>
@@ -208,7 +210,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                           value={user.role}
                           onChange={(e) => handleRoleChange(user.id, e.target.value as UserRole)}
                           disabled={loadingId === user.id}
-                          className="text-sm font-medium bg-transparent border border-stone-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-amber-500 disabled:opacity-50"
+                          className="rounded-lg border border-stone-200 bg-transparent px-2 py-1 text-sm font-medium focus:ring-1 focus:ring-amber-500 focus:outline-none disabled:opacity-50"
                         >
                           <option value="member">{t('role.member')}</option>
                           <option value="editor">{t('role.editor')}</option>
@@ -218,13 +220,13 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                           type="button"
                           disabled={loadingId === user.id}
                           onClick={() => handleDelete(user.id)}
-                          className="text-red-600 hover:text-red-800 font-medium disabled:opacity-50"
+                          className="font-medium text-red-600 hover:text-red-800 disabled:opacity-50"
                         >
                           {t('common.delete')}
                         </button>
                       </>
                     ) : (
-                      <span className="text-stone-400 italic text-xs">{t('admin.you')}</span>
+                      <span className="text-xs text-stone-400 italic">{t('admin.you')}</span>
                     )}
                   </td>
                 </tr>
@@ -244,8 +246,8 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
       {/* Create User Modal */}
       <Modal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)}>
         <ModalPanel maxWidth="md" className="rounded-2xl">
-          <div className="px-6 py-5 border-b border-stone-100/80 flex justify-between items-center bg-stone-50/50">
-            <h3 className="text-xl font-serif font-bold text-stone-800">{t('admin.createTitle')}</h3>
+          <div className="flex items-center justify-between border-b border-stone-100/80 bg-stone-50/50 px-6 py-5">
+            <h3 className="font-serif text-xl font-bold text-stone-800">{t('admin.createTitle')}</h3>
             <ModalCloseButton onClick={() => setIsCreateModalOpen(false)} label={t('common.close')} className="size-8" />
           </div>
 
@@ -253,7 +255,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
             onSubmit={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              form.handleSubmit();
+              void form.handleSubmit();
             }}
             className="p-6"
           >
@@ -270,7 +272,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                       required
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
-                      className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 placeholder-stone-400 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                      className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-stone-900 placeholder-stone-400 shadow-sm transition-colors focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none sm:py-2.5"
                       placeholder={t('admin.emailPlaceholder')}
                     />
                   </div>
@@ -290,7 +292,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                       minLength={8}
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
-                      className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 placeholder-stone-400 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                      className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-stone-900 placeholder-stone-400 shadow-sm transition-colors focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none sm:py-2.5"
                       placeholder={t('admin.passwordHint')}
                     />
                   </div>
@@ -307,7 +309,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                       id={field.name}
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value as UserRole)}
-                      className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                      className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-stone-900 shadow-sm transition-colors focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none sm:py-2.5"
                     >
                       <option value="member">{t('admin.roleMember')}</option>
                       <option value="editor">{t('admin.roleEditor')}</option>
@@ -327,7 +329,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                       id={field.name}
                       value={field.state.value ? 'true' : 'false'}
                       onChange={(e) => field.handleChange(e.target.value === 'true')}
-                      className="w-full px-3 py-2 sm:py-2.5 bg-white text-stone-900 border border-stone-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                      className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-stone-900 shadow-sm transition-colors focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none sm:py-2.5"
                     >
                       <option value="true">{t('admin.statusActive')}</option>
                       <option value="false">{t('admin.statusPending')}</option>

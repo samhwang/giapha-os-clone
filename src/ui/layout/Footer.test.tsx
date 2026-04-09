@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+
 import { t } from '../../../test/i18n';
 import { renderWithProviders } from '../../../test/render-wrapper';
 import Footer from './Footer';

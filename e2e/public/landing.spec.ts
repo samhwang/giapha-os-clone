@@ -10,7 +10,9 @@ test.describe('Landing Page', () => {
   test('should have login link', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
-    await expect(page.getByRole('link', { name: /login|đăng nhập/i })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('link', { name: /login|đăng nhập/i })).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test('should navigate to login page', async ({ page }) => {

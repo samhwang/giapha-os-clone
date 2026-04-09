@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { logger } from '../../lib/logger';
 import { queryKeys } from '../../lib/queryKeys';
 import { createPerson, getPersons, updatePerson } from '../../members/server/member';
@@ -137,7 +138,9 @@ async function fetchRelationshipsData(
 
     if (childrenIds.length > 0) {
       for (const childId of childrenIds) {
-        const childRelsForGrandchildren = await getRelationshipsForPerson({ data: { personId: childId } });
+        const childRelsForGrandchildren = await getRelationshipsForPerson({
+          data: { personId: childId },
+        });
         const grandchildCount = childRelsForGrandchildren.filter(
           (r) => r.personAId === childId && (r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child)
         ).length;
@@ -178,7 +181,7 @@ export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOpti
   const allPersons = data?.allPersons ?? [];
 
   const invalidateRelationships = () => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.relationships.forPerson(personId) });
+    void queryClient.invalidateQueries({ queryKey: queryKeys.relationships.forPerson(personId) });
   };
 
   const addRelationshipMutation = useMutation({
@@ -204,7 +207,9 @@ export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOpti
         const targetPerson = allPersons.find((p) => p.id === mutationData.targetId);
         if (targetPerson && (targetPerson.generation == null || targetPerson.isInLaw == null)) {
           const fields = getAutoPopulatedFields(mutationData.direction as 'child' | 'parent' | 'spouse', person);
-          const updates: { id: string; generation?: number; isInLaw?: boolean } = { id: mutationData.targetId };
+          const updates: { id: string; generation?: number; isInLaw?: boolean } = {
+            id: mutationData.targetId,
+          };
 
           if (targetPerson.generation == null && fields.generation !== undefined) {
             updates.generation = fields.generation;
@@ -252,12 +257,20 @@ export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOpti
         });
 
         await createRelationship({
-          data: { personAId: personId, personBId: newPerson.id, type: RelationshipType.enum.biological_child },
+          data: {
+            personAId: personId,
+            personBId: newPerson.id,
+            type: RelationshipType.enum.biological_child,
+          },
         });
 
         if (mutationData.spouseId && mutationData.spouseId !== 'unknown') {
           await createRelationship({
-            data: { personAId: mutationData.spouseId, personBId: newPerson.id, type: RelationshipType.enum.biological_child },
+            data: {
+              personAId: mutationData.spouseId,
+              personBId: newPerson.id,
+              type: RelationshipType.enum.biological_child,
+            },
           });
         }
 
@@ -265,7 +278,12 @@ export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOpti
       }
 
       if (successCount < validChildren.length) {
-        throw new Error(t('relationship.bulkPartialError', { count: String(successCount), total: String(validChildren.length) }));
+        throw new Error(
+          t('relationship.bulkPartialError', {
+            count: String(successCount),
+            total: String(validChildren.length),
+          })
+        );
       }
     },
     onSuccess: () => {

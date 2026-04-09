@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
+
 import type { Person } from '../../members/types';
 import type { AdjacencyLists, TreeFilterOptions } from '../utils/treeHelpers';
+
 import { getFilteredTreeData } from '../utils/treeHelpers';
 
 interface UseAutoCollapseOptions {
@@ -15,7 +17,7 @@ interface UseAutoCollapseOptions {
 export function useAutoCollapse({ roots, personsMap, adj, filters, autoCollapseLevel, onCollapsed }: UseAutoCollapseOptions) {
   const [collapsedNodes, setCollapsedNodes] = useState<Set<string>>(new Set());
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: filters/adj are derived from personsMap/relationships
+  /* oxlint-disable react-hooks/exhaustive-deps -- filters/adj are derived from personsMap/relationships */
   useEffect(() => {
     const autoCollapsed = new Set<string>();
 
@@ -47,6 +49,7 @@ export function useAutoCollapse({ roots, personsMap, adj, filters, autoCollapseL
       return () => cancelAnimationFrame(raf);
     }
   }, [roots, personsMap, autoCollapseLevel]);
+  /* oxlint-enable react-hooks/exhaustive-deps */
 
   const toggleCollapse = useCallback((personId: string) => {
     setCollapsedNodes((prev) => {

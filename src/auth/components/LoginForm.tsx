@@ -2,6 +2,7 @@ import { KeyRound, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as z from 'zod';
+
 import { authClient } from '../../auth/client';
 import { useAuthForm } from '../../auth/hooks/useAuthForm';
 import { Button } from '../../ui/common/Button';
@@ -32,7 +33,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       setError(null);
 
       try {
-        const { error } = await authClient.signIn.email({ email: value.email, password: value.password });
+        const { error } = await authClient.signIn.email({
+          email: value.email,
+          password: value.password,
+        });
         if (error) {
           setError(error.message || t('auth.loginFailed'));
           return;
@@ -50,7 +54,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        form.handleSubmit();
+        void form.handleSubmit();
       }}
     >
       <div className="space-y-4">
@@ -59,7 +63,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             <field.AuthField
               label={t('auth.emailLabel')}
               placeholder={t('auth.emailPlaceholder')}
-              leftIcon={<Mail className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />}
+              leftIcon={<Mail className="absolute left-3.5 size-5 text-stone-400 transition-colors group-focus-within:text-amber-500" />}
               type="email"
             />
           )}
@@ -70,7 +74,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             <field.AuthField
               label={t('auth.passwordLabel')}
               placeholder={t('auth.passwordPlaceholder')}
-              leftIcon={<KeyRound className="absolute left-3.5 size-5 text-stone-400 group-focus-within:text-amber-500 transition-colors" />}
+              leftIcon={<KeyRound className="absolute left-3.5 size-5 text-stone-400 transition-colors group-focus-within:text-amber-500" />}
               type="password"
             />
           )}
@@ -78,7 +82,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       </div>
 
       {error && (
-        <div className="text-red-700 text-sm-plus text-center bg-red-50 p-3 rounded-xl border border-red-100/50 font-medium animate-[fade-in-up_0.3s_ease-out_forwards]">
+        <div className="animate-[fade-in-up_0.3s_ease-out_forwards] rounded-xl border border-red-100/50 bg-red-50 p-3 text-center text-sm-plus font-medium text-red-700">
           {error}
         </div>
       )}
@@ -89,11 +93,11 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
           size="xl"
           type="submit"
           disabled={form.state.isSubmitting}
-          className="w-full focus:ring-2 focus:ring-offset-2 focus:ring-stone-900 disabled:opacity-70 disabled:cursor-wait"
+          className="w-full focus:ring-2 focus:ring-stone-900 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-70"
         >
           {form.state.isSubmitting ? (
             <span className="flex items-center gap-2.5">
-              <svg className="animate-spin -ml-1 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" role="img" aria-label="Loading">
+              <svg className="-ml-1 h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24" role="img" aria-label="Loading">
                 <title>Loading</title>
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path

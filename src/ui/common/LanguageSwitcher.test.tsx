@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+
 import LanguageSwitcher from './LanguageSwitcher';
 
 // Mock cookieStore which doesn't exist in jsdom

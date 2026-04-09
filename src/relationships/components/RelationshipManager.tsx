@@ -1,9 +1,11 @@
 import { Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useDashboardStore } from '../../dashboard/store/dashboardStore';
+
 import type { Person } from '../../members/types';
-import Avatar from '../../ui/common/Avatar';
 import type { DescendantStats } from '../hooks/useRelationships';
+
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
+import Avatar from '../../ui/common/Avatar';
 import { useRelationships } from '../hooks/useRelationships';
 import { RelationshipType } from '../types';
 import AddRelationshipForm from './AddRelationshipForm';
@@ -38,7 +40,7 @@ export default function RelationshipManager({ person, canEdit = false, onStatsLo
     groupByType,
   } = useRelationships({ person, onStatsLoaded });
 
-  if (loading) return <div className="text-stone-500 text-sm">{t('relationship.loadingFamily')}</div>;
+  if (loading) return <div className="text-sm text-stone-500">{t('relationship.loadingFamily')}</div>;
 
   const spouses = groupByType('spouse').map((rel) => ({
     id: rel.targetPerson.id,
@@ -49,9 +51,9 @@ export default function RelationshipManager({ person, canEdit = false, onStatsLo
   return (
     <div className="space-y-6">
       {actionError && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm font-medium rounded-xl p-3 flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700">
           <p>{actionError}</p>
-          <button type="button" onClick={dismissError} className="text-red-500 hover:text-red-700 font-bold shrink-0">
+          <button type="button" onClick={dismissError} className="shrink-0 font-bold text-red-500 hover:text-red-700">
             ×
           </button>
         </div>
@@ -69,15 +71,15 @@ export default function RelationshipManager({ person, canEdit = false, onStatsLo
 
         return (
           <div key={group} className="border-b border-stone-100 pb-4 last:border-0">
-            <h4 className="font-bold text-stone-700 mb-3 flex justify-between items-center text-sm uppercase tracking-wide">{title}</h4>
+            <h4 className="mb-3 flex items-center justify-between text-sm font-bold tracking-wide text-stone-700 uppercase">{title}</h4>
             {items.length > 0 ? (
               <ul className="space-y-3">
                 {items.map((rel) => (
-                  <li key={rel.id} className="flex items-center justify-between group">
+                  <li key={rel.id} className="group flex items-center justify-between">
                     <button
                       type="button"
                       onClick={() => setMemberModalId(rel.targetPerson.id)}
-                      className="flex items-center gap-3 hover:bg-stone-100 p-2.5 -mx-2.5 rounded-xl transition-all duration-fast flex-1 text-left"
+                      className="-mx-2.5 flex flex-1 items-center gap-3 rounded-xl p-2.5 text-left transition-all duration-fast hover:bg-stone-100"
                     >
                       <Avatar
                         gender={rel.targetPerson.gender}
@@ -86,10 +88,10 @@ export default function RelationshipManager({ person, canEdit = false, onStatsLo
                         className="h-8 w-8 text-xs"
                       />
                       <div className="flex flex-col">
-                        <span className="text-stone-900 font-medium text-sm">{rel.targetPerson.fullName}</span>
-                        {rel.note && <span className="text-xs text-amber-600 font-medium italic mt-0.5">({rel.note})</span>}
+                        <span className="text-sm font-medium text-stone-900">{rel.targetPerson.fullName}</span>
+                        {rel.note && <span className="mt-0.5 text-xs font-medium text-amber-600 italic">({rel.note})</span>}
                         {rel.type === RelationshipType.enum.adopted_child && (
-                          <span className="text-xs text-stone-400 italic mt-0.5">({t('relationship.adopted')})</span>
+                          <span className="mt-0.5 text-xs text-stone-400 italic">({t('relationship.adopted')})</span>
                         )}
                       </div>
                     </button>
@@ -97,7 +99,7 @@ export default function RelationshipManager({ person, canEdit = false, onStatsLo
                       <button
                         type="button"
                         onClick={() => handleDelete(rel.id)}
-                        className="text-stone-300 hover:text-red-500 hover:bg-red-50 p-2 sm:p-2.5 rounded-lg transition-colors flex items-center justify-center ml-2"
+                        className="ml-2 flex items-center justify-center rounded-lg p-2 text-stone-300 transition-colors hover:bg-red-50 hover:text-red-500 sm:p-2.5"
                         title={t('relationship.deleteRelationship')}
                         aria-label={t('relationship.deleteRelationship')}
                       >
@@ -115,25 +117,25 @@ export default function RelationshipManager({ person, canEdit = false, onStatsLo
       })}
 
       {canEdit && activeForm === 'none' && (
-        <div className="flex flex-col sm:flex-row gap-3 mt-4">
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row">
           <button
             type="button"
             onClick={() => setActiveForm('bulk')}
-            className="flex-1 py-3 border-2 border-dashed border-stone-200 bg-stone-50/50 hover:bg-stone-50 rounded-xl sm:rounded-2xl text-stone-500 font-medium text-sm hover:border-sky-400 hover:text-sky-700 transition-all duration-fast"
+            className="flex-1 rounded-xl border-2 border-dashed border-stone-200 bg-stone-50/50 py-3 text-sm font-medium text-stone-500 transition-all duration-fast hover:border-sky-400 hover:bg-stone-50 hover:text-sky-700 sm:rounded-2xl"
           >
             {t('relationship.addChild')}
           </button>
           <button
             type="button"
             onClick={() => setActiveForm('spouse')}
-            className="flex-1 py-3 border-2 border-dashed border-stone-200 bg-stone-50/50 hover:bg-stone-50 rounded-xl sm:rounded-2xl text-stone-500 font-medium text-sm hover:border-rose-400 hover:text-rose-700 transition-all duration-fast"
+            className="flex-1 rounded-xl border-2 border-dashed border-stone-200 bg-stone-50/50 py-3 text-sm font-medium text-stone-500 transition-all duration-fast hover:border-rose-400 hover:bg-stone-50 hover:text-rose-700 sm:rounded-2xl"
           >
             {t('relationship.addSpouse')}
           </button>
           <button
             type="button"
             onClick={() => setActiveForm('add')}
-            className="flex-1 py-3 border-2 border-dashed border-stone-200 bg-stone-50/50 hover:bg-stone-50 rounded-xl sm:rounded-2xl text-stone-500 font-medium text-sm hover:border-amber-400 hover:text-amber-700 transition-all duration-fast"
+            className="flex-1 rounded-xl border-2 border-dashed border-stone-200 bg-stone-50/50 py-3 text-sm font-medium text-stone-500 transition-all duration-fast hover:border-amber-400 hover:bg-stone-50 hover:text-amber-700 sm:rounded-2xl"
           >
             {t('relationship.addRelationship')}
           </button>

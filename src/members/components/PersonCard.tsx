@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { formatDisplayDate } from '../../events/utils/dateHelpers';
 import Avatar from '../../ui/common/Avatar';
@@ -24,21 +25,21 @@ export default function PersonCard({ person }: PersonCardProps) {
       onClick={() => setMemberModalId(person.id)}
       className={cn(
         cardVariants({ variant: 'glass', interactive: true }),
-        'group block relative p-2 sm:p-4 text-left w-full',
+        'group relative block w-full p-2 text-left sm:p-4',
         person.isDeceased && 'opacity-80 grayscale-[0.3]'
       )}
     >
-      <div className="flex items-center space-x-4 relative z-10">
+      <div className="relative z-10 flex items-center space-x-4">
         <div className="relative">
           <Avatar
             gender={person.gender}
             avatarUrl={person.avatarUrl}
             fullName={person.fullName}
-            className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 shadow-lg ring-2 ring-white transition-transform duration-default group-hover:scale-105 text-xl font-bold"
+            className="h-14 w-14 shrink-0 text-xl font-bold shadow-lg ring-2 ring-white transition-transform duration-default group-hover:scale-105 sm:h-16 sm:w-16"
           />
           <div
             className={cn(
-              'absolute bottom-0 right-0 size-5 rounded-full ring-2 ring-white shadow-sm flex items-center justify-center',
+              'absolute right-0 bottom-0 flex size-5 items-center justify-center rounded-full shadow-sm ring-2 ring-white',
               getGenderStyle(person.gender)
             )}
           >
@@ -50,11 +51,11 @@ export default function PersonCard({ person }: PersonCardProps) {
           </div>
         </div>
 
-        <div className="flex-1 min-w-0">
-          <h3 className="text-base text-left sm:text-lg font-bold text-stone-900 group-hover:text-amber-700 transition-colors truncate mb-1.5">
+        <div className="min-w-0 flex-1">
+          <h3 className="mb-1.5 truncate text-left text-base font-bold text-stone-900 transition-colors group-hover:text-amber-700 sm:text-lg">
             {person.fullName}
           </h3>
-          <p className="text-sm font-medium text-stone-500 truncate flex items-center gap-1.5">
+          <p className="flex items-center gap-1.5 truncate text-sm font-medium text-stone-500">
             <svg className="size-4 shrink-0 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" role="img" aria-label={t('common.day')}>
               <title>{t('common.day')}</title>
               <path
@@ -65,13 +66,18 @@ export default function PersonCard({ person }: PersonCardProps) {
               />
             </svg>
             <span className="truncate">
-              {formatDisplayDate({ year: person.birthYear, month: person.birthMonth, day: person.birthDay, unknownLabel: t('common.unknown') })}
+              {formatDisplayDate({
+                year: person.birthYear,
+                month: person.birthMonth,
+                day: person.birthDay,
+                unknownLabel: t('common.unknown'),
+              })}
               {person.isDeceased &&
                 ` → ${formatDisplayDate({ year: person.deathYear, month: person.deathMonth, day: person.deathDay, unknownLabel: t('common.unknown') })}`}
             </span>
           </p>
           {(person.isDeceased || person.isInLaw || person.birthOrder != null || person.generation != null) && (
-            <div className="flex flex-wrap items-center gap-1.5 shrink-0 mt-2">
+            <div className="mt-2 flex shrink-0 flex-wrap items-center gap-1.5">
               {person.isInLaw && <InLawBadge size="md" gender={person.gender} />}
               {person.birthOrder != null && (
                 <Badge color="amber">{person.birthOrder === 1 ? t('member.birthOrderFirst') : t('member.birthOrderN', { order: person.birthOrder })}</Badge>

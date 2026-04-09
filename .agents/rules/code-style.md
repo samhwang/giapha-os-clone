@@ -2,7 +2,7 @@
 
 ## Tooling
 
-[Biome](https://biomejs.dev/) handles both linting and formatting. No ESLint, Prettier, or separate formatters.
+[Oxlint](https://oxc.rs/docs/guide/usage/linter.html) handles linting. [Oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) handles formatting. No ESLint, Prettier, Biome, or separate formatters.
 
 ## Formatting Rules
 
@@ -17,8 +17,8 @@
 
 ## Auto-formatting
 
-- **On save**: Configure editor to use Biome
-- **Pre-commit**: lint-staged runs Biome on staged files
+- **On save**: Configure editor to use Oxfmt
+- **Pre-commit**: lint-staged runs Oxlint + Oxfmt on staged files
 - **Manual**: `pnpm lint:fix`
 
 ## TypeScript Conventions
@@ -43,17 +43,17 @@ type CreatePerson = z.infer<typeof createPersonSchema>;
 
 ## Naming Conventions
 
-| Element | Convention | Example |
-|---------|-----------|---------|
-| Variables, functions | camelCase | `birthOrder`, `computeKinship` |
-| Components | PascalCase | `FamilyTree`, `PersonCard` |
-| Types, interfaces, enums | PascalCase | `Person`, `RelationshipType` |
-| Constants | UPPER_SNAKE_CASE | `MAX_GENERATION_DEPTH` |
-| Files (general) | kebab-case | `kinship-helpers.ts` |
-| Files (components) | PascalCase | `FamilyTree.tsx` |
-| Files (routes) | kebab-case or $param | `$id.tsx`, `index.tsx` |
-| Database columns | snake_case | `full_name`, `birth_year` |
-| Prisma fields | camelCase | `fullName`, `birthYear` |
+| Element                  | Convention           | Example                        |
+| ------------------------ | -------------------- | ------------------------------ |
+| Variables, functions     | camelCase            | `birthOrder`, `computeKinship` |
+| Components               | PascalCase           | `FamilyTree`, `PersonCard`     |
+| Types, interfaces, enums | PascalCase           | `Person`, `RelationshipType`   |
+| Constants                | UPPER_SNAKE_CASE     | `MAX_GENERATION_DEPTH`         |
+| Files (general)          | kebab-case           | `kinship-helpers.ts`           |
+| Files (components)       | PascalCase           | `FamilyTree.tsx`               |
+| Files (routes)           | kebab-case or $param | `$id.tsx`, `index.tsx`         |
+| Database columns         | snake_case           | `full_name`, `birth_year`      |
+| Prisma fields            | camelCase            | `fullName`, `birthYear`        |
 
 ## Component Structure
 
@@ -117,6 +117,7 @@ Existing CVA components in `src/ui/common/`: `Card`, `Badge`, `Button`, `Avatar`
 All screens and components must use the design system. See [Reference](../../docs/reference/02-reference.md#design-tokens) for the complete token, typography, and layout utility tables.
 
 **Tokens** — Use semantic tokens over hardcoded Tailwind colors:
+
 ```tsx
 // ✅ Semantic tokens
 <div className="bg-surface-glass border-border-default text-text-primary rounded-card shadow-card duration-default">
@@ -126,6 +127,7 @@ All screens and components must use the design system. See [Reference](../../doc
 ```
 
 **Typography** — Use typography utility classes:
+
 ```tsx
 // ✅ Typography utilities
 <h1 className="text-heading-page">{title}</h1>
@@ -137,6 +139,7 @@ All screens and components must use the design system. See [Reference](../../doc
 ```
 
 **Layout** — Use layout utility classes:
+
 ```tsx
 // ✅ Layout utilities
 <div className="layout-page">...</div>
@@ -147,6 +150,7 @@ All screens and components must use the design system. See [Reference](../../doc
 ```
 
 **Components** — Use shared components from `src/ui/common/`:
+
 ```tsx
 <Card variant="glass" interactive>...</Card>
 <Badge color="amber">Label</Badge>
@@ -158,6 +162,7 @@ All screens and components must use the design system. See [Reference](../../doc
 ```
 
 **Custom classes** — Any Tailwind class that deviates from the design system must include a comment:
+
 ```tsx
 {/* custom: landing page hero needs larger shadow for visual emphasis */}
 <div className="shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
@@ -165,7 +170,7 @@ All screens and components must use the design system. See [Reference](../../doc
 
 ## Import Order
 
-Biome auto-organizes imports:
+Oxfmt auto-organizes imports (configured in `.oxfmtrc.json`):
 
 1. React / React DOM
 2. External packages (`@tanstack/*`, etc.)
@@ -213,6 +218,7 @@ src/
 ```
 
 Rules:
+
 - Each functional module should be self-contained
 - Types belong in the module that uses them; co-locate if only used by 1 file
 - Keep `database/` for all database concerns (client, repositories, generated types)
@@ -226,6 +232,7 @@ Reference: [clean-code-javascript](https://github.com/ryanmcdermott/clean-code-j
 ### Control Flow
 
 - **Guard clauses first**: Invert conditions and return/continue early to avoid nesting.
+
   ```ts
   // Bad
   if (file) {
@@ -239,8 +246,10 @@ Reference: [clean-code-javascript](https://github.com/ryanmcdermott/clean-code-j
   if (file.type !== 'json') return;
   process(file);
   ```
+
 - **No redundant wrappers**: Don't wrap `for` loops in `if (arr.length > 0)` — iterating an empty array is a no-op.
 - **Extract complex conditions into named booleans**: If a condition needs a comment to explain it, extract it into a `const` instead.
+
   ```ts
   // Bad
   // Check if we should upload the avatar
@@ -250,6 +259,7 @@ Reference: [clean-code-javascript](https://github.com/ryanmcdermott/clean-code-j
   const shouldUploadAvatar = avatarFile && personId;
   if (shouldUploadAvatar) { ... }
   ```
+
 - **Combine nested conditions with `&&`** when the inner block is a single early return.
 - **Collapse nested if/else into ternaries** when the only difference is the assigned value.
 
@@ -285,7 +295,8 @@ Reference: [clean-code-javascript](https://github.com/ryanmcdermott/clean-code-j
 
 ## Ignored Files
 
-Biome skips these (configured in `biome.json`):
+Oxlint skips these (configured in `.oxlintrc.json`):
+
 - `src/routeTree.gen.ts` (auto-generated by TanStack Router)
 - `node_modules/`
 - `dist/`

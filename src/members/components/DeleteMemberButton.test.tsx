@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { t } from '../../../test/i18n';
 import { queryWrapper as wrapper } from '../../../test/render-wrapper';
 import DeleteMemberButton from './DeleteMemberButton';

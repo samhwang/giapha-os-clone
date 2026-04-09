@@ -250,8 +250,17 @@ export function parseGedcom(gedcom: string): {
           const parts = cleanVal.split(' ');
           const parseDateParts = () => {
             if (parts.length === 3)
-              return { day: Number.parseInt(parts[0], 10) || null, month: parseMonthName(parts[1]), year: Number.parseInt(parts[2], 10) || null };
-            if (parts.length === 2) return { day: null, month: parseMonthName(parts[0]), year: Number.parseInt(parts[1], 10) || null };
+              return {
+                day: Number.parseInt(parts[0], 10) || null,
+                month: parseMonthName(parts[1]),
+                year: Number.parseInt(parts[2], 10) || null,
+              };
+            if (parts.length === 2)
+              return {
+                day: null,
+                month: parseMonthName(parts[0]),
+                year: Number.parseInt(parts[1], 10) || null,
+              };
             if (parts.length === 1) return { day: null, month: null, year: Number.parseInt(parts[0], 10) || null };
             return { day: null, month: null, year: null };
           };
@@ -306,14 +315,22 @@ export function parseGedcom(gedcom: string): {
     }
 
     if (husb && wife && husb !== wife) {
-      relationships.push({ type: RelationshipType.enum.marriage, personAId: husb, personBId: wife });
+      relationships.push({
+        type: RelationshipType.enum.marriage,
+        personAId: husb,
+        personBId: wife,
+      });
     }
 
     const parentA = husb || wife;
     if (parentA) {
       for (const childId of children) {
         if (parentA === childId) continue;
-        relationships.push({ type: RelationshipType.enum.biological_child, personAId: parentA, personBId: childId });
+        relationships.push({
+          type: RelationshipType.enum.biological_child,
+          personAId: parentA,
+          personBId: childId,
+        });
       }
     }
   }

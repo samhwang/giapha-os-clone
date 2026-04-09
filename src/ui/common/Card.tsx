@@ -1,5 +1,7 @@
-import { cva, type VariantProps } from 'class-variance-authority';
 import type { HTMLAttributes, ReactNode } from 'react';
+
+import { cva, type VariantProps } from 'class-variance-authority';
+
 import { cn } from '../utils/cn';
 
 const cardVariants = cva('rounded-card border overflow-hidden transition-all duration-default', {

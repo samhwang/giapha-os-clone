@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import { type ReactNode, useEffect, useRef } from 'react';
+
 import { cn } from '../utils/cn';
 
 interface ModalProps {
@@ -36,7 +37,7 @@ export function Modal({ isOpen, onClose, children }: ModalProps): ReactNode {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-surface-overlay backdrop-blur-sm animate-[fade-in_0.2s_ease-out_forwards]">
+    <div className="fixed inset-0 z-[100] flex animate-[fade-in_0.2s_ease-out_forwards] items-center justify-center bg-surface-overlay p-4 backdrop-blur-sm sm:p-6">
       {onClose && <button type="button" tabIndex={-1} aria-hidden="true" className="absolute inset-0 cursor-pointer" onClick={onClose} />}
       {children}
     </div>
@@ -61,7 +62,7 @@ export function ModalPanel({ children, maxWidth = '4xl', className }: ModalPanel
       role="dialog"
       aria-modal="true"
       className={cn(
-        'relative bg-surface-panel backdrop-blur-2xl rounded-3xl shadow-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-border-default animate-[scale-in_0.2s_ease-out_forwards]',
+        'relative flex max-h-[90vh] w-full animate-[scale-in_0.2s_ease-out_forwards] flex-col overflow-hidden rounded-3xl border border-border-default bg-surface-panel shadow-2xl backdrop-blur-2xl',
         MAX_WIDTH_MAP[maxWidth],
         className
       )}
@@ -83,7 +84,7 @@ export function ModalCloseButton({ onClick, label, className }: ModalCloseButton
       type="button"
       onClick={onClick}
       className={cn(
-        'size-10 flex items-center justify-center bg-surface-muted/80 backdrop-blur-md text-text-secondary rounded-full hover:bg-surface-muted hover:text-text-primary shadow-sm border border-border-default transition-colors',
+        'flex size-10 items-center justify-center rounded-full border border-border-default bg-surface-muted/80 text-text-secondary shadow-sm backdrop-blur-md transition-colors hover:bg-surface-muted hover:text-text-primary',
         className
       )}
       aria-label={label}

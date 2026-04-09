@@ -1,4 +1,5 @@
 import { forwardRef, type InputHTMLAttributes, type ReactNode, useId } from 'react';
+
 import { cn } from '../utils/cn';
 
 const INPUT_BASE =
@@ -23,7 +24,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, l
         </label>
       )}
       <div className="relative">
-        {leftIcon && <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">{leftIcon}</div>}
+        {leftIcon && <div className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-text-muted">{leftIcon}</div>}
         <input
           ref={ref}
           id={id}
@@ -31,7 +32,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, l
           aria-describedby={errorId}
           className={cn(
             INPUT_BASE,
-            leftIcon ? 'pl-10 pr-4 py-2.5' : 'px-4 py-3',
+            leftIcon ? 'py-2.5 pr-4 pl-10' : 'px-4 py-3',
             error && 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/20',
             className
           )}
@@ -39,7 +40,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, l
         />
       </div>
       {error && (
-        <p id={errorId} className="text-sm text-rose-600 font-medium">
+        <p id={errorId} className="text-sm font-medium text-rose-600">
           {error}
         </p>
       )}

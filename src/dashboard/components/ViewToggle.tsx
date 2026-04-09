@@ -1,5 +1,6 @@
 import { Circle, List, ListTree, Network } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
 import { cn } from '../../ui/utils/cn';
 import { useDashboardStore } from '../store/dashboardStore';
 
@@ -17,7 +18,7 @@ export default function ViewToggle() {
   ];
 
   return (
-    <div className="flex bg-stone-200/50 p-1.5 rounded-full shadow-inner w-fit mx-auto mt-4 mb-2 relative border border-border-default backdrop-blur-sm z-10">
+    <div className="relative z-10 mx-auto mt-4 mb-2 flex w-fit rounded-full border border-border-default bg-stone-200/50 p-1.5 shadow-inner backdrop-blur-sm">
       {tabs.map((tab, _index) => {
         const isActive = currentView === tab.id;
         return (
@@ -26,11 +27,11 @@ export default function ViewToggle() {
             key={tab.id}
             onClick={() => setView(tab.id)}
             className={cn(
-              'relative px-4 sm:px-6 py-1.5 sm:py-2.5 text-sm font-semibold rounded-full transition-colors duration-default ease-in-out z-10 flex items-center gap-2',
+              'relative z-10 flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold transition-colors duration-default ease-in-out sm:px-6 sm:py-2.5',
               isActive ? 'text-stone-900' : 'text-stone-500 hover:text-stone-800'
             )}
           >
-            {isActive && <div className="absolute inset-0 bg-white rounded-full shadow-sm border border-border-default z-[-1] animate-scale-in" />}
+            {isActive && <div className="absolute inset-0 z-[-1] animate-scale-in rounded-full border border-border-default bg-white shadow-sm" />}
             <span className={cn('transition-colors duration-default', isActive ? 'text-amber-700' : 'text-stone-400')}>{tab.icon}</span>
             <span className="tracking-wide">{tab.label}</span>
           </button>

@@ -1,4 +1,5 @@
 import * as z from 'zod';
+
 import type { Gender as PrismaGender } from '../database/generated/prisma/enums';
 
 export const Gender = z.enum(['male', 'female', 'other']);

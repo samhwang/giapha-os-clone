@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+
 import { describe, expect, it, vi } from 'vitest';
 
 const mockNavigate = vi.fn();
@@ -55,8 +56,16 @@ describe('Auth logic', () => {
 
   it('signUp.email is called correctly', async () => {
     mockSignUp.mockResolvedValue({ error: null });
-    await mockSignUp({ email: 'test@example.com', password: 'password123', name: 'test@example.com' });
-    expect(mockSignUp).toHaveBeenCalledWith({ email: 'test@example.com', password: 'password123', name: 'test@example.com' });
+    await mockSignUp({
+      email: 'test@example.com',
+      password: 'password123',
+      name: 'test@example.com',
+    });
+    expect(mockSignUp).toHaveBeenCalledWith({
+      email: 'test@example.com',
+      password: 'password123',
+      name: 'test@example.com',
+    });
   });
 
   it('signIn returns error on failure', async () => {

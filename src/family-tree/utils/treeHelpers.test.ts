@@ -1,4 +1,8 @@
 import { describe, expect, it } from 'vitest';
+
+import type { Person } from '../../members/types';
+import type { Relationship } from '../../relationships/types';
+
 import {
   binhThiMoc,
   createPerson,
@@ -14,9 +18,7 @@ import {
   vanThiBinh,
   vanThiCam,
 } from '../../../test/fixtures';
-import type { Person } from '../../members/types';
 import { Gender } from '../../members/types';
-import type { Relationship } from '../../relationships/types';
 import { RelationshipType } from '../../relationships/types';
 import { buildAdjacencyLists, getFilteredTreeData } from './treeHelpers';
 
@@ -64,7 +66,13 @@ describe('buildAdjacencyLists', () => {
     const parent = createPerson({ id: 'parent-1', fullName: 'Parent' });
     const adopted = createPerson({ id: 'child-adopted', fullName: 'Adopted' });
     const pMap = toPersonsMap([parent, adopted] as Person[]);
-    const rels = [createRelationship({ type: RelationshipType.enum.adopted_child, personAId: parent.id, personBId: adopted.id })];
+    const rels = [
+      createRelationship({
+        type: RelationshipType.enum.adopted_child,
+        personAId: parent.id,
+        personBId: adopted.id,
+      }),
+    ];
 
     const adj = buildAdjacencyLists(rels as Relationship[], pMap);
     expect(adj.childrenByPersonId.get(parent.id)).toHaveLength(1);
@@ -75,7 +83,14 @@ describe('buildAdjacencyLists', () => {
     const a = createPerson({ id: 'p-a' });
     const b = createPerson({ id: 'p-b', gender: Gender.enum.female });
     const pMap = toPersonsMap([a, b] as Person[]);
-    const rels = [createRelationship({ type: RelationshipType.enum.marriage, personAId: a.id, personBId: b.id, note: 'first wife' })];
+    const rels = [
+      createRelationship({
+        type: RelationshipType.enum.marriage,
+        personAId: a.id,
+        personBId: b.id,
+        note: 'first wife',
+      }),
+    ];
 
     const adj = buildAdjacencyLists(rels as Relationship[], pMap);
     expect(adj.spousesByPersonId.get(a.id)?.[0].note).toBe('first wife');
@@ -94,8 +109,16 @@ describe('buildAdjacencyLists', () => {
     const childB = createPerson({ id: 'c-b', birthOrder: 1, birthYear: 2005 });
     const pMap = toPersonsMap([parent, childA, childB] as Person[]);
     const rels = [
-      createRelationship({ type: RelationshipType.enum.biological_child, personAId: parent.id, personBId: childA.id }),
-      createRelationship({ type: RelationshipType.enum.biological_child, personAId: parent.id, personBId: childB.id }),
+      createRelationship({
+        type: RelationshipType.enum.biological_child,
+        personAId: parent.id,
+        personBId: childA.id,
+      }),
+      createRelationship({
+        type: RelationshipType.enum.biological_child,
+        personAId: parent.id,
+        personBId: childB.id,
+      }),
     ];
 
     const adj = buildAdjacencyLists(rels as Relationship[], pMap);
@@ -111,10 +134,22 @@ describe('buildAdjacencyLists', () => {
 describe('getFilteredTreeData', () => {
   const personsMap = toPersonsMap(mockPersons as Person[]);
   const adj = buildAdjacencyLists(mockRelationships as Relationship[], personsMap);
-  const noFilters = { hideDaughtersInLaw: false, hideSonsInLaw: false, hideDaughters: false, hideSons: false, hideMales: false, hideFemales: false };
+  const noFilters = {
+    hideDaughtersInLaw: false,
+    hideSonsInLaw: false,
+    hideDaughters: false,
+    hideSons: false,
+    hideMales: false,
+    hideFemales: false,
+  };
 
   it('returns person, spouses, and children for a given personId', () => {
-    const data = getFilteredTreeData({ personId: vanCongGoc.id, personsMap, adj, filters: noFilters });
+    const data = getFilteredTreeData({
+      personId: vanCongGoc.id,
+      personsMap,
+      adj,
+      filters: noFilters,
+    });
 
     expect(data.person.id).toBe(vanCongGoc.id);
     expect(data.spouses).toHaveLength(1);
@@ -123,43 +158,83 @@ describe('getFilteredTreeData', () => {
   });
 
   it('hides daughters-in-law when hideDaughtersInLaw is true', () => {
-    const data = getFilteredTreeData({ personId: vanCongGoc.id, personsMap, adj, filters: { ...noFilters, hideDaughtersInLaw: true } });
+    const data = getFilteredTreeData({
+      personId: vanCongGoc.id,
+      personsMap,
+      adj,
+      filters: { ...noFilters, hideDaughtersInLaw: true },
+    });
     expect(data.spouses.every((s) => s.person.gender !== Gender.enum.female)).toBe(true);
   });
 
   it('hides sons-in-law when hideSonsInLaw is true', () => {
-    const data = getFilteredTreeData({ personId: dinhThiMyDuyen.id, personsMap, adj, filters: { ...noFilters, hideSonsInLaw: true } });
+    const data = getFilteredTreeData({
+      personId: dinhThiMyDuyen.id,
+      personsMap,
+      adj,
+      filters: { ...noFilters, hideSonsInLaw: true },
+    });
     expect(data.spouses.every((s) => s.person.gender !== Gender.enum.male)).toBe(true);
   });
 
   it('hides daughters when hideDaughters is true', () => {
-    const data = getFilteredTreeData({ personId: vanCongGoc.id, personsMap, adj, filters: { ...noFilters, hideDaughters: true } });
+    const data = getFilteredTreeData({
+      personId: vanCongGoc.id,
+      personsMap,
+      adj,
+      filters: { ...noFilters, hideDaughters: true },
+    });
     expect(data.children.every((c) => c.gender !== Gender.enum.female)).toBe(true);
   });
 
   it('hides sons when hideSons is true', () => {
-    const data = getFilteredTreeData({ personId: vanCongGoc.id, personsMap, adj, filters: { ...noFilters, hideSons: true } });
+    const data = getFilteredTreeData({
+      personId: vanCongGoc.id,
+      personsMap,
+      adj,
+      filters: { ...noFilters, hideSons: true },
+    });
     expect(data.children.every((c) => c.gender !== Gender.enum.male)).toBe(true);
   });
 
   it('hides male spouses when hideMales is true', () => {
     // vanTriMinh is male, married to dinhThiMyDuyen (female)
-    const data = getFilteredTreeData({ personId: dinhThiMyDuyen.id, personsMap, adj, filters: { ...noFilters, hideMales: true } });
+    const data = getFilteredTreeData({
+      personId: dinhThiMyDuyen.id,
+      personsMap,
+      adj,
+      filters: { ...noFilters, hideMales: true },
+    });
     expect(data.spouses.every((s) => s.person.gender !== Gender.enum.male)).toBe(true);
   });
 
   it('hides female spouses when hideFemales is true', () => {
-    const data = getFilteredTreeData({ personId: vanCongGoc.id, personsMap, adj, filters: { ...noFilters, hideFemales: true } });
+    const data = getFilteredTreeData({
+      personId: vanCongGoc.id,
+      personsMap,
+      adj,
+      filters: { ...noFilters, hideFemales: true },
+    });
     expect(data.spouses.every((s) => s.person.gender !== Gender.enum.female)).toBe(true);
   });
 
   it('hides male children when hideMales is true', () => {
-    const data = getFilteredTreeData({ personId: vanCongGoc.id, personsMap, adj, filters: { ...noFilters, hideMales: true } });
+    const data = getFilteredTreeData({
+      personId: vanCongGoc.id,
+      personsMap,
+      adj,
+      filters: { ...noFilters, hideMales: true },
+    });
     expect(data.children.every((c) => c.gender !== Gender.enum.male)).toBe(true);
   });
 
   it('hides female children when hideFemales is true', () => {
-    const data = getFilteredTreeData({ personId: vanCongGoc.id, personsMap, adj, filters: { ...noFilters, hideFemales: true } });
+    const data = getFilteredTreeData({
+      personId: vanCongGoc.id,
+      personsMap,
+      adj,
+      filters: { ...noFilters, hideFemales: true },
+    });
     expect(data.children.every((c) => c.gender !== Gender.enum.female)).toBe(true);
   });
 
@@ -168,7 +243,12 @@ describe('getFilteredTreeData', () => {
   });
 
   it('returns empty children/spouses for a leaf node', () => {
-    const data = getFilteredTreeData({ personId: vanThiCam.id, personsMap, adj, filters: noFilters });
+    const data = getFilteredTreeData({
+      personId: vanThiCam.id,
+      personsMap,
+      adj,
+      filters: noFilters,
+    });
     expect(data.person.id).toBe(vanThiCam.id);
     expect(data.children).toHaveLength(0);
     expect(data.spouses).toHaveLength(0);

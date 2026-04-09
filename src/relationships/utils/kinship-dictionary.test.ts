@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { ancestorDepthTerm, descendantDepthTerm } from './kinship-dictionary';
 
 describe('ancestorDepthTerm', () => {

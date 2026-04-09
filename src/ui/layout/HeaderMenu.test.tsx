@@ -1,7 +1,9 @@
+import type { ReactNode } from 'react';
+
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
+
 import { t } from '../../../test/i18n';
 import HeaderMenu from './HeaderMenu';
 

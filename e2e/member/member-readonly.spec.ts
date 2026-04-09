@@ -1,5 +1,6 @@
-import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+
 import { SEED_DATA_PATH, type SeedData } from '../e2e-seed-data';
 import { waitForHydration } from '../fixtures';
 

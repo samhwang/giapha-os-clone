@@ -1,7 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { createPerson } from '../../../test/fixtures';
+
 import type { Person } from '../../members/types';
+
+import { createPerson } from '../../../test/fixtures';
 import { RelationshipType } from '../../relationships/types';
 import DashboardViews from './DashboardViews';
 
@@ -13,14 +15,36 @@ const { useDashboardStore } = await import('../store/dashboardStore');
 
 describe('DashboardViews', () => {
   const persons: Person[] = [
-    createPerson({ id: 'a', fullName: 'Grandparent', generation: 1, gender: 'male', isInLaw: false }),
+    createPerson({
+      id: 'a',
+      fullName: 'Grandparent',
+      generation: 1,
+      gender: 'male',
+      isInLaw: false,
+    }),
     createPerson({ id: 'b', fullName: 'Parent', generation: 2, gender: 'male', isInLaw: false }),
     createPerson({ id: 'c', fullName: 'Spouse', generation: 2, gender: 'female', isInLaw: true }),
   ];
 
   const relationships = [
-    { id: 'r1', type: RelationshipType.enum.biological_child, personAId: 'a', personBId: 'b', note: null, createdAt: new Date(), updatedAt: new Date() },
-    { id: 'r2', type: RelationshipType.enum.marriage, personAId: 'b', personBId: 'c', note: null, createdAt: new Date(), updatedAt: new Date() },
+    {
+      id: 'r1',
+      type: RelationshipType.enum.biological_child,
+      personAId: 'a',
+      personBId: 'b',
+      note: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    {
+      id: 'r2',
+      type: RelationshipType.enum.marriage,
+      personAId: 'b',
+      personBId: 'c',
+      note: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
   ];
 
   it('renders DashboardMemberList when view is list', () => {

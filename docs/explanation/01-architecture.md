@@ -91,13 +91,13 @@ This project has evolved significantly beyond being a direct clone. The original
 
 ### Architecture Changes
 
-| Aspect | Original | This Clone |
-|--------|----------|------------|
-| Framework | Next.js | TanStack Start |
-| Auth | Supabase Auth | Better Auth |
-| Database | Supabase (PostgreSQL) | Prisma + PostgreSQL |
-| File Storage | Supabase Storage | Local filesystem / S3-compatible |
-| Styling | CSS Modules + custom | Tailwind CSS v4 |
+| Aspect       | Original              | This Clone                       |
+| ------------ | --------------------- | -------------------------------- |
+| Framework    | Next.js               | TanStack Start                   |
+| Auth         | Supabase Auth         | Better Auth                      |
+| Database     | Supabase (PostgreSQL) | Prisma + PostgreSQL              |
+| File Storage | Supabase Storage      | Local filesystem / S3-compatible |
+| Styling      | CSS Modules + custom  | Tailwind CSS v4                  |
 
 ### Code Improvements
 
@@ -110,7 +110,7 @@ This project has evolved significantly beyond being a direct clone. The original
 
 ### Conventions
 
-- [Biome](https://biomejs.dev/) for linting/formatting (replacing ESLint + Prettier)
+- [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) + [Oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) for linting/formatting
 - Atomic commits with [Conventional Commits](https://www.conventionalcommits.org/)
 - Agent-based workflow with `.agents/` rules for consistent implementation patterns
 - Module-based project structure organized by domain functionality

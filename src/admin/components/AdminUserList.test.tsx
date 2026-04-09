@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { createUser } from '../../../test/fixtures';
 import { t } from '../../../test/i18n';
 import { queryWrapper as wrapper } from '../../../test/render-wrapper';
@@ -19,9 +20,24 @@ vi.mock('../server/user', () => ({
   createUser: (...args: unknown[]) => mockCreateUser(...args),
 }));
 
-const adminUser = createUser({ id: 'admin-1', email: 'admin@test.com', role: UserRole.enum.admin, isActive: true });
-const memberUser = createUser({ id: 'member-1', email: 'member@test.com', role: UserRole.enum.member, isActive: true });
-const inactiveUser = createUser({ id: 'inactive-1', email: 'inactive@test.com', role: UserRole.enum.member, isActive: false });
+const adminUser = createUser({
+  id: 'admin-1',
+  email: 'admin@test.com',
+  role: UserRole.enum.admin,
+  isActive: true,
+});
+const memberUser = createUser({
+  id: 'member-1',
+  email: 'member@test.com',
+  role: UserRole.enum.member,
+  isActive: true,
+});
+const inactiveUser = createUser({
+  id: 'inactive-1',
+  email: 'inactive@test.com',
+  role: UserRole.enum.member,
+  isActive: false,
+});
 
 describe('AdminUserList', () => {
   let confirmSpy: ReturnType<typeof vi.spyOn>;
@@ -39,18 +55,24 @@ describe('AdminUserList', () => {
   });
 
   it('renders user list with emails', () => {
-    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, { wrapper });
+    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, {
+      wrapper,
+    });
     expect(screen.getByText('admin@test.com')).toBeInTheDocument();
     expect(screen.getByText('member@test.com')).toBeInTheDocument();
   });
 
   it('shows "You" label for current user', () => {
-    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, { wrapper });
+    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, {
+      wrapper,
+    });
     expect(screen.getByText(new RegExp(t('admin.you'), 'i'))).toBeInTheDocument();
   });
 
   it('shows action controls for non-current users', () => {
-    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, { wrapper });
+    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, {
+      wrapper,
+    });
     // Role select dropdown should be present for non-current user
     const selects = screen.getAllByRole('combobox');
     expect(selects.length).toBeGreaterThan(0);
@@ -60,13 +82,22 @@ describe('AdminUserList', () => {
   });
 
   it('shows approve button for inactive users', () => {
-    render(<AdminUserList initialUsers={[adminUser, inactiveUser]} currentUserId="admin-1" />, { wrapper });
+    render(<AdminUserList initialUsers={[adminUser, inactiveUser]} currentUserId="admin-1" />, {
+      wrapper,
+    });
     expect(screen.getByRole('button', { name: new RegExp(`^${t('admin.approve')}$`, 'i') })).toBeInTheDocument();
   });
 
   it('shows role select with correct value for admin users', () => {
-    const otherAdmin = createUser({ id: 'admin-2', email: 'admin2@test.com', role: UserRole.enum.admin, isActive: true });
-    render(<AdminUserList initialUsers={[adminUser, otherAdmin]} currentUserId="admin-1" />, { wrapper });
+    const otherAdmin = createUser({
+      id: 'admin-2',
+      email: 'admin2@test.com',
+      role: UserRole.enum.admin,
+      isActive: true,
+    });
+    render(<AdminUserList initialUsers={[adminUser, otherAdmin]} currentUserId="admin-1" />, {
+      wrapper,
+    });
     const selects = screen.getAllByRole('combobox');
     // The role select for the other admin should have 'admin' selected
     const roleSelect = selects.find((s) => (s as HTMLSelectElement).value === 'admin');
@@ -92,7 +123,9 @@ describe('AdminUserList', () => {
   });
 
   it('changes role via select dropdown', async () => {
-    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, { wrapper });
+    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, {
+      wrapper,
+    });
 
     const selects = screen.getAllByRole('combobox');
     // Find the role select for the member user (value should be 'member')
@@ -103,31 +136,41 @@ describe('AdminUserList', () => {
     fireEvent.change(roleSelect, { target: { value: 'admin' } });
 
     await waitFor(() => {
-      expect(mockChangeRole).toHaveBeenCalledWith({ data: { userId: 'member-1', newRole: 'admin' } });
+      expect(mockChangeRole).toHaveBeenCalledWith({
+        data: { userId: 'member-1', newRole: 'admin' },
+      });
     });
     expect(screen.getByText(t('admin.roleUpdated'))).toBeInTheDocument();
   });
 
   it('locks active user', async () => {
     const user = userEvent.setup();
-    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, { wrapper });
+    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, {
+      wrapper,
+    });
 
     await user.click(screen.getByText(new RegExp(t('admin.lock'), 'i')));
 
     await waitFor(() => {
-      expect(mockToggleStatus).toHaveBeenCalledWith({ data: { userId: 'member-1', isActive: false } });
+      expect(mockToggleStatus).toHaveBeenCalledWith({
+        data: { userId: 'member-1', isActive: false },
+      });
     });
     expect(screen.getByText(t('admin.statusLocked'))).toBeInTheDocument();
   });
 
   it('approves inactive user', async () => {
     const user = userEvent.setup();
-    render(<AdminUserList initialUsers={[adminUser, inactiveUser]} currentUserId="admin-1" />, { wrapper });
+    render(<AdminUserList initialUsers={[adminUser, inactiveUser]} currentUserId="admin-1" />, {
+      wrapper,
+    });
 
     await user.click(screen.getByRole('button', { name: new RegExp(`^${t('admin.approve')}$`, 'i') }));
 
     await waitFor(() => {
-      expect(mockToggleStatus).toHaveBeenCalledWith({ data: { userId: 'inactive-1', isActive: true } });
+      expect(mockToggleStatus).toHaveBeenCalledWith({
+        data: { userId: 'inactive-1', isActive: true },
+      });
     });
     expect(screen.getByText(t('admin.statusApproved'))).toBeInTheDocument();
   });
@@ -135,7 +178,9 @@ describe('AdminUserList', () => {
   it('deletes user after confirm', async () => {
     confirmSpy.mockReturnValue(true);
     const user = userEvent.setup();
-    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, { wrapper });
+    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, {
+      wrapper,
+    });
 
     await user.click(screen.getByText(new RegExp(t('common.delete'), 'i')));
 
@@ -148,7 +193,9 @@ describe('AdminUserList', () => {
 
   it('does not delete on cancel', async () => {
     const user = userEvent.setup();
-    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, { wrapper });
+    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, {
+      wrapper,
+    });
 
     await user.click(screen.getByText(new RegExp(t('common.delete'), 'i')));
     expect(mockDeleteUser).not.toHaveBeenCalled();
@@ -172,7 +219,9 @@ describe('AdminUserList', () => {
 
   it('shows error notification on failure', async () => {
     mockChangeRole.mockRejectedValue(new Error('Role change failed'));
-    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, { wrapper });
+    render(<AdminUserList initialUsers={[adminUser, memberUser]} currentUserId="admin-1" />, {
+      wrapper,
+    });
 
     const selects = screen.getAllByRole('combobox');
     const roleSelect = selects.find((s) => (s as HTMLSelectElement).value === 'member');

@@ -1,3 +1,5 @@
+import type { PluginOption } from 'vite';
+
 import { cloudflare } from '@cloudflare/vite-plugin';
 import netlify from '@netlify/vite-plugin-tanstack-start';
 import tailwindcss from '@tailwindcss/vite';
@@ -5,7 +7,6 @@ import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import { nitro } from 'nitro/vite';
-import type { PluginOption } from 'vite';
 import { defineConfig } from 'vite';
 
 const SECURITY_HEADERS = {

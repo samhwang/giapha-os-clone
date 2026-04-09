@@ -1,7 +1,8 @@
 import type { RelationshipCreateManyInput, RelationshipUncheckedCreateInput } from '../../database/generated/prisma/models';
-import { getDbClient } from '../../database/lib/client';
 import type { DbClient } from '../../database/transaction';
 import type { RelationshipType } from '../types';
+
+import { getDbClient } from '../../database/lib/client';
 
 interface FindRelationshipByParticipantsInput {
   personAId: string;

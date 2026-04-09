@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { createPerson } from '../../../test/fixtures';
 import { t } from '../../../test/i18n';
 import { queryWrapper as wrapper } from '../../../test/render-wrapper';
@@ -84,7 +85,15 @@ describe('RelationshipManager', () => {
   });
 
   it('displays relationship target person name', async () => {
-    mockGetRelationshipsForPerson.mockResolvedValue([{ id: 'r1', type: RelationshipType.enum.marriage, personAId: 'p1', personBId: 'p2', note: null }]);
+    mockGetRelationshipsForPerson.mockResolvedValue([
+      {
+        id: 'r1',
+        type: RelationshipType.enum.marriage,
+        personAId: 'p1',
+        personBId: 'p2',
+        note: null,
+      },
+    ]);
     mockGetPersons.mockResolvedValue([personA, personB]);
 
     render(<RelationshipManager person={personA} />, { wrapper });
@@ -127,7 +136,15 @@ describe('RelationshipManager', () => {
 
   it('delete relationship calls deleteRelationship', async () => {
     confirmSpy.mockReturnValue(true);
-    mockGetRelationshipsForPerson.mockResolvedValue([{ id: 'r1', type: RelationshipType.enum.marriage, personAId: 'p1', personBId: 'p2', note: null }]);
+    mockGetRelationshipsForPerson.mockResolvedValue([
+      {
+        id: 'r1',
+        type: RelationshipType.enum.marriage,
+        personAId: 'p1',
+        personBId: 'p2',
+        note: null,
+      },
+    ]);
     mockGetPersons.mockResolvedValue([personA, personB]);
 
     const user = userEvent.setup();
@@ -145,7 +162,15 @@ describe('RelationshipManager', () => {
   });
 
   it('delete cancel does not call server', async () => {
-    mockGetRelationshipsForPerson.mockResolvedValue([{ id: 'r1', type: RelationshipType.enum.marriage, personAId: 'p1', personBId: 'p2', note: null }]);
+    mockGetRelationshipsForPerson.mockResolvedValue([
+      {
+        id: 'r1',
+        type: RelationshipType.enum.marriage,
+        personAId: 'p1',
+        personBId: 'p2',
+        note: null,
+      },
+    ]);
     mockGetPersons.mockResolvedValue([personA, personB]);
 
     const user = userEvent.setup();

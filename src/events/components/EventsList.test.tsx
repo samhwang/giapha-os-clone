@@ -1,9 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import type { Person } from '../../members/types';
+
 import { t } from '../../../test/i18n';
 import { queryWrapper as wrapper } from '../../../test/render-wrapper';
 import { useDashboardStore } from '../../dashboard/store/dashboardStore';
-import type { Person } from '../../members/types';
 import EventsList from './EventsList';
 
 function makePerson(overrides: Partial<Person> & { id: string; fullName: string }): Person {
@@ -43,7 +45,13 @@ describe('EventsList', () => {
   });
 
   const persons = [
-    makePerson({ id: 'p1', fullName: 'Nguyễn Văn A', birthYear: 1990, birthMonth: 3, birthDay: 14 }),
+    makePerson({
+      id: 'p1',
+      fullName: 'Nguyễn Văn A',
+      birthYear: 1990,
+      birthMonth: 3,
+      birthDay: 14,
+    }),
     makePerson({
       id: 'p2',
       fullName: 'Trần Thị B',

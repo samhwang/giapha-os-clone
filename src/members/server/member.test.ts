@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+
 import { ERRORS } from '../../lib/errors';
 import { uploadAvatar } from '../../lib/storage';
 import { countRelationshipsForPerson, createRelationship, deleteAllRelationships } from '../../relationships/repository/relationship';
@@ -100,7 +101,11 @@ describe('deleteMember (inner logic)', () => {
   it('should not delete a member with relationships', async () => {
     const personA = await createPerson({ fullName: 'Person A', gender: Gender.enum.male });
     const personB = await createPerson({ fullName: 'Person B', gender: Gender.enum.female });
-    await createRelationship({ type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id });
+    await createRelationship({
+      type: RelationshipType.enum.marriage,
+      personAId: personA.id,
+      personBId: personB.id,
+    });
 
     const relationshipCount = await countRelationshipsForPerson(personA.id);
 
@@ -116,7 +121,12 @@ describe('uploadPersonAvatar (inner logic)', () => {
   it('should upload avatar and update person', async () => {
     const person = await createPerson({ fullName: 'Avatar Test', gender: Gender.enum.male });
 
-    const key = await uploadAvatar({ buffer: Buffer.from('fake-image'), personId: person.id, filename: 'photo.jpg', contentType: 'image/jpeg' });
+    const key = await uploadAvatar({
+      buffer: Buffer.from('fake-image'),
+      personId: person.id,
+      filename: 'photo.jpg',
+      contentType: 'image/jpeg',
+    });
 
     const result = await updatePerson({ id: person.id, data: { avatarUrl: key } });
 
@@ -194,7 +204,11 @@ describe('deleteMember guards (wrapper logic)', () => {
   it('should throw MEMBER.HAS_RELATIONSHIPS when person has relationships', async () => {
     const personA = await createPerson({ fullName: 'Person A', gender: Gender.enum.male });
     const personB = await createPerson({ fullName: 'Person B', gender: Gender.enum.female });
-    await createRelationship({ type: RelationshipType.enum.marriage, personAId: personA.id, personBId: personB.id });
+    await createRelationship({
+      type: RelationshipType.enum.marriage,
+      personAId: personA.id,
+      personBId: personB.id,
+    });
 
     const relCount = await countRelationshipsForPerson(personA.id);
     expect(relCount).toBeGreaterThan(0);
@@ -213,7 +227,12 @@ describe('deleteMember guards (wrapper logic)', () => {
 
   it('should handle avatar URL during deletion (person has avatar)', async () => {
     const person = await createPerson({ fullName: 'Has Avatar', gender: Gender.enum.male });
-    const key = await uploadAvatar({ buffer: Buffer.from('fake'), personId: person.id, filename: 'photo.jpg', contentType: 'image/jpeg' });
+    const key = await uploadAvatar({
+      buffer: Buffer.from('fake'),
+      personId: person.id,
+      filename: 'photo.jpg',
+      contentType: 'image/jpeg',
+    });
     const updated = await updatePerson({ id: person.id, data: { avatarUrl: key } });
     expect(updated.avatarUrl).toBe(key);
 
@@ -276,7 +295,12 @@ describe('uploadPersonAvatar guards (wrapper logic)', () => {
 
   it('should delete existing avatar before replacement', async () => {
     const person = await createPerson({ fullName: 'Replace Avatar', gender: Gender.enum.male });
-    const oldKey = await uploadAvatar({ buffer: Buffer.from('old'), personId: person.id, filename: 'old.jpg', contentType: 'image/jpeg' });
+    const oldKey = await uploadAvatar({
+      buffer: Buffer.from('old'),
+      personId: person.id,
+      filename: 'old.jpg',
+      contentType: 'image/jpeg',
+    });
     await updatePerson({ id: person.id, data: { avatarUrl: oldKey } });
 
     // Verify old avatar exists
@@ -284,7 +308,12 @@ describe('uploadPersonAvatar guards (wrapper logic)', () => {
     expect(before?.avatarUrl).not.toBeNull();
 
     // Upload new avatar (replaces old)
-    const newKey = await uploadAvatar({ buffer: Buffer.from('new'), personId: person.id, filename: 'new.jpg', contentType: 'image/jpeg' });
+    const newKey = await uploadAvatar({
+      buffer: Buffer.from('new'),
+      personId: person.id,
+      filename: 'new.jpg',
+      contentType: 'image/jpeg',
+    });
     const after = await updatePerson({ id: person.id, data: { avatarUrl: newKey } });
     expect(after.avatarUrl).toBe(newKey);
   });
@@ -416,7 +445,10 @@ describe('createManyPersonDetailsPrivate', () => {
   it('should accept a single input object', async () => {
     const person = await createPerson({ fullName: 'A', gender: Gender.enum.male });
 
-    const result = await createManyPersonDetailsPrivate({ personId: person.id, phoneNumber: '111' });
+    const result = await createManyPersonDetailsPrivate({
+      personId: person.id,
+      phoneNumber: '111',
+    });
 
     expect(result.count).toBe(1);
   });

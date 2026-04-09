@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router';
+
 import { getPersonById } from '../../../members/server/member';
 
 export const Route = createFileRoute('/dashboard/members/$id')({

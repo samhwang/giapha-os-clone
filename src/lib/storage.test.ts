@@ -99,9 +99,14 @@ describe('uploadAvatar', () => {
 
   it('should reject files exceeding 2 MB', async () => {
     const oversizedBuffer = Buffer.alloc(2 * 1024 * 1024 + 1);
-    await expect(uploadAvatar({ buffer: oversizedBuffer, personId: 'p1', filename: 'big.jpg', contentType: 'image/jpeg' })).rejects.toThrow(
-      'Avatar exceeds maximum size of 2 MB'
-    );
+    await expect(
+      uploadAvatar({
+        buffer: oversizedBuffer,
+        personId: 'p1',
+        filename: 'big.jpg',
+        contentType: 'image/jpeg',
+      })
+    ).rejects.toThrow('Avatar exceeds maximum size of 2 MB');
   });
 
   it('should reject disallowed content types', async () => {
@@ -112,7 +117,12 @@ describe('uploadAvatar', () => {
   it('should accept all allowed image types', async () => {
     const buffer = Buffer.from('fake');
     for (const type of ['image/jpeg', 'image/png', 'image/webp', 'image/gif']) {
-      const key = await uploadAvatar({ buffer, personId: 'p1', filename: `img.${type.split('/')[1]}`, contentType: type });
+      const key = await uploadAvatar({
+        buffer,
+        personId: 'p1',
+        filename: `img.${type.split('/')[1]}`,
+        contentType: type,
+      });
       expect(key).toBeDefined();
     }
   });

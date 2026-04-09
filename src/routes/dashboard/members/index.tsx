@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
+
 import { UserRole } from '../../../auth/types';
 import DashboardViews from '../../../dashboard/components/DashboardViews';
 import ViewToggle from '../../../dashboard/components/ViewToggle';

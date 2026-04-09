@@ -1,6 +1,7 @@
 import type { CustomEventCreateInput, CustomEventCreateManyInput, CustomEventUpdateInput } from '../../database/generated/prisma/models';
-import { getDbClient } from '../../database/lib/client';
 import type { DbClient } from '../../database/transaction';
+
+import { getDbClient } from '../../database/lib/client';
 
 export function findAllCustomEvents(client: DbClient = getDbClient()) {
   return client.customEvent.findMany({ orderBy: { eventDate: 'asc' } });

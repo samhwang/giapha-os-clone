@@ -1,5 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+
 import { createPerson, createRelationship } from '../../../test/fixtures';
 import { t } from '../../../test/i18n';
 import { Gender } from '../../members/types';
@@ -46,7 +47,13 @@ describe('FamilyStats', () => {
     const pA = createPerson({ id: 'p1', gender: Gender.enum.male });
     const pB = createPerson({ id: 'p2', gender: Gender.enum.female });
     const persons = [pA, pB];
-    const relationships = [createRelationship({ personAId: 'p1', personBId: 'p2', type: RelationshipType.enum.marriage })];
+    const relationships = [
+      createRelationship({
+        personAId: 'p1',
+        personBId: 'p2',
+        type: RelationshipType.enum.marriage,
+      }),
+    ];
     render(<FamilyStats persons={persons} relationships={relationships} />);
     expect(screen.getByText(new RegExp(t('stats.genderRatio'), 'i'))).toBeInTheDocument();
   });
@@ -91,7 +98,13 @@ describe('FamilyStats', () => {
       createPerson({ id: 'p3', gender: Gender.enum.male }),
       createPerson({ id: 'p4', gender: Gender.enum.female }),
     ];
-    const relationships = [createRelationship({ personAId: 'p1', personBId: 'p2', type: RelationshipType.enum.marriage })];
+    const relationships = [
+      createRelationship({
+        personAId: 'p1',
+        personBId: 'p2',
+        type: RelationshipType.enum.marriage,
+      }),
+    ];
     render(<FamilyStats persons={persons} relationships={relationships} />);
 
     const marriedCard = screen.getByText(new RegExp(t('stats.married'), 'i')).closest('div') as HTMLElement;

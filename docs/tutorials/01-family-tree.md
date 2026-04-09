@@ -126,6 +126,7 @@ Back on the member detail page, the avatar now appears in the profile banner and
 ## What You Built
 
 You now have a working family tree with:
+
 - **4 members** across 3 generations
 - **3 relationships** (1 marriage, 2 biological child)
 - **4 visualization modes** to explore the same data

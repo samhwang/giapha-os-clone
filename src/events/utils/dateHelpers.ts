@@ -1,7 +1,9 @@
 import { Lunar, Solar } from 'lunar-javascript';
+
+import type { EventType } from '../types';
+
 import { getUserTimeZone, nowInTimeZone } from '../../lib/date';
 import { logger } from '../../lib/logger';
-import type { EventType } from '../types';
 
 interface FormatDisplayDateInput {
   year: number | null;

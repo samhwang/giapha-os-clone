@@ -1,8 +1,10 @@
 import { screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+
+import type { CustomEventRecord } from '../types';
+
 import { t } from '../../../test/i18n';
 import { renderWithProviders } from '../../../test/render-wrapper';
-import type { CustomEventRecord } from '../types';
 
 const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 

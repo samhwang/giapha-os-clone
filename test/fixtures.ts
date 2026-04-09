@@ -1,4 +1,5 @@
 import type { UserProfile } from '../src/admin/types';
+
 import { UserRole } from '../src/auth/types';
 import { Gender, type Person } from '../src/members/types';
 import { type Relationship, RelationshipType } from '../src/relationships/types';
@@ -254,31 +255,126 @@ export const mockPersons: Person[] = [
 
 export const mockRelationships: Relationship[] = [
   // Gen 1 marriage
-  createRelationship({ id: 'rel-001', type: RelationshipType.enum.marriage, personAId: vanCongGoc.id, personBId: binhThiMoc.id }),
+  createRelationship({
+    id: 'rel-001',
+    type: RelationshipType.enum.marriage,
+    personAId: vanCongGoc.id,
+    personBId: binhThiMoc.id,
+  }),
   // Gen 1 → Gen 2
-  createRelationship({ id: 'rel-002', type: RelationshipType.enum.biological_child, personAId: vanCongGoc.id, personBId: vanCongThuan.id }),
-  createRelationship({ id: 'rel-003', type: RelationshipType.enum.biological_child, personAId: binhThiMoc.id, personBId: vanCongThuan.id }),
-  createRelationship({ id: 'rel-004', type: RelationshipType.enum.biological_child, personAId: vanCongGoc.id, personBId: vanThiBinh.id }),
-  createRelationship({ id: 'rel-005', type: RelationshipType.enum.biological_child, personAId: binhThiMoc.id, personBId: vanThiBinh.id }),
-  createRelationship({ id: 'rel-006', type: RelationshipType.enum.biological_child, personAId: vanCongGoc.id, personBId: vanCongVien.id }),
-  createRelationship({ id: 'rel-007', type: RelationshipType.enum.biological_child, personAId: binhThiMoc.id, personBId: vanCongVien.id }),
+  createRelationship({
+    id: 'rel-002',
+    type: RelationshipType.enum.biological_child,
+    personAId: vanCongGoc.id,
+    personBId: vanCongThuan.id,
+  }),
+  createRelationship({
+    id: 'rel-003',
+    type: RelationshipType.enum.biological_child,
+    personAId: binhThiMoc.id,
+    personBId: vanCongThuan.id,
+  }),
+  createRelationship({
+    id: 'rel-004',
+    type: RelationshipType.enum.biological_child,
+    personAId: vanCongGoc.id,
+    personBId: vanThiBinh.id,
+  }),
+  createRelationship({
+    id: 'rel-005',
+    type: RelationshipType.enum.biological_child,
+    personAId: binhThiMoc.id,
+    personBId: vanThiBinh.id,
+  }),
+  createRelationship({
+    id: 'rel-006',
+    type: RelationshipType.enum.biological_child,
+    personAId: vanCongGoc.id,
+    personBId: vanCongVien.id,
+  }),
+  createRelationship({
+    id: 'rel-007',
+    type: RelationshipType.enum.biological_child,
+    personAId: binhThiMoc.id,
+    personBId: vanCongVien.id,
+  }),
   // Gen 2 marriages
-  createRelationship({ id: 'rel-008', type: RelationshipType.enum.marriage, personAId: vanCongThuan.id, personBId: camThiDiu.id }),
-  createRelationship({ id: 'rel-009', type: RelationshipType.enum.marriage, personAId: vanCongVien.id, personBId: tanThiKheo.id }),
+  createRelationship({
+    id: 'rel-008',
+    type: RelationshipType.enum.marriage,
+    personAId: vanCongThuan.id,
+    personBId: camThiDiu.id,
+  }),
+  createRelationship({
+    id: 'rel-009',
+    type: RelationshipType.enum.marriage,
+    personAId: vanCongVien.id,
+    personBId: tanThiKheo.id,
+  }),
   // Gen 2 → Gen 3
-  createRelationship({ id: 'rel-010', type: RelationshipType.enum.biological_child, personAId: vanCongThuan.id, personBId: vanCongTri.id }),
-  createRelationship({ id: 'rel-011', type: RelationshipType.enum.biological_child, personAId: camThiDiu.id, personBId: vanCongTri.id }),
-  createRelationship({ id: 'rel-012', type: RelationshipType.enum.biological_child, personAId: vanCongThuan.id, personBId: vanThiCam.id }),
-  createRelationship({ id: 'rel-013', type: RelationshipType.enum.biological_child, personAId: camThiDiu.id, personBId: vanThiCam.id }),
-  createRelationship({ id: 'rel-014', type: RelationshipType.enum.biological_child, personAId: vanCongThuan.id, personBId: vanCongMoc.id }),
-  createRelationship({ id: 'rel-015', type: RelationshipType.enum.biological_child, personAId: camThiDiu.id, personBId: vanCongMoc.id }),
+  createRelationship({
+    id: 'rel-010',
+    type: RelationshipType.enum.biological_child,
+    personAId: vanCongThuan.id,
+    personBId: vanCongTri.id,
+  }),
+  createRelationship({
+    id: 'rel-011',
+    type: RelationshipType.enum.biological_child,
+    personAId: camThiDiu.id,
+    personBId: vanCongTri.id,
+  }),
+  createRelationship({
+    id: 'rel-012',
+    type: RelationshipType.enum.biological_child,
+    personAId: vanCongThuan.id,
+    personBId: vanThiCam.id,
+  }),
+  createRelationship({
+    id: 'rel-013',
+    type: RelationshipType.enum.biological_child,
+    personAId: camThiDiu.id,
+    personBId: vanThiCam.id,
+  }),
+  createRelationship({
+    id: 'rel-014',
+    type: RelationshipType.enum.biological_child,
+    personAId: vanCongThuan.id,
+    personBId: vanCongMoc.id,
+  }),
+  createRelationship({
+    id: 'rel-015',
+    type: RelationshipType.enum.biological_child,
+    personAId: camThiDiu.id,
+    personBId: vanCongMoc.id,
+  }),
   // Gen 3 marriage
-  createRelationship({ id: 'rel-016', type: RelationshipType.enum.marriage, personAId: vanCongTri.id, personBId: ngoThiDiuHien.id }),
+  createRelationship({
+    id: 'rel-016',
+    type: RelationshipType.enum.marriage,
+    personAId: vanCongTri.id,
+    personBId: ngoThiDiuHien.id,
+  }),
   // Gen 3 → Gen 4
-  createRelationship({ id: 'rel-017', type: RelationshipType.enum.biological_child, personAId: vanCongTri.id, personBId: vanTriMinh.id }),
-  createRelationship({ id: 'rel-018', type: RelationshipType.enum.biological_child, personAId: ngoThiDiuHien.id, personBId: vanTriMinh.id }),
+  createRelationship({
+    id: 'rel-017',
+    type: RelationshipType.enum.biological_child,
+    personAId: vanCongTri.id,
+    personBId: vanTriMinh.id,
+  }),
+  createRelationship({
+    id: 'rel-018',
+    type: RelationshipType.enum.biological_child,
+    personAId: ngoThiDiuHien.id,
+    personBId: vanTriMinh.id,
+  }),
   // Gen 4 marriage
-  createRelationship({ id: 'rel-019', type: RelationshipType.enum.marriage, personAId: vanTriMinh.id, personBId: dinhThiMyDuyen.id }),
+  createRelationship({
+    id: 'rel-019',
+    type: RelationshipType.enum.marriage,
+    personAId: vanTriMinh.id,
+    personBId: dinhThiMyDuyen.id,
+  }),
 ];
 
 // ============================================================

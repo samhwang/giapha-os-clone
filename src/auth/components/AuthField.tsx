@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+
 import { INPUT_BASE } from '../../ui/common/Input';
 import { cn } from '../../ui/utils/cn';
 import { useFieldContext } from '../hooks/useAuthForm';
@@ -17,7 +18,7 @@ export default function AuthField({ label, type, leftIcon, placeholder }: AuthFi
       <label htmlFor={field.name} className="text-label ml-1">
         {label}
       </label>
-      <div className="relative flex items-center group">
+      <div className="group relative flex items-center">
         {leftIcon}
         <input
           id={field.name}
@@ -25,7 +26,7 @@ export default function AuthField({ label, type, leftIcon, placeholder }: AuthFi
           type={type}
           autoComplete={field.name}
           required
-          className={cn(INPUT_BASE, 'bg-white/50 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] pl-11 pr-4 py-3.5')}
+          className={cn(INPUT_BASE, 'bg-white/50 py-3.5 pr-4 pl-11 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)]')}
           placeholder={placeholder}
           value={field.state.value}
           onChange={(e) => field.handleChange(e.target.value)}

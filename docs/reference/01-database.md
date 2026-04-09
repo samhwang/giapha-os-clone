@@ -235,10 +235,10 @@ await withTransaction(async (tx) => {
 
 ### Available Repositories
 
-| File | Entity | Operations |
-|------|--------|------------|
-| `members/server/repository/person.ts` | Person, PersonDetailsPrivate | create, update, find, delete, batch update, upsert private details |
-| `relationships/server/repository/relationship.ts` | Relationship | create, delete, find by participants, find for person, count |
-| `events/server/repository/custom-event.ts` | CustomEvent | create, update, delete, find all |
-| `admin/server/repository/user.ts` | User | count, find by email, find all, update, delete |
-| `database/transaction.ts` | — | `withTransaction` helper, `DbClient` type |
+| File                                              | Entity                       | Operations                                                         |
+| ------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------ |
+| `members/server/repository/person.ts`             | Person, PersonDetailsPrivate | create, update, find, delete, batch update, upsert private details |
+| `relationships/server/repository/relationship.ts` | Relationship                 | create, delete, find by participants, find for person, count       |
+| `events/server/repository/custom-event.ts`        | CustomEvent                  | create, update, delete, find all                                   |
+| `admin/server/repository/user.ts`                 | User                         | count, find by email, find all, update, delete                     |
+| `database/transaction.ts`                         | —                            | `withTransaction` helper, `DbClient` type                          |

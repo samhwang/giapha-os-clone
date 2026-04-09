@@ -41,13 +41,13 @@ The app calculates family relationships dynamically using Vietnamese kinship ter
 
 Vietnamese kinship terms are based on generation difference, gender, and lineage side (paternal vs. maternal):
 
-| Generation Difference | Male | Female |
-|----------------------|------|--------|
-| -2 | ông nội / ông ngoại | bà nội / bà ngoại |
-| -1 | cha / chú / bác | mẹ / cô / dì |
-| 0 | anh / em | chị / em |
-| +1 | con | con |
-| +2 | cháu | cháu |
+| Generation Difference | Male                | Female            |
+| --------------------- | ------------------- | ----------------- |
+| -2                    | ông nội / ông ngoại | bà nội / bà ngoại |
+| -1                    | cha / chú / bác     | mẹ / cô / dì      |
+| 0                     | anh / em            | chị / em          |
+| +1                    | con                 | con               |
+| +2                    | cháu                | cháu              |
 
 ### Kinship Lookup
 
@@ -92,11 +92,11 @@ Translation files are stored in `src/i18n/lib/translations/` (`vi.json` and `en.
 
 Three roles control access to different parts of the application:
 
-| Role | Permissions |
-|------|-------------|
-| `admin` | Full access, manage users, approve accounts, data import/export, view private details |
-| `editor` | Add/edit family members (no access to private details) |
-| `member` | View family tree, limited editing |
+| Role     | Permissions                                                                           |
+| -------- | ------------------------------------------------------------------------------------- |
+| `admin`  | Full access, manage users, approve accounts, data import/export, view private details |
+| `editor` | Add/edit family members (no access to private details)                                |
+| `member` | View family tree, limited editing                                                     |
 
 Role checks are enforced via server function middleware on the backend and `beforeLoad` route guards on the frontend.
 
@@ -115,4 +115,5 @@ Export family data in multiple formats at `/dashboard/data`:
 ### Import
 
 Import from:
+
 - **JSON** — Restore from backup

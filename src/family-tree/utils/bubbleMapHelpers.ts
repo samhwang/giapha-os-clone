@@ -1,6 +1,8 @@
 import type * as d3 from 'd3';
+
 import type { Person } from '../../members/types';
 import type { AdjacencyLists } from './treeHelpers';
+
 import { getFilteredTreeData } from './treeHelpers';
 
 export interface GraphNode extends d3.SimulationNodeDatum {

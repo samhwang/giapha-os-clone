@@ -1,12 +1,14 @@
 import { AlignLeft, Cake, CalendarDays, Clock, Flower, MapPin, Plus, Star } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDashboardStore } from '../../dashboard/store/dashboardStore';
+
 import type { Person } from '../../members/types';
+import type { CustomEventRecord, EventType, FamilyEvent } from '../types';
+
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
 import { Badge } from '../../ui/common/Badge';
 import { EmptyState } from '../../ui/common/EmptyState';
 import { cn } from '../../ui/utils/cn';
-import type { CustomEventRecord, EventType, FamilyEvent } from '../types';
 import { formatEventDateLabel, getTodayLunar, getZodiacSign } from '../utils/dateHelpers';
 import { computeEvents } from '../utils/eventHelpers';
 import CustomEventModal from './CustomEventModal';
@@ -100,23 +102,23 @@ function EventCard({ event, index, onCustomEventClick }: EventCardProps) {
       type="button"
       onClick={handleClick}
       className={cn(
-        'w-full text-left flex items-center gap-4 p-4 rounded-2xl border transition-all hover:shadow-md group animate-[fade-in-up_0.35s_ease-out_forwards]',
+        'group flex w-full animate-[fade-in-up_0.35s_ease-out_forwards] items-center gap-4 rounded-2xl border p-4 text-left transition-all hover:shadow-md',
         borderClass
       )}
       style={{ animationDelay: `${index * 0.04}s`, animationFillMode: 'backwards' }}
     >
-      <div className={cn('shrink-0 size-11 flex items-center justify-center rounded-xl', iconBg)}>
+      <div className={cn('flex size-11 shrink-0 items-center justify-center rounded-xl', iconBg)}>
         {isCustom ? <Star className="size-5" /> : isBirthday ? <Cake className="size-5" /> : <Flower className="size-5" />}
       </div>
 
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <p className="font-semibold text-stone-800 truncate group-hover:text-amber-700 transition-colors">{event.personName}</p>
+          <p className="truncate font-semibold text-stone-800 transition-colors group-hover:text-amber-700">{event.personName}</p>
           {/* custom: indigo zodiac badge — one-off color not warranting a Badge variant */}
           {isBirthday && event.originDay && event.originMonth && getZodiacSign(event.originDay, event.originMonth) && (
             <Badge
               size="sm"
-              className="shrink-0 text-2xs font-sans font-bold text-indigo-700 bg-indigo-50 border-indigo-200/60 tracking-wider whitespace-nowrap"
+              className="shrink-0 border-indigo-200/60 bg-indigo-50 font-sans text-2xs font-bold tracking-wider whitespace-nowrap text-indigo-700"
             >
               {getZodiacSign(event.originDay, event.originMonth)}
             </Badge>
@@ -127,22 +129,22 @@ function EventCard({ event, index, onCustomEventClick }: EventCardProps) {
             </Badge>
           )}
         </div>
-        <div className="flex flex-col gap-1 mt-0.5">
-          <p className="text-sm text-stone-500 flex items-center gap-1.5 leading-tight">
+        <div className="mt-0.5 flex flex-col gap-1">
+          <p className="flex items-center gap-1.5 text-sm leading-tight text-stone-500">
             <CalendarDays className="size-3.5 shrink-0" />
             {isCustom ? t('events.customEvent') : isBirthday ? t('events.birthday') : t('events.deathAnniversary')} —{' '}
             <span className="font-medium text-stone-600">{dateLabel}</span>
             {event.originYear && !isCustom && <span className="text-stone-400">({event.originYear})</span>}
           </p>
           {event.location && (
-            <p className="text-sm text-stone-500 flex items-center gap-1.5 leading-tight">
+            <p className="flex items-center gap-1.5 text-sm leading-tight text-stone-500">
               <MapPin className="size-3.5 shrink-0" />
               <span className="truncate">{event.location}</span>
             </p>
           )}
           {event.content && (
-            <p className="text-sm text-stone-500 flex items-start gap-1.5 leading-tight mt-0.5">
-              <AlignLeft className="size-3.5 shrink-0 mt-0.5" />
+            <p className="mt-0.5 flex items-start gap-1.5 text-sm leading-tight text-stone-500">
+              <AlignLeft className="mt-0.5 size-3.5 shrink-0" />
               <span className="line-clamp-2">{event.content}</span>
             </p>
           )}
@@ -151,7 +153,7 @@ function EventCard({ event, index, onCustomEventClick }: EventCardProps) {
 
       <div
         className={cn(
-          'shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold',
+          'flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold',
           isPast && 'bg-stone-100 text-stone-400',
           isToday && 'bg-amber-400 text-white',
           isSoon && 'bg-red-100 text-red-600',
@@ -229,13 +231,13 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
   return (
     <div className="space-y-5">
       {/* Summary banner with lunar date */}
-      <div className="bg-linear-to-r from-amber-50 to-orange-50/40 border border-amber-200/60 rounded-2xl p-4 sm:p-5 animate-[fade-in-up_0.3s_ease-out_forwards]">
+      <div className="animate-[fade-in-up_0.3s_ease-out_forwards] rounded-2xl border border-amber-200/60 bg-linear-to-r from-amber-50 to-orange-50/40 p-4 sm:p-5">
         <p className="text-sm font-medium text-amber-900">{lunarToday.solarStr}</p>
-        <p className="text-xs text-amber-700/70 mt-0.5">
+        <p className="mt-0.5 text-xs text-amber-700/70">
           {t('events.lunarDate')}: {lunarToday.lunarDayStr}, {lunarToday.lunarYear}
         </p>
         {(todayCount > 0 || soonCount > 0) && (
-          <div className="flex items-center gap-2 mt-2 pt-2 border-t border-amber-200/40">
+          <div className="mt-2 flex items-center gap-2 border-t border-amber-200/40 pt-2">
             <span className="text-lg">🎊</span>
             <p className="text-sm font-medium text-amber-800">
               {todayCount > 0 && <span className="font-bold">{t('events.todayCount', { count: todayCount })}</span>}
@@ -247,17 +249,17 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
       </div>
 
       {/* Filter tabs + add button */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex flex-wrap gap-2">
         {tabs.map((tab) => (
           <button
             type="button"
             key={tab.key}
             onClick={() => setFilter(tab.key)}
             className={cn(
-              'px-4 py-2 rounded-xl text-sm font-semibold transition-all',
+              'rounded-xl px-4 py-2 text-sm font-semibold transition-all',
               filter === tab.key
                 ? 'bg-amber-500 text-white shadow-sm'
-                : 'bg-surface-elevated text-stone-600 border border-border-default hover:border-amber-200 hover:text-amber-700'
+                : 'border border-border-default bg-surface-elevated text-stone-600 hover:border-amber-200 hover:text-amber-700'
             )}
           >
             {tab.label}
@@ -270,24 +272,24 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
               setEditingEvent(null);
               setModalOpen(true);
             }}
-            className="ml-auto flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-purple-700 bg-purple-50 border border-purple-200/60 hover:bg-purple-100 transition-colors"
+            className="ml-auto flex items-center gap-1.5 rounded-xl border border-purple-200/60 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition-colors hover:bg-purple-100"
           >
             <Plus className="size-4" />
             {t('events.addCustomEvent')}
           </button>
         )}
-        <span className={cn('text-xs text-stone-400 self-center', !isAdmin && 'ml-auto')}>{t('events.yearCount', { count: filtered.length })}</span>
+        <span className={cn('self-center text-xs text-stone-400', !isAdmin && 'ml-auto')}>{t('events.yearCount', { count: filtered.length })}</span>
       </div>
 
       {/* Deceased birthday toggle — hidden on past tab */}
       {filter !== 'past' && (
         <div className="flex px-1">
-          <label className="flex items-center gap-2.5 text-sm font-medium text-stone-600 cursor-pointer hover:text-stone-900 transition-colors select-none">
+          <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-stone-600 transition-colors select-none hover:text-stone-900">
             <input
               type="checkbox"
               checked={showDeceasedBirthdays}
               onChange={(e) => setShowDeceasedBirthdays(e.target.checked)}
-              className="rounded-md border-stone-300 text-amber-500 focus:ring-amber-500 size-4 transition-all"
+              className="size-4 rounded-md border-stone-300 text-amber-500 transition-all focus:ring-amber-500"
             />
             {t('events.showDeceasedBirthdays')}
           </label>
@@ -308,7 +310,7 @@ export default function EventsList({ persons, customEvents = [], isAdmin = false
         <button
           type="button"
           onClick={() => setShowCount((n) => n + 20)}
-          className="w-full py-3 text-sm font-semibold text-stone-500 hover:text-amber-600 transition-colors"
+          className="w-full py-3 text-sm font-semibold text-stone-500 transition-colors hover:text-amber-600"
         >
           {t('events.showMore', { count: upcoming.length - showCount })}
         </button>

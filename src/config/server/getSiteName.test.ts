@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { ClientRuntimeEnv, clientEnv } from '../lib/env.server';
 
 describe('getSiteName (env parsing logic)', () => {

@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import * as z from 'zod';
+
 import { isEditorMiddleware } from '../../auth/server/middleware';
 import { ERRORS } from '../../lib/errors';
 import {
@@ -29,7 +30,11 @@ export const createRelationship = createServerFn({ method: 'POST' })
       throw new Error(ERRORS.RELATIONSHIP.SELF_RELATION);
     }
 
-    const existing = await findRelationshipByParticipants({ personAId: data.personAId, personBId: data.personBId, type: data.type });
+    const existing = await findRelationshipByParticipants({
+      personAId: data.personAId,
+      personBId: data.personBId,
+      type: data.type,
+    });
     if (existing) {
       throw new Error(ERRORS.RELATIONSHIP.DUPLICATE);
     }

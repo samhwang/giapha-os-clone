@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { createPerson, createRelationship } from '../../../test/fixtures';
+
 import type { Person } from '../../members/types';
-import { Gender } from '../../members/types';
 import type { Relationship } from '../../relationships/types';
+
+import { createPerson, createRelationship } from '../../../test/fixtures';
+import { Gender } from '../../members/types';
 import { RelationshipType } from '../../relationships/types';
 import { exportToGedcom, parseGedcom } from './gedcom';
 
@@ -18,7 +20,14 @@ describe('exportToGedcom', () => {
   });
 
   it('exports individual with name, sex, and birth date', () => {
-    const person = makePerson({ id: 'abc-123', fullName: 'Vạn Công Trí', gender: Gender.enum.male, birthYear: 1958, birthMonth: 4, birthDay: 12 });
+    const person = makePerson({
+      id: 'abc-123',
+      fullName: 'Vạn Công Trí',
+      gender: Gender.enum.male,
+      birthYear: 1958,
+      birthMonth: 4,
+      birthDay: 12,
+    });
     const result = exportToGedcom({ persons: [person], relationships: [] });
 
     expect(result).toContain('0 @I1@ INDI');
@@ -58,7 +67,11 @@ describe('exportToGedcom', () => {
   it('exports marriage as FAM record with HUSB and WIFE', () => {
     const husband = makePerson({ id: 'h-1', gender: Gender.enum.male });
     const wife = makePerson({ id: 'w-1', gender: Gender.enum.female });
-    const marriage = makeRel({ type: RelationshipType.enum.marriage, personAId: husband.id, personBId: wife.id });
+    const marriage = makeRel({
+      type: RelationshipType.enum.marriage,
+      personAId: husband.id,
+      personBId: wife.id,
+    });
 
     const result = exportToGedcom({ persons: [husband, wife], relationships: [marriage] });
     expect(result).toContain('1 HUSB @I1@');
@@ -68,7 +81,11 @@ describe('exportToGedcom', () => {
   it('exports children in FAM record', () => {
     const parent = makePerson({ id: 'p-1', gender: Gender.enum.male });
     const child = makePerson({ id: 'c-1' });
-    const rel = makeRel({ type: RelationshipType.enum.biological_child, personAId: parent.id, personBId: child.id });
+    const rel = makeRel({
+      type: RelationshipType.enum.biological_child,
+      personAId: parent.id,
+      personBId: child.id,
+    });
 
     const result = exportToGedcom({ persons: [parent, child], relationships: [rel] });
     expect(result).toContain('1 CHIL @I2@');
@@ -78,10 +95,21 @@ describe('exportToGedcom', () => {
     const husband = makePerson({ id: 'h-1', gender: Gender.enum.male });
     const wife = makePerson({ id: 'w-1', gender: Gender.enum.female });
     const child = makePerson({ id: 'c-1', gender: Gender.enum.male });
-    const marriage = makeRel({ type: RelationshipType.enum.marriage, personAId: husband.id, personBId: wife.id });
-    const childRel = makeRel({ type: RelationshipType.enum.biological_child, personAId: husband.id, personBId: child.id });
+    const marriage = makeRel({
+      type: RelationshipType.enum.marriage,
+      personAId: husband.id,
+      personBId: wife.id,
+    });
+    const childRel = makeRel({
+      type: RelationshipType.enum.biological_child,
+      personAId: husband.id,
+      personBId: child.id,
+    });
 
-    const result = exportToGedcom({ persons: [husband, wife, child], relationships: [marriage, childRel] });
+    const result = exportToGedcom({
+      persons: [husband, wife, child],
+      relationships: [marriage, childRel],
+    });
 
     // Husband should have FAMS
     const husbandBlock = result.split('0 @I1@ INDI')[1].split('0 @I2@')[0];

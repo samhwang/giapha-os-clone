@@ -1,10 +1,12 @@
 import { ArrowUpDown, Filter, Plus, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import type { Relationship } from '../../relationships/types';
+
 import PersonCard from '../../members/components/PersonCard';
 import { Gender, type Person } from '../../members/types';
 import { buildFamilyGroupedSort, FALLBACK_BIRTH_YEAR } from '../../members/utils/familyGrouping';
-import type { Relationship } from '../../relationships/types';
 import { Button } from '../../ui/common/Button';
 import { Card } from '../../ui/common/Card';
 import { EmptyState } from '../../ui/common/EmptyState';
@@ -104,24 +106,24 @@ export default function DashboardMemberList({ initialPersons, relationships = []
 
   return (
     <>
-      <div className="mb-8 relative">
-        <Card className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 sm:p-5 relative z-10 w-full">
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto flex-1">
-            <div className="relative flex-1 max-w-sm group">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
+      <div className="relative mb-8">
+        <Card className="relative z-10 flex w-full flex-col items-start justify-between gap-4 p-4 sm:flex-row sm:items-center sm:p-5">
+          <div className="flex w-full flex-1 flex-col gap-4 sm:w-auto sm:flex-row">
+            <div className="group relative max-w-sm flex-1">
+              <Search className="absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-stone-400 transition-colors group-focus-within:text-amber-500" />
               <input
                 type="text"
                 placeholder={t('member.searchPlaceholder')}
-                className="bg-white/90 text-stone-900 w-full pl-10 pr-4 py-2.5 rounded-xl border border-border-strong shadow-sm placeholder-stone-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                className="w-full rounded-xl border border-border-strong bg-white/90 py-2.5 pr-4 pl-10 text-stone-900 placeholder-stone-400 shadow-sm transition-all focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto items-center">
+            <div className="flex w-full flex-col items-center gap-2 sm:w-auto sm:flex-row sm:gap-3">
               <div className="relative w-full sm:w-auto">
-                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none" />
+                <Filter className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-stone-400" />
                 <select
-                  className="appearance-none bg-white/90 text-stone-700 w-full sm:w-40 pl-9 pr-8 py-2.5 rounded-xl border border-border-strong shadow-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 hover:border-amber-300 font-medium text-sm transition-all focus:bg-white"
+                  className="w-full appearance-none rounded-xl border border-border-strong bg-white/90 py-2.5 pr-8 pl-9 text-sm font-medium text-stone-700 shadow-sm transition-all hover:border-amber-300 focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:outline-none sm:w-40"
                   value={filterOption}
                   onChange={(e) => setFilterOption(e.target.value)}
                 >
@@ -133,7 +135,7 @@ export default function DashboardMemberList({ initialPersons, relationships = []
                   <option value="deceased">{t('member.filterDeceased')}</option>
                   <option value="first_child">{t('member.filterFirstborn')}</option>
                 </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
                   <svg className="size-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label={t('member.openMenu')}>
                     <title>{t('member.openMenu')}</title>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
@@ -142,9 +144,9 @@ export default function DashboardMemberList({ initialPersons, relationships = []
               </div>
 
               <div className="relative w-full sm:w-auto">
-                <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none" />
+                <ArrowUpDown className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-stone-400" />
                 <select
-                  className="appearance-none bg-white/90 text-stone-700 w-full sm:w-52 pl-9 pr-8 py-2.5 rounded-xl border border-border-strong shadow-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 hover:border-amber-300 font-medium text-sm transition-all focus:bg-white"
+                  className="w-full appearance-none rounded-xl border border-border-strong bg-white/90 py-2.5 pr-8 pl-9 text-sm font-medium text-stone-700 shadow-sm transition-all hover:border-amber-300 focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:outline-none sm:w-52"
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
                 >
@@ -157,7 +159,7 @@ export default function DashboardMemberList({ initialPersons, relationships = []
                   <option value="generation_asc">{t('member.sortGenerationAsc')}</option>
                   <option value="generation_desc">{t('member.sortGenerationDesc')}</option>
                 </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
                   <svg className="size-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label={t('member.openMenu')}>
                     <title>{t('member.openMenu')}</title>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />

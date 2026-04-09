@@ -2,7 +2,9 @@ import { useMutation } from '@tanstack/react-query';
 import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, Loader2, RefreshCw, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import type { Person } from '../../members/types';
+
 import { type Relationship, RelationshipType } from '../../relationships/types';
 import { Button } from '../../ui/common/Button';
 import { cn } from '../../ui/utils/cn';
@@ -285,7 +287,7 @@ export default function LineageManager({ persons, relationships }: LineageManage
       });
 
       setUpdates(result);
-    } catch (_err) {
+    } catch {
       // Compute errors are local (not server), keep as-is
       applyMutation.reset();
     } finally {
@@ -304,8 +306,8 @@ export default function LineageManager({ persons, relationships }: LineageManage
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-3">
-        <Button variant="ghost" onClick={handleCompute} disabled={computing || applying} className="bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl">
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <Button variant="ghost" onClick={handleCompute} disabled={computing || applying} className="rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200">
           {computing ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
           {computing ? t('lineage.calculating') : t('lineage.calculate')}
         </Button>
@@ -319,14 +321,14 @@ export default function LineageManager({ persons, relationships }: LineageManage
       </div>
 
       {error && (
-        <div className="flex items-start gap-3 bg-red-50 text-red-700 border border-red-200 rounded-xl p-4 text-sm font-medium animate-[fade-in-up_0.3s_ease-out_forwards]">
-          <AlertCircle className="size-5 shrink-0 mt-0.5" />
+        <div className="flex animate-[fade-in-up_0.3s_ease-out_forwards] items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-700">
+          <AlertCircle className="mt-0.5 size-5 shrink-0" />
           {error}
         </div>
       )}
 
       {applied && (
-        <div className="flex items-center gap-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl p-4 text-sm font-semibold animate-[fade-in-up_0.3s_ease-out_forwards]">
+        <div className="flex animate-[fade-in-up_0.3s_ease-out_forwards] items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-700">
           <CheckCircle2 className="size-5 shrink-0" />
           {t('lineage.applySuccess', { count: changedCount })}
         </div>
@@ -335,19 +337,19 @@ export default function LineageManager({ persons, relationships }: LineageManage
       {updates && (
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <p className="text-sm text-stone-500 font-medium">{t('lineage.changesSummary', { changed: changedCount, total: updates.length })}</p>
+            <p className="text-sm font-medium text-stone-500">{t('lineage.changesSummary', { changed: changedCount, total: updates.length })}</p>
           </div>
 
-          <div className="rounded-2xl border border-border-strong overflow-hidden shadow-sm">
+          <div className="overflow-hidden rounded-2xl border border-border-strong shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-stone-50 border-b border-border-strong">
-                    <th className="text-left px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.nameHeader')}</th>
-                    <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.generationHeader')}</th>
-                    <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.birthOrderHeader')}</th>
-                    <th className="text-center px-4 py-3 font-semibold text-stone-600 whitespace-nowrap">{t('lineage.inLawHeader')}</th>
-                    <th className="text-center px-4 py-3 font-semibold text-stone-600">{t('lineage.statusHeader')}</th>
+                  <tr className="border-b border-border-strong bg-stone-50">
+                    <th className="px-4 py-3 text-left font-semibold whitespace-nowrap text-stone-600">{t('lineage.nameHeader')}</th>
+                    <th className="px-4 py-3 text-center font-semibold whitespace-nowrap text-stone-600">{t('lineage.generationHeader')}</th>
+                    <th className="px-4 py-3 text-center font-semibold whitespace-nowrap text-stone-600">{t('lineage.birthOrderHeader')}</th>
+                    <th className="px-4 py-3 text-center font-semibold whitespace-nowrap text-stone-600">{t('lineage.inLawHeader')}</th>
+                    <th className="px-4 py-3 text-center font-semibold text-stone-600">{t('lineage.statusHeader')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -355,7 +357,7 @@ export default function LineageManager({ persons, relationships }: LineageManage
                     <tr
                       key={u.id}
                       className={cn(
-                        'border-b border-stone-100 last:border-0 transition-colors',
+                        'border-b border-stone-100 transition-colors last:border-0',
                         u.changed && 'bg-amber-50/40',
                         i % 2 === 0 && !u.changed && 'bg-white',
                         !u.changed && i % 2 !== 0 && 'bg-stone-50/30'
@@ -385,11 +387,11 @@ export default function LineageManager({ persons, relationships }: LineageManage
                       </td>
                       <td className="px-4 py-3 text-center">
                         {u.changed ? (
-                          <span className="inline-block px-2 py-0.5 rounded-full text-xs-plus font-bold bg-amber-100 text-amber-700 border border-amber-200/60">
+                          <span className="inline-block rounded-full border border-amber-200/60 bg-amber-100 px-2 py-0.5 text-xs-plus font-bold text-amber-700">
                             {t('common.update')}
                           </span>
                         ) : (
-                          <span className="inline-block px-2 py-0.5 rounded-full text-xs-plus font-bold bg-stone-100 text-stone-400 border border-border-default">
+                          <span className="inline-block rounded-full border border-border-default bg-stone-100 px-2 py-0.5 text-xs-plus font-bold text-stone-400">
                             {t('common.unchanged')}
                           </span>
                         )}
@@ -405,7 +407,7 @@ export default function LineageManager({ persons, relationships }: LineageManage
             <button
               type="button"
               onClick={() => setShowAll(!showAll)}
-              className="mt-3 flex items-center gap-1.5 text-sm font-medium text-stone-500 hover:text-amber-700 transition-colors mx-auto"
+              className="mx-auto mt-3 flex items-center gap-1.5 text-sm font-medium text-stone-500 transition-colors hover:text-amber-700"
             >
               {showAll ? (
                 <>

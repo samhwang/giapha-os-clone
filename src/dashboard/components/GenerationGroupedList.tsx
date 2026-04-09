@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
-import PersonCard from '../../members/components/PersonCard';
+
 import type { Person } from '../../members/types';
+
+import PersonCard from '../../members/components/PersonCard';
 import { buildCoupleGroups, type PersonWithFamily } from '../../members/utils/familyGrouping';
 import { Card } from '../../ui/common/Card';
 
@@ -67,7 +69,7 @@ function GenerationSection({
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-stone-200" />
-        <h3 className="text-lg font-serif font-bold text-amber-800 bg-amber-50 px-4 py-1.5 rounded-full border border-amber-200/50 shadow-sm">
+        <h3 className="rounded-full border border-amber-200/50 bg-amber-50 px-4 py-1.5 font-serif text-lg font-bold text-amber-800 shadow-sm">
           {gen === '0' ? t('member.unknownGeneration') : t('stats.generationLabel', { gen })}
         </h3>
         <div className="h-px flex-1 bg-stone-200" />
@@ -118,13 +120,13 @@ function FamilyGroup({
 
   return (
     // custom: larger radius for family group containers
-    <Card variant="elevated" className="relative p-5 sm:p-8 rounded-[2.5rem]">
+    <Card variant="elevated" className="relative rounded-[2.5rem] p-5 sm:p-8">
       {label && (
-        <div className="absolute -top-3 left-8 px-3 py-0.5 bg-stone-100 text-xs font-bold text-stone-600 tracking-widest border border-stone-300 rounded-full shadow-sm z-20">
+        <div className="absolute -top-3 left-8 z-20 rounded-full border border-stone-300 bg-stone-100 px-3 py-0.5 text-xs font-bold tracking-widest text-stone-600 shadow-sm">
           {label}
         </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+      <div className="grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
         {coupleGroups.map((group) => (
           <CoupleGroup key={group[0]?.id ?? 'empty'} group={group} />
         ))}
@@ -142,16 +144,16 @@ function CoupleGroup({ group }: { group: Person[] }) {
     <div className={`relative ${colSpanClass}`}>
       {isCouple && (
         <>
-          <div className="hidden sm:block absolute -inset-3 lg:-inset-4 bg-amber-50/70 border border-amber-200/80 rounded-4xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] z-0" />
-          <div className="sm:hidden absolute -inset-2 bg-amber-50/70 border border-amber-200/80 rounded-3xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] z-0" />
+          <div className="absolute -inset-3 z-0 hidden rounded-4xl border border-amber-200/80 bg-amber-50/70 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] sm:block lg:-inset-4" />
+          <div className="absolute -inset-2 z-0 rounded-3xl border border-amber-200/80 bg-amber-50/70 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] sm:hidden" />
         </>
       )}
-      <div className={`relative z-10 grid grid-cols-1 ${innerGridClass} gap-y-6 lg:gap-x-6 h-full`}>
+      <div className={`relative z-10 grid grid-cols-1 ${innerGridClass} h-full gap-y-6 lg:gap-x-6`}>
         {group.map((person, pIdx) => (
-          <div key={person.id} className="relative h-full flex flex-col">
+          <div key={person.id} className="relative flex h-full flex-col">
             <PersonCard person={person} />
-            {isCouple && pIdx < group.length - 1 && <div className="hidden md:block absolute top-1/2 -right-3 w-6 h-0.5 bg-amber-300 z-10 translate-x-1/2" />}
-            {isCouple && pIdx < group.length - 1 && <div className="md:hidden absolute -bottom-6 left-1/2 w-0.5 h-6 bg-amber-300 z-10 -translate-x-1/2" />}
+            {isCouple && pIdx < group.length - 1 && <div className="absolute top-1/2 -right-3 z-10 hidden h-0.5 w-6 translate-x-1/2 bg-amber-300 md:block" />}
+            {isCouple && pIdx < group.length - 1 && <div className="absolute -bottom-6 left-1/2 z-10 h-6 w-0.5 -translate-x-1/2 bg-amber-300 md:hidden" />}
           </div>
         ))}
       </div>

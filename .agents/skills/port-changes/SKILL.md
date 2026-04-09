@@ -91,15 +91,15 @@ Organize changes into logical feature groups. For each group, note:
 
 Use the directory mapping:
 
-| Base repo (Next.js) | Fork (TanStack Start) |
-| --- | --- |
-| `app/` | `src/routes/` |
-| `app/actions/` | `src/*/server/` |
-| `components/` | `src/*/components/` |
-| `utils/` | `src/*/utils/` or `src/lib/` |
-| `types/` | `src/*/types/` (co-located) |
-| `hooks/` | `src/*/hooks/` (co-located) |
-| `app/globals.css` | `src/styles.css` |
+| Base repo (Next.js) | Fork (TanStack Start)        |
+| ------------------- | ---------------------------- |
+| `app/`              | `src/routes/`                |
+| `app/actions/`      | `src/*/server/`              |
+| `components/`       | `src/*/components/`          |
+| `utils/`            | `src/*/utils/` or `src/lib/` |
+| `types/`            | `src/*/types/` (co-located)  |
+| `hooks/`            | `src/*/hooks/` (co-located)  |
+| `app/globals.css`   | `src/styles.css`             |
 
 ### Step 6: Produce Integration Plan
 

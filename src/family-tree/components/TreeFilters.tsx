@@ -1,8 +1,10 @@
 import { Filter } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { cn } from '../../ui/utils/cn';
+
 import type { TreeFilterOptions } from '../utils/treeHelpers';
+
+import { cn } from '../../ui/utils/cn';
 
 const INITIAL_FILTERS: TreeFilterOptions = {
   hideDaughtersInLaw: false,
@@ -56,10 +58,10 @@ export default function TreeFilters({ filters, onToggle }: TreeFiltersProps) {
         type="button"
         onClick={() => setShowFilters(!showFilters)}
         className={cn(
-          'flex items-center gap-2 px-4 h-10 rounded-full font-semibold text-sm shadow-sm border transition-all',
+          'flex h-10 items-center gap-2 rounded-full border px-4 text-sm font-semibold shadow-sm transition-all',
           showFilters
-            ? 'bg-amber-100/90 text-amber-800 border-amber-200'
-            : 'bg-surface-elevated text-stone-600 border-border-default hover:bg-white hover:text-stone-900 hover:shadow-md backdrop-blur-md'
+            ? 'border-amber-200 bg-amber-100/90 text-amber-800'
+            : 'border-border-default bg-surface-elevated text-stone-600 backdrop-blur-md hover:bg-white hover:text-stone-900 hover:shadow-md'
         )}
       >
         <Filter className="size-4" />
@@ -68,14 +70,14 @@ export default function TreeFilters({ filters, onToggle }: TreeFiltersProps) {
 
       {/* custom: dropdown panel — not a semantic card, needs panel-specific positioning and shadow */}
       {showFilters && (
-        <div className="absolute top-full right-0 mt-2 w-52 bg-surface-panel backdrop-blur-xl shadow-xl border border-border-default rounded-card p-4 flex flex-col gap-3 z-50 animate-[fade-in_0.15s_ease-out_forwards]">
+        <div className="absolute top-full right-0 z-50 mt-2 flex w-52 animate-[fade-in_0.15s_ease-out_forwards] flex-col gap-3 rounded-card border border-border-default bg-surface-panel p-4 shadow-xl backdrop-blur-xl">
           {filterOptions.map(({ key, label }) => (
-            <label key={key} className="flex items-center gap-2.5 text-sm font-medium text-stone-700 cursor-pointer select-none">
+            <label key={key} className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-stone-700 select-none">
               <input
                 type="checkbox"
                 checked={filters[key]}
                 onChange={() => onToggle(key)}
-                className="rounded text-amber-600 focus:ring-amber-500 cursor-pointer size-4"
+                className="size-4 cursor-pointer rounded text-amber-600 focus:ring-amber-500"
               />
               {label}
             </label>

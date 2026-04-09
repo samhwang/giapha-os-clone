@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { t } from '../../../test/i18n';
 
 const mockSignUp = vi.fn();
@@ -18,7 +19,14 @@ vi.mock('../hooks/useAuthForm', () => ({
     capturedOnSubmit = opts.onSubmit;
     return {
       state: { isSubmitting: false },
-      handleSubmit: () => capturedOnSubmit({ value: { email: 'new@example.com', password: 'password123', confirmPassword: 'password123' } }),
+      handleSubmit: () =>
+        capturedOnSubmit({
+          value: {
+            email: 'new@example.com',
+            password: 'password123',
+            confirmPassword: 'password123',
+          },
+        }),
       AppField: ({ children, name }: { children: (field: unknown) => React.ReactNode; name: string }) => {
         const mockField = {
           AuthField: ({ label, type, placeholder }: { label: string; type: string; placeholder: string }) => (
@@ -68,7 +76,11 @@ describe('RegisterForm', () => {
 
     await user.click(screen.getByRole('button', { name: new RegExp(t('auth.createAccountButton'), 'i') }));
 
-    expect(mockSignUp).toHaveBeenCalledWith({ email: 'new@example.com', password: 'password123', name: 'new@example.com' });
+    expect(mockSignUp).toHaveBeenCalledWith({
+      email: 'new@example.com',
+      password: 'password123',
+      name: 'new@example.com',
+    });
     expect(mockOnSuccess).toHaveBeenCalled();
   });
 
