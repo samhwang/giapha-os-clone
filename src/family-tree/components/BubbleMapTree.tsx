@@ -85,20 +85,8 @@ export default function BubbleMapTree({ personsMap, relationships, roots }: Bubb
         .on("zoom", (event) => {
           g.attr("transform", event.transform);
         });
-      svg.call(
-        zoom as unknown as (
-          selection: d3.Selection<SVGSVGElement, unknown, null, undefined>,
-        ) => void,
-      );
-      svg.call(
-        zoom.translateTo as unknown as (
-          selection: d3.Selection<SVGSVGElement, unknown, null, undefined>,
-          x: number,
-          y: number,
-        ) => void,
-        width / 2,
-        height / 2,
-      );
+      svg.call(zoom);
+      svg.call(zoom.translateTo, width / 2, height / 2);
 
       // Force simulation
       const simulation = d3
