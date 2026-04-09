@@ -23,7 +23,8 @@ Lookup tables for tech stack, project structure, routes, environment variables, 
 | Icons              | [lucide-react](https://lucide.dev/)                                | latest  |
 | Unit Testing       | [Vitest](https://vitest.dev/)                                      | 4.x     |
 | E2E Testing        | [Playwright](https://playwright.dev/)                              | latest  |
-| Linting/Formatting | [Biome](https://biomejs.dev/)                                      | latest  |
+| Linting            | [Oxlint](https://oxc.rs/docs/guide/usage/linter.html)              | latest  |
+| Formatting         | [Oxfmt](https://oxc.rs/docs/guide/usage/formatter.html)            | latest  |
 
 ## Project Structure
 
@@ -261,11 +262,11 @@ To add dark mode or custom themes, override the `:root` variables under a `[data
 
 ### Code Quality
 
-| Command              | Description                                                |
-| -------------------- | ---------------------------------------------------------- |
-| `pnpm run lint`      | [Biome](https://biomejs.dev/) linting and formatting check |
-| `pnpm run lint:fix`  | Auto-fix linting issues                                    |
-| `pnpm run typecheck` | TypeScript type checking                                   |
+| Command              | Description                                 |
+| -------------------- | ------------------------------------------- |
+| `pnpm run lint`      | Oxlint + Oxfmt linting and formatting check |
+| `pnpm run lint:fix`  | Auto-fix linting issues                     |
+| `pnpm run typecheck` | TypeScript type checking                    |
 
 ### Infrastructure
 
@@ -296,14 +297,14 @@ Triggered on pull requests to master branch. Runs the full CI pipeline.
 
 Reusable workflow called by both pull requests and the build workflow. Runs all validation checks in parallel:
 
-| Task             | Command                     | Description                        |
-| ---------------- | --------------------------- | ---------------------------------- |
-| ci               | `pnpm run lint`             | Biome linting and formatting check |
-| typecheck        | `pnpm run typecheck`        | TypeScript type checking           |
-| test:ui          | `pnpm run test:ui`          | React component unit tests         |
-| test:server      | `pnpm run test:server`      | Server function tests              |
-| test:integration | `pnpm run test:integration` | Integration tests                  |
-| e2e              | `pnpm run test:e2e`         | Playwright end-to-end tests        |
+| Task             | Command                     | Description                                 |
+| ---------------- | --------------------------- | ------------------------------------------- |
+| ci               | `pnpm run lint`             | Oxlint + Oxfmt linting and formatting check |
+| typecheck        | `pnpm run typecheck`        | TypeScript type checking                    |
+| test:ui          | `pnpm run test:ui`          | React component unit tests                  |
+| test:server      | `pnpm run test:server`      | Server function tests                       |
+| test:integration | `pnpm run test:integration` | Integration tests                           |
+| e2e              | `pnpm run test:e2e`         | Playwright end-to-end tests                 |
 
 All tasks except e2e run in parallel using a matrix strategy.
 

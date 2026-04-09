@@ -101,7 +101,7 @@ src/
 
 Load these rules when working on relevant domains:
 
-- **[commands.md](.agents/rules/commands.md)** - Development workflow commands (Docker, pnpm, Prisma, Biome, Vitest)
+- **[commands.md](.agents/rules/commands.md)** - Development workflow commands (Docker, pnpm, Prisma, Oxlint, Oxfmt, Vitest)
 - **[code-style.md](.agents/rules/code-style.md)** - Code formatting, TypeScript conventions, naming, file organization
 - **[patterns.md](.agents/rules/patterns.md)** - TanStack Start/Router, Prisma, Better Auth, Tailwind, storage patterns
 - **[testing.md](.agents/rules/testing.md)** - Vitest, React Testing Library, TDD/BDD, coverage targets
@@ -135,7 +135,7 @@ Load a skill when working on specific task types:
 - **CVA** (component variants)
 - **unstorage (local fs / S3-compatible)** (file uploads via `STORAGE_PROVIDER`)
 - **Tailwind CSS v4** (styling/animation)
-- **Biome** (linting + formatting)
+- **Oxlint + Oxfmt** (linting + formatting)
 - **Vitest** + React Testing Library (unit/component tests)
 - **Playwright** (E2E tests)
 
@@ -147,7 +147,7 @@ pnpm run dev                  # Development server
 pnpm run build                # Production build
 pnpm run test                 # Run tests (watch mode)
 pnpm run test:run             # Run tests (single run)
-pnpm run lint                 # Check code quality (Biome)
+pnpm run lint                 # Check code quality (Oxlint + Oxfmt)
 pnpm run lint:fix             # Auto-fix linting issues
 pnpm run typecheck            # TypeScript type checking
 pnpm run prisma:studio        # Database GUI
@@ -183,7 +183,7 @@ pnpm run lint          # Lint check
 pnpm run test:run      # Run all tests
 ```
 
-Pre-commit hooks run lint-staged (Biome) automatically.
+Pre-commit hooks run lint-staged (Oxlint + Oxfmt) automatically.
 
 ### Full Quality Check
 
@@ -220,6 +220,6 @@ pnpm run prisma:generate
 - **Self-hosted**: Docker Compose for PostgreSQL + unstorage (local fs / S3-compatible)
 - **Vietnamese genealogy**: Kinship terms, lunar calendar, family tree visualization
 - **Core modules**: `src/relationships/utils/` (kinship), `src/events/utils/` (dates, events), `src/members/server/` (member logic), `src/admin/server/` (admin logic)
-- **Code quality**: Biome for linting/formatting, TypeScript strict mode, comprehensive tests
+- **Code quality**: Oxlint + Oxfmt for linting/formatting, TypeScript strict mode, comprehensive tests
 
 When in doubt, follow existing patterns in the codebase and refer to the relevant rules in `.agents/rules/`.

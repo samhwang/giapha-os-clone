@@ -445,7 +445,7 @@ pnpm run build
 
 ### Pre-commit Hooks
 
-The project uses lint-staged with [Biome](https://biomejs.dev/) to run lint checks on staged files before commit.
+The project uses lint-staged with [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) and [Oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) to run lint and format checks on staged files before commit.
 
 ### Pre-push Hook
 

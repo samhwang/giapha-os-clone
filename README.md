@@ -124,5 +124,6 @@ See the [Deployment Guide](./docs/how-to/02-deployment.md) for detailed instruct
 │   ├── lib/              # Shared utilities (storage, dates, errors, logging, query keys)
 │   └── i18n/             # i18next translations
 ├── docker-compose.yml    # PostgreSQL
-└── biome.json            # Linter/formatter config
+├── .oxlintrc.json        # Linter config (Oxlint)
+└── .oxfmtrc.json         # Formatter config (Oxfmt)
 ```
