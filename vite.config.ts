@@ -15,23 +15,39 @@ const SECURITY_HEADERS = {
   'Referrer-Policy': 'strict-origin-when-cross-origin',
 };
 
-type DeploymentEnv = 'node' | 'vercel' | 'netlify' | 'cloudflare';
+type DeploymentEnv = 'bun' | 'vercel' | 'netlify' | 'cloudflare';
 
 function getDeploymentPlugins(): PluginOption[] {
-  const env = (process.env.DEPLOYMENT_ENV ?? 'node') as DeploymentEnv;
+  const env = (process.env.DEPLOYMENT_ENV ?? 'bun') as DeploymentEnv;
 
   switch (env) {
     case 'netlify':
       return [netlify()];
     case 'cloudflare':
       return [cloudflare({ viteEnvironment: { name: 'ssr' } })];
-    default:
+    case 'vercel':
       return [
         nitro({
-          preset: env === 'vercel' ? 'vercel' : 'node-server',
+          preset: env,
+          routeRules: { '/**': { headers: SECURITY_HEADERS } },
+          vercel: {
+            functions: {
+              runtime: 'bun1.x',
+            },
+          },
+        }),
+      ];
+    case 'bun':
+      return [
+        nitro({
+          preset: env,
           routeRules: { '/**': { headers: SECURITY_HEADERS } },
         }),
       ];
+    default:
+      throw new Error('ERROR: Unsupported deployment environment', {
+        cause: { env },
+      });
   }
 }
 
