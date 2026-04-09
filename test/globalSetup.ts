@@ -7,7 +7,7 @@ import path from 'node:path';
 function pushSchema(databaseUrl: string) {
   console.log('Running Prisma DB Push');
   process.env.DATABASE_URL = databaseUrl;
-  childProcess.execSync(`pnpm run prisma:migrate:dev --url "${databaseUrl}"`, {
+  childProcess.execSync(`bun run prisma:migrate:dev --url "${databaseUrl}"`, {
     env: { ...process.env, DATABASE_URL: databaseUrl },
   });
   console.log('Prisma DB Push complete');
