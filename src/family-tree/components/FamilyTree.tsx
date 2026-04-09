@@ -1,17 +1,19 @@
-import { Crosshair, Minus, Plus } from 'lucide-react';
-import { Fragment, type ReactNode, useCallback, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useDashboardStore } from '../../dashboard/store/dashboardStore';
-import { Gender, type Person } from '../../members/types';
-import type { Relationship } from '../../relationships/types';
-import { cn } from '../../ui/utils/cn';
-import { useAutoCollapse } from '../hooks/useAutoCollapse';
-import { usePanZoom } from '../hooks/usePanZoom';
-import { buildAdjacencyLists, getFilteredTreeData } from '../utils/treeHelpers';
-import FamilyNodeCard from './FamilyNodeCard';
-import styles from './family-tree.module.css';
-import TreeFilters, { useTreeFilters } from './TreeFilters';
-import ZoomControls from './ZoomControls';
+import { Crosshair, Minus, Plus } from "lucide-react";
+import { Fragment, type ReactNode, useCallback, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+
+import type { Relationship } from "../../relationships/types";
+
+import { useDashboardStore } from "../../dashboard/store/dashboardStore";
+import { Gender, type Person } from "../../members/types";
+import { cn } from "../../ui/utils/cn";
+import { useAutoCollapse } from "../hooks/useAutoCollapse";
+import { usePanZoom } from "../hooks/usePanZoom";
+import { buildAdjacencyLists, getFilteredTreeData } from "../utils/treeHelpers";
+import styles from "./family-tree.module.css";
+import FamilyNodeCard from "./FamilyNodeCard";
+import TreeFilters, { useTreeFilters } from "./TreeFilters";
+import ZoomControls from "./ZoomControls";
 
 const DEFAULT_AUTO_COLLAPSE_LEVEL = 2;
 
@@ -33,25 +35,38 @@ export default function FamilyTree({ personsMap, relationships, roots }: FamilyT
     scale,
     isPressed,
     isDragging,
-    handlers: { handleMouseDown, handleMouseMove, handleMouseUpOrLeave, handleClickCapture, handleZoomIn, handleZoomOut, handleResetZoom },
+    handlers: {
+      handleMouseDown,
+      handleMouseMove,
+      handleMouseUpOrLeave,
+      handleClickCapture,
+      handleZoomIn,
+      handleZoomOut,
+      handleResetZoom,
+    },
   } = usePanZoom(containerRef);
 
   const centerTree = useCallback(() => {
     if (!containerRef.current) return;
     const el = containerRef.current;
-    const inner = el.querySelector('#export-container');
+    const inner = el.querySelector("#export-container");
     if (inner) {
       const innerRect = inner.getBoundingClientRect();
       const containerRect = el.getBoundingClientRect();
-      el.scrollLeft += innerRect.left + innerRect.width / 2 - (containerRect.left + containerRect.width / 2);
+      el.scrollLeft +=
+        innerRect.left + innerRect.width / 2 - (containerRect.left + containerRect.width / 2);
     } else {
       el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
     }
   }, []);
 
-  const adj = useMemo(() => buildAdjacencyLists(relationships, personsMap), [relationships, personsMap]);
+  const adj = useMemo(
+    () => buildAdjacencyLists(relationships, personsMap),
+    [relationships, personsMap],
+  );
 
-  const getTreeData = (personId: string) => getFilteredTreeData({ personId, personsMap, adj, filters });
+  const getTreeData = (personId: string) =>
+    getFilteredTreeData({ personId, personsMap, adj, filters });
 
   const { collapsedNodes, toggleCollapse } = useAutoCollapse({
     roots,
@@ -77,19 +92,24 @@ export default function FamilyTree({ personsMap, relationships, roots }: FamilyT
         <div className="node-container inline-flex flex-col items-center">
           <div
             className={cn(
-              'flex relative z-10 items-stretch h-full',
-              showAvatar && 'bg-white rounded-2xl shadow-md border border-border-strong transition-opacity'
+              "relative z-10 flex h-full items-stretch",
+              showAvatar &&
+                "rounded-2xl border border-border-strong bg-white shadow-md transition-opacity",
             )}
           >
             <FamilyNodeCard person={data.person} />
             {data.spouses.length > 0 &&
               data.spouses.map((spouseData, idx) => (
-                <div key={spouseData.person.id} className="flex relative">
+                <div key={spouseData.person.id} className="relative flex">
                   <FamilyNodeCard
                     isRingVisible={idx === 0}
                     isPlusVisible={idx > 0}
                     person={spouseData.person}
-                    role={spouseData.person.gender === Gender.enum.male ? t('tree.husband') : t('tree.wife')}
+                    role={
+                      spouseData.person.gender === Gender.enum.male
+                        ? t("tree.husband")
+                        : t("tree.wife")
+                    }
                     note={spouseData.note}
                   />
                 </div>
@@ -103,10 +123,10 @@ export default function FamilyTree({ personsMap, relationships, roots }: FamilyT
                   e.stopPropagation();
                   toggleCollapse(personId);
                 }}
-                className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white border border-border-strong rounded-full size-6 flex items-center justify-center shadow-md z-20 text-stone-500 hover:text-amber-600 hover:border-amber-300 transition-colors cursor-pointer"
-                title={isCollapsed ? t('tree.expand') : t('tree.collapse')}
+                className="absolute -bottom-3 left-1/2 z-20 flex size-6 -translate-x-1/2 cursor-pointer items-center justify-center rounded-full border border-border-strong bg-white text-stone-500 shadow-md transition-colors hover:border-amber-300 hover:text-amber-600"
+                title={isCollapsed ? t("tree.expand") : t("tree.collapse")}
               >
-                {isCollapsed ? <Plus className="w-3.5 h-3.5" /> : <Minus className="w-3.5 h-3.5" />}
+                {isCollapsed ? <Plus className="h-3.5 w-3.5" /> : <Minus className="h-3.5 w-3.5" />}
               </button>
             )}
           </div>
@@ -123,27 +143,36 @@ export default function FamilyTree({ personsMap, relationships, roots }: FamilyT
     );
   };
 
-  if (roots.length === 0) return <div className="text-center p-10 text-stone-500">{t('tree.noData')}</div>;
+  if (roots.length === 0)
+    return <div className="p-10 text-center text-stone-500">{t("tree.noData")}</div>;
 
   return (
     <section aria-label="Family tree" className="relative w-full">
       <div className="absolute top-3 right-3 z-20 flex items-center gap-2">
         <TreeFilters filters={filters} onToggle={toggle} />
-        <ZoomControls scale={scale} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onResetZoom={handleResetZoom} />
+        <ZoomControls
+          scale={scale}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onResetZoom={handleResetZoom}
+        />
         <button
           type="button"
           onClick={centerTree}
-          className="flex items-center justify-center size-10 rounded-full bg-surface-elevated backdrop-blur-md shadow-sm border border-border-default text-stone-600 hover:bg-white hover:text-stone-900 hover:shadow-md transition-all"
-          title={t('tree.center')}
+          className="flex size-10 items-center justify-center rounded-full border border-border-default bg-surface-elevated text-stone-600 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:text-stone-900 hover:shadow-md"
+          title={t("tree.center")}
         >
           <Crosshair className="size-4" />
         </button>
       </div>
 
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: drag-to-pan container */}
+      {/* oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- drag-to-pan container */}
       <div
         ref={containerRef}
-        className={cn('w-full overflow-auto bg-stone-50', isPressed ? 'cursor-grabbing' : 'cursor-grab')}
+        className={cn(
+          "w-full overflow-auto bg-stone-50",
+          isPressed ? "cursor-grabbing" : "cursor-grab",
+        )}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUpOrLeave}
@@ -153,8 +182,13 @@ export default function FamilyTree({ personsMap, relationships, roots }: FamilyT
       >
         <div
           id="export-container"
-          className={cn('w-max min-w-full mx-auto p-4', styles.tree, 'transition-all duration-fast', isDragging && 'opacity-90')}
-          style={{ transform: `scale(${scale})`, transformOrigin: 'top center' }}
+          className={cn(
+            "mx-auto w-max min-w-full p-4",
+            styles.tree,
+            "transition-all duration-fast",
+            isDragging && "opacity-90",
+          )}
+          style={{ transform: `scale(${scale})`, transformOrigin: "top center" }}
         >
           <ul>
             {roots.map((root) => (
