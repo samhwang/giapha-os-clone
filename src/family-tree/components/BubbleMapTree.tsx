@@ -86,6 +86,7 @@ export default function BubbleMapTree({ personsMap, relationships, roots }: Bubb
           g.attr("transform", event.transform);
         });
       svg.call(zoom);
+      // oxlint-disable-next-line typescript-eslint/unbound-method -- d3 zoom API binds via svg.call()
       svg.call(zoom.translateTo, width / 2, height / 2);
 
       // Force simulation

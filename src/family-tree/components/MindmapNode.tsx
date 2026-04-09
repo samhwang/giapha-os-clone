@@ -119,7 +119,7 @@ export const MindmapNode = memo(function MindmapNode({
           )}
         </div>
 
-        {/* oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- can't use <button> because spouse <button> elements are nested inside */}
+        {/* oxlint-disable jsx-a11y/prefer-tag-over-role -- can't use <button> because spouse <button> elements are nested inside */}
         <div
           role="button"
           tabIndex={0}

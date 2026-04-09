@@ -24,7 +24,7 @@ export function useAutoCollapse({
 }: UseAutoCollapseOptions) {
   const [collapsedNodes, setCollapsedNodes] = useState<Set<string>>(new Set());
 
-  // oxlint-disable-next-line react-hooks/exhaustive-deps -- filters/adj are derived from personsMap/relationships
+  /* oxlint-disable react-hooks/exhaustive-deps -- filters/adj are derived from personsMap/relationships */
   useEffect(() => {
     const autoCollapsed = new Set<string>();
 
@@ -56,6 +56,7 @@ export function useAutoCollapse({
       return () => cancelAnimationFrame(raf);
     }
   }, [roots, personsMap, autoCollapseLevel]);
+  /* oxlint-enable react-hooks/exhaustive-deps */
 
   const toggleCollapse = useCallback((personId: string) => {
     setCollapsedNodes((prev) => {
