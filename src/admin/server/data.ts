@@ -1,8 +1,15 @@
-import { createServerFn } from '@tanstack/react-start';
-import * as z from 'zod';
-import { isAdminMiddleware } from '../../auth/server/middleware';
-import { withTransaction } from '../../database/transaction';
-import { createManyCustomEvents, deleteAllCustomEvents, findAllCustomEvents } from '../../events/repository/custom-event';
+import { createServerFn } from "@tanstack/react-start";
+import * as z from "zod";
+
+import type { BackupPayload } from "../types";
+
+import { isAdminMiddleware } from "../../auth/server/middleware";
+import { withTransaction } from "../../database/transaction";
+import {
+  createManyCustomEvents,
+  deleteAllCustomEvents,
+  findAllCustomEvents,
+} from "../../events/repository/custom-event";
 import {
   createManyPersonDetailsPrivate,
   createManyPersons,
@@ -10,11 +17,14 @@ import {
   deleteAllPersons,
   findAllPersonDetailsPrivate,
   findAllPersons,
-} from '../../members/repository/person';
-import { Gender } from '../../members/types';
-import { createManyRelationships, deleteAllRelationships, findAllRelationships } from '../../relationships/repository/relationship';
-import { RelationshipType } from '../../relationships/types';
-import type { BackupPayload } from '../types';
+} from "../../members/repository/person";
+import { Gender } from "../../members/types";
+import {
+  createManyRelationships,
+  deleteAllRelationships,
+  findAllRelationships,
+} from "../../relationships/repository/relationship";
+import { RelationshipType } from "../../relationships/types";
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
@@ -66,7 +76,7 @@ const ImportCustomEventPayload = z.object({
 const ImportDataPayload = z.object({
   version: z.number().optional(),
   timestamp: z.string().optional(),
-  persons: z.array(ImportPersonPayload).min(1, 'error.data.emptyBackup'),
+  persons: z.array(ImportPersonPayload).min(1, "error.data.emptyBackup"),
   relationships: z.array(ImportRelationshipPayload),
   personDetailsPrivate: z.array(ImportPersonDetailsPrivatePayload).optional(),
   customEvents: z.array(ImportCustomEventPayload).optional(),
@@ -76,7 +86,7 @@ const ImportDataPayload = z.object({
 
 const CHUNK_SIZE = 200;
 
-export const exportData = createServerFn({ method: 'GET' })
+export const exportData = createServerFn({ method: "GET" })
   .middleware([isAdminMiddleware])
   .handler(async () => {
     const [persons, relationships, personDetailsPrivate, customEvents] = await Promise.all([
@@ -110,7 +120,7 @@ export const exportData = createServerFn({ method: 'GET' })
     return payload;
   });
 
-export const importData = createServerFn({ method: 'POST' })
+export const importData = createServerFn({ method: "POST" })
   .inputValidator(ImportDataPayload)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
@@ -144,7 +154,7 @@ export const importData = createServerFn({ method: 'POST' })
             avatarUrl: p.avatarUrl ?? null,
             note: p.note ?? null,
           })),
-          tx
+          tx,
         );
       }
 
@@ -159,7 +169,7 @@ export const importData = createServerFn({ method: 'POST' })
             personBId: r.personBId,
             note: r.note ?? null,
           })),
-          tx
+          tx,
         );
       }
 
@@ -173,7 +183,7 @@ export const importData = createServerFn({ method: 'POST' })
               occupation: pd.occupation ?? null,
               currentResidence: pd.currentResidence ?? null,
             })),
-            tx
+            tx,
           );
         }
       }
@@ -190,7 +200,7 @@ export const importData = createServerFn({ method: 'POST' })
               content: ce.content ?? null,
               createdBy: ce.createdBy ?? null,
             })),
-            tx
+            tx,
           );
         }
       }

@@ -184,11 +184,11 @@ body {
 /* ── Typography utilities ── */
 
 .text-heading-page {
-  @apply text-xl sm:text-2xl font-serif font-bold text-text-heading;
+  @apply font-serif text-xl font-bold text-text-heading sm:text-2xl;
 }
 
 .text-heading-section {
-  @apply text-lg sm:text-xl font-serif font-bold text-text-heading;
+  @apply font-serif text-lg font-bold text-text-heading sm:text-xl;
 }
 
 .text-heading-card {
@@ -196,11 +196,11 @@ body {
 }
 
 .text-label {
-  @apply block text-sm font-semibold text-text-label mb-1.5;
+  @apply mb-1.5 block text-sm font-semibold text-text-label;
 }
 
 .text-overline {
-  @apply text-xs font-bold text-text-muted uppercase tracking-widest;
+  @apply text-xs font-bold tracking-widest text-text-muted uppercase;
 }
 
 .text-description {
@@ -214,7 +214,7 @@ body {
 /* ── Layout utilities ── */
 
 .layout-page {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
 }
 
 .layout-section {
@@ -226,11 +226,11 @@ body {
 }
 
 .layout-card-grid {
-  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+  @apply grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3;
 }
 
 .layout-grid-2 {
-  @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+  @apply grid grid-cols-1 gap-6 md:grid-cols-2;
 }
 
 /* Fix iOS auto-zoom when focusing on inputs */

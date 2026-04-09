@@ -1,4 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+
+import type { Person } from "../types";
+
 import {
   binhThiMoc,
   camThiDiu,
@@ -13,9 +16,13 @@ import {
   vanThiBinh,
   vanThiCam,
   vanTriMinh,
-} from '../../../test/fixtures';
-import type { Person } from '../types';
-import { buildCoupleGroups, buildFamilyGroupedSort, getGroupId, sortFamilyMembers } from './familyGrouping';
+} from "../../../test/fixtures";
+import {
+  buildCoupleGroups,
+  buildFamilyGroupedSort,
+  getGroupId,
+  sortFamilyMembers,
+} from "./familyGrouping";
 
 // Helper to build Maps from mock data
 function buildMaps(_persons: Person[]) {
@@ -50,8 +57,8 @@ function buildMaps(_persons: Person[]) {
   return { parentsOf, spousesOf };
 }
 
-describe('getGroupId', () => {
-  it('returns parents group when person has parents', () => {
+describe("getGroupId", () => {
+  it("returns parents group when person has parents", () => {
     const { parentsOf, spousesOf } = buildMaps([]);
     const groupId = getGroupId(vanCongTri.id, parentsOf, spousesOf);
     expect(groupId).toMatch(/^parents_/);
@@ -59,16 +66,16 @@ describe('getGroupId', () => {
     expect(groupId).toContain(camThiDiu.id);
   });
 
-  it('returns spouses group when person has no parents and no spouses', () => {
+  it("returns spouses group when person has no parents and no spouses", () => {
     const parentsOf = new Map<string, string[]>();
     const spousesOf = new Map<string, string[]>();
-    const soloId = 'solo-person-id';
+    const soloId = "solo-person-id";
     parentsOf.set(soloId, []); // explicitly no parents
     const groupId = getGroupId(soloId, parentsOf, spousesOf);
     expect(groupId).toMatch(/^spouses_/);
   });
 
-  it('returns parents group when a BFS spouse has parents', () => {
+  it("returns parents group when a BFS spouse has parents", () => {
     const { parentsOf, spousesOf } = buildMaps([]);
     // dinhThiMyDuyen has no parents in our map, but is married to vanTriMinh who has parents
     const groupId = getGroupId(dinhThiMyDuyen.id, parentsOf, spousesOf);
@@ -79,12 +86,12 @@ describe('getGroupId', () => {
   });
 });
 
-describe('buildFamilyGroupedSort', () => {
-  it('groups persons by family and sorts by generation ascending', () => {
+describe("buildFamilyGroupedSort", () => {
+  it("groups persons by family and sorts by generation ascending", () => {
     const { parentsOf, spousesOf } = buildMaps([]);
     const allPersons = [vanCongGoc, binhThiMoc, vanCongThuan, camThiDiu, vanCongTri];
     const filtered = [vanCongTri, vanCongThuan, vanCongGoc];
-    const result = buildFamilyGroupedSort(filtered, allPersons, parentsOf, spousesOf, 'generation');
+    const result = buildFamilyGroupedSort(filtered, allPersons, parentsOf, spousesOf, "generation");
     expect(result.length).toBe(3);
     // Gen 1 should come first
     expect(result[0].generation).toBe(1);
@@ -94,28 +101,28 @@ describe('buildFamilyGroupedSort', () => {
     }
   });
 
-  it('handles members without birthOrder (null)', () => {
+  it("handles members without birthOrder (null)", () => {
     const { parentsOf, spousesOf } = buildMaps([]);
     const allPersons = [vanCongTri, ngoThiDiuHien];
     const filtered = [vanCongTri, ngoThiDiuHien];
-    const result = buildFamilyGroupedSort(filtered, allPersons, parentsOf, spousesOf, 'generation');
+    const result = buildFamilyGroupedSort(filtered, allPersons, parentsOf, spousesOf, "generation");
     expect(result.length).toBe(2);
     // birthOrder is null for both, should not crash
   });
 
-  it('handles all members being in-laws (no core member via !isInLaw)', () => {
+  it("handles all members being in-laws (no core member via !isInLaw)", () => {
     const { parentsOf, spousesOf } = buildMaps([]);
     // Only in-laws
     const allPersons = [binhThiMoc];
     const filtered = [binhThiMoc];
-    const result = buildFamilyGroupedSort(filtered, allPersons, parentsOf, spousesOf, 'generation');
+    const result = buildFamilyGroupedSort(filtered, allPersons, parentsOf, spousesOf, "generation");
     expect(result).toHaveLength(1);
     expect(result[0].isInLaw).toBe(true);
   });
 });
 
-describe('sortFamilyMembers', () => {
-  it('sorts by birthOrder when bloodline refs differ', () => {
+describe("sortFamilyMembers", () => {
+  it("sorts by birthOrder when bloodline refs differ", () => {
     const spousesOf = new Map<string, string[]>();
     const members: Person[] = [
       { ...vanCongThuan, birthOrder: 2 },
@@ -126,7 +133,7 @@ describe('sortFamilyMembers', () => {
     expect(sorted[1].id).toBe(vanCongThuan.id);
   });
 
-  it('places bloodline member before in-law when same bloodline ref', () => {
+  it("places bloodline member before in-law when same bloodline ref", () => {
     const spousesOf = new Map<string, string[]>();
     spousesOf.set(vanCongTri.id, [ngoThiDiuHien.id]);
     spousesOf.set(ngoThiDiuHien.id, [vanCongTri.id]);
@@ -140,7 +147,7 @@ describe('sortFamilyMembers', () => {
     expect(sorted[1].id).toBe(ngoThiDiuHien.id);
   });
 
-  it('sorts by birthYear when birthOrder is null for both', () => {
+  it("sorts by birthYear when birthOrder is null for both", () => {
     const spousesOf = new Map<string, string[]>();
     const members: Person[] = [
       { ...vanCongTri, birthYear: 1960, birthOrder: null },
@@ -152,8 +159,8 @@ describe('sortFamilyMembers', () => {
   });
 });
 
-describe('buildCoupleGroups', () => {
-  it('groups a single person with no spouse as single-element group', () => {
+describe("buildCoupleGroups", () => {
+  it("groups a single person with no spouse as single-element group", () => {
     const spousesOf = new Map<string, string[]>();
     const result = buildCoupleGroups([vanCongTri], spousesOf);
     expect(result).toHaveLength(1);
@@ -161,7 +168,7 @@ describe('buildCoupleGroups', () => {
     expect(result[0][0].id).toBe(vanCongTri.id);
   });
 
-  it('groups married couples together via BFS', () => {
+  it("groups married couples together via BFS", () => {
     const spousesOf = new Map<string, string[]>();
     spousesOf.set(vanCongTri.id, [ngoThiDiuHien.id]);
     spousesOf.set(ngoThiDiuHien.id, [vanCongTri.id]);
@@ -173,7 +180,7 @@ describe('buildCoupleGroups', () => {
     expect(result[0][1].isInLaw).toBe(true);
   });
 
-  it('separates unrelated persons into different groups', () => {
+  it("separates unrelated persons into different groups", () => {
     const spousesOf = new Map<string, string[]>();
     const result = buildCoupleGroups([vanCongTri, vanCongGoc], spousesOf);
     expect(result).toHaveLength(2);

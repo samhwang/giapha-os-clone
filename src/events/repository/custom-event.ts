@@ -1,9 +1,14 @@
-import type { CustomEventCreateInput, CustomEventCreateManyInput, CustomEventUpdateInput } from '../../database/generated/prisma/models';
-import { getDbClient } from '../../database/lib/client';
-import type { DbClient } from '../../database/transaction';
+import type {
+  CustomEventCreateInput,
+  CustomEventCreateManyInput,
+  CustomEventUpdateInput,
+} from "../../database/generated/prisma/models";
+import type { DbClient } from "../../database/transaction";
+
+import { getDbClient } from "../../database/lib/client";
 
 export function findAllCustomEvents(client: DbClient = getDbClient()) {
-  return client.customEvent.findMany({ orderBy: { eventDate: 'asc' } });
+  return client.customEvent.findMany({ orderBy: { eventDate: "asc" } });
 }
 
 export function createCustomEvent(data: CustomEventCreateInput, client: DbClient = getDbClient()) {
@@ -15,7 +20,10 @@ interface UpdateCustomEventInput {
   data: CustomEventUpdateInput;
 }
 
-export function updateCustomEvent({ id, data }: UpdateCustomEventInput, client: DbClient = getDbClient()) {
+export function updateCustomEvent(
+  { id, data }: UpdateCustomEventInput,
+  client: DbClient = getDbClient(),
+) {
   return client.customEvent.update({ where: { id }, data });
 }
 
@@ -27,6 +35,9 @@ export function deleteAllCustomEvents(client: DbClient = getDbClient()) {
   return client.customEvent.deleteMany();
 }
 
-export function createManyCustomEvents(data: CustomEventCreateManyInput | CustomEventCreateManyInput[], client: DbClient = getDbClient()) {
+export function createManyCustomEvents(
+  data: CustomEventCreateManyInput | CustomEventCreateManyInput[],
+  client: DbClient = getDbClient(),
+) {
   return client.customEvent.createMany({ data });
 }

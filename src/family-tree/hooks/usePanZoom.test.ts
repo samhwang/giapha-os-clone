@@ -1,7 +1,8 @@
-import { act, renderHook } from '@testing-library/react';
-import { createRef, type MouseEvent, type RefObject } from 'react';
-import { describe, expect, it, vi } from 'vitest';
-import { usePanZoom } from './usePanZoom';
+import { act, renderHook } from "@testing-library/react";
+import { createRef, type MouseEvent, type RefObject } from "react";
+import { describe, expect, it, vi } from "vitest";
+
+import { usePanZoom } from "./usePanZoom";
 
 function createContainerRef(): RefObject<HTMLDivElement | null> {
   return createRef<HTMLDivElement>();
@@ -21,8 +22,8 @@ function mockMouseEvent(overrides = {}) {
   } as unknown as MouseEvent<HTMLElement>;
 }
 
-describe('usePanZoom', () => {
-  it('initializes with default values', () => {
+describe("usePanZoom", () => {
+  it("initializes with default values", () => {
     const ref = createContainerRef();
     const { result } = renderHook(() => usePanZoom(ref));
 
@@ -31,7 +32,7 @@ describe('usePanZoom', () => {
     expect(result.current.isDragging).toBe(false);
   });
 
-  it('zooms in by 0.1 step', () => {
+  it("zooms in by 0.1 step", () => {
     const ref = createContainerRef();
     const { result } = renderHook(() => usePanZoom(ref));
 
@@ -39,7 +40,7 @@ describe('usePanZoom', () => {
     expect(result.current.scale).toBeCloseTo(1.1);
   });
 
-  it('zooms out by 0.1 step', () => {
+  it("zooms out by 0.1 step", () => {
     const ref = createContainerRef();
     const { result } = renderHook(() => usePanZoom(ref));
 
@@ -47,7 +48,7 @@ describe('usePanZoom', () => {
     expect(result.current.scale).toBeCloseTo(0.9);
   });
 
-  it('does not zoom in beyond max scale (2)', () => {
+  it("does not zoom in beyond max scale (2)", () => {
     const ref = createContainerRef();
     const { result } = renderHook(() => usePanZoom(ref));
 
@@ -57,7 +58,7 @@ describe('usePanZoom', () => {
     expect(result.current.scale).toBe(2);
   });
 
-  it('does not zoom out below min scale (0.3)', () => {
+  it("does not zoom out below min scale (0.3)", () => {
     const ref = createContainerRef();
     const { result } = renderHook(() => usePanZoom(ref));
 
@@ -67,7 +68,7 @@ describe('usePanZoom', () => {
     expect(result.current.scale).toBeCloseTo(0.3);
   });
 
-  it('resets zoom to 1', () => {
+  it("resets zoom to 1", () => {
     const ref = createContainerRef();
     const { result } = renderHook(() => usePanZoom(ref));
 
@@ -80,8 +81,8 @@ describe('usePanZoom', () => {
   });
 });
 
-describe('usePanZoom mouse handlers', () => {
-  it('handleMouseDown sets isPressed to true', () => {
+describe("usePanZoom mouse handlers", () => {
+  it("handleMouseDown sets isPressed to true", () => {
     const ref = createMockContainerRef();
     const { result } = renderHook(() => usePanZoom(ref));
 
@@ -90,7 +91,7 @@ describe('usePanZoom mouse handlers', () => {
     expect(result.current.isPressed).toBe(true);
   });
 
-  it('handleMouseUpOrLeave resets isPressed and isDragging', () => {
+  it("handleMouseUpOrLeave resets isPressed and isDragging", () => {
     const ref = createMockContainerRef();
     const { result } = renderHook(() => usePanZoom(ref));
 
@@ -103,7 +104,7 @@ describe('usePanZoom mouse handlers', () => {
     expect(result.current.isDragging).toBe(false);
   });
 
-  it('handleMouseMove with large displacement triggers isDragging', () => {
+  it("handleMouseMove with large displacement triggers isDragging", () => {
     const ref = createMockContainerRef();
     const { result } = renderHook(() => usePanZoom(ref));
 
@@ -114,7 +115,7 @@ describe('usePanZoom mouse handlers', () => {
     expect(result.current.isDragging).toBe(true);
   });
 
-  it('handleMouseMove without press does nothing', () => {
+  it("handleMouseMove without press does nothing", () => {
     const ref = createMockContainerRef();
     const { result } = renderHook(() => usePanZoom(ref));
 
@@ -124,7 +125,7 @@ describe('usePanZoom mouse handlers', () => {
     expect(result.current.isPressed).toBe(false);
   });
 
-  it('handleMouseMove without containerRef does nothing', () => {
+  it("handleMouseMove without containerRef does nothing", () => {
     const ref = { current: null };
     const { result } = renderHook(() => usePanZoom(ref));
 
@@ -134,7 +135,7 @@ describe('usePanZoom mouse handlers', () => {
     expect(result.current.isDragging).toBe(false);
   });
 
-  it('handleMouseMove scrolls the container when dragging', () => {
+  it("handleMouseMove scrolls the container when dragging", () => {
     const ref = createMockContainerRef();
     ref.current.scrollLeft = 100;
     ref.current.scrollTop = 100;
@@ -151,7 +152,7 @@ describe('usePanZoom mouse handlers', () => {
     expect(ref.current.scrollTop).toBe(70);
   });
 
-  it('handleMouseMove below threshold does not trigger dragging', () => {
+  it("handleMouseMove below threshold does not trigger dragging", () => {
     const ref = createMockContainerRef();
     const { result } = renderHook(() => usePanZoom(ref));
 
@@ -162,7 +163,7 @@ describe('usePanZoom mouse handlers', () => {
     expect(result.current.isDragging).toBe(false);
   });
 
-  it('handleClickCapture stops propagation after drag', () => {
+  it("handleClickCapture stops propagation after drag", () => {
     const ref = createMockContainerRef();
     const { result } = renderHook(() => usePanZoom(ref));
 
@@ -179,7 +180,7 @@ describe('usePanZoom mouse handlers', () => {
     expect(clickEvent.preventDefault).toHaveBeenCalled();
   });
 
-  it('handleClickCapture does not stop propagation without prior drag', () => {
+  it("handleClickCapture does not stop propagation without prior drag", () => {
     const ref = createMockContainerRef();
     const { result } = renderHook(() => usePanZoom(ref));
 
@@ -190,7 +191,7 @@ describe('usePanZoom mouse handlers', () => {
     expect(clickEvent.preventDefault).not.toHaveBeenCalled();
   });
 
-  it('handleMouseDown with container records scroll position', () => {
+  it("handleMouseDown with container records scroll position", () => {
     const ref = createMockContainerRef();
     ref.current.scrollLeft = 50;
     ref.current.scrollTop = 75;

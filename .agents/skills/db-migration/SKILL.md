@@ -17,6 +17,7 @@ Manage Prisma schema changes, migrations, and database seeding for the project.
 ## Trigger Condition
 
 When user asks to:
+
 - Add a new model/table
 - Modify existing schema
 - Run migrations
@@ -27,6 +28,7 @@ When user asks to:
 ### Step 1: Edit Schema
 
 Edit `prisma/schema.prisma`:
+
 ```prisma
 model NewModel {
   id        String   @id @default(cuid())
@@ -62,6 +64,7 @@ pnpm typecheck      # Ensure types compile
 ### Step 5: Seed (if needed)
 
 Edit `prisma/seed.ts` and run:
+
 ```bash
 pnpm prisma db seed
 ```
@@ -153,45 +156,45 @@ enum RelationType {
 
 ```typescript
 // prisma/seed.ts
-import { PrismaClient } from '../src/database/generated/prisma/client'
+import { PrismaClient } from "../src/database/generated/prisma/client";
 
 async function main() {
-  const db = new PrismaClient({ adapter })
+  const db = new PrismaClient({ adapter });
   const family = await db.family.create({
     data: {
-      name: 'Nguyen Family',
+      name: "Nguyen Family",
       members: {
         create: [
-          { firstName: 'Minh', lastName: 'Nguyen', gender: 'MALE' },
-          { firstName: 'Lan', lastName: 'Nguyen', gender: 'FEMALE' },
+          { firstName: "Minh", lastName: "Nguyen", gender: "MALE" },
+          { firstName: "Lan", lastName: "Nguyen", gender: "FEMALE" },
         ],
       },
     },
-  })
-  console.log('Created family:', family.id)
+  });
+  console.log("Created family:", family.id);
 }
 
 main()
   .catch((e) => {
-    console.error(e)
-    process.exit(1)
+    console.error(e);
+    process.exit(1);
   })
   .finally(async () => {
-    await db.$disconnect()
-  })
+    await db.$disconnect();
+  });
 ```
 
 ## Commands Reference
 
-| Command | Purpose |
-|---------|---------|
-| `pnpm prisma migrate dev --name name` | Create and apply migration |
-| `pnpm prisma migrate deploy` | Apply migrations (production) |
-| `pnpm prisma migrate reset` | Reset database (dev only) |
-| `pnpm prisma db push` | Push schema without migration |
-| `pnpm prisma generate` | Generate Prisma Client |
-| `pnpm prisma studio` | GUI for database |
-| `pnpm prisma db seed` | Run seed script |
+| Command                               | Purpose                       |
+| ------------------------------------- | ----------------------------- |
+| `pnpm prisma migrate dev --name name` | Create and apply migration    |
+| `pnpm prisma migrate deploy`          | Apply migrations (production) |
+| `pnpm prisma migrate reset`           | Reset database (dev only)     |
+| `pnpm prisma db push`                 | Push schema without migration |
+| `pnpm prisma generate`                | Generate Prisma Client        |
+| `pnpm prisma studio`                  | GUI for database              |
+| `pnpm prisma db seed`                 | Run seed script               |
 
 ## Notes
 

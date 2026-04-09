@@ -1,17 +1,18 @@
-import '@dotenvx/dotenvx/config';
-import { existsSync, readFileSync, unlinkSync } from 'node:fs';
-import { test as teardown } from '@playwright/test';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '../src/database/generated/prisma/client';
-import { SEED_DATA_PATH, type SeedData } from './e2e-seed-data';
+import "@dotenvx/dotenvx/config";
+import { test as teardown } from "@playwright/test";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { existsSync, readFileSync, unlinkSync } from "node:fs";
 
-teardown('cleanup e2e users', async () => {
+import { PrismaClient } from "../src/database/generated/prisma/client";
+import { SEED_DATA_PATH, type SeedData } from "./e2e-seed-data";
+
+teardown("cleanup e2e users", async () => {
   if (!existsSync(SEED_DATA_PATH)) {
-    console.log('E2E teardown: no seed data file found, skipping');
+    console.log("E2E teardown: no seed data file found, skipping");
     return;
   }
 
-  const seedData: SeedData = JSON.parse(readFileSync(SEED_DATA_PATH, 'utf-8'));
+  const seedData: SeedData = JSON.parse(readFileSync(SEED_DATA_PATH, "utf-8"));
 
   const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
   const db = new PrismaClient({ adapter });
@@ -20,7 +21,7 @@ teardown('cleanup e2e users', async () => {
     // Delete all E2E-prefixed persons (seeded + created during tests).
     // Cascade handles relationships and private details.
     const { count: personCount } = await db.person.deleteMany({
-      where: { fullName: { startsWith: 'E2E' } },
+      where: { fullName: { startsWith: "E2E" } },
     });
 
     // Cascade delete handles accounts and sessions via onDelete: Cascade

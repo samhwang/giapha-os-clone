@@ -1,7 +1,11 @@
-import type { RelationshipCreateManyInput, RelationshipUncheckedCreateInput } from '../../database/generated/prisma/models';
-import { getDbClient } from '../../database/lib/client';
-import type { DbClient } from '../../database/transaction';
-import type { RelationshipType } from '../types';
+import type {
+  RelationshipCreateManyInput,
+  RelationshipUncheckedCreateInput,
+} from "../../database/generated/prisma/models";
+import type { DbClient } from "../../database/transaction";
+import type { RelationshipType } from "../types";
+
+import { getDbClient } from "../../database/lib/client";
 
 interface FindRelationshipByParticipantsInput {
   personAId: string;
@@ -9,7 +13,10 @@ interface FindRelationshipByParticipantsInput {
   type: RelationshipType;
 }
 
-export function findRelationshipByParticipants({ personAId, personBId, type }: FindRelationshipByParticipantsInput, client: DbClient = getDbClient()) {
+export function findRelationshipByParticipants(
+  { personAId, personBId, type }: FindRelationshipByParticipantsInput,
+  client: DbClient = getDbClient(),
+) {
   return client.relationship.findFirst({
     where: {
       OR: [
@@ -20,7 +27,10 @@ export function findRelationshipByParticipants({ personAId, personBId, type }: F
   });
 }
 
-export function createRelationship(data: RelationshipUncheckedCreateInput, client: DbClient = getDbClient()) {
+export function createRelationship(
+  data: RelationshipUncheckedCreateInput,
+  client: DbClient = getDbClient(),
+) {
   return client.relationship.create({ data });
 }
 
@@ -29,13 +39,13 @@ export function deleteRelationship(id: string, client: DbClient = getDbClient())
 }
 
 export function findAllRelationships(client: DbClient = getDbClient()) {
-  return client.relationship.findMany({ orderBy: { createdAt: 'asc' } });
+  return client.relationship.findMany({ orderBy: { createdAt: "asc" } });
 }
 
 export function findRelationshipsForPerson(personId: string, client: DbClient = getDbClient()) {
   return client.relationship.findMany({
     where: { OR: [{ personAId: personId }, { personBId: personId }] },
-    orderBy: { createdAt: 'asc' },
+    orderBy: { createdAt: "asc" },
   });
 }
 
@@ -49,6 +59,9 @@ export function deleteAllRelationships(client: DbClient = getDbClient()) {
   return client.relationship.deleteMany();
 }
 
-export function createManyRelationships(data: RelationshipCreateManyInput | RelationshipCreateManyInput[], client: DbClient = getDbClient()) {
+export function createManyRelationships(
+  data: RelationshipCreateManyInput | RelationshipCreateManyInput[],
+  client: DbClient = getDbClient(),
+) {
   return client.relationship.createMany({ data });
 }

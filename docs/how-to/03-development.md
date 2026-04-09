@@ -10,14 +10,14 @@ How to build features, write tests, and run CI for Gia Pha OS.
 
 ```tsx
 // src/routes/about.tsx → /about
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/about')({
+export const Route = createFileRoute("/about")({
   component: AboutPage,
-})
+});
 
 function AboutPage() {
-  return <div>About Page</div>
+  return <div>About Page</div>;
 }
 ```
 
@@ -32,15 +32,15 @@ function AboutPage() {
 
 ```tsx
 // src/routes/dashboard/members/$id/index.tsx → /dashboard/members/:id
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/dashboard/members/$id/')({
+export const Route = createFileRoute("/dashboard/members/$id/")({
   component: MemberDetailPage,
-})
+});
 
 function MemberDetailPage() {
-  const { id } = Route.useParams()
-  return <div>Member ID: {id}</div>
+  const { id } = Route.useParams();
+  return <div>Member ID: {id}</div>;
 }
 ```
 
@@ -51,23 +51,23 @@ See the [Route Map](../reference/02-reference.md#route-map) reference for all ex
 Loaders run on the server to fetch data before rendering. Data fetching is done via server functions:
 
 ```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import * as memberFns from '../../members/server/member'
+import { createFileRoute } from "@tanstack/react-router";
+import * as memberFns from "../../members/server/member";
 
-export const Route = createFileRoute('/dashboard/members/')({
+export const Route = createFileRoute("/dashboard/members/")({
   loader: () => memberFns.getMembers(),
   component: MembersPage,
-})
+});
 
 function MembersPage() {
-  const { persons } = Route.useLoaderData()
+  const { persons } = Route.useLoaderData();
   return (
     <ul>
-      {persons.map(person => (
+      {persons.map((person) => (
         <li key={person.id}>{person.fullName}</li>
       ))}
     </ul>
-  )
+  );
 }
 ```
 
@@ -76,15 +76,15 @@ function MembersPage() {
 Server functions use `createServerFn` with middleware for auth:
 
 ```typescript
-import { createServerFn } from '@tanstack/react-start'
-import { isUserMiddleware } from '../../auth/server/middleware'
-import { findAllPersons } from '../repository/person'
+import { createServerFn } from "@tanstack/react-start";
+import { isUserMiddleware } from "../../auth/server/middleware";
+import { findAllPersons } from "../repository/person";
 
 export const getMembers = createServerFn()
   .middleware([isUserMiddleware])
   .handler(async () => {
-    return findAllPersons()
-  })
+    return findAllPersons();
+  });
 ```
 
 ## Forms (TanStack Form)
@@ -102,7 +102,7 @@ Create a form hook in your domain's hooks directory:
 
 ```tsx
 // src/admin/hooks/useAdminForm.ts
-import { createFormHook, createFormHookContexts } from '@tanstack/react-form-start';
+import { createFormHook, createFormHookContexts } from "@tanstack/react-form-start";
 
 export const { fieldContext, formContext, useFieldContext } = createFormHookContexts();
 
@@ -117,15 +117,15 @@ export const { useAppForm: useAdminForm } = createFormHook({
 ### Using the Form (Server Function)
 
 ```tsx
-import { useAdminForm } from '../hooks/useAdminForm';
-import { createUser } from '../server/user';
+import { useAdminForm } from "../hooks/useAdminForm";
+import { createUser } from "../server/user";
 
 function CreateUserForm() {
   const form = useAdminForm({
     defaultValues: {
-      email: '',
-      password: '',
-      role: 'member',
+      email: "",
+      password: "",
+      role: "member",
     },
     // No validators - server function handles validation
     onSubmit: async ({ value }) => {
@@ -143,10 +143,7 @@ function CreateUserForm() {
     >
       <form.AppField name="email">
         {(field) => (
-          <input
-            value={field.state.value}
-            onChange={(e) => field.handleChange(e.target.value)}
-          />
+          <input value={field.state.value} onChange={(e) => field.handleChange(e.target.value)} />
         )}
       </form.AppField>
       <button type="submit">Create</button>
@@ -158,8 +155,8 @@ function CreateUserForm() {
 ### Using the Form (External API)
 
 ```tsx
-import * as z from 'zod';
-import { authClient } from '../../auth/client';
+import * as z from "zod";
+import { authClient } from "../../auth/client";
 
 const Login = z.object({
   email: z.email(),
@@ -169,11 +166,11 @@ const Login = z.object({
 function LoginForm() {
   const form = useAuthForm({
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
     validators: {
-      onSubmit: Login,  // Validators needed for external API
+      onSubmit: Login, // Validators needed for external API
     },
     onSubmit: async ({ value }) => {
       await authClient.signIn.email({ email: value.email, password: value.password });
@@ -195,6 +192,7 @@ function LoginForm() {
 ```
 
 **Key points:**
+
 - Server functions already validate — no form validators needed
 - External APIs (e.g., Better Auth) need Zod validators in `validators.onSubmit`
 - Forms use `form.AppField` with render props for controlled inputs
@@ -206,36 +204,36 @@ function LoginForm() {
 ### Checking Auth in Loader
 
 ```typescript
-export const Route = createFileRoute('/dashboard')({
+export const Route = createFileRoute("/dashboard")({
   beforeLoad: async ({ context }) => {
     if (!context.user) {
-      throw redirect({ to: '/login' })
+      throw redirect({ to: "/login" });
     }
   },
-})
+});
 ```
 
 ### Getting User in Component
 
 ```tsx
-import { useRouteContext } from '@tanstack/react-router'
+import { useRouteContext } from "@tanstack/react-router";
 
 function DashboardPage() {
-  const { user } = useRouteContext({ from: '/dashboard' })
-  return <div>Welcome, {user.name}</div>
+  const { user } = useRouteContext({ from: "/dashboard" });
+  return <div>Welcome, {user.name}</div>;
 }
 ```
 
 ### Role-Based Access
 
 ```typescript
-export const Route = createFileRoute('/dashboard/users')({
+export const Route = createFileRoute("/dashboard/users")({
   beforeLoad: async ({ context }) => {
-    if (context.user?.role !== 'admin') {
-      throw redirect({ to: '/dashboard' })
+    if (context.user?.role !== "admin") {
+      throw redirect({ to: "/dashboard" });
     }
   },
-})
+});
 ```
 
 ## Using the Database
@@ -243,14 +241,20 @@ export const Route = createFileRoute('/dashboard/users')({
 Use repository functions co-located with domain modules instead of calling [Prisma](https://www.prisma.io/) directly:
 
 ```typescript
-import { findAllPersons, findPersonById, createPerson, updatePerson, deletePerson } from '../repository/person'
+import {
+  findAllPersons,
+  findPersonById,
+  createPerson,
+  updatePerson,
+  deletePerson,
+} from "../repository/person";
 
 // Query examples
-const persons = await findAllPersons()
-const person = await findPersonById('xxx')
-const created = await createPerson({ data: { fullName: 'Name', gender: 'male' } })
-const updated = await updatePerson({ id: 'xxx', data: { fullName: 'New' } })
-const deleted = await deletePerson('xxx')
+const persons = await findAllPersons();
+const person = await findPersonById("xxx");
+const created = await createPerson({ data: { fullName: "Name", gender: "male" } });
+const updated = await updatePerson({ id: "xxx", data: { fullName: "New" } });
+const deleted = await deletePerson("xxx");
 ```
 
 ### Database Migrations
@@ -293,12 +297,12 @@ Pure logic tests — no mocking needed.
 
 ```typescript
 // src/utils/kinshipHelpers.test.ts
-import { computeKinship } from './kinshipHelpers'
+import { computeKinship } from "./kinshipHelpers";
 
-test('returns correct kinship for parent-child', () => {
-  const result = computeKinship(parent, child, persons, relationships)
-  expect(result.aCallsB).toBe('cha')
-})
+test("returns correct kinship for parent-child", () => {
+  const result = computeKinship(parent, child, persons, relationships);
+  expect(result.aCallsB).toBe("cha");
+});
 ```
 
 #### Layer 2: Server Functions
@@ -307,21 +311,21 @@ Test business logic with a real PostgreSQL database using [Testcontainers](https
 
 ```typescript
 // src/members/server/member.test.ts
-import { createPerson, findPersonById } from '../repository/person'
+import { createPerson, findPersonById } from "../repository/person";
 
-test('creates person with private details', async () => {
+test("creates person with private details", async () => {
   const person = await createPerson({
     data: {
-      fullName: 'Test User',
-      gender: 'male',
+      fullName: "Test User",
+      gender: "male",
       privateDetails: {
-        create: { phoneNumber: '0901234567' }
-      }
+        create: { phoneNumber: "0901234567" },
+      },
     },
-  })
+  });
 
-  expect(person.privateDetails?.phoneNumber).toBe('0901234567')
-})
+  expect(person.privateDetails?.phoneNumber).toBe("0901234567");
+});
 ```
 
 #### Layer 3: Components
@@ -330,13 +334,13 @@ Test rendering and user interactions with [React Testing Library](https://testin
 
 ```tsx
 // src/components/PersonCard.test.tsx
-import { render, screen } from '@testing-library/react'
-import { PersonCard } from './PersonCard'
+import { render, screen } from "@testing-library/react";
+import { PersonCard } from "./PersonCard";
 
-test('renders person name', () => {
-  render(<PersonCard person={{ fullName: 'Nguyen Van A', gender: 'male' }} />)
-  expect(screen.getByText('Nguyen Van A')).toBeInTheDocument()
-})
+test("renders person name", () => {
+  render(<PersonCard person={{ fullName: "Nguyen Van A", gender: "male" }} />);
+  expect(screen.getByText("Nguyen Van A")).toBeInTheDocument();
+});
 ```
 
 #### Layer 4: E2E Tests
@@ -345,12 +349,12 @@ Real browser testing with [Playwright](https://playwright.dev/).
 
 ```typescript
 // e2e/landing.spec.ts
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test";
 
-test('landing page displays correctly', async ({ page }) => {
-  await page.goto('/')
-  await expect(page.getByRole('heading')).toBeVisible()
-})
+test("landing page displays correctly", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading")).toBeVisible();
+});
 ```
 
 ##### E2E Prerequisites
@@ -385,20 +389,20 @@ e2e/members.spec.ts
 #### Basic Structure
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test";
 
-test.describe('Feature Name', () => {
-  test('user flow description', async ({ page }) => {
+test.describe("Feature Name", () => {
+  test("user flow description", async ({ page }) => {
     // Navigate
-    await page.goto('/')
+    await page.goto("/");
 
     // Interact
-    await page.getByRole('link', { name: 'Login' }).click()
+    await page.getByRole("link", { name: "Login" }).click();
 
     // Assert
-    await expect(page).toHaveURL(/.*\/login/)
-  })
-})
+    await expect(page).toHaveURL(/.*\/login/);
+  });
+});
 ```
 
 #### Authentication in E2E
@@ -409,9 +413,9 @@ Use `storageState` in Playwright config to persist auth state across tests:
 // playwright.config.ts
 export default defineConfig({
   use: {
-    storageState: '.auth/user.json',
+    storageState: ".auth/user.json",
   },
-})
+});
 ```
 
 ### Type Testing
@@ -419,10 +423,10 @@ export default defineConfig({
 Inline type tests using `expectTypeOf`:
 
 ```typescript
-import { expectTypeOf } from 'vitest'
+import { expectTypeOf } from "vitest";
 
-expectTypeOf<PersonNode>().toMatchTypeOf<object>()
-expectTypeOf<KinshipResult | null>().toMatchTypeOf<object | null>()
+expectTypeOf<PersonNode>().toMatchTypeOf<object>();
+expectTypeOf<KinshipResult | null>().toMatchTypeOf<object | null>();
 ```
 
 See the [Commands](../reference/02-reference.md#commands) and [Coverage Targets](../reference/02-reference.md#coverage-targets) references for the full test command list and coverage goals.

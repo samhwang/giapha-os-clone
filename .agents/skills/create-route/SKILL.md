@@ -17,6 +17,7 @@ Create a new TanStack Start route with proper structure including loader, valida
 ## Trigger Condition
 
 When user asks to:
+
 - Create a new page/route
 - Add a new endpoint
 - Create a route file in `src/routes/`
@@ -26,6 +27,7 @@ When user asks to:
 ### Step 1: Identify Route Path
 
 Determine the file path based on TanStack Start conventions:
+
 - `/members` → `src/routes/members.tsx`
 - `/members/$memberId` → `src/routes/members.$memberId.tsx`
 - `/admin/users` → `src/routes/admin.users.tsx`
@@ -35,28 +37,30 @@ Determine the file path based on TanStack Start conventions:
 Create `src/routes/[route-name].tsx` with:
 
 ```typescript
-import { createFileRoute } from '@tanstack/react-router'
-import { z } from 'zod'
+import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 
-export const Route = createFileRoute('/[route-name]')({
+export const Route = createFileRoute("/[route-name]")({
   validateSearch: z.object({
     // search params schema
   }),
   loader: async ({ context }) => {
     // server-side data fetching
-    return { data: [] }
+    return { data: [] };
   },
-})
+});
 ```
 
 ### Step 3: Create Component (if needed)
 
 Create in `src/components/` or co-locate:
+
 - `src/routes/[route-name].components.tsx`
 
 ### Step 4: Add Server Functions (if needed)
 
 Create in `src/*/server/`:
+
 - `src/*/server/[feature].ts`
 
 ### Step 5: Create Tests
@@ -78,18 +82,18 @@ Create co-located test: `src/routes/[route-name].test.tsx`
 
 ```tsx
 // src/routes/members.tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { membersOptions } from '../../members/server/member'
+import { createFileRoute } from "@tanstack/react-router";
+import { membersOptions } from "../../members/server/member";
 
-export const Route = createFileRoute('/members')({
+export const Route = createFileRoute("/members")({
   loader: async ({ context }) => {
-    return await context.members.getAllMembers()
+    return await context.members.getAllMembers();
   },
-})
+});
 
 export default function MembersPage() {
-  const members = Route.useLoaderData()
-  return <MembersList members={members} />
+  const members = Route.useLoaderData();
+  return <MembersList members={members} />;
 }
 ```
 
@@ -97,29 +101,29 @@ export default function MembersPage() {
 
 ```tsx
 // src/routes/members.$memberId.tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { z } from 'zod'
+import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 
 const MemberParams = z.object({
   memberId: z.string(),
-})
+});
 
-export const Route = createFileRoute('/members/$memberId')({
+export const Route = createFileRoute("/members/$memberId")({
   validateSearch: z.object({
-    tab: z.enum(['overview', 'family', 'events']).default('overview'),
+    tab: z.enum(["overview", "family", "events"]).default("overview"),
   }),
   loader: async ({ params, context }) => {
-    const { memberId } = MemberParams.parse(params)
-    return await context.members.getMemberById(memberId)
+    const { memberId } = MemberParams.parse(params);
+    return await context.members.getMemberById(memberId);
   },
-})
+});
 
 export default function MemberDetailPage() {
-  const { memberId } = Route.useParams()
-  const member = Route.useLoaderData()
-  const search = Route.useSearch()
-  
-  return <MemberProfile member={member} activeTab={search.tab} />
+  const { memberId } = Route.useParams();
+  const member = Route.useLoaderData();
+  const search = Route.useSearch();
+
+  return <MemberProfile member={member} activeTab={search.tab} />;
 }
 ```
 

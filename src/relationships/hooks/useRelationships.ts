@@ -1,13 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { logger } from '../../lib/logger';
-import { queryKeys } from '../../lib/queryKeys';
-import { createPerson, getPersons, updatePerson } from '../../members/server/member';
-import { Gender, type Person } from '../../members/types';
-import { createRelationship, deleteRelationship, getRelationshipsForPerson } from '../server/relationship';
-import { RelationshipType } from '../types';
-import { getAutoPopulatedFields } from '../utils/autoPopulate';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+
+import { logger } from "../../lib/logger";
+import { queryKeys } from "../../lib/queryKeys";
+import { createPerson, getPersons, updatePerson } from "../../members/server/member";
+import { Gender, type Person } from "../../members/types";
+import {
+  createRelationship,
+  deleteRelationship,
+  getRelationshipsForPerson,
+} from "../server/relationship";
+import { RelationshipType } from "../types";
+import { getAutoPopulatedFields } from "../utils/autoPopulate";
 
 export interface DescendantStats {
   biologicalChildren: number;
@@ -22,7 +27,7 @@ export interface DescendantStats {
 export interface EnrichedRelationship {
   id: string;
   type: RelationshipType;
-  direction: 'parent' | 'child' | 'spouse' | 'child_in_law';
+  direction: "parent" | "child" | "spouse" | "child_in_law";
   targetPerson: Person;
   note: string | null;
 }
@@ -58,7 +63,7 @@ interface RelationshipsData {
 async function fetchRelationshipsData(
   personId: string,
   t: (key: string, opts?: Record<string, string>) => string,
-  onStatsLoaded?: (stats: DescendantStats) => void
+  onStatsLoaded?: (stats: DescendantStats) => void,
 ): Promise<RelationshipsData> {
   const rels = await getRelationshipsForPerson({ data: { personId } });
   const persons = await getPersons();
@@ -72,13 +77,13 @@ async function fetchRelationshipsData(
     const target = personsMap.get(targetId);
     if (!target) continue;
 
-    let direction: 'parent' | 'child' | 'spouse' = 'spouse';
+    let direction: "parent" | "child" | "spouse" = "spouse";
     if (r.type === RelationshipType.enum.marriage) {
-      direction = 'spouse';
+      direction = "spouse";
     } else if (isA) {
-      direction = 'child';
+      direction = "child";
     } else {
-      direction = 'parent';
+      direction = "parent";
     }
 
     formattedRels.push({
@@ -91,7 +96,9 @@ async function fetchRelationshipsData(
   }
 
   // Fetch in-laws (spouses of children)
-  const childrenIds = formattedRels.filter((r) => r.direction === 'child').map((r) => r.targetPerson.id);
+  const childrenIds = formattedRels
+    .filter((r) => r.direction === "child")
+    .map((r) => r.targetPerson.id);
 
   for (const childId of childrenIds) {
     const childRels = await getRelationshipsForPerson({ data: { personId: childId } });
@@ -107,17 +114,17 @@ async function fetchRelationshipsData(
       const spouseGender = spousePerson.gender;
       let noteLabel =
         spouseGender === Gender.enum.female
-          ? t('relationship.daughterInLaw', { name: childPerson.fullName })
+          ? t("relationship.daughterInLaw", { name: childPerson.fullName })
           : spouseGender === Gender.enum.male
-            ? t('relationship.sonInLaw', { name: childPerson.fullName })
-            : t('relationship.spouseOf', { name: childPerson.fullName });
+            ? t("relationship.sonInLaw", { name: childPerson.fullName })
+            : t("relationship.spouseOf", { name: childPerson.fullName });
 
       if (m.note) noteLabel += ` - ${m.note}`;
 
       formattedRels.push({
         id: `${m.id}_inlaw`,
         type: RelationshipType.enum.marriage,
-        direction: 'child_in_law',
+        direction: "child_in_law",
         targetPerson: spousePerson,
         note: noteLabel,
       });
@@ -125,26 +132,42 @@ async function fetchRelationshipsData(
   }
 
   if (onStatsLoaded) {
-    const bioChildren = formattedRels.filter((r) => r.direction === 'child' && r.type === RelationshipType.enum.biological_child);
-    const maleChildren = formattedRels.filter((r) => r.direction === 'child' && r.targetPerson.gender === Gender.enum.male);
-    const femaleChildren = formattedRels.filter((r) => r.direction === 'child' && r.targetPerson.gender === Gender.enum.female);
+    const bioChildren = formattedRels.filter(
+      (r) => r.direction === "child" && r.type === RelationshipType.enum.biological_child,
+    );
+    const maleChildren = formattedRels.filter(
+      (r) => r.direction === "child" && r.targetPerson.gender === Gender.enum.male,
+    );
+    const femaleChildren = formattedRels.filter(
+      (r) => r.direction === "child" && r.targetPerson.gender === Gender.enum.female,
+    );
 
-    const sonInLaw = formattedRels.filter((r) => r.direction === 'child_in_law' && r.targetPerson.gender === Gender.enum.male).length;
-    const daughterInLaw = formattedRels.filter((r) => r.direction === 'child_in_law' && r.targetPerson.gender === Gender.enum.female).length;
+    const sonInLaw = formattedRels.filter(
+      (r) => r.direction === "child_in_law" && r.targetPerson.gender === Gender.enum.male,
+    ).length;
+    const daughterInLaw = formattedRels.filter(
+      (r) => r.direction === "child_in_law" && r.targetPerson.gender === Gender.enum.female,
+    ).length;
 
     let paternalGrandchildren = 0;
     let maternalGrandchildren = 0;
 
     if (childrenIds.length > 0) {
       for (const childId of childrenIds) {
-        const childRelsForGrandchildren = await getRelationshipsForPerson({ data: { personId: childId } });
+        const childRelsForGrandchildren = await getRelationshipsForPerson({
+          data: { personId: childId },
+        });
         const grandchildCount = childRelsForGrandchildren.filter(
-          (r) => r.personAId === childId && (r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child)
+          (r) =>
+            r.personAId === childId &&
+            (r.type === RelationshipType.enum.biological_child ||
+              r.type === RelationshipType.enum.adopted_child),
         ).length;
 
         const childPerson = personsMap.get(childId);
         if (childPerson?.gender === Gender.enum.male) paternalGrandchildren += grandchildCount;
-        else if (childPerson?.gender === Gender.enum.female) maternalGrandchildren += grandchildCount;
+        else if (childPerson?.gender === Gender.enum.female)
+          maternalGrandchildren += grandchildCount;
       }
     }
 
@@ -167,7 +190,7 @@ export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOpti
   const personGender = person.gender;
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const [activeForm, setActiveForm] = useState<'none' | 'add' | 'bulk' | 'spouse'>('none');
+  const [activeForm, setActiveForm] = useState<"none" | "add" | "bulk" | "spouse">("none");
 
   const { data, isLoading: loading } = useQuery({
     queryKey: queryKeys.relationships.forPerson(personId),
@@ -186,14 +209,15 @@ export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOpti
       let personAId = personId;
       let personBId = mutationData.targetId;
 
-      if (mutationData.direction === 'parent') {
+      if (mutationData.direction === "parent") {
         personAId = mutationData.targetId;
         personBId = personId;
       }
 
       let type: RelationshipType = RelationshipType.enum.biological_child;
-      if (mutationData.direction === 'spouse') type = RelationshipType.enum.marriage;
-      else if (mutationData.type === RelationshipType.enum.adopted_child) type = RelationshipType.enum.adopted_child;
+      if (mutationData.direction === "spouse") type = RelationshipType.enum.marriage;
+      else if (mutationData.type === RelationshipType.enum.adopted_child)
+        type = RelationshipType.enum.adopted_child;
 
       await createRelationship({
         data: { personAId, personBId, type, note: mutationData.note || null },
@@ -203,8 +227,13 @@ export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOpti
       try {
         const targetPerson = allPersons.find((p) => p.id === mutationData.targetId);
         if (targetPerson && (targetPerson.generation == null || targetPerson.isInLaw == null)) {
-          const fields = getAutoPopulatedFields(mutationData.direction as 'child' | 'parent' | 'spouse', person);
-          const updates: { id: string; generation?: number; isInLaw?: boolean } = { id: mutationData.targetId };
+          const fields = getAutoPopulatedFields(
+            mutationData.direction as "child" | "parent" | "spouse",
+            person,
+          );
+          const updates: { id: string; generation?: number; isInLaw?: boolean } = {
+            id: mutationData.targetId,
+          };
 
           if (targetPerson.generation == null && fields.generation !== undefined) {
             updates.generation = fields.generation;
@@ -218,29 +247,31 @@ export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOpti
           }
         }
       } catch (err) {
-        logger.error('Failed to auto-update target person properties', err);
+        logger.error("Failed to auto-update target person properties", err);
       }
     },
     onSuccess: () => {
-      setActiveForm('none');
+      setActiveForm("none");
       invalidateRelationships();
     },
   });
 
   const bulkAddMutation = useMutation({
     mutationFn: async (mutationData: BulkAddData) => {
-      const validChildren = mutationData.children.filter((c) => c.name.trim() !== '');
+      const validChildren = mutationData.children.filter((c) => c.name.trim() !== "");
       if (validChildren.length === 0) {
-        throw new Error(t('relationship.bulkMinOneChild'));
+        throw new Error(t("relationship.bulkMinOneChild"));
       }
 
       let successCount = 0;
 
       for (const child of validChildren) {
-        const birthYear = child.birthYear.trim() !== '' ? Number.parseInt(child.birthYear, 10) : undefined;
-        const birthOrder = child.birthOrder.trim() !== '' ? Number.parseInt(child.birthOrder, 10) : undefined;
+        const birthYear =
+          child.birthYear.trim() !== "" ? Number.parseInt(child.birthYear, 10) : undefined;
+        const birthOrder =
+          child.birthOrder.trim() !== "" ? Number.parseInt(child.birthOrder, 10) : undefined;
 
-        const childFields = getAutoPopulatedFields('child', person);
+        const childFields = getAutoPopulatedFields("child", person);
         const newPerson = await createPerson({
           data: {
             fullName: child.name.trim(),
@@ -252,12 +283,20 @@ export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOpti
         });
 
         await createRelationship({
-          data: { personAId: personId, personBId: newPerson.id, type: RelationshipType.enum.biological_child },
+          data: {
+            personAId: personId,
+            personBId: newPerson.id,
+            type: RelationshipType.enum.biological_child,
+          },
         });
 
-        if (mutationData.spouseId && mutationData.spouseId !== 'unknown') {
+        if (mutationData.spouseId && mutationData.spouseId !== "unknown") {
           await createRelationship({
-            data: { personAId: mutationData.spouseId, personBId: newPerson.id, type: RelationshipType.enum.biological_child },
+            data: {
+              personAId: mutationData.spouseId,
+              personBId: newPerson.id,
+              type: RelationshipType.enum.biological_child,
+            },
           });
         }
 
@@ -265,11 +304,16 @@ export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOpti
       }
 
       if (successCount < validChildren.length) {
-        throw new Error(t('relationship.bulkPartialError', { count: String(successCount), total: String(validChildren.length) }));
+        throw new Error(
+          t("relationship.bulkPartialError", {
+            count: String(successCount),
+            total: String(validChildren.length),
+          }),
+        );
       }
     },
     onSuccess: () => {
-      setActiveForm('none');
+      setActiveForm("none");
       invalidateRelationships();
     },
     onError: () => {
@@ -280,14 +324,21 @@ export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOpti
   const quickAddSpouseMutation = useMutation({
     mutationFn: async (mutationData: QuickAddSpouseData) => {
       if (!mutationData.name.trim()) {
-        throw new Error(t('relationship.spouseNameRequired'));
+        throw new Error(t("relationship.spouseNameRequired"));
       }
 
       const newSpouseGender =
-        personGender === Gender.enum.male ? Gender.enum.female : personGender === Gender.enum.female ? Gender.enum.male : Gender.enum.female;
-      const birthYear = mutationData.birthYear.trim() !== '' ? Number.parseInt(mutationData.birthYear, 10) : undefined;
+        personGender === Gender.enum.male
+          ? Gender.enum.female
+          : personGender === Gender.enum.female
+            ? Gender.enum.male
+            : Gender.enum.female;
+      const birthYear =
+        mutationData.birthYear.trim() !== ""
+          ? Number.parseInt(mutationData.birthYear, 10)
+          : undefined;
 
-      const spouseFields = getAutoPopulatedFields('spouse', person);
+      const spouseFields = getAutoPopulatedFields("spouse", person);
       const newPerson = await createPerson({
         data: {
           fullName: mutationData.name.trim(),
@@ -307,7 +358,7 @@ export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOpti
       });
     },
     onSuccess: () => {
-      setActiveForm('none');
+      setActiveForm("none");
       invalidateRelationships();
     },
   });
@@ -334,14 +385,22 @@ export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOpti
   };
 
   const handleDelete = async (relId: string): Promise<void> => {
-    if (!confirm(t('relationship.deleteConfirm'))) return;
+    if (!confirm(t("relationship.deleteConfirm"))) return;
     deleteMutation.mutate(relId);
   };
 
-  const processing = addRelationshipMutation.isPending || bulkAddMutation.isPending || quickAddSpouseMutation.isPending || deleteMutation.isPending;
+  const processing =
+    addRelationshipMutation.isPending ||
+    bulkAddMutation.isPending ||
+    quickAddSpouseMutation.isPending ||
+    deleteMutation.isPending;
 
   const actionError =
-    addRelationshipMutation.error?.message || bulkAddMutation.error?.message || quickAddSpouseMutation.error?.message || deleteMutation.error?.message || null;
+    addRelationshipMutation.error?.message ||
+    bulkAddMutation.error?.message ||
+    quickAddSpouseMutation.error?.message ||
+    deleteMutation.error?.message ||
+    null;
 
   const dismissError = () => {
     addRelationshipMutation.reset();

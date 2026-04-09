@@ -1,4 +1,4 @@
-export type EventType = 'birthday' | 'death_anniversary' | 'custom_event';
+export type EventType = "birthday" | "death_anniversary" | "custom_event";
 
 export interface FamilyEvent {
   personId: string | null;

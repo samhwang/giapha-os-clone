@@ -1,15 +1,16 @@
-import { createServerFn } from '@tanstack/react-start';
-import * as z from 'zod';
-import { isEditorMiddleware } from '../../auth/server/middleware';
-import { ERRORS } from '../../lib/errors';
+import { createServerFn } from "@tanstack/react-start";
+import * as z from "zod";
+
+import { isEditorMiddleware } from "../../auth/server/middleware";
+import { ERRORS } from "../../lib/errors";
 import {
   createRelationship as createRelationshipRepo,
   deleteRelationship as deleteRelationshipRepo,
   findAllRelationships,
   findRelationshipByParticipants,
   findRelationshipsForPerson,
-} from '../repository/relationship';
-import { RelationshipType } from '../types';
+} from "../repository/relationship";
+import { RelationshipType } from "../types";
 
 const CreateRelationshipPayload = z.object({
   type: RelationshipType,
@@ -21,7 +22,7 @@ const CreateRelationshipPayload = z.object({
 const IdPayload = z.object({ id: z.uuid() });
 const PersonIdPayload = z.object({ personId: z.uuid() });
 
-export const createRelationship = createServerFn({ method: 'POST' })
+export const createRelationship = createServerFn({ method: "POST" })
   .inputValidator(CreateRelationshipPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
@@ -29,7 +30,11 @@ export const createRelationship = createServerFn({ method: 'POST' })
       throw new Error(ERRORS.RELATIONSHIP.SELF_RELATION);
     }
 
-    const existing = await findRelationshipByParticipants({ personAId: data.personAId, personBId: data.personBId, type: data.type });
+    const existing = await findRelationshipByParticipants({
+      personAId: data.personAId,
+      personBId: data.personBId,
+      type: data.type,
+    });
     if (existing) {
       throw new Error(ERRORS.RELATIONSHIP.DUPLICATE);
     }
@@ -37,7 +42,7 @@ export const createRelationship = createServerFn({ method: 'POST' })
     return createRelationshipRepo(data);
   });
 
-export const deleteRelationship = createServerFn({ method: 'POST' })
+export const deleteRelationship = createServerFn({ method: "POST" })
   .inputValidator(IdPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
@@ -45,11 +50,11 @@ export const deleteRelationship = createServerFn({ method: 'POST' })
     return { success: true };
   });
 
-export const getRelationships = createServerFn({ method: 'GET' }).handler(async () => {
+export const getRelationships = createServerFn({ method: "GET" }).handler(async () => {
   return findAllRelationships();
 });
 
-export const getRelationshipsForPerson = createServerFn({ method: 'GET' })
+export const getRelationshipsForPerson = createServerFn({ method: "GET" })
   .inputValidator(PersonIdPayload)
   .handler(async ({ data }) => {
     return findRelationshipsForPerson(data.personId);

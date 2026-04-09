@@ -1,4 +1,4 @@
-import type { Person } from '../types';
+import type { Person } from "../types";
 
 const FALLBACK_BIRTH_ORDER = 999;
 export const FALLBACK_BIRTH_YEAR = 9999;
@@ -6,9 +6,13 @@ const FALLBACK_GENERATION = 999;
 
 export type PersonWithFamily = Person & { _familyId?: string };
 
-export function getGroupId(personId: string, parentsOf: Map<string, string[]>, spousesOf: Map<string, string[]>): string {
+export function getGroupId(
+  personId: string,
+  parentsOf: Map<string, string[]>,
+  spousesOf: Map<string, string[]>,
+): string {
   const parents = parentsOf.get(personId) || [];
-  if (parents.length > 0) return `parents_${[...parents].sort().join('_')}`;
+  if (parents.length > 0) return `parents_${[...parents].sort().join("_")}`;
 
   // BFS through marriage cluster to find a bloodline member
   const visited = new Set<string>([personId]);
@@ -20,7 +24,7 @@ export function getGroupId(personId: string, parentsOf: Map<string, string[]>, s
     if (!curr) continue;
     cluster.push(curr);
     const pts = parentsOf.get(curr);
-    if (pts && pts.length > 0) return `parents_${[...pts].sort().join('_')}`;
+    if (pts && pts.length > 0) return `parents_${[...pts].sort().join("_")}`;
 
     for (const s of spousesOf.get(curr) || []) {
       if (visited.has(s)) continue;
@@ -37,7 +41,7 @@ export function buildFamilyGroupedSort(
   allPersons: Person[],
   parentsOf: Map<string, string[]>,
   spousesOf: Map<string, string[]>,
-  sortOption: string
+  sortOption: string,
 ): PersonWithFamily[] {
   const personMap = new Map<string, Person>();
   for (const p of allPersons) personMap.set(p.id, p);
@@ -59,14 +63,20 @@ export function buildFamilyGroupedSort(
       const p1 = personMap.get(parents[0]);
       if (p1) parentBirthOrder = p1.birthOrder || FALLBACK_BIRTH_ORDER;
     }
-    return { parentBirthOrder, ownBirthOrder: coreMember.birthOrder || FALLBACK_BIRTH_ORDER, birthYear: coreMember.birthYear || FALLBACK_BIRTH_YEAR };
+    return {
+      parentBirthOrder,
+      ownBirthOrder: coreMember.birthOrder || FALLBACK_BIRTH_ORDER,
+      birthYear: coreMember.birthYear || FALLBACK_BIRTH_YEAR,
+    };
   };
 
   const sortedGroups = Array.from(families.entries()).sort((a, b) => {
     const scoreA = getFamilyScore(a[1]);
     const scoreB = getFamilyScore(b[1]);
-    if (scoreA.parentBirthOrder !== scoreB.parentBirthOrder) return scoreA.parentBirthOrder - scoreB.parentBirthOrder;
-    if (scoreA.ownBirthOrder !== scoreB.ownBirthOrder) return scoreA.ownBirthOrder - scoreB.ownBirthOrder;
+    if (scoreA.parentBirthOrder !== scoreB.parentBirthOrder)
+      return scoreA.parentBirthOrder - scoreB.parentBirthOrder;
+    if (scoreA.ownBirthOrder !== scoreB.ownBirthOrder)
+      return scoreA.ownBirthOrder - scoreB.ownBirthOrder;
     return scoreA.birthYear - scoreB.birthYear;
   });
 
@@ -81,7 +91,7 @@ export function buildFamilyGroupedSort(
   result.sort((a, b) => {
     const genA = a.generation || FALLBACK_GENERATION;
     const genB = b.generation || FALLBACK_GENERATION;
-    if (genA !== genB) return sortOption === 'generation_desc' ? genB - genA : genA - genB;
+    if (genA !== genB) return sortOption === "generation_desc" ? genB - genA : genA - genB;
     return 0;
   });
 
@@ -101,7 +111,9 @@ export function sortFamilyMembers(members: Person[], spousesOf: Map<string, stri
 
     if (refA.id !== refB.id) {
       if ((refA.birthOrder || FALLBACK_BIRTH_ORDER) !== (refB.birthOrder || FALLBACK_BIRTH_ORDER))
-        return (refA.birthOrder || FALLBACK_BIRTH_ORDER) - (refB.birthOrder || FALLBACK_BIRTH_ORDER);
+        return (
+          (refA.birthOrder || FALLBACK_BIRTH_ORDER) - (refB.birthOrder || FALLBACK_BIRTH_ORDER)
+        );
       return (refA.birthYear || FALLBACK_BIRTH_YEAR) - (refB.birthYear || FALLBACK_BIRTH_YEAR);
     }
 
@@ -111,7 +123,10 @@ export function sortFamilyMembers(members: Person[], spousesOf: Map<string, stri
   });
 }
 
-export function buildCoupleGroups(famPersons: Person[], spousesOf: Map<string, string[]>): Person[][] {
+export function buildCoupleGroups(
+  famPersons: Person[],
+  spousesOf: Map<string, string[]>,
+): Person[][] {
   const personById = new Map<string, Person>();
   for (const p of famPersons) personById.set(p.id, p);
 
@@ -138,8 +153,12 @@ export function buildCoupleGroups(famPersons: Person[], spousesOf: Map<string, s
     }
 
     // Order: bloodline first, then in-laws
-    const bloodline = group.filter((m) => !m.isInLaw).sort((a, b) => (a.birthYear || FALLBACK_BIRTH_YEAR) - (b.birthYear || FALLBACK_BIRTH_YEAR));
-    const inLaws = group.filter((m) => m.isInLaw).sort((a, b) => (a.birthYear || FALLBACK_BIRTH_YEAR) - (b.birthYear || FALLBACK_BIRTH_YEAR));
+    const bloodline = group
+      .filter((m) => !m.isInLaw)
+      .sort((a, b) => (a.birthYear || FALLBACK_BIRTH_YEAR) - (b.birthYear || FALLBACK_BIRTH_YEAR));
+    const inLaws = group
+      .filter((m) => m.isInLaw)
+      .sort((a, b) => (a.birthYear || FALLBACK_BIRTH_YEAR) - (b.birthYear || FALLBACK_BIRTH_YEAR));
     groups.push([...bloodline, ...inLaws]);
   }
 

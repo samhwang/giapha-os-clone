@@ -1,4 +1,4 @@
-import { type MouseEvent, type RefObject, useRef, useState } from 'react';
+import { type MouseEvent, type RefObject, useRef, useState } from "react";
 
 const MIN_SCALE = 0.3;
 const MAX_SCALE = 2;
@@ -39,7 +39,10 @@ export function usePanZoom(containerRef: RefObject<HTMLDivElement | null>): PanZ
     hasDraggedRef.current = false;
     setDragStart({ x: e.pageX, y: e.pageY });
     if (containerRef.current) {
-      setScrollStart({ left: containerRef.current.scrollLeft, top: containerRef.current.scrollTop });
+      setScrollStart({
+        left: containerRef.current.scrollLeft,
+        top: containerRef.current.scrollTop,
+      });
     }
   };
 

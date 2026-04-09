@@ -26,14 +26,14 @@ When user asks to:
 
 ## Documentation Locations
 
-| Location | Content | Key Sections |
-|----------|---------|-------------|
-| `README.md` | Project overview, setup, tech stack | Overview, quick start, commands |
-| `docs/` | Numbered user-facing docs ([Diataxis](https://diataxis.fr/) framework) | How-to guides, explanation, reference |
-| `AGENTS.md` | Agent control manifest | Project structure, tech stack, available skills/rules, commands |
-| `.agents/rules/` | Domain-specific guidelines | Code style, patterns, commands, testing, deployment, communication |
-| `.agents/skills/` | Task-specific toolkits | Each skill's SKILL.md |
-| `.env.sample` | Environment variable reference | All required/optional env vars |
+| Location          | Content                                                                | Key Sections                                                       |
+| ----------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `README.md`       | Project overview, setup, tech stack                                    | Overview, quick start, commands                                    |
+| `docs/`           | Numbered user-facing docs ([Diataxis](https://diataxis.fr/) framework) | How-to guides, explanation, reference                              |
+| `AGENTS.md`       | Agent control manifest                                                 | Project structure, tech stack, available skills/rules, commands    |
+| `.agents/rules/`  | Domain-specific guidelines                                             | Code style, patterns, commands, testing, deployment, communication |
+| `.agents/skills/` | Task-specific toolkits                                                 | Each skill's SKILL.md                                              |
+| `.env.sample`     | Environment variable reference                                         | All required/optional env vars                                     |
 
 ## Workflow
 
@@ -67,19 +67,19 @@ Group changes by their documentation impact:
 
 For each category, note which documentation locations are affected using the mapping:
 
-| Change Type | Docs to Check |
-|-------------|---------------|
-| New feature | `README.md`, `docs/explanation/02-features.md`, `AGENTS.md` (project structure) |
-| New env var | `.env.sample`, `docs/reference/02-reference.md`, `README.md` |
-| New dependency | `README.md`, `AGENTS.md` (tech stack), `docs/reference/02-reference.md`, `.agents/rules/patterns.md` |
-| New command/script | `README.md`, `AGENTS.md` (commands), `docs/reference/02-reference.md`, `.agents/rules/commands.md` |
-| New route/module | `AGENTS.md` (project structure), `docs/reference/02-reference.md` |
-| Database change | `docs/reference/01-database.md`, `.agents/skills/db-migration/SKILL.md` |
-| New skill/rule | `AGENTS.md` (available skills/rules) |
-| Test changes | `docs/how-to/03-development.md`, `.agents/rules/testing.md` |
-| Deployment change | `docs/how-to/02-deployment.md`, `.agents/rules/deployment.md` |
-| Storage change | `docs/how-to/04-storage.md`, `docs/reference/02-reference.md` |
-| CI/CD change | `docs/reference/02-reference.md` |
+| Change Type        | Docs to Check                                                                                        |
+| ------------------ | ---------------------------------------------------------------------------------------------------- |
+| New feature        | `README.md`, `docs/explanation/02-features.md`, `AGENTS.md` (project structure)                      |
+| New env var        | `.env.sample`, `docs/reference/02-reference.md`, `README.md`                                         |
+| New dependency     | `README.md`, `AGENTS.md` (tech stack), `docs/reference/02-reference.md`, `.agents/rules/patterns.md` |
+| New command/script | `README.md`, `AGENTS.md` (commands), `docs/reference/02-reference.md`, `.agents/rules/commands.md`   |
+| New route/module   | `AGENTS.md` (project structure), `docs/reference/02-reference.md`                                    |
+| Database change    | `docs/reference/01-database.md`, `.agents/skills/db-migration/SKILL.md`                              |
+| New skill/rule     | `AGENTS.md` (available skills/rules)                                                                 |
+| Test changes       | `docs/how-to/03-development.md`, `.agents/rules/testing.md`                                          |
+| Deployment change  | `docs/how-to/02-deployment.md`, `.agents/rules/deployment.md`                                        |
+| Storage change     | `docs/how-to/04-storage.md`, `docs/reference/02-reference.md`                                        |
+| CI/CD change       | `docs/reference/02-reference.md`                                                                     |
 
 ### Step 3: Audit Each Location
 
@@ -91,6 +91,7 @@ For each affected documentation file, read the current content and compare again
 4. **Identify removals**: documented features that no longer exist
 
 Pay special attention to:
+
 - Tech stack versions and package names
 - Command examples (do they still work?)
 - File paths (do they still exist?)
@@ -107,6 +108,7 @@ Update each affected file following these principles:
 - **No fluff**: Concise, factual documentation
 
 For `README.md` specifically — if it does not exist, create it with:
+
 - Project name and one-line description
 - Tech stack summary
 - Quick start instructions (Docker + pnpm)
@@ -153,12 +155,12 @@ pnpm lint
 
 The `docs/` directory follows the [Diataxis](https://diataxis.fr/) framework. Each document must serve **one** primary purpose:
 
-| Type | Purpose | Question It Answers |
-|------|---------|---------------------|
-| **How-to guide** | Goal-oriented steps | "How do I...?" |
-| **Explanation** | Understanding-oriented discussion | "Why...? Can you tell me about...?" |
-| **Reference** | Information-oriented lookup | "What is...?" |
-| **Tutorial** | Learning-oriented guided experience | "Can you teach me to...?" |
+| Type             | Purpose                             | Question It Answers                 |
+| ---------------- | ----------------------------------- | ----------------------------------- |
+| **How-to guide** | Goal-oriented steps                 | "How do I...?"                      |
+| **Explanation**  | Understanding-oriented discussion   | "Why...? Can you tell me about...?" |
+| **Reference**    | Information-oriented lookup         | "What is...?"                       |
+| **Tutorial**     | Learning-oriented guided experience | "Can you teach me to...?"           |
 
 Current `docs/` structure:
 

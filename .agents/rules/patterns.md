@@ -7,9 +7,9 @@
 Routes use file-based routing with `createFileRoute`:
 
 ```tsx
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/dashboard/')({
+export const Route = createFileRoute("/dashboard/")({
   loader: async () => {
     const [persons, customEvents] = await Promise.all([getPersons(), getCustomEvents()]);
     return { persons, customEvents };
@@ -28,9 +28,9 @@ function DashboardPage() {
 Replace Next.js Server Actions with `createServerFn`:
 
 ```tsx
-import { createServerFn } from '@tanstack/react-start';
+import { createServerFn } from "@tanstack/react-start";
 
-export const createPerson = createServerFn({ method: 'POST' })
+export const createPerson = createServerFn({ method: "POST" })
   .validator((data: CreatePersonInput) => data)
   .handler(async ({ data }) => {
     return db.person.create({ data });
@@ -46,24 +46,24 @@ Use TanStack Start middleware for auth guards. The app separates auth logic from
 Inner logic functions that perform the actual auth checks:
 
 ```tsx
-import { auth } from 'better-auth';
-import { getHeaders } from '@tanstack/react-start/server';
+import { auth } from "better-auth";
+import { getHeaders } from "@tanstack/react-start/server";
 
 export async function requireSession(): Promise<Session> {
   const session = await auth.api.getSession({ headers: getHeaders() });
-  if (!session) throw new Error('Unauthorized');
+  if (!session) throw new Error("Unauthorized");
   return session;
 }
 
 export async function requireUser(): Promise<User> {
   const session = await requireSession();
-  if (!session.user) throw new Error('Unauthorized');
+  if (!session.user) throw new Error("Unauthorized");
   return session.user;
 }
 
 export async function requireAdmin(): Promise<User> {
   const user = await requireUser();
-  if (user.role !== 'admin') throw new Error('Từ chối truy cập.');
+  if (user.role !== "admin") throw new Error("Từ chối truy cập.");
   return user;
 }
 ```
@@ -73,10 +73,10 @@ export async function requireAdmin(): Promise<User> {
 TanStack Start middlewares that use the auth library:
 
 ```tsx
-import { createMiddleware } from '@tanstack/react-start';
-import { getHeaders } from '@tanstack/react-start/server';
-import { auth } from 'better-auth';
-import { requireSession, requireUser, requireAdmin } from './lib';
+import { createMiddleware } from "@tanstack/react-start";
+import { getHeaders } from "@tanstack/react-start/server";
+import { auth } from "better-auth";
+import { requireSession, requireUser, requireAdmin } from "./lib";
 
 export const isSessionMiddleware = createMiddleware().server(async ({ next }) => {
   const session = await requireSession();
@@ -97,10 +97,10 @@ export const isAdminMiddleware = createMiddleware().server(async ({ next }) => {
 #### Usage in Server Functions
 
 ```tsx
-import { createServerFn } from '@tanstack/react-start';
-import { isAdminMiddleware } from '../../auth/server/middleware';
+import { createServerFn } from "@tanstack/react-start";
+import { isAdminMiddleware } from "../../auth/server/middleware";
 
-export const exportData = createServerFn({ method: 'GET' })
+export const exportData = createServerFn({ method: "GET" })
   .middleware([isAdminMiddleware])
   .handler(async () => {
     // Handler logic
@@ -116,12 +116,12 @@ export const exportData = createServerFn({ method: 'GET' })
 All query keys live in `src/lib/queryKeys.ts`:
 
 ```ts
-import { queryKeys } from '../../lib/queryKeys';
+import { queryKeys } from "../../lib/queryKeys";
 
 // Usage
-queryKeys.persons.all        // ['persons']
-queryKeys.persons.detail(id) // ['person', id]
-queryKeys.relationships.forPerson(personId) // ['relationships', personId]
+queryKeys.persons.all; // ['persons']
+queryKeys.persons.detail(id); // ['person', id]
+queryKeys.relationships.forPerson(personId); // ['relationships', personId]
 ```
 
 Always use factory keys — never hand-write key arrays.
@@ -129,11 +129,11 @@ Always use factory keys — never hand-write key arrays.
 ### useQuery
 
 ```tsx
-import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '../../lib/queryKeys';
+import { useQuery } from "@tanstack/react-query";
+import { queryKeys } from "../../lib/queryKeys";
 
 const { data, isLoading, error } = useQuery({
-  queryKey: queryKeys.persons.detail(memberId ?? ''),
+  queryKey: queryKeys.persons.detail(memberId ?? ""),
   queryFn: () => getPersonById({ data: { id: memberId! } }),
   enabled: !!memberId, // conditional fetching
 });
@@ -142,7 +142,7 @@ const { data, isLoading, error } = useQuery({
 ### useMutation + Invalidation
 
 ```tsx
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const queryClient = useQueryClient();
 
@@ -165,11 +165,11 @@ const handleChange = useCallback(() => {
 
 ### When to Use What
 
-| Scenario | Approach |
-|----------|----------|
-| Data loaded in route loader, no client-side refetch needed | `Route.useLoaderData()` only |
-| Data fetched on demand (modals, conditional UI) | `useQuery` with `enabled` flag |
-| Write operations (create, update, delete) | `useMutation` + `invalidateQueries` or `router.invalidate()` |
+| Scenario                                                   | Approach                                                     |
+| ---------------------------------------------------------- | ------------------------------------------------------------ |
+| Data loaded in route loader, no client-side refetch needed | `Route.useLoaderData()` only                                 |
+| Data fetched on demand (modals, conditional UI)            | `useQuery` with `enabled` flag                               |
+| Write operations (create, update, delete)                  | `useMutation` + `invalidateQueries` or `router.invalidate()` |
 
 ## TanStack Router
 
@@ -183,31 +183,33 @@ Use `$param` prefix for dynamic segments:
 ### Navigation
 
 ```tsx
-import { Link, useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from "@tanstack/react-router";
 
 // Declarative
-<Link to="/dashboard/members/$id" params={{ id: person.id }}>View</Link>
+<Link to="/dashboard/members/$id" params={{ id: person.id }}>
+  View
+</Link>;
 
 // Programmatic
 const navigate = useNavigate();
-navigate({ to: '/dashboard/members/$id', params: { id } });
+navigate({ to: "/dashboard/members/$id", params: { id } });
 ```
 
 ### Search Params
 
 ```tsx
 // In route definition
-export const Route = createFileRoute('/dashboard/')({
+export const Route = createFileRoute("/dashboard/")({
   validateSearch: (search) => ({
-    view: search.view as 'tree' | 'list' | 'mindmap' ?? 'tree',
-    root: search.root as string ?? null,
+    view: (search.view as "tree" | "list" | "mindmap") ?? "tree",
+    root: (search.root as string) ?? null,
   }),
 });
 
 // In component
 const { view, root } = Route.useSearch();
 const navigate = useNavigate();
-navigate({ search: { view: 'mindmap' } });
+navigate({ search: { view: "mindmap" } });
 ```
 
 ## TanStack Form
@@ -225,14 +227,14 @@ Create a hook file per feature domain:
 
 ```tsx
 // src/admin/hooks/useAdminForm.ts
-import { createFormHook, createFormHookContexts } from '@tanstack/react-form-start';
+import { createFormHook, createFormHookContexts } from "@tanstack/react-form-start";
 
 export const { fieldContext, formContext, useFieldContext } = createFormHookContexts();
 
 export const { useAppForm: useAdminForm } = createFormHook({
   fieldContext,
   formContext,
-  fieldComponents: {},  // Add custom field components if needed
+  fieldComponents: {}, // Add custom field components if needed
   formComponents: {},
 });
 ```
@@ -288,8 +290,8 @@ export default function AdminUserList({ ... }) {
 ### Form with External API (validators needed)
 
 ```tsx
-import * as z from 'zod';
-import { authClient } from '../../auth/client';
+import * as z from "zod";
+import { authClient } from "../../auth/client";
 
 const Login = z.object({
   email: z.email(),
@@ -299,11 +301,11 @@ const Login = z.object({
 export default function LoginForm() {
   const form = useAuthForm({
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
     validators: {
-      onSubmit: Login,  // Validators needed for external API
+      onSubmit: Login, // Validators needed for external API
     },
     onSubmit: async ({ value }) => {
       await authClient.signIn.email({ email: value.email, password: value.password });
@@ -339,9 +341,9 @@ All database operations go through repository functions co-located with their do
 ### Repository Usage
 
 ```tsx
-import { findPersonById, createPerson } from '../repository/person';
-import { countRelationshipsForPerson } from '../../relationships/repository/relationship';
-import { withTransaction } from '../../database/transaction';
+import { findPersonById, createPerson } from "../repository/person";
+import { countRelationshipsForPerson } from "../../relationships/repository/relationship";
+import { withTransaction } from "../../database/transaction";
 
 // Simple queries
 const person = await findPersonById(id);
@@ -349,7 +351,7 @@ const count = await countRelationshipsForPerson(id);
 
 // Create
 const newPerson = await createPerson({
-  data: { fullName: 'Test', gender: 'male' },
+  data: { fullName: "Test", gender: "male" },
 });
 
 // Transactions (pass tx to repository functions)
@@ -366,14 +368,13 @@ Each function accepts an optional `client` parameter (defaults to `getDbClient()
 ### Error Handling
 
 ```tsx
-import { Prisma } from '../../database/generated/prisma/client'
-
+import { Prisma } from "../../database/generated/prisma/client";
 
 try {
   await createPerson({ data });
 } catch (error) {
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    if (error.code === 'P2002') {
+    if (error.code === "P2002") {
       // Unique constraint violation
     }
   }
@@ -386,7 +387,7 @@ try {
 ### Client Usage
 
 ```tsx
-import { authClient } from '../../auth/client';
+import { authClient } from "../../auth/client";
 
 // Sign up
 await authClient.signUp.email({ email, password, name });
@@ -406,10 +407,10 @@ const { data: session } = authClient.useSession();
 Use `beforeLoad` in route definitions:
 
 ```tsx
-export const Route = createFileRoute('/dashboard')({
+export const Route = createFileRoute("/dashboard")({
   beforeLoad: async ({ context }) => {
-    if (!context.user) throw redirect({ to: '/login' });
-    if (!context.user.isActive) throw redirect({ to: '/login' });
+    if (!context.user) throw redirect({ to: "/login" });
+    if (!context.user.isActive) throw redirect({ to: "/login" });
   },
 });
 ```
@@ -467,7 +468,7 @@ Available animations: `fade-in`, `fade-in-up`, `scale-in` (defined in `src/style
 Files are stored via `unstorage` (`src/lib/storage.ts`) which supports local filesystem (`fs` driver) and S3-compatible storage (`s3` driver), selected at runtime via `STORAGE_PROVIDER` env var.
 
 ```tsx
-import { uploadAvatar, deleteAvatar, getPublicUrl, resolveAvatarUrl } from '../lib/storage';
+import { uploadAvatar, deleteAvatar, getPublicUrl, resolveAvatarUrl } from "../lib/storage";
 
 // Upload — returns a storage key (not a URL)
 const key = await uploadAvatar({ buffer, personId, filename, contentType });

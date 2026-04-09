@@ -1,10 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Person } from '../../members/types';
-import { computeEvents } from './eventHelpers';
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import type { Person } from "../../members/types";
+
+import { computeEvents } from "./eventHelpers";
 
 function makePerson(overrides: Partial<Person> & { id: string; fullName: string }): Person {
   return {
-    gender: 'male',
+    gender: "male",
     birthYear: null,
     birthMonth: null,
     birthDay: null,
@@ -27,7 +29,7 @@ function makePerson(overrides: Partial<Person> & { id: string; fullName: string 
   };
 }
 
-describe('computeEvents', () => {
+describe("computeEvents", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     // Set "today" to 2025-01-15
@@ -38,25 +40,41 @@ describe('computeEvents', () => {
     vi.useRealTimers();
   });
 
-  describe('birthday events (solar)', () => {
-    it('should create a birthday event when birthMonth and birthDay are provided', () => {
-      const persons = [makePerson({ id: 'p1', fullName: 'Test Person', birthYear: 1990, birthMonth: 3, birthDay: 14 })];
+  describe("birthday events (solar)", () => {
+    it("should create a birthday event when birthMonth and birthDay are provided", () => {
+      const persons = [
+        makePerson({
+          id: "p1",
+          fullName: "Test Person",
+          birthYear: 1990,
+          birthMonth: 3,
+          birthDay: 14,
+        }),
+      ];
 
       const events = computeEvents({ persons });
-      const birthdays = events.filter((e) => e.type === 'birthday');
+      const birthdays = events.filter((e) => e.type === "birthday");
 
       expect(birthdays).toHaveLength(1);
-      expect(birthdays[0].personName).toBe('Test Person');
-      expect(birthdays[0].eventDateLabel).toBe('14/03');
+      expect(birthdays[0].personName).toBe("Test Person");
+      expect(birthdays[0].eventDateLabel).toBe("14/03");
       expect(birthdays[0].originYear).toBe(1990);
       expect(birthdays[0].daysUntil).toBeGreaterThan(0);
     });
 
-    it('should emit both past and upcoming events if birthday already passed this year', () => {
-      const persons = [makePerson({ id: 'p1', fullName: 'January Baby', birthYear: 2000, birthMonth: 1, birthDay: 1 })];
+    it("should emit both past and upcoming events if birthday already passed this year", () => {
+      const persons = [
+        makePerson({
+          id: "p1",
+          fullName: "January Baby",
+          birthYear: 2000,
+          birthMonth: 1,
+          birthDay: 1,
+        }),
+      ];
 
       const events = computeEvents({ persons });
-      const birthdays = events.filter((e) => e.type === 'birthday');
+      const birthdays = events.filter((e) => e.type === "birthday");
 
       // Should have 2 entries: past (Jan 1, 2025) and upcoming (Jan 1, 2026)
       expect(birthdays).toHaveLength(2);
@@ -66,20 +84,20 @@ describe('computeEvents', () => {
       expect(upcoming?.nextOccurrence.getFullYear()).toBe(2026);
     });
 
-    it('should skip birthday when birthMonth or birthDay is null', () => {
-      const persons = [makePerson({ id: 'p1', fullName: 'Year Only', birthYear: 1990 })];
+    it("should skip birthday when birthMonth or birthDay is null", () => {
+      const persons = [makePerson({ id: "p1", fullName: "Year Only", birthYear: 1990 })];
 
       const events = computeEvents({ persons });
-      expect(events.filter((e) => e.type === 'birthday')).toHaveLength(0);
+      expect(events.filter((e) => e.type === "birthday")).toHaveLength(0);
     });
   });
 
-  describe('death anniversary events (lunar)', () => {
-    it('should create a death anniversary for deceased person with death date', () => {
+  describe("death anniversary events (lunar)", () => {
+    it("should create a death anniversary for deceased person with death date", () => {
       const persons = [
         makePerson({
-          id: 'p1',
-          fullName: 'Deceased Person',
+          id: "p1",
+          fullName: "Deceased Person",
           birthYear: 1902,
           birthMonth: 3,
           birthDay: 15,
@@ -91,32 +109,44 @@ describe('computeEvents', () => {
       ];
 
       const events = computeEvents({ persons });
-      const anniversaries = events.filter((e) => e.type === 'death_anniversary');
+      const anniversaries = events.filter((e) => e.type === "death_anniversary");
 
       expect(anniversaries.length).toBeGreaterThanOrEqual(1);
-      expect(anniversaries[0].personName).toBe('Deceased Person');
+      expect(anniversaries[0].personName).toBe("Deceased Person");
       expect(anniversaries[0].eventDateLabel).toMatch(/ÂL$/);
     });
 
-    it('should skip death anniversary for living person', () => {
-      const persons = [makePerson({ id: 'p1', fullName: 'Living Person', birthYear: 1990, birthMonth: 3, birthDay: 14, deathMonth: 8, deathDay: 22 })];
-
-      const events = computeEvents({ persons });
-      expect(events.filter((e) => e.type === 'death_anniversary')).toHaveLength(0);
-    });
-
-    it('should skip death anniversary when deathMonth or deathDay is null', () => {
-      const persons = [makePerson({ id: 'p1', fullName: 'Deceased No Date', deathYear: 1975, isDeceased: true })];
-
-      const events = computeEvents({ persons });
-      expect(events.filter((e) => e.type === 'death_anniversary')).toHaveLength(0);
-    });
-
-    it('should prefer stored lunar death dates over solar-to-lunar conversion', () => {
+    it("should skip death anniversary for living person", () => {
       const persons = [
         makePerson({
-          id: 'p1',
-          fullName: 'Lunar Stored',
+          id: "p1",
+          fullName: "Living Person",
+          birthYear: 1990,
+          birthMonth: 3,
+          birthDay: 14,
+          deathMonth: 8,
+          deathDay: 22,
+        }),
+      ];
+
+      const events = computeEvents({ persons });
+      expect(events.filter((e) => e.type === "death_anniversary")).toHaveLength(0);
+    });
+
+    it("should skip death anniversary when deathMonth or deathDay is null", () => {
+      const persons = [
+        makePerson({ id: "p1", fullName: "Deceased No Date", deathYear: 1975, isDeceased: true }),
+      ];
+
+      const events = computeEvents({ persons });
+      expect(events.filter((e) => e.type === "death_anniversary")).toHaveLength(0);
+    });
+
+    it("should prefer stored lunar death dates over solar-to-lunar conversion", () => {
+      const persons = [
+        makePerson({
+          id: "p1",
+          fullName: "Lunar Stored",
           birthYear: 1920,
           birthMonth: 1,
           birthDay: 1,
@@ -131,18 +161,18 @@ describe('computeEvents', () => {
       ];
 
       const events = computeEvents({ persons });
-      const anniversary = events.find((e) => e.type === 'death_anniversary');
+      const anniversary = events.find((e) => e.type === "death_anniversary");
 
       expect(anniversary).toBeDefined();
       // Should use stored lunar month/day (05/03) not converted from solar
-      expect(anniversary?.eventDateLabel).toContain('03/05');
+      expect(anniversary?.eventDateLabel).toContain("03/05");
     });
 
-    it('should create death anniversary from stored lunar dates even without solar death date', () => {
+    it("should create death anniversary from stored lunar dates even without solar death date", () => {
       const persons = [
         makePerson({
-          id: 'p1',
-          fullName: 'Lunar Only',
+          id: "p1",
+          fullName: "Lunar Only",
           birthYear: 1920,
           birthMonth: 1,
           birthDay: 1,
@@ -154,57 +184,92 @@ describe('computeEvents', () => {
       ];
 
       const events = computeEvents({ persons });
-      const anniversary = events.find((e) => e.type === 'death_anniversary');
+      const anniversary = events.find((e) => e.type === "death_anniversary");
 
       expect(anniversary).toBeDefined();
-      expect(anniversary?.eventDateLabel).toContain('15/07');
+      expect(anniversary?.eventDateLabel).toContain("15/07");
       expect(anniversary?.originYear).toBe(1980);
     });
   });
 
-  describe('sorting', () => {
-    it('should sort events by daysUntil (soonest first)', () => {
+  describe("sorting", () => {
+    it("should sort events by daysUntil (soonest first)", () => {
       const persons = [
-        makePerson({ id: 'p1', fullName: 'March Birthday', birthYear: 1990, birthMonth: 3, birthDay: 1 }),
-        makePerson({ id: 'p2', fullName: 'February Birthday', birthYear: 1990, birthMonth: 2, birthDay: 1 }),
+        makePerson({
+          id: "p1",
+          fullName: "March Birthday",
+          birthYear: 1990,
+          birthMonth: 3,
+          birthDay: 1,
+        }),
+        makePerson({
+          id: "p2",
+          fullName: "February Birthday",
+          birthYear: 1990,
+          birthMonth: 2,
+          birthDay: 1,
+        }),
       ];
 
       const events = computeEvents({ persons });
       const upcoming = events.filter((e) => e.daysUntil >= 0);
-      expect(upcoming[0].personName).toBe('February Birthday');
-      expect(upcoming[1].personName).toBe('March Birthday');
+      expect(upcoming[0].personName).toBe("February Birthday");
+      expect(upcoming[1].personName).toBe("March Birthday");
     });
   });
 
-  describe('custom events', () => {
-    it('should include custom events in results', () => {
+  describe("custom events", () => {
+    it("should include custom events in results", () => {
       const customEvents = [
-        { id: 'ce-1', name: 'Giỗ Ông', eventDate: '2025-03-15', location: 'Hà Nội', content: null, createdBy: null },
-        { id: 'ce-2', name: 'Lễ Tảo Mộ', eventDate: '2025-06-01', location: null, content: null, createdBy: null },
+        {
+          id: "ce-1",
+          name: "Giỗ Ông",
+          eventDate: "2025-03-15",
+          location: "Hà Nội",
+          content: null,
+          createdBy: null,
+        },
+        {
+          id: "ce-2",
+          name: "Lễ Tảo Mộ",
+          eventDate: "2025-06-01",
+          location: null,
+          content: null,
+          createdBy: null,
+        },
       ];
 
       const events = computeEvents({ persons: [], customEvents });
-      const custom = events.filter((e) => e.type === 'custom_event');
+      const custom = events.filter((e) => e.type === "custom_event");
 
       expect(custom).toHaveLength(2);
-      expect(custom[0].personName).toBe('Giỗ Ông');
-      expect(custom[0].location).toBe('Hà Nội');
+      expect(custom[0].personName).toBe("Giỗ Ông");
+      expect(custom[0].location).toBe("Hà Nội");
     });
 
-    it('should skip custom events with null eventDate', () => {
-      const customEvents = [{ id: 'ce-1', name: 'No Date', eventDate: null as unknown as string, location: null, content: null, createdBy: null }];
+    it("should skip custom events with null eventDate", () => {
+      const customEvents = [
+        {
+          id: "ce-1",
+          name: "No Date",
+          eventDate: null as unknown as string,
+          location: null,
+          content: null,
+          createdBy: null,
+        },
+      ];
 
       const events = computeEvents({ persons: [], customEvents });
-      expect(events.filter((e) => e.type === 'custom_event')).toHaveLength(0);
+      expect(events.filter((e) => e.type === "custom_event")).toHaveLength(0);
     });
   });
 
-  describe('deceased birthday inclusion', () => {
-    it('should include birthday for deceased person', () => {
+  describe("deceased birthday inclusion", () => {
+    it("should include birthday for deceased person", () => {
       const persons = [
         makePerson({
-          id: 'p1',
-          fullName: 'Deceased With Birthday',
+          id: "p1",
+          fullName: "Deceased With Birthday",
           birthYear: 1920,
           birthMonth: 6,
           birthDay: 15,
@@ -216,20 +281,26 @@ describe('computeEvents', () => {
       ];
 
       const events = computeEvents({ persons });
-      const birthdays = events.filter((e) => e.type === 'birthday');
+      const birthdays = events.filter((e) => e.type === "birthday");
 
       expect(birthdays).toHaveLength(1);
       expect(birthdays[0].isDeceased).toBe(true);
     });
   });
 
-  describe('with multiple persons', () => {
-    it('should generate both birthday and anniversary events', () => {
+  describe("with multiple persons", () => {
+    it("should generate both birthday and anniversary events", () => {
       const persons = [
-        makePerson({ id: 'p1', fullName: 'Living Person', birthYear: 1990, birthMonth: 6, birthDay: 15 }),
         makePerson({
-          id: 'p2',
-          fullName: 'Deceased Person',
+          id: "p1",
+          fullName: "Living Person",
+          birthYear: 1990,
+          birthMonth: 6,
+          birthDay: 15,
+        }),
+        makePerson({
+          id: "p2",
+          fullName: "Deceased Person",
           birthYear: 1920,
           birthMonth: 3,
           birthDay: 10,
@@ -243,8 +314,8 @@ describe('computeEvents', () => {
       const events = computeEvents({ persons });
       const types = events.map((e) => e.type);
 
-      expect(types).toContain('birthday');
-      expect(types).toContain('death_anniversary');
+      expect(types).toContain("birthday");
+      expect(types).toContain("death_anniversary");
     });
   });
 });

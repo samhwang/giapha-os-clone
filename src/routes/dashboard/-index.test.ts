@@ -1,19 +1,19 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockGetPersons = vi.fn();
 const mockGetCustomEvents = vi.fn();
 
-vi.mock('../../members/server/member', () => ({
+vi.mock("../../members/server/member", () => ({
   getPersons: (...args: unknown[]) => mockGetPersons(...args),
 }));
 
-vi.mock('../../events/server/customEvent', () => ({
+vi.mock("../../events/server/customEvent", () => ({
   getCustomEvents: (...args: unknown[]) => mockGetCustomEvents(...args),
 }));
 
 let capturedOptions: Record<string, unknown> = {};
 
-vi.mock('@tanstack/react-router', () => ({
+vi.mock("@tanstack/react-router", () => ({
   createFileRoute: () => (opts: Record<string, unknown>) => {
     capturedOptions = opts;
     return { options: opts };
@@ -21,18 +21,18 @@ vi.mock('@tanstack/react-router', () => ({
   Link: () => null,
 }));
 
-describe('dashboard/index loader', () => {
+describe("dashboard/index loader", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should fetch persons and customEvents in parallel', async () => {
-    const persons = [{ id: '1', fullName: 'Test' }];
-    const customEvents = [{ id: '2', name: 'Event' }];
+  it("should fetch persons and customEvents in parallel", async () => {
+    const persons = [{ id: "1", fullName: "Test" }];
+    const customEvents = [{ id: "2", name: "Event" }];
     mockGetPersons.mockResolvedValue(persons);
     mockGetCustomEvents.mockResolvedValue(customEvents);
 
-    await import('./index');
+    await import("./index");
 
     const loader = capturedOptions.loader as () => Promise<unknown>;
     const result = await loader();
@@ -42,7 +42,7 @@ describe('dashboard/index loader', () => {
     expect(mockGetCustomEvents).toHaveBeenCalledOnce();
   });
 
-  it('should handle empty results', async () => {
+  it("should handle empty results", async () => {
     mockGetPersons.mockResolvedValue([]);
     mockGetCustomEvents.mockResolvedValue([]);
 

@@ -1,5 +1,5 @@
-import { Gender, type Person } from '../../members/types';
-import { type Relationship, RelationshipType } from '../../relationships/types';
+import { Gender, type Person } from "../../members/types";
+import { type Relationship, RelationshipType } from "../../relationships/types";
 
 export interface SpouseData {
   person: Person;
@@ -24,7 +24,10 @@ export interface TreeFilterOptions {
  * Pre-computes adjacency lists for spouses and children from raw data.
  * Optimises per-node lookups from O(N) to O(1).
  */
-export function buildAdjacencyLists(relationships: Relationship[], personsMap: Map<string, Person>): AdjacencyLists {
+export function buildAdjacencyLists(
+  relationships: Relationship[],
+  personsMap: Map<string, Person>,
+): AdjacencyLists {
   const spouses = new Map<string, SpouseData[]>();
   const children = new Map<string, Person[]>();
 
@@ -38,7 +41,10 @@ export function buildAdjacencyLists(relationships: Relationship[], personsMap: M
 
       const pA = personsMap.get(r.personAId);
       if (pA) spouses.get(r.personBId)?.push({ person: pA, note: r.note });
-    } else if (r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child) {
+    } else if (
+      r.type === RelationshipType.enum.biological_child ||
+      r.type === RelationshipType.enum.adopted_child
+    ) {
       if (!children.has(r.personAId)) children.set(r.personAId, []);
       const child = personsMap.get(r.personBId);
       if (child) children.get(r.personAId)?.push(child);
@@ -73,8 +79,14 @@ interface FilteredTreeData {
   children: Person[];
 }
 
-export function getFilteredTreeData({ personId, personsMap, adj, filters }: GetFilteredTreeDataInput): FilteredTreeData {
-  const { hideDaughtersInLaw, hideSonsInLaw, hideDaughters, hideSons, hideMales, hideFemales } = filters;
+export function getFilteredTreeData({
+  personId,
+  personsMap,
+  adj,
+  filters,
+}: GetFilteredTreeDataInput): FilteredTreeData {
+  const { hideDaughtersInLaw, hideSonsInLaw, hideDaughters, hideSons, hideMales, hideFemales } =
+    filters;
 
   let spousesList = adj.spousesByPersonId.get(personId) || [];
   spousesList = spousesList.filter((s) => {

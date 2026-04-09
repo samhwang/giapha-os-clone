@@ -100,7 +100,7 @@ Update your environment variables to match the new provider:
 ```yaml
 # Switch to S3-compatible
 - STORAGE_PROVIDER=s3
-- S3_ENDPOINT=http://seaweedfs:8333   # your provider's endpoint
+- S3_ENDPOINT=http://seaweedfs:8333 # your provider's endpoint
 - S3_BUCKET=giapha
 # ... other S3 vars
 
@@ -114,6 +114,7 @@ Verify that avatars display correctly in the application. No database changes ar
 ## Avatar Upload
 
 Members can upload avatars:
+
 - Supported formats: JPG, PNG, WebP
 - Max size: 5MB
 - Stored in `avatars/{personId}/` directory (relative to storage root)

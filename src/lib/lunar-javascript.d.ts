@@ -1,4 +1,4 @@
-declare module 'lunar-javascript' {
+declare module "lunar-javascript" {
   export class Solar {
     static fromYmd(year: number, month: number, day: number): Solar;
     getYear(): number;

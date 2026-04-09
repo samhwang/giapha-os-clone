@@ -1,15 +1,24 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { UserRole } from '../../auth/types';
-import { getDbClient } from '../../database/lib/client';
-import { deleteAllUsers, deleteUser, findAllUsers, findUserByEmail, updateUser } from '../repository/user';
+import { beforeEach, describe, expect, it } from "vitest";
+
+import { UserRole } from "../../auth/types";
+import { getDbClient } from "../../database/lib/client";
+import {
+  deleteAllUsers,
+  deleteUser,
+  findAllUsers,
+  findUserByEmail,
+  updateUser,
+} from "../repository/user";
 
 const db = getDbClient();
 
-async function seedUser(overrides: { id?: string; email?: string; role?: UserRole; isActive?: boolean } = {}) {
+async function seedUser(
+  overrides: { id?: string; email?: string; role?: UserRole; isActive?: boolean } = {},
+) {
   const id = overrides.id ?? crypto.randomUUID();
   const data = {
     email: overrides.email ?? `user-${crypto.randomUUID()}@test.com`,
-    name: 'Test User',
+    name: "Test User",
     role: overrides.role ?? UserRole.enum.member,
     isActive: overrides.isActive ?? true,
   };
@@ -21,8 +30,8 @@ async function seedUser(overrides: { id?: string; email?: string; role?: UserRol
   });
 }
 
-describe('changeRole (inner logic)', () => {
-  it('should update user role', async () => {
+describe("changeRole (inner logic)", () => {
+  it("should update user role", async () => {
     const user = await seedUser({ role: UserRole.enum.member });
 
     const updated = await updateUser({ id: user.id, data: { role: UserRole.enum.editor } });
@@ -31,8 +40,8 @@ describe('changeRole (inner logic)', () => {
   });
 });
 
-describe('deleteUser (inner logic)', () => {
-  it('should delete user', async () => {
+describe("deleteUser (inner logic)", () => {
+  it("should delete user", async () => {
     const user = await seedUser();
 
     await deleteUser(user.id);
@@ -42,8 +51,8 @@ describe('deleteUser (inner logic)', () => {
   });
 });
 
-describe('toggleStatus (inner logic)', () => {
-  it('should toggle user status to inactive', async () => {
+describe("toggleStatus (inner logic)", () => {
+  it("should toggle user status to inactive", async () => {
     const user = await seedUser({ isActive: true });
 
     const updated = await updateUser({ id: user.id, data: { isActive: false } });
@@ -51,7 +60,7 @@ describe('toggleStatus (inner logic)', () => {
     expect(updated.isActive).toBe(false);
   });
 
-  it('should toggle user status to active', async () => {
+  it("should toggle user status to active", async () => {
     const user = await seedUser({ isActive: false });
 
     const updated = await updateUser({ id: user.id, data: { isActive: true } });
@@ -60,14 +69,14 @@ describe('toggleStatus (inner logic)', () => {
   });
 });
 
-describe('getUsers (inner logic)', () => {
+describe("getUsers (inner logic)", () => {
   beforeEach(async () => {
     await deleteAllUsers();
   });
 
-  it('should return all users', async () => {
-    await seedUser({ email: 'user1@test.com' });
-    await seedUser({ email: 'user2@test.com' });
+  it("should return all users", async () => {
+    await seedUser({ email: "user1@test.com" });
+    await seedUser({ email: "user2@test.com" });
 
     const users = await findAllUsers();
 
@@ -75,12 +84,12 @@ describe('getUsers (inner logic)', () => {
   });
 });
 
-describe('server wrapper guards', () => {
+describe("server wrapper guards", () => {
   beforeEach(async () => {
     await deleteAllUsers();
   });
 
-  it('should verify self-role guard exists (changeRole)', async () => {
+  it("should verify self-role guard exists (changeRole)", async () => {
     const user = await seedUser({ role: UserRole.enum.admin });
     const currentUser = await findUserByEmail(user.email);
     expect(currentUser).not.toBeNull();
@@ -90,7 +99,7 @@ describe('server wrapper guards', () => {
     expect(isSelfRole).toBe(true);
   });
 
-  it('should verify self-delete guard exists (deleteUser)', async () => {
+  it("should verify self-delete guard exists (deleteUser)", async () => {
     const user = await seedUser();
     const currentUser = await findUserByEmail(user.email);
     expect(currentUser).not.toBeNull();
@@ -100,7 +109,7 @@ describe('server wrapper guards', () => {
     expect(isSelfDelete).toBe(true);
   });
 
-  it('should verify self-status guard exists (toggleStatus)', async () => {
+  it("should verify self-status guard exists (toggleStatus)", async () => {
     const user = await seedUser({ isActive: true });
     const currentUser = await findUserByEmail(user.email);
     expect(currentUser).not.toBeNull();
@@ -110,15 +119,15 @@ describe('server wrapper guards', () => {
     expect(isSelfStatus).toBe(true);
   });
 
-  it('should verify emailTaken check exists (createUser)', async () => {
-    const user = await seedUser({ email: 'taken@test.com' });
-    const existing = await findUserByEmail('taken@test.com');
+  it("should verify emailTaken check exists (createUser)", async () => {
+    const user = await seedUser({ email: "taken@test.com" });
+    const existing = await findUserByEmail("taken@test.com");
     expect(existing).not.toBeNull();
     expect(existing?.id).toBe(user.id);
   });
 
-  it('should verify user defaults to member role and active status', () => {
-    expect(UserRole.enum.member).toBe('member');
+  it("should verify user defaults to member role and active status", () => {
+    expect(UserRole.enum.member).toBe("member");
     expect(true).toBe(true); // isActive defaults to true
   });
 });

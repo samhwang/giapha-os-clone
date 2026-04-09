@@ -1,28 +1,31 @@
-import { useTranslation } from 'react-i18next';
-import { cn } from '../utils/cn';
+import { useTranslation } from "react-i18next";
+
+import { cn } from "../utils/cn";
 
 interface FooterProps {
   className?: string;
   showDisclaimer?: boolean;
 }
 
-export default function Footer({ className = '', showDisclaimer = false }: FooterProps) {
+export default function Footer({ className = "", showDisclaimer = false }: FooterProps) {
   const { t } = useTranslation();
 
   return (
-    <footer className={cn('py-8 text-center text-sm text-stone-500', className, 'backdrop-blur-sm')}>
-      <div className="max-w-7xl mx-auto px-4">
+    <footer
+      className={cn("py-8 text-center text-sm text-stone-500", className, "backdrop-blur-sm")}
+    >
+      <div className="mx-auto max-w-7xl px-4">
         {showDisclaimer && (
-          <p className="mb-4 text-xs tracking-wide bg-amber-50 inline-block px-3 py-1 rounded-full text-amber-800/80 border border-amber-200/50">
-            {t('footer.disclaimer')}
+          <p className="mb-4 inline-block rounded-full border border-amber-200/50 bg-amber-50 px-3 py-1 text-xs tracking-wide text-amber-800/80">
+            {t("footer.disclaimer")}
           </p>
         )}
-        <p className="flex items-center justify-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+        <p className="flex items-center justify-center gap-2 opacity-80 transition-opacity hover:opacity-100">
           <a
             href="https://github.com/samhwang/giapha-os-clone"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold text-stone-600 hover:text-amber-700 transition-colors inline-flex items-center gap-1.5"
+            className="inline-flex items-center gap-1.5 font-semibold text-stone-600 transition-colors hover:text-amber-700"
           >
             <svg
               viewBox="0 0 24 24"
@@ -46,7 +49,7 @@ export default function Footer({ className = '', showDisclaimer = false }: Foote
             href="https://me.samh.page"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold text-green-600 hover:text-amber-700 transition-colors inline-flex items-center gap-1.5"
+            className="inline-flex items-center gap-1.5 font-semibold text-green-600 transition-colors hover:text-amber-700"
           >
             Sam Huynh
           </a>

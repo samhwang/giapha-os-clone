@@ -1,6 +1,7 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
-import type { ViewMode } from '../components/ViewToggle';
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+
+import type { ViewMode } from "../components/ViewToggle";
 
 interface DashboardState {
   memberModalId: string | null;
@@ -20,40 +21,40 @@ interface DashboardAction {
 }
 
 const updateUrl = (key: string, value: string | null): void => {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
   const newUrl = new URL(window.location.href);
   if (value) {
     newUrl.searchParams.set(key, value);
   } else {
     newUrl.searchParams.delete(key);
   }
-  window.history.replaceState(null, '', newUrl.toString());
+  window.history.replaceState(null, "", newUrl.toString());
 };
 
 const getInitialState = (): DashboardState => ({
   memberModalId: null as string | null,
   showCreateModal: false,
   showAvatar: true,
-  view: 'list' as ViewMode,
+  view: "list" as ViewMode,
   rootId: null as string | null,
 });
 
 const readUrlState = (): DashboardState => {
-  if (typeof window === 'undefined') return getInitialState();
+  if (typeof window === "undefined") return getInitialState();
 
   const sp = new URLSearchParams(window.location.search);
   const defaults = getInitialState();
 
-  const avatarParam = sp.get('avatar');
-  if (avatarParam === 'hide') defaults.showAvatar = false;
+  const avatarParam = sp.get("avatar");
+  if (avatarParam === "hide") defaults.showAvatar = false;
 
-  const viewParam = sp.get('view') as ViewMode;
+  const viewParam = sp.get("view") as ViewMode;
   if (viewParam) defaults.view = viewParam;
 
-  const rootIdParam = sp.get('rootId');
+  const rootIdParam = sp.get("rootId");
   if (rootIdParam) defaults.rootId = rootIdParam;
 
-  const modalId = sp.get('memberModalId');
+  const modalId = sp.get("memberModalId");
   if (modalId) defaults.memberModalId = modalId;
 
   return defaults;
@@ -71,29 +72,29 @@ export const useDashboardStore = create<DashboardState & DashboardAction>()(
       },
 
       setMemberModalId: (id) => {
-        set({ memberModalId: id }, undefined, 'setMemberModalId');
-        updateUrl('memberModalId', id);
+        set({ memberModalId: id }, undefined, "setMemberModalId");
+        updateUrl("memberModalId", id);
       },
 
       setShowCreateModal: (show) => {
-        set({ showCreateModal: show }, undefined, 'setShowCreateModal');
+        set({ showCreateModal: show }, undefined, "setShowCreateModal");
       },
 
       setShowAvatar: (show) => {
-        set({ showAvatar: show }, undefined, 'setShowAvatar');
-        updateUrl('avatar', show ? null : 'hide');
+        set({ showAvatar: show }, undefined, "setShowAvatar");
+        updateUrl("avatar", show ? null : "hide");
       },
 
       setView: (v) => {
-        set({ view: v }, undefined, 'setView');
-        updateUrl('view', v);
+        set({ view: v }, undefined, "setView");
+        updateUrl("view", v);
       },
 
       setRootId: (id) => {
-        set({ rootId: id }, undefined, 'setRootId');
-        updateUrl('rootId', id);
+        set({ rootId: id }, undefined, "setRootId");
+        updateUrl("rootId", id);
       },
     }),
-    { name: 'dashboard' }
-  )
+    { name: "dashboard" },
+  ),
 );

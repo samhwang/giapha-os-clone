@@ -12,16 +12,16 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ### Types
 
-| Type | When to Use |
-|------|-------------|
-| `feat` | New feature or functionality |
-| `fix` | Bug fix |
-| `docs` | Documentation changes |
+| Type       | When to Use                             |
+| ---------- | --------------------------------------- |
+| `feat`     | New feature or functionality            |
+| `fix`      | Bug fix                                 |
+| `docs`     | Documentation changes                   |
 | `refactor` | Code restructuring (no behavior change) |
-| `test` | Adding or updating tests |
-| `chore` | Build, tooling, dependency updates |
-| `style` | Formatting changes (no logic change) |
-| `perf` | Performance improvements |
+| `test`     | Adding or updating tests                |
+| `chore`    | Build, tooling, dependency updates      |
+| `style`    | Formatting changes (no logic change)    |
+| `perf`     | Performance improvements                |
 
 ### Examples
 
@@ -67,11 +67,14 @@ refactor: extract avatar upload to shared utility
 
 ```markdown
 ## Summary
+
 Brief description of what changed and why.
 
 ## Changes
+
 - Bullet list of specific changes
 
 ## Test Plan
+
 - How to verify the changes work correctly
 ```

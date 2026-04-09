@@ -1,21 +1,22 @@
-import '@dotenvx/dotenvx/config';
-import { mkdirSync, writeFileSync } from 'node:fs';
-import { test as setup } from '@playwright/test';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { auth } from '../src/auth/server';
-import { UserRole } from '../src/auth/types';
-import { PrismaClient } from '../src/database/generated/prisma/client';
-import { SEED_DATA_PATH, type SeedData } from './e2e-seed-data';
-import { TEST_ADMIN, TEST_EDITOR, TEST_MEMBER, TEST_PERSON } from './fixtures';
+import "@dotenvx/dotenvx/config";
+import { test as setup } from "@playwright/test";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { mkdirSync, writeFileSync } from "node:fs";
 
-setup('seed e2e users', async () => {
+import { auth } from "../src/auth/server";
+import { UserRole } from "../src/auth/types";
+import { PrismaClient } from "../src/database/generated/prisma/client";
+import { SEED_DATA_PATH, type SeedData } from "./e2e-seed-data";
+import { TEST_ADMIN, TEST_EDITOR, TEST_MEMBER, TEST_PERSON } from "./fixtures";
+
+setup("seed e2e users", async () => {
   const ctx = await auth.$context;
   const test = ctx.test;
 
   // Seed admin first — databaseHook promotes the first user to admin
   const adminUser = test.createUser({
     email: TEST_ADMIN.email,
-    name: 'Admin',
+    name: "Admin",
     role: UserRole.enum.admin,
     isActive: true,
     emailVerified: true,
@@ -24,7 +25,7 @@ setup('seed e2e users', async () => {
 
   const editorUser = test.createUser({
     email: TEST_EDITOR.email,
-    name: 'Editor',
+    name: "Editor",
     role: UserRole.enum.editor,
     isActive: true,
     emailVerified: true,
@@ -33,7 +34,7 @@ setup('seed e2e users', async () => {
 
   const memberUser = test.createUser({
     email: TEST_MEMBER.email,
-    name: 'Member',
+    name: "Member",
     role: UserRole.enum.member,
     isActive: true,
     emailVerified: true,
@@ -51,7 +52,7 @@ setup('seed e2e users', async () => {
         gender: TEST_PERSON.gender,
         birthYear: TEST_PERSON.birthYear,
         privateDetails: {
-          create: { phoneNumber: '0901234567' },
+          create: { phoneNumber: "0901234567" },
         },
       },
     });
@@ -66,8 +67,10 @@ setup('seed e2e users', async () => {
     memberUserId: savedMember.id,
     personName: personFullName,
   };
-  mkdirSync('.playwright', { recursive: true });
+  mkdirSync(".playwright", { recursive: true });
   writeFileSync(SEED_DATA_PATH, JSON.stringify(seedData, null, 2));
 
-  console.log(`E2E seed complete: admin (${savedAdmin.email}), editor (${savedEditor.email}), member (${savedMember.email}), person (${personFullName})`);
+  console.log(
+    `E2E seed complete: admin (${savedAdmin.email}), editor (${savedEditor.email}), member (${savedMember.email}), person (${personFullName})`,
+  );
 });

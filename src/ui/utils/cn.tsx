@@ -1,10 +1,10 @@
-import { type ClassValue, clsx } from 'clsx';
-import { extendTailwindMerge } from 'tailwind-merge';
+import { type ClassValue, clsx } from "clsx";
+import { extendTailwindMerge } from "tailwind-merge";
 
 const twMerge = extendTailwindMerge({
   extend: {
     classGroups: {
-      'font-size': [{ text: ['2xs', '3xs', 'xs-plus', 'sm-plus', 'base-plus'] }],
+      "font-size": [{ text: ["2xs", "3xs", "xs-plus", "sm-plus", "base-plus"] }],
     },
   },
 });

@@ -19,13 +19,13 @@ pnpm test:e2e:ui            # Playwright UI mode
 
 ### Test File Pattern
 
-| Type | Pattern | Vitest Project | Example |
-|------|---------|----------------|---------|
-| Unit | `.test.ts` | `server` | `src/utils/kinshipHelpers.test.ts` |
-| Component | `.test.tsx` | `ui-components` | `src/components/PersonCard.test.tsx` |
-| Hook | `hooks/**/*.test.ts` | `ui-components` | `src/members/hooks/useAvatarUpload.test.ts` |
-| Route/Integration | `src/routes/**/*.test.{ts,tsx}` | `integration` | `src/routes/dashboard/-index.test.ts` |
-| E2E | `.spec.ts` | Playwright | `e2e/login.spec.ts` |
+| Type              | Pattern                         | Vitest Project  | Example                                     |
+| ----------------- | ------------------------------- | --------------- | ------------------------------------------- |
+| Unit              | `.test.ts`                      | `server`        | `src/utils/kinshipHelpers.test.ts`          |
+| Component         | `.test.tsx`                     | `ui-components` | `src/components/PersonCard.test.tsx`        |
+| Hook              | `hooks/**/*.test.ts`            | `ui-components` | `src/members/hooks/useAvatarUpload.test.ts` |
+| Route/Integration | `src/routes/**/*.test.{ts,tsx}` | `integration`   | `src/routes/dashboard/-index.test.ts`       |
+| E2E               | `.spec.ts`                      | Playwright      | `e2e/login.spec.ts`                         |
 
 ### Coverage Targets
 
@@ -50,21 +50,23 @@ pnpm test:e2e:ui            # Playwright UI mode
 - Files: `src/**/server/*.test.ts`
 
 **Why test inner logic instead of full server functions?**
+
 - TanStack Start's `createServerFn` wraps handlers in complex runtime context
 - Mocking the framework adds unnecessary complexity and brittleness
 - Testing inner logic directly gives us the same coverage without framework coupling
 - Use Testcontainers for real database; mock only auth helpers
 
 Example pattern:
+
 ```ts
 // ❌ DON'T: Test through TanStack Start wrapper (requires complex mocking)
-import { createPerson } from './member'; // the server function export
-const result = await createPerson({ data: { fullName: 'Test', gender: 'male' } });
+import { createPerson } from "./member"; // the server function export
+const result = await createPerson({ data: { fullName: "Test", gender: "male" } });
 
 // ✅ DO: Test inner logic directly via repository functions (uses real DB via Testcontainers)
-import { createPerson } from '../repository/person';
+import { createPerson } from "../repository/person";
 const result = await createPerson({
-  data: { fullName: 'Test', gender: 'male' },
+  data: { fullName: "Test", gender: "male" },
 });
 ```
 
@@ -83,15 +85,18 @@ const result = await createPerson({
 - Files: `src/routes/**/*.test.{ts,tsx}` (runs in `integration` vitest project)
 
 Example pattern:
+
 ```ts
 let capturedOptions: Record<string, unknown> = {};
 
-vi.mock('@tanstack/react-router', () => ({
+vi.mock("@tanstack/react-router", () => ({
   createFileRoute: () => (opts: Record<string, unknown>) => {
     capturedOptions = opts;
     return { options: opts };
   },
-  redirect: (opts: { to: string }) => { throw new RedirectError(opts); },
+  redirect: (opts: { to: string }) => {
+    throw new RedirectError(opts);
+  },
 }));
 
 // Then test the loader/beforeLoad:
@@ -108,23 +113,25 @@ const result = await loader();
 - Files: `e2e/**/*.spec.ts`
 
 **Why Playwright instead of Vitest browser?**
+
 - TanStack Start's virtual imports (`#tanstack-router-entry`, etc.) don't work with Vitest's browser provider
 - Playwright is the industry standard for React E2E testing
 - Full control over browser context, network interception, storage
 
 Example:
+
 ```ts
 // e2e/login.spec.ts
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test";
 
-test('login flow works', async ({ page }) => {
-  await page.goto('/login')
-  await page.fill('[name="email"]', 'test@example.com')
-  await page.fill('[name="password"]', 'password')
-  await page.click('button[type="submit"]')
-  
-  await expect(page).toHaveURL('/dashboard')
-})
+test("login flow works", async ({ page }) => {
+  await page.goto("/login");
+  await page.fill('[name="email"]', "test@example.com");
+  await page.fill('[name="password"]', "password");
+  await page.click('button[type="submit"]');
+
+  await expect(page).toHaveURL("/dashboard");
+});
 ```
 
 Type tests can be inlined within regular test files using `expectTypeOf` from vitest.
@@ -149,11 +156,11 @@ Shared mock data lives in `test/fixtures.ts`:
 
 ## Coverage Targets
 
-| Area | Target | Rationale |
-|------|--------|-----------|
-| `src/utils/**` | 90%+ | Pure logic, most critical |
-| `src/**/server/*.test.ts` | 80%+ | Business logic via Testcontainers |
-| `src/components/**` | 70%+ | Rendering and interactions |
+| Area                      | Target | Rationale                         |
+| ------------------------- | ------ | --------------------------------- |
+| `src/utils/**`            | 90%+   | Pure logic, most critical         |
+| `src/**/server/*.test.ts` | 80%+   | Business logic via Testcontainers |
+| `src/components/**`       | 70%+   | Rendering and interactions        |
 
 ## i18n in Tests
 
@@ -161,14 +168,14 @@ Use `createI18nInstance('vi').t` for assertions instead of hardcoded Vietnamese 
 This way tests only break when behavior changes, not when translations are updated.
 
 ```ts
-import { createI18nInstance } from '../../i18n/lib';
-const t = createI18nInstance('vi').t;
+import { createI18nInstance } from "../../i18n/lib";
+const t = createI18nInstance("vi").t;
 
 // ✅ DO: Use translation keys
-expect(screen.getByLabelText(t('auth.emailLabel'))).toBeInTheDocument();
+expect(screen.getByLabelText(t("auth.emailLabel"))).toBeInTheDocument();
 
 // ❌ DON'T: Hardcode translated text
-expect(screen.getByLabelText('Email')).toBeInTheDocument();
+expect(screen.getByLabelText("Email")).toBeInTheDocument();
 ```
 
 ## What NOT to Test (Excluded from Coverage)

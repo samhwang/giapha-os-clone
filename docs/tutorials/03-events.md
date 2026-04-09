@@ -51,6 +51,7 @@ Back on the member detail page, you should see a **DECEASED** badge and both the
 3. The date shown is the lunar anniversary converted to this year's solar calendar
 
 Click **View Events** to see the full events page. Use the filter tabs at the top:
+
 - Click **Death Anniversaries** to see only Giỗ events
 - Click **Birthdays** to see only birthday events
 - Click **All** to see everything
@@ -86,11 +87,11 @@ Each event shows how many days away it is. Events happening today are highlighte
 
 The app tracks three types of events:
 
-| Event Type | Source | Calendar |
-|------------|--------|----------|
-| **Birthdays** | Member's birth date | Solar |
+| Event Type                    | Source                    | Calendar                   |
+| ----------------------------- | ------------------------- | -------------------------- |
+| **Birthdays**                 | Member's birth date       | Solar                      |
 | **Death Anniversaries (Giỗ)** | Member's lunar death date | Lunar → converted to solar |
-| **Custom Events** | Manually created | Solar |
+| **Custom Events**             | Manually created          | Solar                      |
 
 Death anniversaries use the Vietnamese lunar calendar — the same lunar date falls on a different solar date each year, and the app handles the conversion automatically.
 

@@ -1,17 +1,19 @@
-import { ArrowLeftRight, BookOpen, GitMerge, Info, Search, Sparkles, Users } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import { Gender } from '../../members/types';
-import Avatar from '../../ui/common/Avatar';
-import { Badge } from '../../ui/common/Badge';
-import { Card } from '../../ui/common/Card';
-import { EmptyState } from '../../ui/common/EmptyState';
-import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
-import { cn } from '../../ui/utils/cn';
-import { getGenderStyle } from '../../ui/utils/styles';
-import type { PersonNode, RelEdge } from '../types';
-import { COLLATERAL, DESCENDANTS, DIRECT, IN_LAW, UNCLE_AUNT } from '../utils/kinship-dictionary';
-import { computeKinship } from '../utils/kinshipHelpers';
+import { ArrowLeftRight, BookOpen, GitMerge, Info, Search, Sparkles, Users } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
+
+import type { PersonNode, RelEdge } from "../types";
+
+import { Gender } from "../../members/types";
+import Avatar from "../../ui/common/Avatar";
+import { Badge } from "../../ui/common/Badge";
+import { Card } from "../../ui/common/Card";
+import { EmptyState } from "../../ui/common/EmptyState";
+import { FemaleIcon, MaleIcon } from "../../ui/icons/GenderIcons";
+import { cn } from "../../ui/utils/cn";
+import { getGenderStyle } from "../../ui/utils/styles";
+import { COLLATERAL, DESCENDANTS, DIRECT, IN_LAW, UNCLE_AUNT } from "../utils/kinship-dictionary";
+import { computeKinship } from "../utils/kinshipHelpers";
 
 interface Props {
   persons: PersonNode[];
@@ -32,38 +34,49 @@ function PersonSelector({
   disabledId?: string;
 }) {
   const { t } = useTranslation();
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
 
   const filtered = useMemo(
-    () => persons.filter((p) => p.id !== disabledId && p.fullName.toLowerCase().includes(search.toLowerCase())).slice(0, 20),
-    [persons, disabledId, search]
+    () =>
+      persons
+        .filter(
+          (p) => p.id !== disabledId && p.fullName.toLowerCase().includes(search.toLowerCase()),
+        )
+        .slice(0, 20),
+    [persons, disabledId, search],
   );
 
   return (
-    <div className="flex-1 min-w-0 relative">
-      <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-2">{label}</p>
+    <div className="relative min-w-0 flex-1">
+      <p className="mb-2 text-xs font-semibold tracking-wider text-stone-400 uppercase">{label}</p>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          'w-full flex items-center gap-3 px-4 py-3 rounded-2xl border text-left transition-all',
-          selected ? 'bg-amber-50 border-amber-300 text-stone-800' : 'bg-surface-elevated border-stone-200 text-stone-400 hover:border-amber-200'
+          "flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-all",
+          selected
+            ? "border-amber-300 bg-amber-50 text-stone-800"
+            : "border-stone-200 bg-surface-elevated text-stone-400 hover:border-amber-200",
         )}
       >
         <div className="relative shrink-0">
           {selected ? (
-            <Avatar gender={selected.gender} fullName={selected.fullName} className="size-10 text-sm font-bold ring-2 ring-white shadow-sm" />
+            <Avatar
+              gender={selected.gender}
+              fullName={selected.fullName}
+              className="size-10 text-sm font-bold shadow-sm ring-2 ring-white"
+            />
           ) : (
-            <div className="size-10 rounded-full flex items-center justify-center text-sm font-bold overflow-hidden ring-2 ring-white shadow-sm bg-stone-100 text-stone-400">
+            <div className="flex size-10 items-center justify-center overflow-hidden rounded-full bg-stone-100 text-sm font-bold text-stone-400 shadow-sm ring-2 ring-white">
               ?
             </div>
           )}
           {selected && (
             <div
               className={cn(
-                'absolute -bottom-1 -right-1 size-4 rounded-full ring-2 ring-white shadow-xs flex items-center justify-center',
-                getGenderStyle(selected.gender)
+                "absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full shadow-xs ring-2 ring-white",
+                getGenderStyle(selected.gender),
               )}
             >
               {selected.gender === Gender.enum.male ? (
@@ -75,18 +88,22 @@ function PersonSelector({
           )}
         </div>
 
-        <span className="font-semibold truncate">{selected ? selected.fullName : t('kinship.selectMember')}</span>
-        {selected?.birthYear && <span className="text-xs text-stone-400 shrink-0">({selected.birthYear})</span>}
+        <span className="truncate font-semibold">
+          {selected ? selected.fullName : t("kinship.selectMember")}
+        </span>
+        {selected?.birthYear && (
+          <span className="shrink-0 text-xs text-stone-400">({selected.birthYear})</span>
+        )}
       </button>
 
       {open && (
-        <div className="absolute top-full mt-2 left-0 right-0 z-50 bg-white rounded-2xl shadow-xl border border-border-default overflow-hidden animate-[scale-in_0.15s_ease-out_forwards]">
-          <div className="p-3 border-b border-stone-100">
+        <div className="absolute top-full right-0 left-0 z-50 mt-2 animate-[scale-in_0.15s_ease-out_forwards] overflow-hidden rounded-2xl border border-border-default bg-white shadow-xl">
+          <div className="border-b border-stone-100 p-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400" />
+              <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-stone-400" />
               <input
-                placeholder={t('kinship.searchName')}
-                className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-stone-200 focus:outline-none focus:border-amber-400"
+                placeholder={t("kinship.searchName")}
+                className="w-full rounded-xl border border-stone-200 py-2 pr-4 pl-9 text-sm focus:border-amber-400 focus:outline-none"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -94,7 +111,7 @@ function PersonSelector({
           </div>
           <div className="max-h-52 overflow-y-auto">
             {filtered.length === 0 ? (
-              <p className="text-center py-6 text-sm text-stone-400">{t('kinship.notFound')}</p>
+              <p className="py-6 text-center text-sm text-stone-400">{t("kinship.notFound")}</p>
             ) : (
               filtered.map((p) => (
                 <button
@@ -103,16 +120,20 @@ function PersonSelector({
                   onClick={() => {
                     onSelect(p);
                     setOpen(false);
-                    setSearch('');
+                    setSearch("");
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50 transition-colors text-left"
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-amber-50"
                 >
                   <div className="relative shrink-0">
-                    <Avatar gender={p.gender} fullName={p.fullName} className="size-8 text-xs font-bold ring-1 ring-white shadow-xs" />
+                    <Avatar
+                      gender={p.gender}
+                      fullName={p.fullName}
+                      className="size-8 text-xs font-bold shadow-xs ring-1 ring-white"
+                    />
                     <div
                       className={cn(
-                        'absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full ring-1 ring-white shadow-xs flex items-center justify-center',
-                        getGenderStyle(p.gender)
+                        "absolute -right-0.5 -bottom-0.5 flex size-3.5 items-center justify-center rounded-full shadow-xs ring-1 ring-white",
+                        getGenderStyle(p.gender),
                       )}
                     >
                       {p.gender === Gender.enum.male ? (
@@ -123,11 +144,13 @@ function PersonSelector({
                     </div>
                   </div>
 
-                  <span className="text-sm font-medium text-stone-700 truncate">{p.fullName}</span>
-                  {p.birthYear && <span className="text-xs text-stone-400 ml-auto shrink-0">{p.birthYear}</span>}
+                  <span className="truncate text-sm font-medium text-stone-700">{p.fullName}</span>
+                  {p.birthYear && (
+                    <span className="ml-auto shrink-0 text-xs text-stone-400">{p.birthYear}</span>
+                  )}
                   {p.generation != null && (
                     <Badge color="emerald" size="sm" className="shrink-0">
-                      {t('kinship.generationShort', { gen: p.generation })}
+                      {t("kinship.generationShort", { gen: p.generation })}
                     </Badge>
                   )}
                 </button>
@@ -141,28 +164,40 @@ function PersonSelector({
 }
 
 const KINSHIP_TERMS = [
-  { relation: `${DIRECT.FATHER} / ${DIRECT.MOTHER}`, desc: '1 bậc trên (dòng trực hệ)', example: 'Bố, ba, má...' },
-  { relation: `${DIRECT.GRANDFATHER} / ${DIRECT.GRANDMOTHER}`, desc: '2 bậc trên (dòng trực hệ)', example: 'Ông nội, bà ngoại...' },
-  { relation: 'Cụ / Kỵ / Sơ...', desc: '3 bậc trên trở lên', example: 'Cụ cố, cụ kỵ...' },
-  { relation: `${DESCENDANTS[1]} / ${DESCENDANTS[2]} / ${DESCENDANTS[3]}...`, desc: 'Các bậc dưới trực hệ', example: 'Con, cháu, chắt, chít...' },
+  {
+    relation: `${DIRECT.FATHER} / ${DIRECT.MOTHER}`,
+    desc: "1 bậc trên (dòng trực hệ)",
+    example: "Bố, ba, má...",
+  },
+  {
+    relation: `${DIRECT.GRANDFATHER} / ${DIRECT.GRANDMOTHER}`,
+    desc: "2 bậc trên (dòng trực hệ)",
+    example: "Ông nội, bà ngoại...",
+  },
+  { relation: "Cụ / Kỵ / Sơ...", desc: "3 bậc trên trở lên", example: "Cụ cố, cụ kỵ..." },
+  {
+    relation: `${DESCENDANTS[1]} / ${DESCENDANTS[2]} / ${DESCENDANTS[3]}...`,
+    desc: "Các bậc dưới trực hệ",
+    example: "Con, cháu, chắt, chít...",
+  },
   {
     relation: `${COLLATERAL.OLDER_BROTHER} / ${COLLATERAL.OLDER_SISTER} / ${COLLATERAL.YOUNGER}`,
-    desc: 'Cùng thế hệ, khác nhánh',
-    example: 'Dựa vào thứ bậc của nhánh cha/mẹ',
+    desc: "Cùng thế hệ, khác nhánh",
+    example: "Dựa vào thứ bậc của nhánh cha/mẹ",
   },
   {
     relation: `${UNCLE_AUNT.BAC} / ${UNCLE_AUNT.CHU} / ${UNCLE_AUNT.CO}`,
-    desc: 'Anh/chị/em của cha (Bên Nội)',
+    desc: "Anh/chị/em của cha (Bên Nội)",
     example: `${UNCLE_AUNT.BAC} (anh), ${UNCLE_AUNT.CHU} (em trai), ${UNCLE_AUNT.CO} (chị em gái)`,
   },
   {
     relation: `${UNCLE_AUNT.CAU} / ${UNCLE_AUNT.DI}`,
-    desc: 'Anh/chị/em của mẹ (Bên Ngoại)',
+    desc: "Anh/chị/em của mẹ (Bên Ngoại)",
     example: `${UNCLE_AUNT.CAU} (anh em trai), ${UNCLE_AUNT.DI} (chị em gái)`,
   },
   {
     relation: `${IN_LAW.THIM} / ${IN_LAW.MO} / ${IN_LAW.DUONG}`,
-    desc: 'Vợ/chồng của chú, cậu, cô, dì',
+    desc: "Vợ/chồng của chú, cậu, cô, dì",
     example: `${IN_LAW.THIM} (vợ chú), ${IN_LAW.MO} (vợ cậu), ${IN_LAW.DUONG} (chồng cô/dì)`,
   },
 ];
@@ -187,136 +222,167 @@ export default function KinshipFinder({ persons, relationships }: Props) {
     <div className="space-y-6">
       <Card variant="elevated" className="relative z-10 p-6">
         <div className="flex items-end gap-3">
-          <PersonSelector label={t('kinship.memberA')} selected={personA} onSelect={setPersonA} persons={persons} disabledId={personB?.id} />
+          <PersonSelector
+            label={t("kinship.memberA")}
+            selected={personA}
+            onSelect={setPersonA}
+            persons={persons}
+            disabledId={personB?.id}
+          />
           <button
             type="button"
             onClick={swap}
-            title={t('kinship.swap')}
-            className="size-10 shrink-0 mb-0.5 flex items-center justify-center rounded-xl bg-stone-100 hover:bg-amber-100 hover:text-amber-600 text-stone-500 transition-all border border-stone-200"
+            title={t("kinship.swap")}
+            className="mb-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl border border-stone-200 bg-stone-100 text-stone-500 transition-all hover:bg-amber-100 hover:text-amber-600"
           >
             <ArrowLeftRight className="size-4" />
           </button>
-          <PersonSelector label={t('kinship.memberB')} selected={personB} onSelect={setPersonB} persons={persons} disabledId={personA?.id} />
+          <PersonSelector
+            label={t("kinship.memberB")}
+            selected={personB}
+            onSelect={setPersonB}
+            persons={persons}
+            disabledId={personA?.id}
+          />
         </div>
       </Card>
 
       {!personA || !personB ? (
-        <EmptyState icon={<Users className="size-12 opacity-30" />} title={t('kinship.selectTwo')} />
+        <EmptyState
+          icon={<Users className="size-12 opacity-30" />}
+          title={t("kinship.selectTwo")}
+        />
       ) : result === null ? (
-        <EmptyState title={t('kinship.selectDifferent')} className="py-8" />
+        <EmptyState title={t("kinship.selectDifferent")} className="py-8" />
       ) : (
-        <div className="space-y-4 animate-[fade-in-up_0.35s_ease-out_forwards]">
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 flex items-center gap-3">
-            <Sparkles className="size-5 text-amber-500 shrink-0" />
-            <p className="text-amber-800 font-semibold">{result.distance === -1 ? t(result.description) : result.description}</p>
+        <div className="animate-[fade-in-up_0.35s_ease-out_forwards] space-y-4">
+          <div className="flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4">
+            <Sparkles className="size-5 shrink-0 text-amber-500" />
+            <p className="font-semibold text-amber-800">
+              {result.distance === -1 ? t(result.description) : result.description}
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Card
               variant="elevated"
-              className="p-5 animate-[fade-in-up_0.35s_ease-out_forwards]"
-              style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}
+              className="animate-[fade-in-up_0.35s_ease-out_forwards] p-5"
+              style={{ animationDelay: "0.1s", animationFillMode: "backwards" }}
             >
-              <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">
-                {t('kinship.aCallsB', { personA: personA.fullName, personB: personB.fullName })}
+              <p className="mb-3 text-xs font-semibold tracking-wider text-stone-400 uppercase">
+                {t("kinship.aCallsB", { personA: personA.fullName, personB: personB.fullName })}
               </p>
-              <p className="text-4xl font-serif font-bold text-amber-600 capitalize">{result.aCallsB}</p>
+              <p className="font-serif text-4xl font-bold text-amber-600 capitalize">
+                {result.aCallsB}
+              </p>
             </Card>
 
             <Card
               variant="elevated"
-              className="p-5 animate-[fade-in-up_0.35s_ease-out_forwards]"
-              style={{ animationDelay: '0.15s', animationFillMode: 'backwards' }}
+              className="animate-[fade-in-up_0.35s_ease-out_forwards] p-5"
+              style={{ animationDelay: "0.15s", animationFillMode: "backwards" }}
             >
-              <p className="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-3">
-                {t('kinship.bCallsA', { personA: personA.fullName, personB: personB.fullName })}
+              <p className="mb-3 text-xs font-semibold tracking-wider text-stone-400 uppercase">
+                {t("kinship.bCallsA", { personA: personA.fullName, personB: personB.fullName })}
               </p>
-              <p className="text-4xl font-serif font-bold text-amber-600 capitalize">{result.bCallsA}</p>
+              <p className="font-serif text-4xl font-bold text-amber-600 capitalize">
+                {result.bCallsA}
+              </p>
             </Card>
           </div>
 
           {result.pathLabels.length > 0 && (
             <div
-              className="bg-stone-50 border border-border-default rounded-2xl px-6 py-5 animate-[fade-in-up_0.35s_ease-out_forwards]"
-              style={{ animationDelay: '0.25s', animationFillMode: 'backwards' }}
+              className="animate-[fade-in-up_0.35s_ease-out_forwards] rounded-2xl border border-border-default bg-stone-50 px-6 py-5"
+              style={{ animationDelay: "0.25s", animationFillMode: "backwards" }}
             >
-              <div className="flex items-center gap-2 mb-4">
+              <div className="mb-4 flex items-center gap-2">
                 <GitMerge className="size-4 text-stone-400" />
-                <p className="text-xs font-semibold uppercase tracking-wider text-stone-400">{t('kinship.pathAnalysis')}</p>
+                <p className="text-xs font-semibold tracking-wider text-stone-400 uppercase">
+                  {t("kinship.pathAnalysis")}
+                </p>
               </div>
               <div className="space-y-4">
                 {result.pathLabels.map((pathLabel, i) => (
                   <div key={pathLabel} className="flex items-start gap-4">
-                    <div className="size-6 rounded-full bg-white border border-stone-200 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                    <div className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white shadow-sm">
                       <span className="text-2xs font-bold text-stone-400">{i + 1}</span>
                     </div>
-                    <p className="text-sm text-stone-600 leading-relaxed pt-1">{pathLabel}</p>
+                    <p className="pt-1 text-sm leading-relaxed text-stone-600">{pathLabel}</p>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {(result.aCallsB.includes('/') || result.aCallsB.includes('họ hàng')) && (
-            <p className="text-xs text-stone-400 italic px-1">{t('kinship.kinshipNote')}</p>
+          {(result.aCallsB.includes("/") || result.aCallsB.includes("họ hàng")) && (
+            <p className="px-1 text-xs text-stone-400 italic">{t("kinship.kinshipNote")}</p>
           )}
         </div>
       )}
 
-      <div className="border-t border-border-default pt-6 space-y-4">
+      <div className="space-y-4 border-t border-border-default pt-6">
         <button
           type="button"
           onClick={() => setShowGuide((v) => !v)}
-          className="flex items-center gap-2 text-sm font-semibold text-stone-500 hover:text-amber-600 transition-colors"
+          className="flex items-center gap-2 text-sm font-semibold text-stone-500 transition-colors hover:text-amber-600"
         >
           <BookOpen className="size-4" />
-          {showGuide ? t('kinship.hideGuide') : t('kinship.showGuide')}
+          {showGuide ? t("kinship.hideGuide") : t("kinship.showGuide")}
         </button>
 
         {showGuide && (
-          <div className="overflow-hidden animate-[fade-in_0.25s_ease-out_forwards]">
+          <div className="animate-[fade-in_0.25s_ease-out_forwards] overflow-hidden">
             <div className="space-y-5">
-              <div className="bg-blue-50/60 border border-blue-100 rounded-2xl p-5">
-                <p className="text-sm font-bold text-blue-700 flex items-center gap-2 mb-3">
+              <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-5">
+                <p className="mb-3 flex items-center gap-2 text-sm font-bold text-blue-700">
                   <Info className="size-4" />
-                  {t('kinship.howItWorks')}
+                  {t("kinship.howItWorks")}
                 </p>
                 <ol className="space-y-2 text-sm text-blue-800">
                   {[1, 2, 3, 4, 5].map((step) => (
                     <li key={step} className="flex gap-2">
-                      <span className="font-bold shrink-0">{step}.</span>
-                      <Trans i18nKey={`kinship.howStep${step}`} components={{ strong: <strong /> }} />
+                      <span className="shrink-0 font-bold">{step}.</span>
+                      <Trans
+                        i18nKey={`kinship.howStep${step}`}
+                        components={{ strong: <strong /> }}
+                      />
                     </li>
                   ))}
                 </ol>
               </div>
 
-              <div className="bg-amber-50/60 border border-amber-100 rounded-2xl p-5">
-                <p className="text-sm font-bold text-amber-700 flex items-center gap-2 mb-2">
+              <div className="rounded-2xl border border-amber-100 bg-amber-50/60 p-5">
+                <p className="mb-2 flex items-center gap-2 text-sm font-bold text-amber-700">
                   <Info className="size-4" />
-                  {t('kinship.dataRequirements')}
+                  {t("kinship.dataRequirements")}
                 </p>
                 <ul className="space-y-1.5 text-sm text-amber-800">
                   {[1, 2, 3].map((req) => (
                     <li key={req} className="flex gap-2">
-                      <span className="text-amber-400 shrink-0">•</span>
-                      <Trans i18nKey={`kinship.dataReq${req}`} components={{ strong: <strong /> }} />
+                      <span className="shrink-0 text-amber-400">•</span>
+                      <Trans
+                        i18nKey={`kinship.dataReq${req}`}
+                        components={{ strong: <strong /> }}
+                      />
                     </li>
                   ))}
                 </ul>
               </div>
 
               <Card variant="elevated" className="overflow-hidden">
-                <div className="px-5 py-3 border-b border-stone-100 bg-stone-50/50">
-                  <p className="text-sm font-bold text-stone-600">{t('kinship.referenceTable')}</p>
+                <div className="border-b border-stone-100 bg-stone-50/50 px-5 py-3">
+                  <p className="text-sm font-bold text-stone-600">{t("kinship.referenceTable")}</p>
                 </div>
                 <div className="divide-y divide-stone-100">
                   {KINSHIP_TERMS.map((row) => (
                     <div key={row.relation} className="flex items-start gap-4 px-5 py-3">
-                      <span className="text-sm font-bold text-amber-700 w-48 shrink-0">{row.relation}</span>
+                      <span className="w-48 shrink-0 text-sm font-bold text-amber-700">
+                        {row.relation}
+                      </span>
                       <div className="min-w-0">
                         <p className="text-sm text-stone-600">{row.desc}</p>
-                        <p className="text-xs text-stone-400 mt-0.5">{row.example}</p>
+                        <p className="mt-0.5 text-xs text-stone-400">{row.example}</p>
                       </div>
                     </div>
                   ))}

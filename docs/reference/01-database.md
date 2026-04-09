@@ -202,8 +202,8 @@ src/admin/server/
 Each function accepts an optional `client` parameter that defaults to `getDbClient()`. Pass `tx` from a transaction for transactional operations. Functions with 3+ domain parameters use a single object parameter with a colocated `{FunctionName}Input` interface. The `client` parameter always stays as a separate positional argument — it is infrastructure, not domain data.
 
 ```typescript
-import { getDbClient } from '../../database/lib/client';
-import type { DbClient } from '../../database/transaction';
+import { getDbClient } from "../../database/lib/client";
+import type { DbClient } from "../../database/transaction";
 
 // 2 domain params — positional is fine, client stays separate
 export function findPersonById(id: string, client: DbClient = getDbClient()) {
@@ -224,7 +224,7 @@ export function updatePerson({ id, data }: UpdatePersonInput, client: DbClient =
 ### Transaction Pattern
 
 ```typescript
-import { withTransaction } from '../../database/transaction';
+import { withTransaction } from "../../database/transaction";
 
 await withTransaction(async (tx) => {
   await deleteAllRelationships(tx);
@@ -235,10 +235,10 @@ await withTransaction(async (tx) => {
 
 ### Available Repositories
 
-| File | Entity | Operations |
-|------|--------|------------|
-| `members/server/repository/person.ts` | Person, PersonDetailsPrivate | create, update, find, delete, batch update, upsert private details |
-| `relationships/server/repository/relationship.ts` | Relationship | create, delete, find by participants, find for person, count |
-| `events/server/repository/custom-event.ts` | CustomEvent | create, update, delete, find all |
-| `admin/server/repository/user.ts` | User | count, find by email, find all, update, delete |
-| `database/transaction.ts` | — | `withTransaction` helper, `DbClient` type |
+| File                                              | Entity                       | Operations                                                         |
+| ------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------ |
+| `members/server/repository/person.ts`             | Person, PersonDetailsPrivate | create, update, find, delete, batch update, upsert private details |
+| `relationships/server/repository/relationship.ts` | Relationship                 | create, delete, find by participants, find for person, count       |
+| `events/server/repository/custom-event.ts`        | CustomEvent                  | create, update, delete, find all                                   |
+| `admin/server/repository/user.ts`                 | User                         | count, find by email, find all, update, delete                     |
+| `database/transaction.ts`                         | —                            | `withTransaction` helper, `DbClient` type                          |

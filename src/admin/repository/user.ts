@@ -1,6 +1,7 @@
-import type { UserUpdateInput } from '../../database/generated/prisma/models';
-import { getDbClient } from '../../database/lib/client';
-import type { DbClient } from '../../database/transaction';
+import type { UserUpdateInput } from "../../database/generated/prisma/models";
+import type { DbClient } from "../../database/transaction";
+
+import { getDbClient } from "../../database/lib/client";
 
 export function countUsers(client: DbClient = getDbClient()) {
   return client.user.count();
@@ -22,7 +23,7 @@ export function findAllUsers(client: DbClient = getDbClient()) {
       createdAt: true,
       updatedAt: true,
     },
-    orderBy: { createdAt: 'asc' },
+    orderBy: { createdAt: "asc" },
   });
 }
 

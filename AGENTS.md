@@ -166,12 +166,12 @@ pnpm run prisma:seed          # Seed sample data
 
 ## Rules vs. Skills at a Glance
 
-| Aspect | Rules | Skills |
-|--------|-------|--------|
-| Purpose | Written guidelines covering a domain | Full toolkits with templates and workflows |
-| Execution | Agent interprets and implements | Drop-in code, docs, and checklists |
-| Complexity | Describes guardrails and best practices | Encodes proven patterns for specific tasks |
-| Maintenance | Update prose as policies evolve | Refresh package when better solutions emerge |
+| Aspect      | Rules                                   | Skills                                       |
+| ----------- | --------------------------------------- | -------------------------------------------- |
+| Purpose     | Written guidelines covering a domain    | Full toolkits with templates and workflows   |
+| Execution   | Agent interprets and implements         | Drop-in code, docs, and checklists           |
+| Complexity  | Describes guardrails and best practices | Encodes proven patterns for specific tasks   |
+| Maintenance | Update prose as policies evolve         | Refresh package when better solutions emerge |
 
 ## Common Workflows
 

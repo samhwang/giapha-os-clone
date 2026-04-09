@@ -1,11 +1,13 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { type RenderOptions, render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import type { ReactNode } from 'react';
-import { I18nextProvider } from 'react-i18next';
-import { createI18nInstance } from '../src/i18n/lib';
+import type { ReactNode } from "react";
 
-const i18n = createI18nInstance('vi');
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { type RenderOptions, render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { I18nextProvider } from "react-i18next";
+
+import { createI18nInstance } from "../src/i18n/lib";
+
+const i18n = createI18nInstance("vi");
 
 function createTestQueryClient() {
   return new QueryClient({
@@ -32,7 +34,10 @@ function Wrapper({ children }: { children: ReactNode }) {
   );
 }
 
-export function renderWithProviders(ui: React.ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
+export function renderWithProviders(
+  ui: React.ReactElement,
+  options?: Omit<RenderOptions, "wrapper">,
+) {
   return {
     user: userEvent.setup(),
     ...render(ui, { wrapper: Wrapper, ...options }),

@@ -1,27 +1,32 @@
-import { ArrowUpDown, Filter, Plus, Search } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import PersonCard from '../../members/components/PersonCard';
-import { Gender, type Person } from '../../members/types';
-import { buildFamilyGroupedSort, FALLBACK_BIRTH_YEAR } from '../../members/utils/familyGrouping';
-import type { Relationship } from '../../relationships/types';
-import { Button } from '../../ui/common/Button';
-import { Card } from '../../ui/common/Card';
-import { EmptyState } from '../../ui/common/EmptyState';
-import { useDashboardStore } from '../store/dashboardStore';
-import GenerationGroupedList from './GenerationGroupedList';
+import { ArrowUpDown, Filter, Plus, Search } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+
+import type { Relationship } from "../../relationships/types";
+
+import PersonCard from "../../members/components/PersonCard";
+import { Gender, type Person } from "../../members/types";
+import { buildFamilyGroupedSort, FALLBACK_BIRTH_YEAR } from "../../members/utils/familyGrouping";
+import { Button } from "../../ui/common/Button";
+import { Card } from "../../ui/common/Card";
+import { EmptyState } from "../../ui/common/EmptyState";
+import { useDashboardStore } from "../store/dashboardStore";
+import GenerationGroupedList from "./GenerationGroupedList";
 
 interface DashboardMemberListProps {
   initialPersons: Person[];
   relationships?: Relationship[];
 }
 
-export default function DashboardMemberList({ initialPersons, relationships = [] }: DashboardMemberListProps) {
+export default function DashboardMemberList({
+  initialPersons,
+  relationships = [],
+}: DashboardMemberListProps) {
   const { t } = useTranslation();
   const { setShowCreateModal } = useDashboardStore();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortOption, setSortOption] = useState('updated_desc');
-  const [filterOption, setFilterOption] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOption, setSortOption] = useState("updated_desc");
+  const [filterOption, setFilterOption] = useState("all");
 
   const filteredPersons = useMemo(() => {
     return initialPersons.filter((person) => {
@@ -29,22 +34,22 @@ export default function DashboardMemberList({ initialPersons, relationships = []
 
       let matchesFilter = true;
       switch (filterOption) {
-        case 'male':
+        case "male":
           matchesFilter = person.gender === Gender.enum.male;
           break;
-        case 'female':
+        case "female":
           matchesFilter = person.gender === Gender.enum.female;
           break;
-        case 'in_law_female':
+        case "in_law_female":
           matchesFilter = person.gender === Gender.enum.female && person.isInLaw;
           break;
-        case 'in_law_male':
+        case "in_law_male":
           matchesFilter = person.gender === Gender.enum.male && person.isInLaw;
           break;
-        case 'deceased':
+        case "deceased":
           matchesFilter = person.isDeceased;
           break;
-        case 'first_child':
+        case "first_child":
           matchesFilter = person.birthOrder === 1;
           break;
         default:
@@ -61,10 +66,10 @@ export default function DashboardMemberList({ initialPersons, relationships = []
     const sOf = new Map<string, string[]>();
 
     for (const rel of relationships) {
-      if (rel.type === 'biological_child' || rel.type === 'adopted_child') {
+      if (rel.type === "biological_child" || rel.type === "adopted_child") {
         if (!pOf.has(rel.personBId)) pOf.set(rel.personBId, []);
         pOf.get(rel.personBId)?.push(rel.personAId);
-      } else if (rel.type === 'marriage') {
+      } else if (rel.type === "marriage") {
         if (!sOf.has(rel.personAId)) sOf.set(rel.personAId, []);
         if (!sOf.has(rel.personBId)) sOf.set(rel.personBId, []);
         sOf.get(rel.personAId)?.push(rel.personBId);
@@ -76,20 +81,20 @@ export default function DashboardMemberList({ initialPersons, relationships = []
   }, [relationships]);
 
   const sortedPersons = useMemo(() => {
-    if (!sortOption.includes('generation')) {
+    if (!sortOption.includes("generation")) {
       return [...filteredPersons].sort((a, b) => {
         switch (sortOption) {
-          case 'birth_asc':
+          case "birth_asc":
             return (a.birthYear || FALLBACK_BIRTH_YEAR) - (b.birthYear || FALLBACK_BIRTH_YEAR);
-          case 'birth_desc':
+          case "birth_desc":
             return (b.birthYear || 0) - (a.birthYear || 0);
-          case 'name_asc':
-            return a.fullName.localeCompare(b.fullName, 'vi');
-          case 'name_desc':
-            return b.fullName.localeCompare(a.fullName, 'vi');
-          case 'updated_desc':
+          case "name_asc":
+            return a.fullName.localeCompare(b.fullName, "vi");
+          case "name_desc":
+            return b.fullName.localeCompare(a.fullName, "vi");
+          case "updated_desc":
             return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-          case 'updated_asc':
+          case "updated_asc":
             return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
           default:
             return 0;
@@ -97,70 +102,100 @@ export default function DashboardMemberList({ initialPersons, relationships = []
       });
     }
 
-    return buildFamilyGroupedSort(filteredPersons, initialPersons, parentsOf, spousesOf, sortOption);
+    return buildFamilyGroupedSort(
+      filteredPersons,
+      initialPersons,
+      parentsOf,
+      spousesOf,
+      sortOption,
+    );
   }, [filteredPersons, sortOption, initialPersons, parentsOf, spousesOf]);
 
-  const isGenerationSort = sortOption.includes('generation');
+  const isGenerationSort = sortOption.includes("generation");
 
   return (
     <>
-      <div className="mb-8 relative">
-        <Card className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 sm:p-5 relative z-10 w-full">
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto flex-1">
-            <div className="relative flex-1 max-w-sm group">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-stone-400 group-focus-within:text-amber-500 transition-colors" />
+      <div className="relative mb-8">
+        <Card className="relative z-10 flex w-full flex-col items-start justify-between gap-4 p-4 sm:flex-row sm:items-center sm:p-5">
+          <div className="flex w-full flex-1 flex-col gap-4 sm:w-auto sm:flex-row">
+            <div className="group relative max-w-sm flex-1">
+              <Search className="absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-stone-400 transition-colors group-focus-within:text-amber-500" />
               <input
                 type="text"
-                placeholder={t('member.searchPlaceholder')}
-                className="bg-white/90 text-stone-900 w-full pl-10 pr-4 py-2.5 rounded-xl border border-border-strong shadow-sm placeholder-stone-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                placeholder={t("member.searchPlaceholder")}
+                className="w-full rounded-xl border border-border-strong bg-white/90 py-2.5 pr-4 pl-10 text-stone-900 placeholder-stone-400 shadow-sm transition-all focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto items-center">
+            <div className="flex w-full flex-col items-center gap-2 sm:w-auto sm:flex-row sm:gap-3">
               <div className="relative w-full sm:w-auto">
-                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none" />
+                <Filter className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-stone-400" />
                 <select
-                  className="appearance-none bg-white/90 text-stone-700 w-full sm:w-40 pl-9 pr-8 py-2.5 rounded-xl border border-border-strong shadow-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 hover:border-amber-300 font-medium text-sm transition-all focus:bg-white"
+                  className="w-full appearance-none rounded-xl border border-border-strong bg-white/90 py-2.5 pr-8 pl-9 text-sm font-medium text-stone-700 shadow-sm transition-all hover:border-amber-300 focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:outline-none sm:w-40"
                   value={filterOption}
                   onChange={(e) => setFilterOption(e.target.value)}
                 >
-                  <option value="all">{t('member.filterAll')}</option>
-                  <option value="male">{t('common.male')}</option>
-                  <option value="female">{t('common.female')}</option>
-                  <option value="in_law_female">{t('member.filterInLawFemale')}</option>
-                  <option value="in_law_male">{t('member.filterInLawMale')}</option>
-                  <option value="deceased">{t('member.filterDeceased')}</option>
-                  <option value="first_child">{t('member.filterFirstborn')}</option>
+                  <option value="all">{t("member.filterAll")}</option>
+                  <option value="male">{t("common.male")}</option>
+                  <option value="female">{t("common.female")}</option>
+                  <option value="in_law_female">{t("member.filterInLawFemale")}</option>
+                  <option value="in_law_male">{t("member.filterInLawMale")}</option>
+                  <option value="deceased">{t("member.filterDeceased")}</option>
+                  <option value="first_child">{t("member.filterFirstborn")}</option>
                 </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="size-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label={t('member.openMenu')}>
-                    <title>{t('member.openMenu')}</title>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
+                  <svg
+                    className="size-4 text-stone-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    role="img"
+                    aria-label={t("member.openMenu")}
+                  >
+                    <title>{t("member.openMenu")}</title>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
               </div>
 
               <div className="relative w-full sm:w-auto">
-                <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none" />
+                <ArrowUpDown className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-stone-400" />
                 <select
-                  className="appearance-none bg-white/90 text-stone-700 w-full sm:w-52 pl-9 pr-8 py-2.5 rounded-xl border border-border-strong shadow-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 hover:border-amber-300 font-medium text-sm transition-all focus:bg-white"
+                  className="w-full appearance-none rounded-xl border border-border-strong bg-white/90 py-2.5 pr-8 pl-9 text-sm font-medium text-stone-700 shadow-sm transition-all hover:border-amber-300 focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-500/20 focus:outline-none sm:w-52"
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
                 >
-                  <option value="birth_asc">{t('member.sortBirthAsc')}</option>
-                  <option value="birth_desc">{t('member.sortBirthDesc')}</option>
-                  <option value="name_asc">{t('member.sortNameAsc')}</option>
-                  <option value="name_desc">{t('member.sortNameDesc')}</option>
-                  <option value="updated_desc">{t('member.sortUpdatedDesc')}</option>
-                  <option value="updated_asc">{t('member.sortUpdatedAsc')}</option>
-                  <option value="generation_asc">{t('member.sortGenerationAsc')}</option>
-                  <option value="generation_desc">{t('member.sortGenerationDesc')}</option>
+                  <option value="birth_asc">{t("member.sortBirthAsc")}</option>
+                  <option value="birth_desc">{t("member.sortBirthDesc")}</option>
+                  <option value="name_asc">{t("member.sortNameAsc")}</option>
+                  <option value="name_desc">{t("member.sortNameDesc")}</option>
+                  <option value="updated_desc">{t("member.sortUpdatedDesc")}</option>
+                  <option value="updated_asc">{t("member.sortUpdatedAsc")}</option>
+                  <option value="generation_asc">{t("member.sortGenerationAsc")}</option>
+                  <option value="generation_desc">{t("member.sortGenerationDesc")}</option>
                 </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="size-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label={t('member.openMenu')}>
-                    <title>{t('member.openMenu')}</title>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
+                  <svg
+                    className="size-4 text-stone-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    role="img"
+                    aria-label={t("member.openMenu")}
+                  >
+                    <title>{t("member.openMenu")}</title>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -168,12 +203,17 @@ export default function DashboardMemberList({ initialPersons, relationships = []
           </div>
           <Button variant="primary" onClick={() => setShowCreateModal(true)}>
             <Plus className="size-4" strokeWidth={2.5} />
-            {t('member.addMember')}
+            {t("member.addMember")}
           </Button>
         </Card>
       </div>
 
-      {sortedPersons.length === 0 && <EmptyState title={initialPersons.length > 0 ? t('member.noResults') : t('member.emptyState')} className="py-12" />}
+      {sortedPersons.length === 0 && (
+        <EmptyState
+          title={initialPersons.length > 0 ? t("member.noResults") : t("member.emptyState")}
+          className="py-12"
+        />
+      )}
 
       {sortedPersons.length > 0 && isGenerationSort && (
         <GenerationGroupedList

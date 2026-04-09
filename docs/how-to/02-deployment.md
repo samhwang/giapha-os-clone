@@ -76,6 +76,7 @@ docker compose -f docker-compose.production.yml up db-migrate
 ### Reverse Proxy
 
 A reverse proxy is optional but recommended for:
+
 - SSL/TLS termination
 - Custom domain names
 - Better security headers

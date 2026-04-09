@@ -91,13 +91,13 @@ This project has evolved significantly beyond being a direct clone. The original
 
 ### Architecture Changes
 
-| Aspect | Original | This Clone |
-|--------|----------|------------|
-| Framework | Next.js | TanStack Start |
-| Auth | Supabase Auth | Better Auth |
-| Database | Supabase (PostgreSQL) | Prisma + PostgreSQL |
-| File Storage | Supabase Storage | Local filesystem / S3-compatible |
-| Styling | CSS Modules + custom | Tailwind CSS v4 |
+| Aspect       | Original              | This Clone                       |
+| ------------ | --------------------- | -------------------------------- |
+| Framework    | Next.js               | TanStack Start                   |
+| Auth         | Supabase Auth         | Better Auth                      |
+| Database     | Supabase (PostgreSQL) | Prisma + PostgreSQL              |
+| File Storage | Supabase Storage      | Local filesystem / S3-compatible |
+| Styling      | CSS Modules + custom  | Tailwind CSS v4                  |
 
 ### Code Improvements
 

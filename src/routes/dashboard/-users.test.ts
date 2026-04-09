@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockGetUsers = vi.fn();
 
-vi.mock('../../admin/server/user', () => ({
+vi.mock("../../admin/server/user", () => ({
   getUsers: (...args: unknown[]) => mockGetUsers(...args),
 }));
 
@@ -15,7 +15,7 @@ class RedirectError {
 
 let capturedOptions: Record<string, unknown> = {};
 
-vi.mock('@tanstack/react-router', () => ({
+vi.mock("@tanstack/react-router", () => ({
   createFileRoute: () => (opts: Record<string, unknown>) => {
     capturedOptions = opts;
     return { options: opts };
@@ -27,50 +27,50 @@ vi.mock('@tanstack/react-router', () => ({
 
 type BeforeLoadCtx = { context: { session: { role: string } | null } };
 
-describe('dashboard/users beforeLoad', () => {
+describe("dashboard/users beforeLoad", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    await import('./users');
+    await import("./users");
   });
 
-  it('should allow admin through', () => {
+  it("should allow admin through", () => {
     const beforeLoad = capturedOptions.beforeLoad as (ctx: BeforeLoadCtx) => void;
 
-    expect(() => beforeLoad({ context: { session: { role: 'admin' } } })).not.toThrow();
+    expect(() => beforeLoad({ context: { session: { role: "admin" } } })).not.toThrow();
   });
 
-  it('should redirect non-admin to /dashboard', () => {
+  it("should redirect non-admin to /dashboard", () => {
     const beforeLoad = capturedOptions.beforeLoad as (ctx: BeforeLoadCtx) => void;
 
     try {
-      beforeLoad({ context: { session: { role: 'member' } } });
-      expect.unreachable('should have thrown');
+      beforeLoad({ context: { session: { role: "member" } } });
+      expect.unreachable("should have thrown");
     } catch (err) {
       expect(err).toBeInstanceOf(RedirectError);
-      expect((err as RedirectError).to).toBe('/dashboard');
+      expect((err as RedirectError).to).toBe("/dashboard");
     }
   });
 
-  it('should redirect when no session', () => {
+  it("should redirect when no session", () => {
     const beforeLoad = capturedOptions.beforeLoad as (ctx: BeforeLoadCtx) => void;
 
     try {
       beforeLoad({ context: { session: null } });
-      expect.unreachable('should have thrown');
+      expect.unreachable("should have thrown");
     } catch (err) {
       expect(err).toBeInstanceOf(RedirectError);
-      expect((err as RedirectError).to).toBe('/dashboard');
+      expect((err as RedirectError).to).toBe("/dashboard");
     }
   });
 });
 
-describe('dashboard/users loader', () => {
+describe("dashboard/users loader", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should fetch users', async () => {
-    const users = [{ id: 'u1', email: 'test@example.com' }];
+  it("should fetch users", async () => {
+    const users = [{ id: "u1", email: "test@example.com" }];
     mockGetUsers.mockResolvedValue(users);
 
     const loader = capturedOptions.loader as () => Promise<unknown>;

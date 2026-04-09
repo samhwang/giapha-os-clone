@@ -1,4 +1,4 @@
-import { type KinshipResult, type PersonNode, RelationshipType, type RelEdge } from '../types';
+import { type KinshipResult, type PersonNode, RelationshipType, type RelEdge } from "../types";
 import {
   ANCESTORS,
   ancestorDepthTerm,
@@ -15,51 +15,56 @@ import {
   SIBLING,
   SIDE,
   UNCLE_AUNT,
-} from './kinship-dictionary';
+} from "./kinship-dictionary";
 
 const DEPTH_SIBLING = 1;
 const DEPTH_GREAT_AUNT = 3;
 const DEPTH_GREAT_GREAT_AUNT = 4;
 
-function compareSeniority(a: PersonNode, b: PersonNode): 'senior' | 'junior' | 'equal' {
-  if (a.id === b.id) return 'equal';
+function compareSeniority(a: PersonNode, b: PersonNode): "senior" | "junior" | "equal" {
+  if (a.id === b.id) return "equal";
 
   if (a.birthOrder != null && b.birthOrder != null) {
-    if (a.birthOrder < b.birthOrder) return 'senior';
-    if (a.birthOrder > b.birthOrder) return 'junior';
+    if (a.birthOrder < b.birthOrder) return "senior";
+    if (a.birthOrder > b.birthOrder) return "junior";
   }
 
   if (a.birthYear != null && b.birthYear != null) {
-    if (a.birthYear < b.birthYear) return 'senior';
-    if (a.birthYear > b.birthYear) return 'junior';
+    if (a.birthYear < b.birthYear) return "senior";
+    if (a.birthYear > b.birthYear) return "junior";
   }
 
-  return 'equal';
+  return "equal";
 }
 
 interface GetDirectAncestorTermInput {
   depth: number;
-  gender: 'male' | 'female' | 'other';
+  gender: "male" | "female" | "other";
   isPaternal: boolean;
 }
 
 function getDirectAncestorTerm({ depth, gender, isPaternal }: GetDirectAncestorTermInput): string {
-  if (depth === 1) return gender === 'female' ? DIRECT.MOTHER : DIRECT.FATHER;
+  if (depth === 1) return gender === "female" ? DIRECT.MOTHER : DIRECT.FATHER;
   if (depth === 2) {
-    const base = gender === 'female' ? DIRECT.GRANDMOTHER : DIRECT.GRANDFATHER;
+    const base = gender === "female" ? DIRECT.GRANDMOTHER : DIRECT.GRANDFATHER;
     return `${base} ${isPaternal ? SIDE.PATERNAL : SIDE.MATERNAL}`;
   }
   const title = ANCESTORS[depth] || ancestorDepthTerm(depth);
   if (depth === 3) {
-    const base = gender === 'female' ? DIRECT.GREAT_GRANDMOTHER : DIRECT.GREAT_GRANDFATHER;
+    const base = gender === "female" ? DIRECT.GREAT_GRANDMOTHER : DIRECT.GREAT_GRANDFATHER;
     return `${base} ${isPaternal ? SIDE.PATERNAL : SIDE.MATERNAL}`;
   }
   return title;
 }
 
-function getDirectDescendantTerm(depth: number, gender: 'male' | 'female' | 'other'): string {
+function getDirectDescendantTerm(depth: number, gender: "male" | "female" | "other"): string {
   const base = DESCENDANTS[depth] || descendantDepthTerm(depth);
-  const suffix = gender === 'male' ? ` ${GENDER_SUFFIX.MALE}` : gender === 'female' ? ` ${GENDER_SUFFIX.FEMALE}` : '';
+  const suffix =
+    gender === "male"
+      ? ` ${GENDER_SUFFIX.MALE}`
+      : gender === "female"
+        ? ` ${GENDER_SUFFIX.FEMALE}`
+        : "";
   return base + suffix;
 }
 
@@ -72,11 +77,27 @@ interface ResolveBloodTermsInput {
   pathB: PersonNode[];
 }
 
-function resolveBloodTerms({ depthA, depthB, personA, personB, pathA, pathB }: ResolveBloodTermsInput): [string, string, string] {
-  const needsSwap = (depthA === DEPTH_SIBLING && depthB > DEPTH_SIBLING) || (depthA > DEPTH_SIBLING && depthB > DEPTH_SIBLING && depthA < depthB);
+function resolveBloodTerms({
+  depthA,
+  depthB,
+  personA,
+  personB,
+  pathA,
+  pathB,
+}: ResolveBloodTermsInput): [string, string, string] {
+  const needsSwap =
+    (depthA === DEPTH_SIBLING && depthB > DEPTH_SIBLING) ||
+    (depthA > DEPTH_SIBLING && depthB > DEPTH_SIBLING && depthA < depthB);
 
   if (needsSwap) {
-    const [bCallsA, aCallsB, desc] = resolveBloodTerms({ depthA: depthB, depthB: depthA, personA: personB, personB: personA, pathA: pathB, pathB: pathA });
+    const [bCallsA, aCallsB, desc] = resolveBloodTerms({
+      depthA: depthB,
+      depthB: depthA,
+      personA: personB,
+      personB: personA,
+      pathA: pathB,
+      pathB: pathA,
+    });
     return [aCallsB, bCallsA, desc];
   }
 
@@ -86,7 +107,7 @@ function resolveBloodTerms({ depthA, depthB, personA, personB, pathA, pathB }: R
   if (depthA === 0) {
     const firstChildOfA = pathB[pathB.length - 1];
     if (!firstChildOfA) return [FALLBACK.DESCENDANT, FALLBACK.ANCESTOR, DESCRIPTION.DIRECT_LINE];
-    const isPaternal = firstChildOfA.gender === 'male';
+    const isPaternal = firstChildOfA.gender === "male";
     const bCallsA = getDirectAncestorTerm({ depth: depthB, gender: genderA, isPaternal });
     const aCallsB = getDirectDescendantTerm(depthB, genderB);
     return [aCallsB, bCallsA, DESCRIPTION.DIRECT_LINE];
@@ -95,7 +116,7 @@ function resolveBloodTerms({ depthA, depthB, personA, personB, pathA, pathB }: R
   if (depthB === 0) {
     const firstChildOfB = pathA[pathA.length - 1];
     if (!firstChildOfB) return [FALLBACK.ANCESTOR, FALLBACK.DESCENDANT, DESCRIPTION.DIRECT_LINE];
-    const isPaternal = firstChildOfB.gender === 'male';
+    const isPaternal = firstChildOfB.gender === "male";
     const aCallsB = getDirectAncestorTerm({ depth: depthA, gender: genderB, isPaternal });
     const bCallsA = getDirectDescendantTerm(depthA, genderA);
     return [aCallsB, bCallsA, DESCRIPTION.DIRECT_LINE];
@@ -106,68 +127,82 @@ function resolveBloodTerms({ depthA, depthB, personA, personB, pathA, pathB }: R
   if (!branchA || !branchB) return [FALLBACK.KIN, FALLBACK.KIN, DESCRIPTION.KINSHIP];
 
   const seniority = compareSeniority(branchA, branchB);
-  const isPaternalA = branchA.gender === 'male';
+  const isPaternalA = branchA.gender === "male";
 
   if (depthA === DEPTH_SIBLING && depthB === DEPTH_SIBLING) {
     const aSenior = compareSeniority(personA, personB);
-    if (aSenior === 'senior') {
+    if (aSenior === "senior") {
       return [
-        genderB === 'female' ? SIBLING.YOUNGER_SISTER : SIBLING.YOUNGER_BROTHER,
-        genderA === 'female' ? SIBLING.OLDER_SISTER : SIBLING.OLDER_BROTHER,
+        genderB === "female" ? SIBLING.YOUNGER_SISTER : SIBLING.YOUNGER_BROTHER,
+        genderA === "female" ? SIBLING.OLDER_SISTER : SIBLING.OLDER_BROTHER,
         SIBLING.LABEL,
       ];
     }
     return [
-      genderB === 'female' ? SIBLING.OLDER_SISTER : SIBLING.OLDER_BROTHER,
-      genderA === 'female' ? SIBLING.YOUNGER_SISTER : SIBLING.YOUNGER_BROTHER,
+      genderB === "female" ? SIBLING.OLDER_SISTER : SIBLING.OLDER_BROTHER,
+      genderA === "female" ? SIBLING.YOUNGER_SISTER : SIBLING.YOUNGER_BROTHER,
       SIBLING.LABEL,
     ];
   }
 
   if (depthA > DEPTH_SIBLING && depthB === DEPTH_SIBLING) {
-    let termForB = '';
-    const isPaternalSide = branchA.gender === 'male';
+    let termForB = "";
+    const isPaternalSide = branchA.gender === "male";
 
     if (isPaternalSide) {
-      if (genderB === 'female') {
-        termForB = seniority === 'junior' ? UNCLE_AUNT.BAC : UNCLE_AUNT.CO;
+      if (genderB === "female") {
+        termForB = seniority === "junior" ? UNCLE_AUNT.BAC : UNCLE_AUNT.CO;
       } else {
-        termForB = seniority === 'junior' ? UNCLE_AUNT.BAC : UNCLE_AUNT.CHU;
+        termForB = seniority === "junior" ? UNCLE_AUNT.BAC : UNCLE_AUNT.CHU;
       }
     } else {
-      termForB = genderB === 'female' ? UNCLE_AUNT.DI : UNCLE_AUNT.CAU;
+      termForB = genderB === "female" ? UNCLE_AUNT.DI : UNCLE_AUNT.CAU;
     }
 
-    let prefix = '';
-    if (depthA === DEPTH_GREAT_AUNT) prefix = `${genderB === 'female' ? DIRECT.GRANDMOTHER : DIRECT.GRANDFATHER} `;
-    else if (depthA === DEPTH_GREAT_GREAT_AUNT) prefix = `${genderB === 'female' ? DIRECT.GREAT_GRANDMOTHER : DIRECT.GREAT_GRANDFATHER} `;
+    let prefix = "";
+    if (depthA === DEPTH_GREAT_AUNT)
+      prefix = `${genderB === "female" ? DIRECT.GRANDMOTHER : DIRECT.GRANDFATHER} `;
+    else if (depthA === DEPTH_GREAT_GREAT_AUNT)
+      prefix = `${genderB === "female" ? DIRECT.GREAT_GRANDMOTHER : DIRECT.GREAT_GRANDFATHER} `;
     else if (depthA > DEPTH_GREAT_GREAT_AUNT) prefix = `${ANCESTORS[depthA - 1]} `;
 
-    return [(prefix + termForB).trim(), getDirectDescendantTerm(depthA, genderA), isPaternalSide ? DESCRIPTION.PATERNAL_SENIOR : DESCRIPTION.MATERNAL_SENIOR];
+    return [
+      (prefix + termForB).trim(),
+      getDirectDescendantTerm(depthA, genderA),
+      isPaternalSide ? DESCRIPTION.PATERNAL_SENIOR : DESCRIPTION.MATERNAL_SENIOR,
+    ];
   }
 
   if (depthA > DEPTH_SIBLING && depthB > DEPTH_SIBLING) {
     const side = isPaternalA ? SIDE.PATERNAL_LABEL : SIDE.MATERNAL_LABEL;
 
-    if (depthA === depthB && seniority === 'senior') {
-      return [COLLATERAL.YOUNGER, genderA === 'female' ? COLLATERAL.OLDER_SISTER : COLLATERAL.OLDER_BROTHER, `Anh em ${KINSHIP_MODIFIER.COLLATERAL} ${side}`];
+    if (depthA === depthB && seniority === "senior") {
+      return [
+        COLLATERAL.YOUNGER,
+        genderA === "female" ? COLLATERAL.OLDER_SISTER : COLLATERAL.OLDER_BROTHER,
+        `Anh em ${KINSHIP_MODIFIER.COLLATERAL} ${side}`,
+      ];
     }
     if (depthA === depthB) {
-      return [genderB === 'female' ? COLLATERAL.OLDER_SISTER : COLLATERAL.OLDER_BROTHER, COLLATERAL.YOUNGER, `Anh em ${KINSHIP_MODIFIER.COLLATERAL} ${side}`];
+      return [
+        genderB === "female" ? COLLATERAL.OLDER_SISTER : COLLATERAL.OLDER_BROTHER,
+        COLLATERAL.YOUNGER,
+        `Anh em ${KINSHIP_MODIFIER.COLLATERAL} ${side}`,
+      ];
     }
 
     const genDiff = depthA - depthB;
     let termForB: string = FALLBACK.KIN;
-    if (genDiff === 1 && branchA.gender === 'male') {
-      if (genderB === 'female') {
-        termForB = seniority === 'junior' ? COLLATERAL.BAC : COLLATERAL.CO;
+    if (genDiff === 1 && branchA.gender === "male") {
+      if (genderB === "female") {
+        termForB = seniority === "junior" ? COLLATERAL.BAC : COLLATERAL.CO;
       } else {
-        termForB = seniority === 'junior' ? COLLATERAL.BAC : COLLATERAL.CHU;
+        termForB = seniority === "junior" ? COLLATERAL.BAC : COLLATERAL.CHU;
       }
     } else if (genDiff === 1) {
-      termForB = genderB === 'female' ? COLLATERAL.DI : COLLATERAL.CAU;
+      termForB = genderB === "female" ? COLLATERAL.DI : COLLATERAL.CAU;
     } else {
-      termForB = genderB === 'female' ? COLLATERAL.GRANDMOTHER : COLLATERAL.GRANDFATHER;
+      termForB = genderB === "female" ? COLLATERAL.GRANDMOTHER : COLLATERAL.GRANDFATHER;
     }
     return [termForB, COLLATERAL.GRANDCHILD, `${FALLBACK.KIN} ${side}`];
   }
@@ -175,7 +210,10 @@ function resolveBloodTerms({ depthA, depthB, personA, personB, pathA, pathB }: R
   return [FALLBACK.IN_CLAN, FALLBACK.IN_CLAN, DESCRIPTION.KINSHIP];
 }
 
-const ancestryCache = new WeakMap<Map<string, PersonNode>, Map<string, Map<string, { depth: number; path: PersonNode[] }>>>();
+const ancestryCache = new WeakMap<
+  Map<string, PersonNode>,
+  Map<string, Map<string, { depth: number; path: PersonNode[] }>>
+>();
 
 interface GetAncestryDataInput {
   id: string;
@@ -183,7 +221,11 @@ interface GetAncestryDataInput {
   personsMap: Map<string, PersonNode>;
 }
 
-function getAncestryData({ id, parentMap, personsMap }: GetAncestryDataInput): Map<string, { depth: number; path: PersonNode[] }> {
+function getAncestryData({
+  id,
+  parentMap,
+  personsMap,
+}: GetAncestryDataInput): Map<string, { depth: number; path: PersonNode[] }> {
   const idCache = ancestryCache.get(personsMap);
   const cached = idCache?.get(id);
   if (cached) {
@@ -228,7 +270,12 @@ interface FindBloodKinshipInput {
   parentMap: Map<string, string[]>;
 }
 
-function findBloodKinship({ personA, personB, personsMap, parentMap }: FindBloodKinshipInput): KinshipResult | null {
+function findBloodKinship({
+  personA,
+  personB,
+  personsMap,
+  parentMap,
+}: FindBloodKinshipInput): KinshipResult | null {
   const ancA = getAncestryData({ id: personA.id, parentMap, personsMap });
   const ancB = getAncestryData({ id: personB.id, parentMap, personsMap });
 
@@ -284,7 +331,12 @@ interface ComputeKinshipInput {
   relationships: RelEdge[];
 }
 
-export function computeKinship({ personA, personB, persons, relationships }: ComputeKinshipInput): KinshipResult | null {
+export function computeKinship({
+  personA,
+  personB,
+  persons,
+  relationships,
+}: ComputeKinshipInput): KinshipResult | null {
   if (personA.id === personB.id) return null;
 
   const personsMap = new Map(persons.map((p) => [p.id, p]));
@@ -292,7 +344,10 @@ export function computeKinship({ personA, personB, persons, relationships }: Com
   const spouseMap = new Map<string, string[]>();
 
   for (const r of relationships) {
-    if (r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child) {
+    if (
+      r.type === RelationshipType.enum.biological_child ||
+      r.type === RelationshipType.enum.adopted_child
+    ) {
       const p = parentMap.get(r.personBId) ?? [];
       p.push(r.personAId);
       parentMap.set(r.personBId, p);
@@ -310,8 +365,8 @@ export function computeKinship({ personA, personB, persons, relationships }: Com
   const spousesA = spouseMap.get(personA.id) ?? [];
   if (spousesA.includes(personB.id)) {
     return {
-      aCallsB: personB.gender === 'female' ? IN_LAW.WIFE : IN_LAW.HUSBAND,
-      bCallsA: personA.gender === 'female' ? IN_LAW.WIFE : IN_LAW.HUSBAND,
+      aCallsB: personB.gender === "female" ? IN_LAW.WIFE : IN_LAW.HUSBAND,
+      bCallsA: personA.gender === "female" ? IN_LAW.WIFE : IN_LAW.HUSBAND,
       description: DESCRIPTION.MARRIAGE,
       distance: 0,
       pathLabels: [`${personA.fullName} và ${personB.fullName} là vợ chồng.`],
@@ -333,13 +388,14 @@ export function computeKinship({ personA, personB, persons, relationships }: Com
       let bCallsA = res.bCallsA;
 
       // A calls B (person in spouse's family)
-      const suffix = personA.gender === 'male' ? KINSHIP_MODIFIER.WIFE_SUFFIX : KINSHIP_MODIFIER.HUSBAND_SUFFIX;
+      const suffix =
+        personA.gender === "male" ? KINSHIP_MODIFIER.WIFE_SUFFIX : KINSHIP_MODIFIER.HUSBAND_SUFFIX;
       if (
         res.aCallsB === DIRECT.FATHER ||
         res.aCallsB === DIRECT.MOTHER ||
         res.aCallsB.startsWith(DIRECT.GRANDFATHER) ||
         res.aCallsB.startsWith(DIRECT.GRANDMOTHER) ||
-        res.aCallsB.startsWith('Cụ')
+        res.aCallsB.startsWith("Cụ")
       ) {
         aCallsB = res.aCallsB + suffix;
       } else if (res.aCallsB.includes(SIBLING.OLDER_BROTHER)) {
@@ -352,25 +408,36 @@ export function computeKinship({ personA, personB, persons, relationships }: Com
         aCallsB = `Chị${suffix} (${KINSHIP_MODIFIER.COLLATERAL})`;
       } else if (res.aCallsB === COLLATERAL.OLDER_BROTHER) {
         aCallsB = `Anh${suffix} (${KINSHIP_MODIFIER.COLLATERAL})`;
-      } else if (res.aCallsB.includes('Em')) {
+      } else if (res.aCallsB.includes("Em")) {
         aCallsB = `Em${suffix}`;
       } else if (
-        ([UNCLE_AUNT.BAC, UNCLE_AUNT.CHU, UNCLE_AUNT.CO, UNCLE_AUNT.CAU, UNCLE_AUNT.DI] as string[]).includes(res.aCallsB) ||
+        (
+          [UNCLE_AUNT.BAC, UNCLE_AUNT.CHU, UNCLE_AUNT.CO, UNCLE_AUNT.CAU, UNCLE_AUNT.DI] as string[]
+        ).includes(res.aCallsB) ||
         res.aCallsB.endsWith(` ${KINSHIP_MODIFIER.COLLATERAL}`)
       ) {
-        aCallsB = res.aCallsB.replace(` ${KINSHIP_MODIFIER.COLLATERAL}`, '') + suffix;
+        aCallsB = res.aCallsB.replace(` ${KINSHIP_MODIFIER.COLLATERAL}`, "") + suffix;
       }
 
       // B calls A (in-law of their blood relative)
-      if (res.bCallsA.startsWith('Con')) {
-        bCallsA = personA.gender === 'male' ? IN_LAW.SON_IN_LAW : IN_LAW.DAUGHTER_IN_LAW;
-      } else if (res.bCallsA.startsWith('Cháu')) {
-        bCallsA = personA.gender === 'male' ? IN_LAW.GRANDCHILD_IN_LAW_MALE : IN_LAW.GRANDCHILD_IN_LAW_FEMALE;
-      } else if (res.bCallsA.includes(SIBLING.OLDER_BROTHER) || res.bCallsA.includes(SIBLING.OLDER_SISTER)) {
-        bCallsA = personA.gender === 'male' ? IN_LAW.OLDER_BROTHER_IN_LAW : IN_LAW.OLDER_SISTER_IN_LAW;
-      } else if (res.bCallsA.includes('Em')) {
-        bCallsA = personA.gender === 'male' ? IN_LAW.YOUNGER_BROTHER_IN_LAW : IN_LAW.YOUNGER_SISTER_IN_LAW;
-        if (res.bCallsA.includes(KINSHIP_MODIFIER.COLLATERAL)) bCallsA += ` (${KINSHIP_MODIFIER.COLLATERAL})`;
+      if (res.bCallsA.startsWith("Con")) {
+        bCallsA = personA.gender === "male" ? IN_LAW.SON_IN_LAW : IN_LAW.DAUGHTER_IN_LAW;
+      } else if (res.bCallsA.startsWith("Cháu")) {
+        bCallsA =
+          personA.gender === "male"
+            ? IN_LAW.GRANDCHILD_IN_LAW_MALE
+            : IN_LAW.GRANDCHILD_IN_LAW_FEMALE;
+      } else if (
+        res.bCallsA.includes(SIBLING.OLDER_BROTHER) ||
+        res.bCallsA.includes(SIBLING.OLDER_SISTER)
+      ) {
+        bCallsA =
+          personA.gender === "male" ? IN_LAW.OLDER_BROTHER_IN_LAW : IN_LAW.OLDER_SISTER_IN_LAW;
+      } else if (res.bCallsA.includes("Em")) {
+        bCallsA =
+          personA.gender === "male" ? IN_LAW.YOUNGER_BROTHER_IN_LAW : IN_LAW.YOUNGER_SISTER_IN_LAW;
+        if (res.bCallsA.includes(KINSHIP_MODIFIER.COLLATERAL))
+          bCallsA += ` (${KINSHIP_MODIFIER.COLLATERAL})`;
       } else if (res.bCallsA === COLLATERAL.OLDER_SISTER) {
         bCallsA = `${IN_LAW.OLDER_BROTHER_IN_LAW} (${KINSHIP_MODIFIER.COLLATERAL})`;
       } else if (res.bCallsA === COLLATERAL.OLDER_BROTHER) {
@@ -384,7 +451,7 @@ export function computeKinship({ personA, personB, persons, relationships }: Com
         if (reverseInLaw) {
           bCallsA = reverseInLaw;
         } else {
-          bCallsA = `${personA.gender === 'male' ? IN_LAW.HUSBAND : IN_LAW.WIFE} của ${res.bCallsA}`;
+          bCallsA = `${personA.gender === "male" ? IN_LAW.HUSBAND : IN_LAW.WIFE} của ${res.bCallsA}`;
         }
       }
 
@@ -393,7 +460,10 @@ export function computeKinship({ personA, personB, persons, relationships }: Com
         aCallsB,
         bCallsA,
         description: `Thông qua hôn nhân của ${spouseA.fullName}`,
-        pathLabels: [`${personA.fullName} là ${personA.gender === 'male' ? IN_LAW.HUSBAND : IN_LAW.WIFE} của ${spouseA.fullName}`, ...res.pathLabels],
+        pathLabels: [
+          `${personA.fullName} là ${personA.gender === "male" ? IN_LAW.HUSBAND : IN_LAW.WIFE} của ${spouseA.fullName}`,
+          ...res.pathLabels,
+        ],
       };
     }
   }
@@ -409,21 +479,26 @@ export function computeKinship({ personA, personB, persons, relationships }: Com
       let bCallsA = res.bCallsA;
 
       // A calls B (spouse of A's blood relative)
-      if (res.aCallsB.startsWith('Con')) {
-        aCallsB = personB.gender === 'male' ? IN_LAW.SON_IN_LAW : IN_LAW.DAUGHTER_IN_LAW;
-      } else if (res.aCallsB.startsWith('Cháu')) {
-        aCallsB = personB.gender === 'male' ? IN_LAW.GRANDCHILD_IN_LAW_MALE : IN_LAW.GRANDCHILD_IN_LAW_FEMALE;
+      if (res.aCallsB.startsWith("Con")) {
+        aCallsB = personB.gender === "male" ? IN_LAW.SON_IN_LAW : IN_LAW.DAUGHTER_IN_LAW;
+      } else if (res.aCallsB.startsWith("Cháu")) {
+        aCallsB =
+          personB.gender === "male"
+            ? IN_LAW.GRANDCHILD_IN_LAW_MALE
+            : IN_LAW.GRANDCHILD_IN_LAW_FEMALE;
       } else if (res.aCallsB.includes(SIBLING.OLDER_BROTHER)) {
-        aCallsB = personB.gender === 'female' ? IN_LAW.OLDER_SISTER_IN_LAW : IN_LAW.OLDER_BROTHER_IN_LAW;
+        aCallsB =
+          personB.gender === "female" ? IN_LAW.OLDER_SISTER_IN_LAW : IN_LAW.OLDER_BROTHER_IN_LAW;
       } else if (res.aCallsB.includes(SIBLING.OLDER_SISTER)) {
-        aCallsB = personB.gender === 'male' ? IN_LAW.OLDER_BROTHER_IN_LAW : IN_LAW.OLDER_SISTER_IN_LAW;
+        aCallsB =
+          personB.gender === "male" ? IN_LAW.OLDER_BROTHER_IN_LAW : IN_LAW.OLDER_SISTER_IN_LAW;
       } else if (res.aCallsB.includes(COLLATERAL.OLDER_SISTER)) {
         aCallsB = `${IN_LAW.OLDER_BROTHER_IN_LAW} (${KINSHIP_MODIFIER.COLLATERAL})`;
       } else if (res.aCallsB.includes(COLLATERAL.OLDER_BROTHER)) {
         aCallsB = `${IN_LAW.OLDER_SISTER_IN_LAW} (${KINSHIP_MODIFIER.COLLATERAL})`;
-      } else if (res.aCallsB.includes('Em')) {
+      } else if (res.aCallsB.includes("Em")) {
         aCallsB =
-          personB.gender === 'male'
+          personB.gender === "male"
             ? `${IN_LAW.YOUNGER_BROTHER_IN_LAW} (${KINSHIP_MODIFIER.COLLATERAL})`
             : `${IN_LAW.YOUNGER_SISTER_IN_LAW} (${KINSHIP_MODIFIER.COLLATERAL})`;
       } else if (res.aCallsB === COLLATERAL.CHU) {
@@ -433,18 +508,19 @@ export function computeKinship({ personA, personB, persons, relationships }: Com
         if (reverseInLaw) {
           aCallsB = reverseInLaw;
         } else {
-          aCallsB = `${personB.gender === 'male' ? IN_LAW.HUSBAND : IN_LAW.WIFE} của ${res.aCallsB}`;
+          aCallsB = `${personB.gender === "male" ? IN_LAW.HUSBAND : IN_LAW.WIFE} của ${res.aCallsB}`;
         }
       }
 
       // B calls A (person in spouse's family)
-      const suffix = personB.gender === 'male' ? KINSHIP_MODIFIER.WIFE_SUFFIX : KINSHIP_MODIFIER.HUSBAND_SUFFIX;
+      const suffix =
+        personB.gender === "male" ? KINSHIP_MODIFIER.WIFE_SUFFIX : KINSHIP_MODIFIER.HUSBAND_SUFFIX;
       if (
         res.bCallsA === DIRECT.FATHER ||
         res.bCallsA === DIRECT.MOTHER ||
         res.bCallsA.startsWith(DIRECT.GRANDFATHER) ||
         res.bCallsA.startsWith(DIRECT.GRANDMOTHER) ||
-        res.bCallsA.startsWith('Cụ')
+        res.bCallsA.startsWith("Cụ")
       ) {
         bCallsA = res.bCallsA + suffix;
       } else if (res.bCallsA.includes(SIBLING.OLDER_BROTHER)) {
@@ -457,10 +533,12 @@ export function computeKinship({ personA, personB, persons, relationships }: Com
         bCallsA = `Chị${suffix} (${KINSHIP_MODIFIER.COLLATERAL})`;
       } else if (res.bCallsA === COLLATERAL.OLDER_BROTHER) {
         bCallsA = `Anh${suffix} (${KINSHIP_MODIFIER.COLLATERAL})`;
-      } else if (res.bCallsA.includes('Em')) {
+      } else if (res.bCallsA.includes("Em")) {
         bCallsA = `Em${suffix}`;
       } else if (
-        ([UNCLE_AUNT.BAC, UNCLE_AUNT.CHU, UNCLE_AUNT.CO, UNCLE_AUNT.CAU, UNCLE_AUNT.DI] as string[]).includes(res.bCallsA) ||
+        (
+          [UNCLE_AUNT.BAC, UNCLE_AUNT.CHU, UNCLE_AUNT.CO, UNCLE_AUNT.CAU, UNCLE_AUNT.DI] as string[]
+        ).includes(res.bCallsA) ||
         res.bCallsA.endsWith(` ${KINSHIP_MODIFIER.COLLATERAL}`)
       ) {
         bCallsA = res.bCallsA + suffix;
@@ -471,7 +549,10 @@ export function computeKinship({ personA, personB, persons, relationships }: Com
         aCallsB,
         bCallsA,
         description: `Thông qua hôn nhân của ${spouseB.fullName}`,
-        pathLabels: [...res.pathLabels, `${personB.fullName} là ${personB.gender === 'male' ? IN_LAW.HUSBAND : IN_LAW.WIFE} của ${spouseB.fullName}`],
+        pathLabels: [
+          ...res.pathLabels,
+          `${personB.fullName} là ${personB.gender === "male" ? IN_LAW.HUSBAND : IN_LAW.WIFE} của ${spouseB.fullName}`,
+        ],
       };
     }
   }
@@ -487,17 +568,27 @@ export function computeKinship({ personA, personB, persons, relationships }: Com
 
       const res = findBloodKinship({ personA: spouseA, personB: spouseB, personsMap, parentMap });
       if (res) {
-        const prefixA = personA.gender === 'male' ? IN_LAW.HUSBAND : IN_LAW.WIFE;
-        const prefixB = personB.gender === 'male' ? IN_LAW.HUSBAND : IN_LAW.WIFE;
+        const prefixA = personA.gender === "male" ? IN_LAW.HUSBAND : IN_LAW.WIFE;
+        const prefixB = personB.gender === "male" ? IN_LAW.HUSBAND : IN_LAW.WIFE;
 
         let aCallsB = `${prefixB} của ${res.aCallsB}`;
         let bCallsA = `${prefixA} của ${res.bCallsA}`;
 
         if (res.description.includes(SIBLING.LABEL)) {
-          if (personA.gender === 'male' && personB.gender === 'male' && spouseA.gender === 'female' && spouseB.gender === 'female') {
+          if (
+            personA.gender === "male" &&
+            personB.gender === "male" &&
+            spouseA.gender === "female" &&
+            spouseB.gender === "female"
+          ) {
             aCallsB = IN_LAW.BROTHERS_IN_LAW;
             bCallsA = IN_LAW.BROTHERS_IN_LAW;
-          } else if (personA.gender === 'female' && personB.gender === 'female' && spouseA.gender === 'male' && spouseB.gender === 'male') {
+          } else if (
+            personA.gender === "female" &&
+            personB.gender === "female" &&
+            spouseA.gender === "male" &&
+            spouseB.gender === "male"
+          ) {
             aCallsB = IN_LAW.SISTERS_IN_LAW;
             bCallsA = IN_LAW.SISTERS_IN_LAW;
           }
@@ -521,7 +612,7 @@ export function computeKinship({ personA, personB, persons, relationships }: Com
   return {
     aCallsB: FALLBACK.STRANGER,
     bCallsA: FALLBACK.STRANGER,
-    description: 'kinship.noRelationFound',
+    description: "kinship.noRelationFound",
     distance: -1,
     pathLabels: [],
   };

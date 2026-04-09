@@ -5,10 +5,11 @@ import type {
   PersonDetailsPrivateUncheckedCreateWithoutPersonInput,
   PersonDetailsPrivateUpdateInput,
   PersonUpdateInput,
-} from '../../database/generated/prisma/models';
-import { getDbClient } from '../../database/lib/client';
-import type { DbClient } from '../../database/transaction';
-import { resolveAvatarUrl } from '../../lib/storage';
+} from "../../database/generated/prisma/models";
+import type { DbClient } from "../../database/transaction";
+
+import { getDbClient } from "../../database/lib/client";
+import { resolveAvatarUrl } from "../../lib/storage";
 
 function withResolvedAvatar<T extends { avatarUrl: string | null }>(person: T): T {
   return { ...person, avatarUrl: resolveAvatarUrl(person.avatarUrl) };
@@ -46,7 +47,7 @@ export async function findPersonByIdOrThrowResolved(id: string, client: DbClient
 }
 
 export function findAllPersons(client: DbClient = getDbClient()) {
-  return client.person.findMany({ orderBy: { createdAt: 'asc' } });
+  return client.person.findMany({ orderBy: { createdAt: "asc" } });
 }
 
 export async function findAllPersonsResolved(client: DbClient = getDbClient()) {
@@ -62,7 +63,10 @@ export function deleteAllPersons(client: DbClient = getDbClient()) {
   return client.person.deleteMany();
 }
 
-export function createManyPersons(data: PersonCreateManyInput | PersonCreateManyInput[], client: DbClient = getDbClient()) {
+export function createManyPersons(
+  data: PersonCreateManyInput | PersonCreateManyInput[],
+  client: DbClient = getDbClient(),
+) {
   return client.person.createMany({ data });
 }
 
@@ -72,7 +76,10 @@ interface UpsertPersonDetailsPrivateInput {
   update: PersonDetailsPrivateUpdateInput;
 }
 
-export function upsertPersonDetailsPrivate({ personId, create, update }: UpsertPersonDetailsPrivateInput, client: DbClient = getDbClient()) {
+export function upsertPersonDetailsPrivate(
+  { personId, create, update }: UpsertPersonDetailsPrivateInput,
+  client: DbClient = getDbClient(),
+) {
   return client.personDetailsPrivate.upsert({
     where: { personId },
     create: { personId, ...create },
@@ -85,7 +92,7 @@ export function deletePersonDetailsPrivate(personId: string, client: DbClient = 
 }
 
 export function findAllPersonDetailsPrivate(client: DbClient = getDbClient()) {
-  return client.personDetailsPrivate.findMany({ orderBy: { createdAt: 'asc' } });
+  return client.personDetailsPrivate.findMany({ orderBy: { createdAt: "asc" } });
 }
 
 export function deleteAllPersonDetailsPrivate(client: DbClient = getDbClient()) {
@@ -94,12 +101,19 @@ export function deleteAllPersonDetailsPrivate(client: DbClient = getDbClient()) 
 
 export function createManyPersonDetailsPrivate(
   data: PersonDetailsPrivateCreateManyInput | PersonDetailsPrivateCreateManyInput[],
-  client: DbClient = getDbClient()
+  client: DbClient = getDbClient(),
 ) {
   return client.personDetailsPrivate.createMany({ data });
 }
 
-export function batchUpdatePersons(updates: Array<{ id: string; generation: number | null; birthOrder: number | null; isInLaw?: boolean }>) {
+export function batchUpdatePersons(
+  updates: Array<{
+    id: string;
+    generation: number | null;
+    birthOrder: number | null;
+    isInLaw?: boolean;
+  }>,
+) {
   const db = getDbClient();
   return db.$transaction(
     updates.map((u) =>
@@ -110,7 +124,7 @@ export function batchUpdatePersons(updates: Array<{ id: string; generation: numb
           birthOrder: u.birthOrder,
           ...(u.isInLaw !== undefined && { isInLaw: u.isInLaw }),
         },
-      })
-    )
+      }),
+    ),
   );
 }

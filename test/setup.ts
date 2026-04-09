@@ -1,13 +1,14 @@
-import { cleanup } from '@testing-library/react';
-import '@testing-library/jest-dom/vitest';
-import consola from 'consola';
-import { afterEach, vi } from 'vitest';
-import { createI18nInstance } from '../src/i18n/lib';
+import { cleanup } from "@testing-library/react";
+import "@testing-library/jest-dom/vitest";
+import consola from "consola";
+import { afterEach, vi } from "vitest";
+
+import { createI18nInstance } from "../src/i18n/lib";
 
 // Silence consola output during tests
 consola.mockTypes(() => vi.fn());
 
-vi.mock('@tanstack/react-start', async () => {
+vi.mock("@tanstack/react-start", async () => {
   const createMockHandler = () => {
     const obj = {
       inputValidator: () => obj,
@@ -26,8 +27,8 @@ vi.mock('@tanstack/react-start', async () => {
   };
 });
 
-vi.mock('../src/lib/storage', () => ({
-  uploadAvatar: vi.fn(() => Promise.resolve('avatars/test/avatar.jpg')),
+vi.mock("../src/lib/storage", () => ({
+  uploadAvatar: vi.fn(() => Promise.resolve("avatars/test/avatar.jpg")),
   deleteAvatar: vi.fn(() => Promise.resolve()),
   getPublicUrl: vi.fn((key: string) => `/api/uploads/${key}`),
   resolveAvatarUrl: vi.fn((key: string | null) => (key ? `/api/uploads/${key}` : null)),
@@ -38,7 +39,7 @@ afterEach(() => {
 });
 
 // Initialize i18next with Vietnamese for all tests so existing assertions keep passing
-createI18nInstance('vi');
+createI18nInstance("vi");
 
 afterEach(() => {
   cleanup();
