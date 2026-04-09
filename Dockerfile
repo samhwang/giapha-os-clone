@@ -13,7 +13,7 @@ RUN bun install ${BUN_INSTALL_ARGS}
 # Generate Prisma client
 COPY prisma ./prisma
 COPY prisma.config.ts ./
-RUN bun prisma generate
+RUN bunx prisma generate
 
 COPY . .
 

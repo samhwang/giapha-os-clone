@@ -4,13 +4,13 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-function pushSchema(databaseUrl: string) {
-  console.log('Running Prisma DB Push');
+function runMigrations(databaseUrl: string) {
+  console.log('Running Prisma migrations');
   process.env.DATABASE_URL = databaseUrl;
   childProcess.execSync(`bun run prisma:migrate:dev --url "${databaseUrl}"`, {
     env: { ...process.env, DATABASE_URL: databaseUrl },
   });
-  console.log('Prisma DB Push complete');
+  console.log('Prisma migrations complete');
 }
 
 export async function setup() {
@@ -19,7 +19,7 @@ export async function setup() {
   const databaseUrl = db.getConnectionUri();
   console.log(`PostgreSQL running at ${databaseUrl}`);
 
-  pushSchema(databaseUrl);
+  runMigrations(databaseUrl);
 
   const uploadDir = await fs.mkdtemp(path.join(os.tmpdir(), 'giapha-test-uploads-'));
   console.log(`Upload dir: ${uploadDir}`);
