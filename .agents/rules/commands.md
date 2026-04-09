@@ -14,9 +14,9 @@ docker compose ps             # Check running services
 ### Development
 
 ```bash
-pnpm run dev          # Start dev server (http://localhost:3000)
-pnpm run build        # Production build
-pnpm run start        # Start production server
+bun run dev          # Start dev server (http://localhost:3000)
+bun run build        # Production build
+bun run start        # Start production server
 ```
 
 ### Database (Prisma)
@@ -24,46 +24,46 @@ pnpm run start        # Start production server
 All Prisma commands use `dotenvx run --` to load environment variables.
 
 ```bash
-pnpm run prisma:generate          # Regenerate client after schema changes
-pnpm run prisma:push              # Push schema (development)
-pnpm run prisma:seed              # Seed sample data
-pnpm run prisma:studio            # Open database GUI (http://localhost:5555)
-pnpm run prisma:migrate:dev       # Create migration
-pnpm run prisma:format            # Format schema file
+bun run prisma:generate          # Regenerate client after schema changes
+bun run prisma:push              # Push schema (development)
+bun run prisma:seed              # Seed sample data
+bun run prisma:studio            # Open database GUI (http://localhost:5555)
+bun run prisma:migrate:dev       # Create migration
+bun run prisma:format            # Format schema file
 ```
 
 ### Testing
 
 ```bash
-pnpm run test                     # Watch mode
-pnpm run test:run                 # Run once
-pnpm run test:coverage            # With coverage
-pnpm run test:ui                  # UI components only
-pnpm run test:server              # Server functions only
-pnpm run test:integration         # Integration tests
-pnpm run test:e2e                 # Playwright E2E tests
-pnpm run test:e2e:ui              # Playwright E2E with UI
+bun run test                     # Watch mode
+bun run test:run                 # Run once
+bun run test:coverage            # With coverage
+bun run test:ui                  # UI components only
+bun run test:server              # Server functions only
+bun run test:integration         # Integration tests
+bun run test:e2e                 # Playwright E2E tests
+bun run test:e2e:ui              # Playwright E2E with UI
 ```
 
 ### Linting
 
 ```bash
-pnpm run lint                     # Check issues
-pnpm run lint:fix                 # Auto-fix
-pnpm run typecheck                # TypeScript check
+bun run lint                     # Check issues
+bun run lint:fix                 # Auto-fix
+bun run typecheck                # TypeScript check
 ```
 
 ### Auth
 
 ```bash
-pnpm run auth:generate            # Generate Better Auth client
-pnpm run auth:secret              # Generate Better Auth secret
+bun run auth:generate            # Generate Better Auth client
+bun run auth:secret              # Generate Better Auth secret
 ```
 
 ### Quality Check
 
 ```bash
-pnpm run typecheck && pnpm run lint && pnpm run test:run && pnpm run build
+bun run typecheck && bun run lint && bun run test:run && bun run build
 ```
 
 ### Troubleshooting

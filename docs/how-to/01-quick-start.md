@@ -1,12 +1,11 @@
 # Getting Started
 
-TL;DR: Clone the repo, install dependencies, start Docker services, run migrations, then start the dev server with `pnpm run dev`.
+TL;DR: Clone the repo, install dependencies, start Docker services, run migrations, then start the dev server with `bun run dev`.
 
 ## Prerequisites
 
 - **[Docker](https://www.docker.com/)** & Docker Compose - for PostgreSQL
-- **[pnpm](https://pnpm.io/)** - package manager
-- **[Node.js](https://nodejs.org/)** 24+ - runtime
+- **[Bun](https://bun.sh/)** - runtime and package manager
 
 ## Installation
 
@@ -20,7 +19,7 @@ cd giapha-os-clone
 ### 2. Install dependencies
 
 ```bash
-pnpm install
+bun install
 ```
 
 ### 3. Environment setup
@@ -57,25 +56,25 @@ File uploads are stored locally under `UPLOAD_DIR` (default `./uploads`), which 
 Push the schema to your database:
 
 ```bash
-pnpm run prisma:push
+bun run prisma:push
 ```
 
 Generate the Prisma client:
 
 ```bash
-pnpm run prisma:generate
+bun run prisma:generate
 ```
 
 (Optional) Seed sample data:
 
 ```bash
-pnpm run prisma:seed
+bun run prisma:seed
 ```
 
 ### 6. Start development server
 
 ```bash
-pnpm run dev
+bun run dev
 ```
 
 The app will be available at `http://localhost:3000`.
@@ -93,7 +92,7 @@ If port 3000 is taken:
 lsof -i :3000
 
 # Or use a different port
-PORT=3001 pnpm run dev
+PORT=3001 bun run dev
 ```
 
 ### Database connection refused
@@ -109,10 +108,10 @@ docker ps
 
 ```bash
 # Wipe and recreate
-npx dotenvx run -- prisma migrate reset
+bunx dotenvx run -- prisma migrate reset
 
 # Or just push fresh
-npx dotenvx run -- prisma db push --force-reset
+bunx dotenvx run -- prisma db push --force-reset
 ```
 
 ## Next Steps

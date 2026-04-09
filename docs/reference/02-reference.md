@@ -208,65 +208,65 @@ To add dark mode or custom themes, override the `:root` variables under a `[data
 
 ## Environment Variables
 
-| Variable               | Description                                                                       |
-| ---------------------- | --------------------------------------------------------------------------------- |
-| `DATABASE_URL`         | PostgreSQL connection string                                                      |
-| `STORAGE_PROVIDER`     | Storage driver: `local` (default) or `s3`                                         |
-| `UPLOAD_DIR`           | File upload directory (required when `local`)                                     |
-| `S3_ENDPOINT`          | S3-compatible endpoint URL (required when `s3`)                                   |
-| `S3_BUCKET`            | S3 bucket name (required when `s3`)                                               |
-| `S3_REGION`            | S3 region (required when `s3`)                                                    |
-| `S3_ACCESS_KEY_ID`     | S3 access key (required when `s3`)                                                |
-| `S3_SECRET_ACCESS_KEY` | S3 secret key (required when `s3`)                                                |
-| `S3_PUBLIC_URL`        | Public URL prefix for S3 objects (required when `s3`)                             |
-| `BETTER_AUTH_SECRET`   | Auth encryption key                                                               |
-| `BETTER_AUTH_URL`      | Public URL for auth                                                               |
-| `TRUSTED_ORIGINS`      | Comma-delimited list of trusted origins (optional)                                |
-| `SITE_NAME`            | Site display name (runtime, server-side)                                          |
-| `DEPLOYMENT_ENV`       | Build-time deployment target: `node` (default), `vercel`, `netlify`, `cloudflare` |
-| `E2E_TEST_UTILS`       | Enable E2E test utilities (`true`); testing only, not for production              |
+| Variable               | Description                                                                      |
+| ---------------------- | -------------------------------------------------------------------------------- |
+| `DATABASE_URL`         | PostgreSQL connection string                                                     |
+| `STORAGE_PROVIDER`     | Storage driver: `local` (default) or `s3`                                        |
+| `UPLOAD_DIR`           | File upload directory (required when `local`)                                    |
+| `S3_ENDPOINT`          | S3-compatible endpoint URL (required when `s3`)                                  |
+| `S3_BUCKET`            | S3 bucket name (required when `s3`)                                              |
+| `S3_REGION`            | S3 region (required when `s3`)                                                   |
+| `S3_ACCESS_KEY_ID`     | S3 access key (required when `s3`)                                               |
+| `S3_SECRET_ACCESS_KEY` | S3 secret key (required when `s3`)                                               |
+| `S3_PUBLIC_URL`        | Public URL prefix for S3 objects (required when `s3`)                            |
+| `BETTER_AUTH_SECRET`   | Auth encryption key                                                              |
+| `BETTER_AUTH_URL`      | Public URL for auth                                                              |
+| `TRUSTED_ORIGINS`      | Comma-delimited list of trusted origins (optional)                               |
+| `SITE_NAME`            | Site display name (runtime, server-side)                                         |
+| `DEPLOYMENT_ENV`       | Build-time deployment target: `bun` (default), `vercel`, `netlify`, `cloudflare` |
+| `E2E_TEST_UTILS`       | Enable E2E test utilities (`true`); testing only, not for production             |
 
 ## Commands
 
 ### Development
 
-| Command          | Description              |
-| ---------------- | ------------------------ |
-| `pnpm run dev`   | Start development server |
-| `pnpm run build` | Build for production     |
-| `pnpm run start` | Start production server  |
+| Command         | Description              |
+| --------------- | ------------------------ |
+| `bun run dev`   | Start development server |
+| `bun run build` | Build for production     |
+| `bun run start` | Start production server  |
 
 ### Database ([Prisma](https://www.prisma.io/))
 
-| Command                                   | Description                       |
-| ----------------------------------------- | --------------------------------- |
-| `pnpm run prisma:push`                    | Push schema changes to database   |
-| `pnpm run prisma:generate`                | Regenerate TypeScript types       |
-| `pnpm run prisma:studio`                  | Open database GUI                 |
-| `pnpm run prisma:migrate:dev`             | Create migration file             |
-| `npx dotenvx run -- prisma migrate reset` | Reset database (deletes all data) |
-| `pnpm run prisma:seed`                    | Seed sample data                  |
+| Command                                    | Description                       |
+| ------------------------------------------ | --------------------------------- |
+| `bun run prisma:push`                      | Push schema changes to database   |
+| `bun run prisma:generate`                  | Regenerate TypeScript types       |
+| `bun run prisma:studio`                    | Open database GUI                 |
+| `bun run prisma:migrate:dev`               | Create migration file             |
+| `bunx dotenvx run -- prisma migrate reset` | Reset database (deletes all data) |
+| `bun run prisma:seed`                      | Seed sample data                  |
 
 ### Testing
 
-| Command                     | Description                                                           |
-| --------------------------- | --------------------------------------------------------------------- |
-| `pnpm run test`             | [Vitest](https://vitest.dev/) watch mode                              |
-| `pnpm run test:run`         | Run all Vitest tests once                                             |
-| `pnpm run test:ui`          | UI component tests                                                    |
-| `pnpm run test:server`      | Server function tests ([Testcontainers](https://testcontainers.com/)) |
-| `pnpm run test:integration` | Route-level integration tests                                         |
-| `pnpm run test:coverage`    | Run with coverage report                                              |
-| `pnpm run test:e2e`         | [Playwright](https://playwright.dev/) E2E tests                       |
-| `pnpm run test:e2e:ui`      | Playwright UI mode                                                    |
+| Command                    | Description                                                           |
+| -------------------------- | --------------------------------------------------------------------- |
+| `bun run test`             | [Vitest](https://vitest.dev/) watch mode                              |
+| `bun run test:run`         | Run all Vitest tests once                                             |
+| `bun run test:ui`          | UI component tests                                                    |
+| `bun run test:server`      | Server function tests ([Testcontainers](https://testcontainers.com/)) |
+| `bun run test:integration` | Route-level integration tests                                         |
+| `bun run test:coverage`    | Run with coverage report                                              |
+| `bun run test:e2e`         | [Playwright](https://playwright.dev/) E2E tests                       |
+| `bun run test:e2e:ui`      | Playwright UI mode                                                    |
 
 ### Code Quality
 
-| Command              | Description                                 |
-| -------------------- | ------------------------------------------- |
-| `pnpm run lint`      | Oxlint + Oxfmt linting and formatting check |
-| `pnpm run lint:fix`  | Auto-fix linting issues                     |
-| `pnpm run typecheck` | TypeScript type checking                    |
+| Command             | Description                                 |
+| ------------------- | ------------------------------------------- |
+| `bun run lint`      | Oxlint + Oxfmt linting and formatting check |
+| `bun run lint:fix`  | Auto-fix linting issues                     |
+| `bun run typecheck` | TypeScript type checking                    |
 
 ### Infrastructure
 
@@ -278,7 +278,7 @@ To add dark mode or custom themes, override the `:root` variables under a `[data
 ### Quality Check (all-in-one)
 
 ```bash
-pnpm run typecheck && pnpm run lint && pnpm run test:run && pnpm run build
+bun run typecheck && bun run lint && bun run test:run && bun run build
 ```
 
 ## CI/CD Workflows
@@ -297,14 +297,14 @@ Triggered on pull requests to master branch. Runs the full CI pipeline.
 
 Reusable workflow called by both pull requests and the build workflow. Runs all validation checks in parallel:
 
-| Task             | Command                     | Description                                 |
-| ---------------- | --------------------------- | ------------------------------------------- |
-| ci               | `pnpm run lint`             | Oxlint + Oxfmt linting and formatting check |
-| typecheck        | `pnpm run typecheck`        | TypeScript type checking                    |
-| test:ui          | `pnpm run test:ui`          | React component unit tests                  |
-| test:server      | `pnpm run test:server`      | Server function tests                       |
-| test:integration | `pnpm run test:integration` | Integration tests                           |
-| e2e              | `pnpm run test:e2e`         | Playwright end-to-end tests                 |
+| Task             | Command                    | Description                                 |
+| ---------------- | -------------------------- | ------------------------------------------- |
+| ci               | `bun run lint`             | Oxlint + Oxfmt linting and formatting check |
+| typecheck        | `bun run typecheck`        | TypeScript type checking                    |
+| test:ui          | `bun run test:ui`          | React component unit tests                  |
+| test:server      | `bun run test:server`      | Server function tests                       |
+| test:integration | `bun run test:integration` | Integration tests                           |
+| e2e              | `bun run test:e2e`         | Playwright end-to-end tests                 |
 
 All tasks except e2e run in parallel using a matrix strategy.
 
@@ -360,12 +360,12 @@ Shared mock data in `src/test-utils/fixtures.ts`:
 
 The deployment target is controlled by the `DEPLOYMENT_ENV` environment variable at **build time**:
 
-| DEPLOYMENT_ENV   | Provider                                              | Vite Plugin                           |
-| ---------------- | ----------------------------------------------------- | ------------------------------------- |
-| `node` (default) | Docker, VPS, Railway                                  | `nitro` (node-server preset)          |
-| `vercel`         | [Vercel](https://vercel.com/)                         | `nitro` (vercel preset)               |
-| `netlify`        | [Netlify](https://www.netlify.com/)                   | `@netlify/vite-plugin-tanstack-start` |
-| `cloudflare`     | [Cloudflare Workers](https://workers.cloudflare.com/) | `@cloudflare/vite-plugin`             |
+| DEPLOYMENT_ENV  | Provider                                              | Vite Plugin                           |
+| --------------- | ----------------------------------------------------- | ------------------------------------- |
+| `bun` (default) | Docker, VPS, Railway                                  | `nitro` (bun preset)                  |
+| `vercel`        | [Vercel](https://vercel.com/)                         | `nitro` (vercel preset)               |
+| `netlify`       | [Netlify](https://www.netlify.com/)                   | `@netlify/vite-plugin-tanstack-start` |
+| `cloudflare`    | [Cloudflare Workers](https://workers.cloudflare.com/) | `@cloudflare/vite-plugin`             |
 
 ## Storage Providers
 
