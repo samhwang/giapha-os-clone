@@ -115,8 +115,8 @@ Verify that avatars display correctly in the application. No database changes ar
 
 Members can upload avatars:
 
-- Supported formats: JPG, PNG, WebP
-- Max size: 5MB
+- Supported formats: JPG, PNG, GIF, WebP
+- Max size: 2MB
 - Stored in `avatars/{personId}/` directory (relative to storage root)
 
 See the [Storage Providers](../reference/02-reference.md#storage-providers) reference for provider-specific CLI tools and documentation links.
