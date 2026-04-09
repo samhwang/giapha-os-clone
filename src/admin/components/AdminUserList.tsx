@@ -1,16 +1,16 @@
-import { useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useMutation } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import type { UserProfile } from "../types";
+import type { UserProfile } from '../types';
 
-import { UserRole } from "../../auth/types";
-import { Button } from "../../ui/common/Button";
-import { Card } from "../../ui/common/Card";
-import { Modal, ModalCloseButton, ModalPanel } from "../../ui/common/Modal";
-import { cn } from "../../ui/utils/cn";
-import { useAdminForm } from "../hooks/useAdminForm";
-import { changeRole, createUser, deleteUser, toggleStatus } from "../server/user";
+import { UserRole } from '../../auth/types';
+import { Button } from '../../ui/common/Button';
+import { Card } from '../../ui/common/Card';
+import { Modal, ModalCloseButton, ModalPanel } from '../../ui/common/Modal';
+import { cn } from '../../ui/utils/cn';
+import { useAdminForm } from '../hooks/useAdminForm';
+import { changeRole, createUser, deleteUser, toggleStatus } from '../server/user';
 
 interface AdminUserListProps {
   initialUsers: UserProfile[];
@@ -19,7 +19,7 @@ interface AdminUserListProps {
 
 interface Notification {
   message: string;
-  type: "success" | "error" | "info";
+  type: 'success' | 'error' | 'info';
 }
 
 export default function AdminUserList({ initialUsers, currentUserId }: AdminUserListProps) {
@@ -28,23 +28,22 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
 
-  const showNotification = (message: string, type: "success" | "error" | "info" = "info") => {
+  const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     setNotification({ message, type });
   };
 
   const createUserMutation = useMutation({
-    mutationFn: (data: { email: string; password: string; role: UserRole; isActive: boolean }) =>
-      createUser({ data }),
+    mutationFn: (data: { email: string; password: string; role: UserRole; isActive: boolean }) => createUser({ data }),
     onSuccess: (result) => {
       if (result.user) {
         setUsers((prev) => [...prev, result.user as UserProfile]);
       }
-      showNotification(t("admin.createSuccess"), "success");
+      showNotification(t('admin.createSuccess'), 'success');
       setIsCreateModalOpen(false);
       form.reset();
     },
     onError: (error: unknown) => {
-      showNotification(error instanceof Error ? error.message : t("admin.createError"), "error");
+      showNotification(error instanceof Error ? error.message : t('admin.createError'), 'error');
     },
   });
 
@@ -52,10 +51,10 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
     mutationFn: (data: { userId: string; newRole: UserRole }) => changeRole({ data }),
     onSuccess: (_, { userId, newRole }) => {
       setUsers(users.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
-      showNotification(t("admin.roleUpdated"), "success");
+      showNotification(t('admin.roleUpdated'), 'success');
     },
     onError: (error: unknown) => {
-      showNotification(error instanceof Error ? error.message : t("admin.roleError"), "error");
+      showNotification(error instanceof Error ? error.message : t('admin.roleError'), 'error');
     },
   });
 
@@ -63,10 +62,10 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
     mutationFn: (data: { userId: string; isActive: boolean }) => toggleStatus({ data }),
     onSuccess: (_, { userId, isActive: newStatus }) => {
       setUsers(users.map((u) => (u.id === userId ? { ...u, isActive: newStatus } : u)));
-      showNotification(newStatus ? t("admin.statusApproved") : t("admin.statusLocked"), "success");
+      showNotification(newStatus ? t('admin.statusApproved') : t('admin.statusLocked'), 'success');
     },
     onError: (error: unknown) => {
-      showNotification(error instanceof Error ? error.message : t("admin.statusError"), "error");
+      showNotification(error instanceof Error ? error.message : t('admin.statusError'), 'error');
     },
   });
 
@@ -74,10 +73,10 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
     mutationFn: (userId: string) => deleteUser({ data: { userId } }),
     onSuccess: (_, userId) => {
       setUsers(users.filter((u) => u.id !== userId));
-      showNotification(t("admin.deleteSuccess"), "success");
+      showNotification(t('admin.deleteSuccess'), 'success');
     },
     onError: (error: unknown) => {
-      showNotification(error instanceof Error ? error.message : t("admin.deleteError"), "error");
+      showNotification(error instanceof Error ? error.message : t('admin.deleteError'), 'error');
     },
   });
 
@@ -91,9 +90,9 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
 
   const form = useAdminForm({
     defaultValues: {
-      email: "",
-      password: "",
-      role: "member" as UserRole,
+      email: '',
+      password: '',
+      role: 'member' as UserRole,
       isActive: true,
     },
     onSubmit: async ({ value }) => {
@@ -121,7 +120,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
   };
 
   const handleDelete = (userId: string) => {
-    if (!confirm(t("admin.deleteConfirm"))) return;
+    if (!confirm(t('admin.deleteConfirm'))) return;
     deleteUserMutation.mutate(userId);
   };
 
@@ -130,11 +129,10 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
       {notification && (
         <div
           className={cn(
-            "fixed top-1/2 left-1/2 z-100 flex max-w-[90vw] min-w-[320px] animate-[fade-in-up_0.3s_ease-out_forwards] items-center gap-3 rounded-xl border px-6 py-3 shadow-lg backdrop-blur-md",
-            notification.type === "success" &&
-              "border-emerald-200 bg-emerald-50/90 text-emerald-800",
-            notification.type === "error" && "border-red-200 bg-red-50/90 text-red-800",
-            notification.type === "info" && "border-amber-200 bg-amber-50/90 text-amber-800",
+            'fixed top-1/2 left-1/2 z-100 flex max-w-[90vw] min-w-[320px] animate-[fade-in-up_0.3s_ease-out_forwards] items-center gap-3 rounded-xl border px-6 py-3 shadow-lg backdrop-blur-md',
+            notification.type === 'success' && 'border-emerald-200 bg-emerald-50/90 text-emerald-800',
+            notification.type === 'error' && 'border-red-200 bg-red-50/90 text-red-800',
+            notification.type === 'info' && 'border-amber-200 bg-amber-50/90 text-amber-800'
           )}
         >
           <p className="text-sm font-medium">{notification.message}</p>
@@ -143,7 +141,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
 
       <div className="flex justify-end">
         <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
-          {t("admin.addUser")}
+          {t('admin.addUser')}
         </Button>
       </div>
 
@@ -152,21 +150,11 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead className="border-b border-border-default bg-stone-50/50 tracking-wider uppercase">
               <tr>
-                <th className="px-6 py-4 text-xs font-semibold text-stone-500">
-                  {t("admin.emailHeader")}
-                </th>
-                <th className="px-6 py-4 text-xs font-semibold text-stone-500">
-                  {t("admin.roleHeader")}
-                </th>
-                <th className="px-6 py-4 text-xs font-semibold text-stone-500">
-                  {t("admin.statusHeader")}
-                </th>
-                <th className="px-6 py-4 text-xs font-semibold text-stone-500">
-                  {t("admin.createdHeader")}
-                </th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-stone-500">
-                  {t("admin.actionsHeader")}
-                </th>
+                <th className="px-6 py-4 text-xs font-semibold text-stone-500">{t('admin.emailHeader')}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-stone-500">{t('admin.roleHeader')}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-stone-500">{t('admin.statusHeader')}</th>
+                <th className="px-6 py-4 text-xs font-semibold text-stone-500">{t('admin.createdHeader')}</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-stone-500">{t('admin.actionsHeader')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -176,13 +164,10 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                   <td className="px-6 py-4">
                     <span
                       className={cn(
-                        "inline-flex items-center rounded-md px-2 py-1 text-xs font-medium",
-                        user.role === UserRole.enum.admin &&
-                          "border border-amber-200 bg-amber-100 text-amber-800",
-                        user.role === UserRole.enum.editor &&
-                          "border border-sky-200 bg-sky-100 text-sky-800",
-                        user.role === UserRole.enum.member &&
-                          "border border-stone-200 bg-stone-100 text-stone-600",
+                        'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium',
+                        user.role === UserRole.enum.admin && 'border border-amber-200 bg-amber-100 text-amber-800',
+                        user.role === UserRole.enum.editor && 'border border-sky-200 bg-sky-100 text-sky-800',
+                        user.role === UserRole.enum.member && 'border border-stone-200 bg-stone-100 text-stone-600'
                       )}
                     >
                       {t(`role.${user.role}`)}
@@ -191,18 +176,14 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                   <td className="px-6 py-4">
                     <span
                       className={cn(
-                        "inline-flex items-center rounded-md px-2 py-1 text-xs font-medium",
-                        user.isActive
-                          ? "border border-emerald-200 bg-emerald-100 text-emerald-800"
-                          : "border border-red-200 bg-red-100 text-red-800",
+                        'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium',
+                        user.isActive ? 'border border-emerald-200 bg-emerald-100 text-emerald-800' : 'border border-red-200 bg-red-100 text-red-800'
                       )}
                     >
-                      {user.isActive ? t("admin.active") : t("admin.pending")}
+                      {user.isActive ? t('admin.active') : t('admin.pending')}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-stone-500">
-                    {new Date(user.createdAt).toLocaleDateString("vi-VN")}
-                  </td>
+                  <td className="px-6 py-4 text-stone-500">{new Date(user.createdAt).toLocaleDateString('vi-VN')}</td>
                   <td className="space-x-3 px-6 py-4 text-right">
                     {user.id !== currentUserId ? (
                       <>
@@ -213,7 +194,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                             onClick={() => handleStatusChange(user.id, false)}
                             className="font-medium text-stone-600 hover:text-stone-900 disabled:opacity-50"
                           >
-                            {t("admin.lock")}
+                            {t('admin.lock')}
                           </button>
                         ) : (
                           <button
@@ -222,7 +203,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                             onClick={() => handleStatusChange(user.id, true)}
                             className="font-medium text-emerald-600 hover:text-emerald-800 disabled:opacity-50"
                           >
-                            {t("admin.approve")}
+                            {t('admin.approve')}
                           </button>
                         )}
                         <select
@@ -231,9 +212,9 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                           disabled={loadingId === user.id}
                           className="rounded-lg border border-stone-200 bg-transparent px-2 py-1 text-sm font-medium focus:ring-1 focus:ring-amber-500 focus:outline-none disabled:opacity-50"
                         >
-                          <option value="member">{t("role.member")}</option>
-                          <option value="editor">{t("role.editor")}</option>
-                          <option value="admin">{t("role.admin")}</option>
+                          <option value="member">{t('role.member')}</option>
+                          <option value="editor">{t('role.editor')}</option>
+                          <option value="admin">{t('role.admin')}</option>
                         </select>
                         <button
                           type="button"
@@ -241,11 +222,11 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                           onClick={() => handleDelete(user.id)}
                           className="font-medium text-red-600 hover:text-red-800 disabled:opacity-50"
                         >
-                          {t("common.delete")}
+                          {t('common.delete')}
                         </button>
                       </>
                     ) : (
-                      <span className="text-xs text-stone-400 italic">{t("admin.you")}</span>
+                      <span className="text-xs text-stone-400 italic">{t('admin.you')}</span>
                     )}
                   </td>
                 </tr>
@@ -253,7 +234,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
               {users.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-6 py-8 text-center text-stone-500">
-                    {t("admin.noUsers")}
+                    {t('admin.noUsers')}
                   </td>
                 </tr>
               )}
@@ -266,14 +247,8 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
       <Modal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)}>
         <ModalPanel maxWidth="md" className="rounded-2xl">
           <div className="flex items-center justify-between border-b border-stone-100/80 bg-stone-50/50 px-6 py-5">
-            <h3 className="font-serif text-xl font-bold text-stone-800">
-              {t("admin.createTitle")}
-            </h3>
-            <ModalCloseButton
-              onClick={() => setIsCreateModalOpen(false)}
-              label={t("common.close")}
-              className="size-8"
-            />
+            <h3 className="font-serif text-xl font-bold text-stone-800">{t('admin.createTitle')}</h3>
+            <ModalCloseButton onClick={() => setIsCreateModalOpen(false)} label={t('common.close')} className="size-8" />
           </div>
 
           <form
@@ -289,7 +264,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                 {(field) => (
                   <div>
                     <label htmlFor={field.name} className="text-label">
-                      {t("admin.emailRequired")}
+                      {t('admin.emailRequired')}
                     </label>
                     <input
                       id={field.name}
@@ -298,7 +273,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
                       className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-stone-900 placeholder-stone-400 shadow-sm transition-colors focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none sm:py-2.5"
-                      placeholder={t("admin.emailPlaceholder")}
+                      placeholder={t('admin.emailPlaceholder')}
                     />
                   </div>
                 )}
@@ -308,7 +283,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                 {(field) => (
                   <div>
                     <label htmlFor={field.name} className="text-label">
-                      {t("admin.passwordRequired")}
+                      {t('admin.passwordRequired')}
                     </label>
                     <input
                       id={field.name}
@@ -318,7 +293,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.target.value)}
                       className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-stone-900 placeholder-stone-400 shadow-sm transition-colors focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none sm:py-2.5"
-                      placeholder={t("admin.passwordHint")}
+                      placeholder={t('admin.passwordHint')}
                     />
                   </div>
                 )}
@@ -328,7 +303,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                 {(field) => (
                   <div>
                     <label htmlFor={field.name} className="text-label">
-                      {t("common.role")}
+                      {t('common.role')}
                     </label>
                     <select
                       id={field.name}
@@ -336,9 +311,9 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                       onChange={(e) => field.handleChange(e.target.value as UserRole)}
                       className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-stone-900 shadow-sm transition-colors focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none sm:py-2.5"
                     >
-                      <option value="member">{t("admin.roleMember")}</option>
-                      <option value="editor">{t("admin.roleEditor")}</option>
-                      <option value="admin">{t("admin.roleAdmin")}</option>
+                      <option value="member">{t('admin.roleMember')}</option>
+                      <option value="editor">{t('admin.roleEditor')}</option>
+                      <option value="admin">{t('admin.roleAdmin')}</option>
                     </select>
                   </div>
                 )}
@@ -348,16 +323,16 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
                 {(field) => (
                   <div>
                     <label htmlFor={field.name} className="text-label">
-                      {t("common.status")}
+                      {t('common.status')}
                     </label>
                     <select
                       id={field.name}
-                      value={field.state.value ? "true" : "false"}
-                      onChange={(e) => field.handleChange(e.target.value === "true")}
+                      value={field.state.value ? 'true' : 'false'}
+                      onChange={(e) => field.handleChange(e.target.value === 'true')}
                       className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-stone-900 shadow-sm transition-colors focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none sm:py-2.5"
                     >
-                      <option value="true">{t("admin.statusActive")}</option>
-                      <option value="false">{t("admin.statusPending")}</option>
+                      <option value="true">{t('admin.statusActive')}</option>
+                      <option value="false">{t('admin.statusPending')}</option>
                     </select>
                   </div>
                 )}
@@ -365,10 +340,10 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
             </div>
             <div className="mt-8 flex justify-end gap-3 pt-2">
               <Button variant="ghost" size="sm" onClick={() => setIsCreateModalOpen(false)}>
-                {t("common.cancel")}
+                {t('common.cancel')}
               </Button>
               <Button variant="primary" size="sm" type="submit" disabled={form.state.isSubmitting}>
-                {form.state.isSubmitting ? t("admin.creating") : t("admin.createUser")}
+                {form.state.isSubmitting ? t('admin.creating') : t('admin.createUser')}
               </Button>
             </div>
           </form>

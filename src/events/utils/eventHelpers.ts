@@ -1,7 +1,7 @@
-import { Lunar, Solar } from "lunar-javascript";
+import { Lunar, Solar } from 'lunar-javascript';
 
-import type { Person } from "../../members/types";
-import type { CustomEventRecord, EventType, FamilyEvent } from "../types";
+import type { Person } from '../../members/types';
+import type { CustomEventRecord, EventType, FamilyEvent } from '../types';
 
 const MS_PER_DAY = 86_400_000;
 
@@ -14,16 +14,8 @@ interface NextSolarForLunarInput extends LunarDateLookupInput {
   fromDate: Date;
 }
 
-function nextSolarForLunar({
-  lunarMonth,
-  lunarDay,
-  fromDate,
-}: NextSolarForLunarInput): Date | null {
-  const todaySolar = Solar.fromYmd(
-    fromDate.getFullYear(),
-    fromDate.getMonth() + 1,
-    fromDate.getDate(),
-  );
+function nextSolarForLunar({ lunarMonth, lunarDay, fromDate }: NextSolarForLunarInput): Date | null {
+  const todaySolar = Solar.fromYmd(fromDate.getFullYear(), fromDate.getMonth() + 1, fromDate.getDate());
   const currentLunarYear = todaySolar.getLunar().getYear();
 
   for (let offset = 0; offset <= 2; offset++) {
@@ -47,16 +39,8 @@ interface PrevSolarForLunarInput extends LunarDateLookupInput {
   beforeDate: Date;
 }
 
-function prevSolarForLunar({
-  lunarMonth,
-  lunarDay,
-  beforeDate,
-}: PrevSolarForLunarInput): Date | null {
-  const todaySolar = Solar.fromYmd(
-    beforeDate.getFullYear(),
-    beforeDate.getMonth() + 1,
-    beforeDate.getDate(),
-  );
+function prevSolarForLunar({ lunarMonth, lunarDay, beforeDate }: PrevSolarForLunarInput): Date | null {
+  const todaySolar = Solar.fromYmd(beforeDate.getFullYear(), beforeDate.getMonth() + 1, beforeDate.getDate());
   const currentLunarYear = todaySolar.getLunar().getYear();
 
   for (let offset = 0; offset <= 2; offset++) {
@@ -83,11 +67,7 @@ interface ComputeEventsInput {
   lunarSuffix?: string;
 }
 
-export function computeEvents({
-  persons,
-  customEvents = [],
-  lunarSuffix = "ÂL",
-}: ComputeEventsInput): FamilyEvent[] {
+export function computeEvents({ persons, customEvents = [], lunarSuffix = 'ÂL' }: ComputeEventsInput): FamilyEvent[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const events: FamilyEvent[] = [];
@@ -100,8 +80,8 @@ export function computeEvents({
       const baseEvent = {
         personId: p.id,
         personName: p.fullName,
-        type: "birthday" as EventType,
-        eventDateLabel: `${p.birthDay.toString().padStart(2, "0")}/${p.birthMonth.toString().padStart(2, "0")}`,
+        type: 'birthday' as EventType,
+        eventDateLabel: `${p.birthDay.toString().padStart(2, '0')}/${p.birthMonth.toString().padStart(2, '0')}`,
         originYear: p.birthYear,
         originMonth: p.birthMonth,
         originDay: p.birthDay,
@@ -144,8 +124,8 @@ export function computeEvents({
         const baseDeathEvent = {
           personId: p.id,
           personName: p.fullName,
-          type: "death_anniversary" as EventType,
-          eventDateLabel: `${lDay.toString().padStart(2, "0")}/${lMonth.toString().padStart(2, "0")} ${lunarSuffix}`,
+          type: 'death_anniversary' as EventType,
+          eventDateLabel: `${lDay.toString().padStart(2, '0')}/${lMonth.toString().padStart(2, '0')} ${lunarSuffix}`,
           originYear: p.deathLunarYear ?? p.deathYear,
         };
 
@@ -169,7 +149,7 @@ export function computeEvents({
   // Custom events (solar)
   for (const ce of customEvents) {
     if (!ce.eventDate) continue;
-    const [y, m, d] = ce.eventDate.split("-").map(Number);
+    const [y, m, d] = ce.eventDate.split('-').map(Number);
     if (!y || !m || !d) continue;
 
     const next = new Date(y, m - 1, d);
@@ -178,10 +158,10 @@ export function computeEvents({
     events.push({
       personId: ce.id,
       personName: ce.name,
-      type: "custom_event" as EventType,
+      type: 'custom_event' as EventType,
       nextOccurrence: next,
       daysUntil,
-      eventDateLabel: `${d.toString().padStart(2, "0")}/${m.toString().padStart(2, "0")}/${y}`,
+      eventDateLabel: `${d.toString().padStart(2, '0')}/${m.toString().padStart(2, '0')}/${y}`,
       originYear: y,
       isDeceased: false,
       location: ce.location,

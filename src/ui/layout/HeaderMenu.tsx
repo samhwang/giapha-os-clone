@@ -1,21 +1,11 @@
-import { Link } from "@tanstack/react-router";
-import {
-  BarChart2,
-  CalendarClock,
-  ChevronDown,
-  Database,
-  GitMerge,
-  Info,
-  Network,
-  Settings,
-  UserCircle,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Link } from '@tanstack/react-router';
+import { BarChart2, CalendarClock, ChevronDown, Database, GitMerge, Info, Network, Settings, UserCircle } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import LanguageSwitcher from "../common/LanguageSwitcher";
-import { cn } from "../utils/cn";
-import LogoutButton from "./LogoutButton";
+import LanguageSwitcher from '../common/LanguageSwitcher';
+import { cn } from '../utils/cn';
+import LogoutButton from './LogoutButton';
 
 interface HeaderMenuProps {
   isAdmin: boolean;
@@ -34,38 +24,38 @@ export default function HeaderMenu({ isAdmin, userEmail }: HeaderMenuProps) {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const menuItems = [
     ...(isAdmin
       ? [
           {
-            to: "/dashboard/users",
+            to: '/dashboard/users',
             icon: <Settings className="size-4" />,
-            label: t("nav.userManagement"),
+            label: t('nav.userManagement'),
           },
           {
-            to: "/dashboard/lineage",
+            to: '/dashboard/lineage',
             icon: <Network className="size-4" />,
-            label: t("nav.lineageOrder"),
+            label: t('nav.lineageOrder'),
           },
           {
-            to: "/dashboard/data",
+            to: '/dashboard/data',
             icon: <Database className="size-4" />,
-            label: t("nav.backupRestore"),
+            label: t('nav.backupRestore'),
           },
         ]
       : []),
-    { to: "/dashboard/events", icon: <CalendarClock className="size-4" />, label: t("nav.events") },
+    { to: '/dashboard/events', icon: <CalendarClock className="size-4" />, label: t('nav.events') },
     {
-      to: "/dashboard/kinship",
+      to: '/dashboard/kinship',
       icon: <GitMerge className="size-4" />,
-      label: t("nav.kinshipLookup"),
+      label: t('nav.kinshipLookup'),
     },
-    { to: "/dashboard/stats", icon: <BarChart2 className="size-4" />, label: t("nav.familyStats") },
-    { to: "/about", icon: <Info className="size-4" />, label: t("nav.aboutContact") },
+    { to: '/dashboard/stats', icon: <BarChart2 className="size-4" />, label: t('nav.familyStats') },
+    { to: '/about', icon: <Info className="size-4" />, label: t('nav.aboutContact') },
   ];
 
   return (
@@ -78,20 +68,13 @@ export default function HeaderMenu({ isAdmin, userEmail }: HeaderMenuProps) {
         <div className="flex size-8 items-center justify-center rounded-full bg-linear-to-br from-amber-200 to-amber-100 font-bold text-amber-800 shadow-sm ring-1 ring-amber-300/50">
           {userEmail ? userEmail.charAt(0).toUpperCase() : <UserCircle className="size-5" />}
         </div>
-        <ChevronDown
-          className={cn(
-            "size-4 text-stone-500 transition-transform duration-default",
-            isOpen && "rotate-180",
-          )}
-        />
+        <ChevronDown className={cn('size-4 text-stone-500 transition-transform duration-default', isOpen && 'rotate-180')} />
       </button>
 
       {isOpen && (
         <div className="absolute right-0 z-50 mt-2 w-56 animate-[scale-in_0.15s_ease-out_forwards] overflow-hidden rounded-2xl border border-border-default bg-white py-2 shadow-xl">
           <div className="border-b border-stone-100 bg-stone-50/50 px-4 py-3">
-            <p className="mb-0.5 text-xs font-semibold tracking-wider text-stone-400 uppercase">
-              {t("nav.account")}
-            </p>
+            <p className="mb-0.5 text-xs font-semibold tracking-wider text-stone-400 uppercase">{t('nav.account')}</p>
             <p className="truncate text-sm font-medium text-stone-900">{userEmail}</p>
           </div>
 

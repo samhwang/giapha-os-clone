@@ -1,16 +1,16 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { Person } from "../../members/types";
+import type { Person } from '../../members/types';
 
-import { t } from "../../../test/i18n";
-import { queryWrapper as wrapper } from "../../../test/render-wrapper";
-import { useDashboardStore } from "../../dashboard/store/dashboardStore";
-import EventsList from "./EventsList";
+import { t } from '../../../test/i18n';
+import { queryWrapper as wrapper } from '../../../test/render-wrapper';
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
+import EventsList from './EventsList';
 
 function makePerson(overrides: Partial<Person> & { id: string; fullName: string }): Person {
   return {
-    gender: "male",
+    gender: 'male',
     birthYear: null,
     birthMonth: null,
     birthDay: null,
@@ -33,7 +33,7 @@ function makePerson(overrides: Partial<Person> & { id: string; fullName: string 
   };
 }
 
-describe("EventsList", () => {
+describe('EventsList', () => {
   beforeEach(() => {
     useDashboardStore.getState().reset();
     vi.useFakeTimers();
@@ -46,15 +46,15 @@ describe("EventsList", () => {
 
   const persons = [
     makePerson({
-      id: "p1",
-      fullName: "Nguyễn Văn A",
+      id: 'p1',
+      fullName: 'Nguyễn Văn A',
       birthYear: 1990,
       birthMonth: 3,
       birthDay: 14,
     }),
     makePerson({
-      id: "p2",
-      fullName: "Trần Thị B",
+      id: 'p2',
+      fullName: 'Trần Thị B',
       birthYear: 1920,
       birthMonth: 5,
       birthDay: 10,
@@ -65,80 +65,76 @@ describe("EventsList", () => {
     }),
   ];
 
-  it("renders filter tabs", () => {
+  it('renders filter tabs', () => {
     render(<EventsList persons={persons} />, { wrapper });
-    expect(screen.getByRole("button", { name: t("events.allTab") })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: t("events.birthdayTab") })).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: t("events.deathAnniversaryTab") }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: t('events.allTab') })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: t('events.birthdayTab') })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: t('events.deathAnniversaryTab') })).toBeInTheDocument();
   });
 
-  it("renders event cards for persons with dates", () => {
+  it('renders event cards for persons with dates', () => {
     render(<EventsList persons={persons} />, { wrapper });
     // Nguyễn Văn A has birthday only (1 event)
-    expect(screen.getByText("Nguyễn Văn A")).toBeInTheDocument();
+    expect(screen.getByText('Nguyễn Văn A')).toBeInTheDocument();
     // Trần Thị B has both birthday AND death anniversary (2 events)
-    const bElements = screen.getAllByText("Trần Thị B");
+    const bElements = screen.getAllByText('Trần Thị B');
     expect(bElements.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("shows event count text", () => {
+  it('shows event count text', () => {
     render(<EventsList persons={persons} />, { wrapper });
-    expect(
-      screen.getByText(new RegExp(t("events.yearCount", { count: "\\d+" }))),
-    ).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('events.yearCount', { count: '\\d+' })))).toBeInTheDocument();
   });
 
-  it("shows empty state when no events", () => {
+  it('shows empty state when no events', () => {
     render(<EventsList persons={[]} />, { wrapper });
-    expect(screen.getByText(t("events.emptyTitle"))).toBeInTheDocument();
+    expect(screen.getByText(t('events.emptyTitle'))).toBeInTheDocument();
   });
 
-  it("shows empty state for persons without dates", () => {
-    const noDates = [makePerson({ id: "p1", fullName: "No Dates", birthYear: 1990 })];
+  it('shows empty state for persons without dates', () => {
+    const noDates = [makePerson({ id: 'p1', fullName: 'No Dates', birthYear: 1990 })];
     render(<EventsList persons={noDates} />, { wrapper });
-    expect(screen.getByText(t("events.emptyTitle"))).toBeInTheDocument();
+    expect(screen.getByText(t('events.emptyTitle'))).toBeInTheDocument();
   });
 
-  it("can filter by birthday tab", () => {
+  it('can filter by birthday tab', () => {
     render(<EventsList persons={persons} />, { wrapper });
 
-    const birthdayTab = screen.getByRole("button", { name: t("events.birthdayTab") });
+    const birthdayTab = screen.getByRole('button', { name: t('events.birthdayTab') });
     fireEvent.click(birthdayTab);
 
     // After filtering, only birthday events should show
-    expect(screen.getByText("Nguyễn Văn A")).toBeInTheDocument();
+    expect(screen.getByText('Nguyễn Văn A')).toBeInTheDocument();
   });
 
-  it("filters by death anniversary tab", () => {
+  it('filters by death anniversary tab', () => {
     render(<EventsList persons={persons} />, { wrapper });
 
-    const deathTab = screen.getByRole("button", { name: t("events.deathAnniversaryTab") });
+    const deathTab = screen.getByRole('button', { name: t('events.deathAnniversaryTab') });
     fireEvent.click(deathTab);
 
     // Only deceased person (Trần Thị B) has death anniversary
-    expect(screen.getByText("Trần Thị B")).toBeInTheDocument();
+    expect(screen.getByText('Trần Thị B')).toBeInTheDocument();
     // Living person should not appear in death anniversary filter
-    expect(screen.queryByText("Nguyễn Văn A")).not.toBeInTheDocument();
+    expect(screen.queryByText('Nguyễn Văn A')).not.toBeInTheDocument();
   });
 
-  it("switches back to all events after filtering", () => {
+  it('switches back to all events after filtering', () => {
     render(<EventsList persons={persons} />, { wrapper });
 
     // Filter to death anniversary first
-    fireEvent.click(screen.getByRole("button", { name: t("events.deathAnniversaryTab") }));
-    expect(screen.queryByText("Nguyễn Văn A")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: t('events.deathAnniversaryTab') }));
+    expect(screen.queryByText('Nguyễn Văn A')).not.toBeInTheDocument();
 
     // Switch back to all
-    fireEvent.click(screen.getByRole("button", { name: t("events.allTab") }));
-    expect(screen.getByText("Nguyễn Văn A")).toBeInTheDocument();
-    const bElements = screen.getAllByText("Trần Thị B");
+    fireEvent.click(screen.getByRole('button', { name: t('events.allTab') }));
+    expect(screen.getByText('Nguyễn Văn A')).toBeInTheDocument();
+    const bElements = screen.getAllByText('Trần Thị B');
     expect(bElements.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("renders past events tab", () => {
+  it('renders past events tab', () => {
     render(<EventsList persons={persons} />, { wrapper });
-    expect(screen.getByRole("button", { name: t("events.pastTab") })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: t('events.pastTab') })).toBeInTheDocument();
   });
 });

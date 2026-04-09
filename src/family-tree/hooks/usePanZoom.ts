@@ -1,4 +1,4 @@
-import { type MouseEvent, type RefObject, useRef, useState } from "react";
+import { type MouseEvent, type RefObject, useRef, useState } from 'react';
 
 const MIN_SCALE = 0.3;
 const MAX_SCALE = 2;

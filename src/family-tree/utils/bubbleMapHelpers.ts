@@ -1,9 +1,9 @@
-import type * as d3 from "d3";
+import type * as d3 from 'd3';
 
-import type { Person } from "../../members/types";
-import type { AdjacencyLists } from "./treeHelpers";
+import type { Person } from '../../members/types';
+import type { AdjacencyLists } from './treeHelpers';
 
-import { getFilteredTreeData } from "./treeHelpers";
+import { getFilteredTreeData } from './treeHelpers';
 
 export interface GraphNode extends d3.SimulationNodeDatum {
   id: string;
@@ -30,19 +30,14 @@ const NO_FILTERS = {
  * Build graph nodes (family units) and links (parent-child) from the family tree.
  * Each node groups a person with their spouses into a single "pill" unit.
  */
-export function buildGraphData(
-  roots: Person[],
-  personsMap: Map<string, Person>,
-  adj: AdjacencyLists,
-): { nodes: GraphNode[]; links: GraphLink[] } {
+export function buildGraphData(roots: Person[], personsMap: Map<string, Person>, adj: AdjacencyLists): { nodes: GraphNode[]; links: GraphLink[] } {
   const nodeMap = new Map<string, GraphNode>();
   const linkArray: GraphLink[] = [];
 
   const addFamilyUnit = (mainPerson: Person, spouses: Person[], isRoot: boolean) => {
     const people = [mainPerson, ...spouses];
     const radius = isRoot ? 40 : 30;
-    const width =
-      people.length === 1 ? radius * 2 : radius * 2 + (people.length - 1) * radius * 1.5;
+    const width = people.length === 1 ? radius * 2 : radius * 2 + (people.length - 1) * radius * 1.5;
 
     if (!nodeMap.has(mainPerson.id)) {
       nodeMap.set(mainPerson.id, { id: mainPerson.id, people, radius, width, isRoot });
@@ -60,11 +55,11 @@ export function buildGraphData(
     addFamilyUnit(
       data.person,
       spouses,
-      roots.some((r) => r.id === personId),
+      roots.some((r) => r.id === personId)
     );
 
     for (const child of data.children) {
-      linkArray.push({ source: personId, target: child.id, type: "child" });
+      linkArray.push({ source: personId, target: child.id, type: 'child' });
       walk(child.id, new Set(visited));
     }
   };

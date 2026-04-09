@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockGetSession = vi.fn();
 
-vi.mock("@tanstack/react-start", () => ({
+vi.mock('@tanstack/react-start', () => ({
   createServerFn: () => ({
     handler: (fn: unknown) => {
       mockGetSession.mockImplementation(fn as (...args: unknown[]) => unknown);
@@ -11,13 +11,13 @@ vi.mock("@tanstack/react-start", () => ({
   }),
 }));
 
-vi.mock("@tanstack/react-start/server", () => ({
+vi.mock('@tanstack/react-start/server', () => ({
   getRequestHeaders: vi.fn(() => new Headers()),
 }));
 
 const mockAuthGetSession = vi.fn();
 
-vi.mock("../../auth/server", () => ({
+vi.mock('../../auth/server', () => ({
   auth: {
     api: {
       getSession: (...args: unknown[]) => mockAuthGetSession(...args),
@@ -34,7 +34,7 @@ class RedirectError {
 
 let capturedOptions: Record<string, unknown> = {};
 
-vi.mock("@tanstack/react-router", () => ({
+vi.mock('@tanstack/react-router', () => ({
   createFileRoute: () => (opts: Record<string, unknown>) => {
     capturedOptions = opts;
     return { options: opts };
@@ -46,45 +46,45 @@ vi.mock("@tanstack/react-router", () => ({
   Outlet: () => null,
 }));
 
-describe("dashboard/route beforeLoad", () => {
+describe('dashboard/route beforeLoad', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     vi.resetModules();
   });
 
-  it("should return session context when authenticated", async () => {
+  it('should return session context when authenticated', async () => {
     mockAuthGetSession.mockResolvedValue({
-      user: { id: "u1", email: "admin@test.com", role: "admin", isActive: true },
+      user: { id: 'u1', email: 'admin@test.com', role: 'admin', isActive: true },
     });
 
-    await import("./route");
+    await import('./route');
 
     const beforeLoad = capturedOptions.beforeLoad as () => Promise<unknown>;
     const result = await beforeLoad();
 
     expect(result).toEqual({
       session: {
-        id: "u1",
-        email: "admin@test.com",
-        role: "admin",
+        id: 'u1',
+        email: 'admin@test.com',
+        role: 'admin',
         isActive: true,
       },
     });
   });
 
-  it("should redirect to /login when no session", async () => {
+  it('should redirect to /login when no session', async () => {
     mockAuthGetSession.mockResolvedValue(null);
 
-    await import("./route");
+    await import('./route');
 
     const beforeLoad = capturedOptions.beforeLoad as () => Promise<unknown>;
 
     try {
       await beforeLoad();
-      expect.unreachable("should have thrown");
+      expect.unreachable('should have thrown');
     } catch (err) {
       expect(err).toBeInstanceOf(RedirectError);
-      expect((err as RedirectError).to).toBe("/login");
+      expect((err as RedirectError).to).toBe('/login');
     }
   });
 });

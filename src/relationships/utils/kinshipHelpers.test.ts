@@ -1,28 +1,17 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
-import type { PersonNode, RelEdge } from "../types";
+import type { PersonNode, RelEdge } from '../types';
 
-import { Gender } from "../../members/types";
-import { RelationshipType } from "../types";
-import {
-  DESCENDANTS,
-  DIRECT,
-  FALLBACK,
-  GENDER_SUFFIX,
-  IN_LAW,
-  IN_LAW_REVERSE,
-  KINSHIP_MODIFIER,
-  SIBLING,
-  SIDE,
-  UNCLE_AUNT,
-} from "./kinship-dictionary";
-import { computeKinship } from "./kinshipHelpers";
+import { Gender } from '../../members/types';
+import { RelationshipType } from '../types';
+import { DESCENDANTS, DIRECT, FALLBACK, GENDER_SUFFIX, IN_LAW, IN_LAW_REVERSE, KINSHIP_MODIFIER, SIBLING, SIDE, UNCLE_AUNT } from './kinship-dictionary';
+import { computeKinship } from './kinshipHelpers';
 
 // ── Test data builders ──────────────────────────────────────────────────────
 
 function person(overrides: Partial<PersonNode> & { id: string }): PersonNode {
   return {
-    fullName: "Test",
+    fullName: 'Test',
     gender: Gender.enum.male,
     birthYear: null,
     birthOrder: null,
@@ -45,45 +34,45 @@ function child(parent: string, childId: string): RelEdge {
 // 3-generation family:
 // grandpa (m) + grandma (f) → father (m, birthOrder:1) + aunt (f, birthOrder:2)
 // father + mother → son (m, birthOrder:1) + daughter (f, birthOrder:2)
-const grandpa = person({ id: "grandpa", fullName: "Ông", gender: Gender.enum.male, generation: 1 });
+const grandpa = person({ id: 'grandpa', fullName: 'Ông', gender: Gender.enum.male, generation: 1 });
 const grandma = person({
-  id: "grandma",
-  fullName: "Bà",
+  id: 'grandma',
+  fullName: 'Bà',
   gender: Gender.enum.female,
   generation: 1,
   isInLaw: true,
 });
 const father = person({
-  id: "father",
-  fullName: "Cha",
+  id: 'father',
+  fullName: 'Cha',
   gender: Gender.enum.male,
   generation: 2,
   birthOrder: 1,
 });
 const aunt = person({
-  id: "aunt",
-  fullName: "Cô",
+  id: 'aunt',
+  fullName: 'Cô',
   gender: Gender.enum.female,
   generation: 2,
   birthOrder: 2,
 });
 const mother = person({
-  id: "mother",
-  fullName: "Mẹ",
+  id: 'mother',
+  fullName: 'Mẹ',
   gender: Gender.enum.female,
   generation: 2,
   isInLaw: true,
 });
 const son = person({
-  id: "son",
-  fullName: "Con Trai",
+  id: 'son',
+  fullName: 'Con Trai',
   gender: Gender.enum.male,
   generation: 3,
   birthOrder: 1,
 });
 const daughter = person({
-  id: "daughter",
-  fullName: "Con Gái",
+  id: 'daughter',
+  fullName: 'Con Gái',
   gender: Gender.enum.female,
   generation: 3,
   birthOrder: 2,
@@ -91,8 +80,8 @@ const daughter = person({
 
 // Uncle (father's younger brother) for paternal uncle test
 const uncle = person({
-  id: "uncle",
-  fullName: "Chú",
+  id: 'uncle',
+  fullName: 'Chú',
   gender: Gender.enum.male,
   generation: 2,
   birthOrder: 3,
@@ -100,79 +89,67 @@ const uncle = person({
 
 // Maternal family: maternal grandpa + maternal grandma → mother
 const maternalGrandpa = person({
-  id: "mat-grandpa",
-  fullName: "Ông Ngoại",
+  id: 'mat-grandpa',
+  fullName: 'Ông Ngoại',
   gender: Gender.enum.male,
   generation: 1,
 });
 const maternalGrandma = person({
-  id: "mat-grandma",
-  fullName: "Bà Ngoại",
+  id: 'mat-grandma',
+  fullName: 'Bà Ngoại',
   gender: Gender.enum.female,
   generation: 1,
 });
 const maternalUncle = person({
-  id: "mat-uncle",
-  fullName: "Cậu",
+  id: 'mat-uncle',
+  fullName: 'Cậu',
   gender: Gender.enum.male,
   generation: 2,
   birthOrder: 2,
 });
 
-const allPersons: PersonNode[] = [
-  grandpa,
-  grandma,
-  father,
-  aunt,
-  mother,
-  son,
-  daughter,
-  uncle,
-  maternalGrandpa,
-  maternalGrandma,
-  maternalUncle,
-];
+const allPersons: PersonNode[] = [grandpa, grandma, father, aunt, mother, son, daughter, uncle, maternalGrandpa, maternalGrandma, maternalUncle];
 
 const allRelationships: RelEdge[] = [
   // Gen 1 marriage + children
-  marriage("grandpa", "grandma"),
-  child("grandpa", "father"),
-  child("grandma", "father"),
-  child("grandpa", "aunt"),
-  child("grandma", "aunt"),
-  child("grandpa", "uncle"),
-  child("grandma", "uncle"),
+  marriage('grandpa', 'grandma'),
+  child('grandpa', 'father'),
+  child('grandma', 'father'),
+  child('grandpa', 'aunt'),
+  child('grandma', 'aunt'),
+  child('grandpa', 'uncle'),
+  child('grandma', 'uncle'),
   // Gen 2 marriage + children
-  marriage("father", "mother"),
-  child("father", "son"),
-  child("mother", "son"),
-  child("father", "daughter"),
-  child("mother", "daughter"),
+  marriage('father', 'mother'),
+  child('father', 'son'),
+  child('mother', 'son'),
+  child('father', 'daughter'),
+  child('mother', 'daughter'),
   // Maternal family
-  marriage("mat-grandpa", "mat-grandma"),
-  child("mat-grandpa", "mother"),
-  child("mat-grandma", "mother"),
-  child("mat-grandpa", "mat-uncle"),
-  child("mat-grandma", "mat-uncle"),
+  marriage('mat-grandpa', 'mat-grandma'),
+  child('mat-grandpa', 'mother'),
+  child('mat-grandma', 'mother'),
+  child('mat-grandpa', 'mat-uncle'),
+  child('mat-grandma', 'mat-uncle'),
 ];
 
 // ── Tests ──────────────────────────────────────────────────────
 
-describe("computeKinship", () => {
-  describe("when both persons are the same", () => {
-    it("should return null", () => {
+describe('computeKinship', () => {
+  describe('when both persons are the same', () => {
+    it('should return null', () => {
       expect(
         computeKinship({
           personA: father,
           personB: father,
           persons: allPersons,
           relationships: allRelationships,
-        }),
+        })
       ).toBeNull();
     });
   });
 
-  describe("marriage relationships", () => {
+  describe('marriage relationships', () => {
     it('should return "Vợ" and "Chồng" for a married couple', () => {
       const result = computeKinship({
         personA: father,
@@ -198,7 +175,7 @@ describe("computeKinship", () => {
     });
   });
 
-  describe("parent-child relationships", () => {
+  describe('parent-child relationships', () => {
     it('should return "Cha" for father-son', () => {
       const result = computeKinship({
         personA: son,
@@ -244,7 +221,7 @@ describe("computeKinship", () => {
     });
   });
 
-  describe("grandparent relationships", () => {
+  describe('grandparent relationships', () => {
     it('should return "Ông nội" for paternal grandfather', () => {
       const result = computeKinship({
         personA: son,
@@ -301,7 +278,7 @@ describe("computeKinship", () => {
     });
   });
 
-  describe("sibling relationships", () => {
+  describe('sibling relationships', () => {
     it('should return "Em gái" for older brother calling younger sister', () => {
       const result = computeKinship({
         personA: son,
@@ -327,7 +304,7 @@ describe("computeKinship", () => {
     });
   });
 
-  describe("uncle/aunt relationships (paternal)", () => {
+  describe('uncle/aunt relationships (paternal)', () => {
     it('should return "Cô" for paternal aunt (father\'s sister)', () => {
       const result = computeKinship({
         personA: son,
@@ -351,7 +328,7 @@ describe("computeKinship", () => {
     });
   });
 
-  describe("uncle/aunt relationships (maternal)", () => {
+  describe('uncle/aunt relationships (maternal)', () => {
     it('should return "Cậu" for maternal uncle (mother\'s brother)', () => {
       const result = computeKinship({
         personA: son,
@@ -364,18 +341,18 @@ describe("computeKinship", () => {
     });
   });
 
-  describe("in-law relationships", () => {
+  describe('in-law relationships', () => {
     it('should return "Con dâu" when father-in-law calls daughter-in-law', () => {
       // son is married to wife → father calls wife = "Con dâu"
       const wife = person({
-        id: "wife",
-        fullName: "Vợ",
+        id: 'wife',
+        fullName: 'Vợ',
         gender: Gender.enum.female,
         generation: 3,
         isInLaw: true,
       });
       const personsWithWife = [...allPersons, wife];
-      const relsWithWife = [...allRelationships, marriage("son", "wife")];
+      const relsWithWife = [...allRelationships, marriage('son', 'wife')];
 
       const result = computeKinship({
         personA: father,
@@ -388,19 +365,19 @@ describe("computeKinship", () => {
     });
   });
 
-  describe("enhanced in-law term handling", () => {
+  describe('enhanced in-law term handling', () => {
     it('should return "Cô" when uncle (Chú) calls nephew wife through marriage of B', () => {
       // uncle's wife → uncle calls her 'Vợ', but son calls aunt-wife = ?
       // Actually test: Chú's wife = Thím
       const thuWife = person({
-        id: "thu-wife",
-        fullName: "Thím",
+        id: 'thu-wife',
+        fullName: 'Thím',
         gender: Gender.enum.female,
         generation: 2,
         isInLaw: true,
       });
       const personsExt = [...allPersons, thuWife];
-      const relsExt = [...allRelationships, marriage("uncle", "thu-wife")];
+      const relsExt = [...allRelationships, marriage('uncle', 'thu-wife')];
 
       // son calls uncle's wife
       const result = computeKinship({
@@ -417,14 +394,14 @@ describe("computeKinship", () => {
     it('should return "Dì" when Cậu calls nephew through reverse marriage', () => {
       // maternalUncle's wife = Mợ/Dì
       const cauWife = person({
-        id: "cau-wife",
-        fullName: "Mợ",
+        id: 'cau-wife',
+        fullName: 'Mợ',
         gender: Gender.enum.female,
         generation: 2,
         isInLaw: true,
       });
       const personsExt = [...allPersons, cauWife];
-      const relsExt = [...allRelationships, marriage("mat-uncle", "cau-wife")];
+      const relsExt = [...allRelationships, marriage('mat-uncle', 'cau-wife')];
 
       // son calls maternalUncle's wife
       const result = computeKinship({
@@ -438,38 +415,38 @@ describe("computeKinship", () => {
     });
   });
 
-  describe("4th branch: through both spouses", () => {
+  describe('4th branch: through both spouses', () => {
     // Setup: Two brothers (son, son2) married to two sisters (wife1, wife2)
     const son2 = person({
-      id: "son2",
-      fullName: "Con Trai 2",
+      id: 'son2',
+      fullName: 'Con Trai 2',
       gender: Gender.enum.male,
       generation: 3,
       birthOrder: 2,
     });
     const wife1 = person({
-      id: "wife1",
-      fullName: "Vợ 1",
+      id: 'wife1',
+      fullName: 'Vợ 1',
       gender: Gender.enum.female,
       generation: 3,
       isInLaw: true,
     });
     const wife2 = person({
-      id: "wife2",
-      fullName: "Vợ 2",
+      id: 'wife2',
+      fullName: 'Vợ 2',
       gender: Gender.enum.female,
       generation: 3,
       isInLaw: true,
     });
     const fatherInLaw = person({
-      id: "fil",
-      fullName: "Bố Vợ",
+      id: 'fil',
+      fullName: 'Bố Vợ',
       gender: Gender.enum.male,
       generation: 2,
     });
     const motherInLaw = person({
-      id: "mil",
-      fullName: "Mẹ Vợ",
+      id: 'mil',
+      fullName: 'Mẹ Vợ',
       gender: Gender.enum.female,
       generation: 2,
     });
@@ -477,15 +454,15 @@ describe("computeKinship", () => {
     const extPersons = [...allPersons, son2, wife1, wife2, fatherInLaw, motherInLaw];
     const extRels = [
       ...allRelationships,
-      child("father", "son2"),
-      child("mother", "son2"),
-      marriage("fil", "mil"),
-      child("fil", "wife1"),
-      child("mil", "wife1"),
-      child("fil", "wife2"),
-      child("mil", "wife2"),
-      marriage("son", "wife1"),
-      marriage("son2", "wife2"),
+      child('father', 'son2'),
+      child('mother', 'son2'),
+      marriage('fil', 'mil'),
+      child('fil', 'wife1'),
+      child('mil', 'wife1'),
+      child('fil', 'wife2'),
+      child('mil', 'wife2'),
+      marriage('son', 'wife1'),
+      marriage('son2', 'wife2'),
     ];
 
     it('should return "Anh em cột chèo" for two brothers-in-law married to sisters', () => {
@@ -500,46 +477,46 @@ describe("computeKinship", () => {
       expect(result?.aCallsB).toBe(SIBLING.YOUNGER_BROTHER);
     });
 
-    it("should detect through-both-spouses for unrelated men married to sisters", () => {
+    it('should detect through-both-spouses for unrelated men married to sisters', () => {
       // Create two unrelated men married to two sisters
       const man1 = person({
-        id: "man1",
-        fullName: "Anh A",
+        id: 'man1',
+        fullName: 'Anh A',
         gender: Gender.enum.male,
         generation: 3,
       });
       const man2 = person({
-        id: "man2",
-        fullName: "Anh B",
+        id: 'man2',
+        fullName: 'Anh B',
         gender: Gender.enum.male,
         generation: 3,
       });
       const sister1 = person({
-        id: "sis1",
-        fullName: "Chị 1",
+        id: 'sis1',
+        fullName: 'Chị 1',
         gender: Gender.enum.female,
         generation: 3,
         birthOrder: 1,
       });
       const sister2 = person({
-        id: "sis2",
-        fullName: "Chị 2",
+        id: 'sis2',
+        fullName: 'Chị 2',
         gender: Gender.enum.female,
         generation: 3,
         birthOrder: 2,
       });
-      const dad = person({ id: "dad", fullName: "Bố", gender: Gender.enum.male, generation: 2 });
-      const mom = person({ id: "mom", fullName: "Mẹ", gender: Gender.enum.female, generation: 2 });
+      const dad = person({ id: 'dad', fullName: 'Bố', gender: Gender.enum.male, generation: 2 });
+      const mom = person({ id: 'mom', fullName: 'Mẹ', gender: Gender.enum.female, generation: 2 });
 
       const p = [man1, man2, sister1, sister2, dad, mom];
       const r: RelEdge[] = [
-        marriage("dad", "mom"),
-        child("dad", "sis1"),
-        child("mom", "sis1"),
-        child("dad", "sis2"),
-        child("mom", "sis2"),
-        marriage("man1", "sis1"),
-        marriage("man2", "sis2"),
+        marriage('dad', 'mom'),
+        child('dad', 'sis1'),
+        child('mom', 'sis1'),
+        child('dad', 'sis2'),
+        child('mom', 'sis2'),
+        marriage('man1', 'sis1'),
+        marriage('man2', 'sis2'),
       ];
 
       const result = computeKinship({ personA: man1, personB: man2, persons: p, relationships: r });
@@ -550,43 +527,43 @@ describe("computeKinship", () => {
 
     it('should detect "Chị em dâu" for two women married to brothers', () => {
       const woman1 = person({
-        id: "w1",
-        fullName: "Chị A",
+        id: 'w1',
+        fullName: 'Chị A',
         gender: Gender.enum.female,
         generation: 3,
       });
       const woman2 = person({
-        id: "w2",
-        fullName: "Chị B",
+        id: 'w2',
+        fullName: 'Chị B',
         gender: Gender.enum.female,
         generation: 3,
       });
       const bro1 = person({
-        id: "bro1",
-        fullName: "Anh 1",
+        id: 'bro1',
+        fullName: 'Anh 1',
         gender: Gender.enum.male,
         generation: 3,
         birthOrder: 1,
       });
       const bro2 = person({
-        id: "bro2",
-        fullName: "Anh 2",
+        id: 'bro2',
+        fullName: 'Anh 2',
         gender: Gender.enum.male,
         generation: 3,
         birthOrder: 2,
       });
-      const dad = person({ id: "dad2", fullName: "Bố", gender: Gender.enum.male, generation: 2 });
-      const mom = person({ id: "mom2", fullName: "Mẹ", gender: Gender.enum.female, generation: 2 });
+      const dad = person({ id: 'dad2', fullName: 'Bố', gender: Gender.enum.male, generation: 2 });
+      const mom = person({ id: 'mom2', fullName: 'Mẹ', gender: Gender.enum.female, generation: 2 });
 
       const p = [woman1, woman2, bro1, bro2, dad, mom];
       const r: RelEdge[] = [
-        marriage("dad2", "mom2"),
-        child("dad2", "bro1"),
-        child("mom2", "bro1"),
-        child("dad2", "bro2"),
-        child("mom2", "bro2"),
-        marriage("bro1", "w1"),
-        marriage("bro2", "w2"),
+        marriage('dad2', 'mom2'),
+        child('dad2', 'bro1'),
+        child('mom2', 'bro1'),
+        child('dad2', 'bro2'),
+        child('mom2', 'bro2'),
+        marriage('bro1', 'w1'),
+        marriage('bro2', 'w2'),
       ];
 
       const result = computeKinship({
@@ -601,85 +578,76 @@ describe("computeKinship", () => {
     });
   });
 
-  describe("through-spouse kinship (in-law relationships)", () => {
+  describe('through-spouse kinship (in-law relationships)', () => {
     // Uncle's wife (Thím)
     const uncleWife = person({
-      id: "uncle-wife",
-      fullName: "Thím",
+      id: 'uncle-wife',
+      fullName: 'Thím',
       gender: Gender.enum.female,
       generation: 2,
       isInLaw: true,
     });
     // Maternal uncle's wife (Mợ)
     const maternalUncleWife = person({
-      id: "mat-uncle-wife",
-      fullName: "Mợ",
+      id: 'mat-uncle-wife',
+      fullName: 'Mợ',
       gender: Gender.enum.female,
       generation: 2,
       isInLaw: true,
     });
     // Aunt's husband (Dượng) — aunt = Cô (father's sister)
     const auntHusband = person({
-      id: "aunt-husband",
-      fullName: "Dượng",
+      id: 'aunt-husband',
+      fullName: 'Dượng',
       gender: Gender.enum.male,
       generation: 2,
       isInLaw: true,
     });
     // Son's wife
     const sonWife = person({
-      id: "son-wife",
-      fullName: "Vợ Con Trai",
+      id: 'son-wife',
+      fullName: 'Vợ Con Trai',
       gender: Gender.enum.female,
       generation: 3,
       isInLaw: true,
     });
     // Son's wife's older brother
     const wifeOlderBro = person({
-      id: "wife-older-bro",
-      fullName: "Anh Vợ",
+      id: 'wife-older-bro',
+      fullName: 'Anh Vợ',
       gender: Gender.enum.male,
       generation: 3,
       birthOrder: 1,
     });
     // Son's wife's father (father-in-law)
     const wifeFather = person({
-      id: "wife-father",
-      fullName: "Bố Vợ",
+      id: 'wife-father',
+      fullName: 'Bố Vợ',
       gender: Gender.enum.male,
       generation: 2,
     });
     // Son's wife's mother
     const wifeMother = person({
-      id: "wife-mother",
-      fullName: "Mẹ Vợ",
+      id: 'wife-mother',
+      fullName: 'Mẹ Vợ',
       gender: Gender.enum.female,
       generation: 2,
     });
 
-    const localPersons: PersonNode[] = [
-      ...allPersons,
-      uncleWife,
-      maternalUncleWife,
-      auntHusband,
-      sonWife,
-      wifeOlderBro,
-      wifeFather,
-      wifeMother,
-    ];
+    const localPersons: PersonNode[] = [...allPersons, uncleWife, maternalUncleWife, auntHusband, sonWife, wifeOlderBro, wifeFather, wifeMother];
 
     const localRels: RelEdge[] = [
       ...allRelationships,
-      marriage("uncle", "uncle-wife"),
-      marriage("mat-uncle", "mat-uncle-wife"),
-      marriage("aunt", "aunt-husband"),
-      marriage("son", "son-wife"),
+      marriage('uncle', 'uncle-wife'),
+      marriage('mat-uncle', 'mat-uncle-wife'),
+      marriage('aunt', 'aunt-husband'),
+      marriage('son', 'son-wife'),
       // Son's wife's family
-      marriage("wife-father", "wife-mother"),
-      child("wife-father", "son-wife"),
-      child("wife-mother", "son-wife"),
-      child("wife-father", "wife-older-bro"),
-      child("wife-mother", "wife-older-bro"),
+      marriage('wife-father', 'wife-mother'),
+      child('wife-father', 'son-wife'),
+      child('wife-mother', 'son-wife'),
+      child('wife-father', 'wife-older-bro'),
+      child('wife-mother', 'wife-older-bro'),
     ];
 
     it("should return Thím when son calls uncle's wife (through marriage of B)", () => {
@@ -787,9 +755,9 @@ describe("computeKinship", () => {
     });
   });
 
-  describe("unrelated persons", () => {
+  describe('unrelated persons', () => {
     it('should return "Người dưng" for unrelated persons', () => {
-      const stranger = person({ id: "stranger", fullName: "Người Lạ", gender: Gender.enum.male });
+      const stranger = person({ id: 'stranger', fullName: 'Người Lạ', gender: Gender.enum.male });
       const result = computeKinship({
         personA: son,
         personB: stranger,

@@ -1,10 +1,10 @@
-import { createServerFn } from "@tanstack/react-start";
-import * as z from "zod";
+import { createServerFn } from '@tanstack/react-start';
+import * as z from 'zod';
 
-import { isEditorMiddleware } from "../../auth/server/middleware";
-import { ERRORS } from "../../lib/errors";
-import { deleteAvatar, uploadAvatar } from "../../lib/storage";
-import { countRelationshipsForPerson } from "../../relationships/repository/relationship";
+import { isEditorMiddleware } from '../../auth/server/middleware';
+import { ERRORS } from '../../lib/errors';
+import { deleteAvatar, uploadAvatar } from '../../lib/storage';
+import { countRelationshipsForPerson } from '../../relationships/repository/relationship';
 import {
   createPerson as createPersonRepo,
   deletePersonDetailsPrivate,
@@ -15,8 +15,8 @@ import {
   findPersonByIdResolved,
   updatePerson as updatePersonRepo,
   upsertPersonDetailsPrivate,
-} from "../repository/person";
-import { Gender } from "../types";
+} from '../repository/person';
+import { Gender } from '../types';
 
 const basePersonFields = {
   fullName: z.string().min(1),
@@ -71,7 +71,7 @@ const UploadAvatarPayload = z.object({
   base64: z.string().min(1),
 });
 
-export const createPerson = createServerFn({ method: "POST" })
+export const createPerson = createServerFn({ method: 'POST' })
   .inputValidator(CreatePersonPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
@@ -92,7 +92,7 @@ export const createPerson = createServerFn({ method: "POST" })
     });
   });
 
-export const updatePerson = createServerFn({ method: "POST" })
+export const updatePerson = createServerFn({ method: 'POST' })
   .inputValidator(UpdatePersonPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
@@ -100,8 +100,7 @@ export const updatePerson = createServerFn({ method: "POST" })
 
     await updatePersonRepo({ id, data: personData });
 
-    const hasPrivateDetailsToUpdate =
-      phoneNumber !== undefined || occupation !== undefined || currentResidence !== undefined;
+    const hasPrivateDetailsToUpdate = phoneNumber !== undefined || occupation !== undefined || currentResidence !== undefined;
     if (hasPrivateDetailsToUpdate) {
       const allEmpty = !phoneNumber && !occupation && !currentResidence;
       if (allEmpty) {
@@ -126,7 +125,7 @@ export const updatePerson = createServerFn({ method: "POST" })
     return findPersonByIdOrThrowResolved(id);
   });
 
-export const deleteMember = createServerFn({ method: "POST" })
+export const deleteMember = createServerFn({ method: 'POST' })
   .inputValidator(IdPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
@@ -147,7 +146,7 @@ export const deleteMember = createServerFn({ method: "POST" })
     return { success: true };
   });
 
-export const uploadPersonAvatar = createServerFn({ method: "POST" })
+export const uploadPersonAvatar = createServerFn({ method: 'POST' })
   .inputValidator(UploadAvatarPayload)
   .middleware([isEditorMiddleware])
   .handler(async ({ data }) => {
@@ -158,7 +157,7 @@ export const uploadPersonAvatar = createServerFn({ method: "POST" })
       await deleteAvatar(existing.avatarUrl);
     }
 
-    const buffer = Buffer.from(data.base64, "base64");
+    const buffer = Buffer.from(data.base64, 'base64');
     const key = await uploadAvatar({
       buffer,
       personId: data.personId,
@@ -169,11 +168,11 @@ export const uploadPersonAvatar = createServerFn({ method: "POST" })
     return updatePersonRepo({ id: data.personId, data: { avatarUrl: key } });
   });
 
-export const getPersons = createServerFn({ method: "GET" }).handler(async () => {
+export const getPersons = createServerFn({ method: 'GET' }).handler(async () => {
   return findAllPersonsResolved();
 });
 
-export const getPersonById = createServerFn({ method: "GET" })
+export const getPersonById = createServerFn({ method: 'GET' })
   .inputValidator(IdPayload)
   .handler(async ({ data }) => {
     return findPersonByIdResolved(data.id);

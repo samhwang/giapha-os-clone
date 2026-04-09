@@ -1,95 +1,95 @@
-import { screen, waitFor } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { t } from "../../../test/i18n";
-import { renderWithProviders } from "../../../test/render-wrapper";
+import { t } from '../../../test/i18n';
+import { renderWithProviders } from '../../../test/render-wrapper';
 
-const mockToPng = vi.fn().mockResolvedValue("data:image/png;base64,fake");
-const mockToJpeg = vi.fn().mockResolvedValue("data:image/jpeg;base64,fake");
+const mockToPng = vi.fn().mockResolvedValue('data:image/png;base64,fake');
+const mockToJpeg = vi.fn().mockResolvedValue('data:image/jpeg;base64,fake');
 const mockSave = vi.fn();
 const mockAddImage = vi.fn();
 
-vi.mock("html-to-image", () => ({
+vi.mock('html-to-image', () => ({
   toPng: (...args: unknown[]) => mockToPng(...args),
   toJpeg: (...args: unknown[]) => mockToJpeg(...args),
 }));
 
-vi.mock("jspdf", () => ({
+vi.mock('jspdf', () => ({
   default: class MockJsPDF {
     addImage = mockAddImage;
     save = mockSave;
   },
 }));
 
-import ExportButton from "./ExportButton";
+import ExportButton from './ExportButton';
 
 function setupExportContainer() {
-  const el = document.createElement("div");
-  el.id = "export-container";
-  Object.defineProperty(el, "scrollWidth", { value: 800 });
-  Object.defineProperty(el, "scrollHeight", { value: 600 });
+  const el = document.createElement('div');
+  el.id = 'export-container';
+  Object.defineProperty(el, 'scrollWidth', { value: 800 });
+  Object.defineProperty(el, 'scrollHeight', { value: 600 });
   document.body.appendChild(el);
   return el;
 }
 
-describe("ExportButton", () => {
+describe('ExportButton', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockToPng.mockResolvedValue("data:image/png;base64,fake");
-    mockToJpeg.mockResolvedValue("data:image/jpeg;base64,fake");
+    mockToPng.mockResolvedValue('data:image/png;base64,fake');
+    mockToJpeg.mockResolvedValue('data:image/jpeg;base64,fake');
   });
 
   afterEach(() => {
-    const existing = document.getElementById("export-container");
+    const existing = document.getElementById('export-container');
     if (existing) existing.remove();
   });
 
-  it("renders export button text", () => {
+  it('renders export button text', () => {
     renderWithProviders(<ExportButton />);
-    expect(screen.getByText(t("export.exportFile"))).toBeInTheDocument();
+    expect(screen.getByText(t('export.exportFile'))).toBeInTheDocument();
   });
 
-  it("toggles menu on button click", async () => {
+  it('toggles menu on button click', async () => {
     const { user } = renderWithProviders(<ExportButton />);
 
-    await user.click(screen.getByText(t("export.exportFile")));
-    expect(screen.getByText(t("export.saveAsPng"))).toBeInTheDocument();
-    expect(screen.getByText(t("export.saveAsPdf"))).toBeInTheDocument();
+    await user.click(screen.getByText(t('export.exportFile')));
+    expect(screen.getByText(t('export.saveAsPng'))).toBeInTheDocument();
+    expect(screen.getByText(t('export.saveAsPdf'))).toBeInTheDocument();
 
-    await user.click(screen.getByText(t("export.exportFile")));
-    expect(screen.queryByText(t("export.saveAsPng"))).not.toBeInTheDocument();
+    await user.click(screen.getByText(t('export.exportFile')));
+    expect(screen.queryByText(t('export.saveAsPng'))).not.toBeInTheDocument();
   });
 
-  it("closes menu on click outside", async () => {
+  it('closes menu on click outside', async () => {
     const { user } = renderWithProviders(<ExportButton />);
 
-    await user.click(screen.getByText(t("export.exportFile")));
-    expect(screen.getByText(t("export.saveAsPng"))).toBeInTheDocument();
+    await user.click(screen.getByText(t('export.exportFile')));
+    expect(screen.getByText(t('export.saveAsPng'))).toBeInTheDocument();
 
     await user.click(document.body);
     await waitFor(() => {
-      expect(screen.queryByText(t("export.saveAsPng"))).not.toBeInTheDocument();
+      expect(screen.queryByText(t('export.saveAsPng'))).not.toBeInTheDocument();
     });
   });
 
-  it("exports PNG when PNG option is clicked", async () => {
+  it('exports PNG when PNG option is clicked', async () => {
     setupExportContainer();
     const { user } = renderWithProviders(<ExportButton />);
 
-    await user.click(screen.getByText(t("export.exportFile")));
-    await user.click(screen.getByText(t("export.saveAsPng")));
+    await user.click(screen.getByText(t('export.exportFile')));
+    await user.click(screen.getByText(t('export.saveAsPng')));
 
     await waitFor(() => {
       expect(mockToPng).toHaveBeenCalled();
     });
   });
 
-  it("exports PDF when PDF option is clicked", async () => {
+  it('exports PDF when PDF option is clicked', async () => {
     setupExportContainer();
     const { user } = renderWithProviders(<ExportButton />);
 
-    await user.click(screen.getByText(t("export.exportFile")));
-    await user.click(screen.getByText(t("export.saveAsPdf")));
+    await user.click(screen.getByText(t('export.exportFile')));
+    await user.click(screen.getByText(t('export.saveAsPdf')));
 
     await waitFor(() => {
       expect(mockToJpeg).toHaveBeenCalled();
@@ -98,28 +98,28 @@ describe("ExportButton", () => {
     });
   });
 
-  it("shows error when export container is not found", async () => {
+  it('shows error when export container is not found', async () => {
     const { user } = renderWithProviders(<ExportButton />);
 
-    await user.click(screen.getByText(t("export.exportFile")));
-    await user.click(screen.getByText(t("export.saveAsPng")));
+    await user.click(screen.getByText(t('export.exportFile')));
+    await user.click(screen.getByText(t('export.saveAsPng')));
 
     await waitFor(() => {
-      expect(screen.getByText(t("export.exportError"))).toBeInTheDocument();
+      expect(screen.getByText(t('export.exportError'))).toBeInTheDocument();
     });
   });
 
-  it("dismisses error when close button is clicked", async () => {
+  it('dismisses error when close button is clicked', async () => {
     const { user } = renderWithProviders(<ExportButton />);
 
-    await user.click(screen.getByText(t("export.exportFile")));
-    await user.click(screen.getByText(t("export.saveAsPng")));
+    await user.click(screen.getByText(t('export.exportFile')));
+    await user.click(screen.getByText(t('export.saveAsPng')));
 
     await waitFor(() => {
-      expect(screen.getByText(t("export.exportError"))).toBeInTheDocument();
+      expect(screen.getByText(t('export.exportError'))).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText("×"));
-    expect(screen.queryByText(t("export.exportError"))).not.toBeInTheDocument();
+    await user.click(screen.getByText('×'));
+    expect(screen.queryByText(t('export.exportError'))).not.toBeInTheDocument();
   });
 });

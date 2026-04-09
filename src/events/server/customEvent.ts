@@ -1,13 +1,13 @@
-import { createServerFn } from "@tanstack/react-start";
-import * as z from "zod";
+import { createServerFn } from '@tanstack/react-start';
+import * as z from 'zod';
 
-import { isAdminMiddleware } from "../../auth/server/middleware";
+import { isAdminMiddleware } from '../../auth/server/middleware';
 import {
   createCustomEvent as createCustomEventRepo,
   deleteCustomEvent as deleteCustomEventRepo,
   findAllCustomEvents,
   updateCustomEvent as updateCustomEventRepo,
-} from "../repository/custom-event";
+} from '../repository/custom-event';
 
 const CreateCustomEventPayload = z.object({
   name: z.string().min(1),
@@ -26,11 +26,11 @@ const UpdateCustomEventPayload = z.object({
 
 const IdPayload = z.object({ id: z.uuid() });
 
-export const getCustomEvents = createServerFn({ method: "GET" }).handler(async () => {
+export const getCustomEvents = createServerFn({ method: 'GET' }).handler(async () => {
   return findAllCustomEvents();
 });
 
-export const createCustomEvent = createServerFn({ method: "POST" })
+export const createCustomEvent = createServerFn({ method: 'POST' })
   .inputValidator(CreateCustomEventPayload)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
@@ -42,7 +42,7 @@ export const createCustomEvent = createServerFn({ method: "POST" })
     });
   });
 
-export const updateCustomEvent = createServerFn({ method: "POST" })
+export const updateCustomEvent = createServerFn({ method: 'POST' })
   .inputValidator(UpdateCustomEventPayload)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {
@@ -50,7 +50,7 @@ export const updateCustomEvent = createServerFn({ method: "POST" })
     return updateCustomEventRepo({ id, data: updateData });
   });
 
-export const deleteCustomEvent = createServerFn({ method: "POST" })
+export const deleteCustomEvent = createServerFn({ method: 'POST' })
   .inputValidator(IdPayload)
   .middleware([isAdminMiddleware])
   .handler(async ({ data }) => {

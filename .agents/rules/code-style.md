@@ -61,9 +61,9 @@ Follow this order within each component file:
 
 ```tsx
 // 1. Imports
-import { useState } from "react";
-import { useSomething } from "../../lib/something";
-import type { Person } from "../../members/types";
+import { useState } from 'react';
+import { useSomething } from '../../lib/something';
+import type { Person } from '../../members/types';
 
 // 2. Types/interfaces (if component-specific, named {Component}Props)
 interface PersonCardProps {
@@ -94,13 +94,13 @@ export function PersonCard({ person, onSelect }: PersonCardProps): ReactNode {
 Use [class-variance-authority](https://cva.style/) for components with style variants. Define variants as a `cva()` call, export the component and optionally the variants.
 
 ```tsx
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva, type VariantProps } from 'class-variance-authority';
 
-const avatarVariants = cva("rounded-full flex items-center justify-center", {
+const avatarVariants = cva('rounded-full flex items-center justify-center', {
   variants: {
     gender: {
-      male: "bg-sky-400",
-      female: "bg-rose-400",
+      male: 'bg-sky-400',
+      female: 'bg-rose-400',
     },
   },
 });
@@ -236,14 +236,14 @@ Reference: [clean-code-javascript](https://github.com/ryanmcdermott/clean-code-j
   ```ts
   // Bad
   if (file) {
-    if (file.type === "json") {
+    if (file.type === 'json') {
       process(file);
     }
   }
 
   // Good
   if (!file) return;
-  if (file.type !== "json") return;
+  if (file.type !== 'json') return;
   process(file);
   ```
 

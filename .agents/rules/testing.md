@@ -60,13 +60,13 @@ Example pattern:
 
 ```ts
 // ❌ DON'T: Test through TanStack Start wrapper (requires complex mocking)
-import { createPerson } from "./member"; // the server function export
-const result = await createPerson({ data: { fullName: "Test", gender: "male" } });
+import { createPerson } from './member'; // the server function export
+const result = await createPerson({ data: { fullName: 'Test', gender: 'male' } });
 
 // ✅ DO: Test inner logic directly via repository functions (uses real DB via Testcontainers)
-import { createPerson } from "../repository/person";
+import { createPerson } from '../repository/person';
 const result = await createPerson({
-  data: { fullName: "Test", gender: "male" },
+  data: { fullName: 'Test', gender: 'male' },
 });
 ```
 
@@ -89,7 +89,7 @@ Example pattern:
 ```ts
 let capturedOptions: Record<string, unknown> = {};
 
-vi.mock("@tanstack/react-router", () => ({
+vi.mock('@tanstack/react-router', () => ({
   createFileRoute: () => (opts: Record<string, unknown>) => {
     capturedOptions = opts;
     return { options: opts };
@@ -122,15 +122,15 @@ Example:
 
 ```ts
 // e2e/login.spec.ts
-import { test, expect } from "@playwright/test";
+import { test, expect } from '@playwright/test';
 
-test("login flow works", async ({ page }) => {
-  await page.goto("/login");
-  await page.fill('[name="email"]', "test@example.com");
-  await page.fill('[name="password"]', "password");
+test('login flow works', async ({ page }) => {
+  await page.goto('/login');
+  await page.fill('[name="email"]', 'test@example.com');
+  await page.fill('[name="password"]', 'password');
   await page.click('button[type="submit"]');
 
-  await expect(page).toHaveURL("/dashboard");
+  await expect(page).toHaveURL('/dashboard');
 });
 ```
 
@@ -168,14 +168,14 @@ Use `createI18nInstance('vi').t` for assertions instead of hardcoded Vietnamese 
 This way tests only break when behavior changes, not when translations are updated.
 
 ```ts
-import { createI18nInstance } from "../../i18n/lib";
-const t = createI18nInstance("vi").t;
+import { createI18nInstance } from '../../i18n/lib';
+const t = createI18nInstance('vi').t;
 
 // ✅ DO: Use translation keys
-expect(screen.getByLabelText(t("auth.emailLabel"))).toBeInTheDocument();
+expect(screen.getByLabelText(t('auth.emailLabel'))).toBeInTheDocument();
 
 // ❌ DON'T: Hardcode translated text
-expect(screen.getByLabelText("Email")).toBeInTheDocument();
+expect(screen.getByLabelText('Email')).toBeInTheDocument();
 ```
 
 ## What NOT to Test (Excluded from Coverage)

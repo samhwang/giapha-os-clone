@@ -20,7 +20,7 @@ services:
       # - postgres_data:/var/lib/postgresql/data
 
       # Bind mount (uncomment and customize path)
-      - "./data/postgres:/var/lib/postgresql/data"
+      - './data/postgres:/var/lib/postgresql/data'
 
   app:
     volumes:
@@ -28,7 +28,7 @@ services:
       # - uploads_data:/app/uploads
 
       # Bind mount (uncomment and customize path)
-      - "./data/uploads:/app/uploads"
+      - './data/uploads:/app/uploads'
 ```
 
 Create the directories if using bind mounts:
@@ -62,10 +62,10 @@ To run [SeaweedFS](https://github.com/seaweedfs/seaweedfs) alongside your app, u
 ```yaml
 seaweedfs:
   image: chrislusf/seaweedfs:latest
-  command: "server -s3 -dir=/data"
+  command: 'server -s3 -dir=/data'
   ports:
-    - "8333:8333"
-    - "9333:9333"
+    - '8333:8333'
+    - '9333:9333'
   volumes:
     - seaweedfs_data:/data
   restart: unless-stopped

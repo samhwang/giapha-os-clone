@@ -1,8 +1,8 @@
-import { createServerFn } from "@tanstack/react-start";
-import * as z from "zod";
+import { createServerFn } from '@tanstack/react-start';
+import * as z from 'zod';
 
-import { isAuthenticatedMiddleware } from "../../auth/server/middleware";
-import { batchUpdatePersons } from "../../members/repository/person";
+import { isAuthenticatedMiddleware } from '../../auth/server/middleware';
+import { batchUpdatePersons } from '../../members/repository/person';
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
@@ -13,13 +13,13 @@ const UpdateBatchPayload = z.object({
       generation: z.number().int().nullable(),
       birthOrder: z.number().int().nullable(),
       isInLaw: z.boolean().optional(),
-    }),
+    })
   ),
 });
 
 // ─── Server Functions ───────────────────────────────────────────────────────
 
-export const updateBatch = createServerFn({ method: "POST" })
+export const updateBatch = createServerFn({ method: 'POST' })
   .inputValidator(UpdateBatchPayload)
   .middleware([isAuthenticatedMiddleware])
   .handler(async ({ data }) => {

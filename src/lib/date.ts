@@ -1,7 +1,7 @@
-import dayjs from "dayjs";
-import advancedFormat from "dayjs/plugin/advancedFormat";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -21,5 +21,5 @@ export function nowInTimeZone(timeZone?: string): dayjs.Dayjs {
 export function formatDateInTimeZone(date: dayjs.Dayjs | Date | string, timeZone?: string): string {
   const tz = timeZone || getUserTimeZone();
   const d = dayjs(date);
-  return d.tz(tz).format("YYYY-MM-DD");
+  return d.tz(tz).format('YYYY-MM-DD');
 }

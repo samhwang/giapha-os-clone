@@ -1,11 +1,11 @@
-import { render, screen } from "@testing-library/react";
-import { useEffect } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { render, screen } from '@testing-library/react';
+import { useEffect } from 'react';
+import { describe, expect, it, vi } from 'vitest';
 
-import { createPerson } from "../../../test/fixtures";
-import { t } from "../../../test/i18n";
-import { Gender } from "../types";
-import MemberDetailContent from "./MemberDetailContent";
+import { createPerson } from '../../../test/fixtures';
+import { t } from '../../../test/i18n';
+import { Gender } from '../types';
+import MemberDetailContent from './MemberDetailContent';
 
 const mockStats = {
   biologicalChildren: 0,
@@ -17,7 +17,7 @@ const mockStats = {
   daughterInLaw: 0,
 };
 
-vi.mock("../../relationships/components/RelationshipManager", () => ({
+vi.mock('../../relationships/components/RelationshipManager', () => ({
   default: ({ onStatsLoaded }: { onStatsLoaded?: (stats: typeof mockStats) => void }) => {
     useEffect(() => {
       if (onStatsLoaded) onStatsLoaded(mockStats);
@@ -26,9 +26,9 @@ vi.mock("../../relationships/components/RelationshipManager", () => ({
   },
 }));
 
-describe("MemberDetailContent", () => {
+describe('MemberDetailContent', () => {
   const basePerson = createPerson({
-    fullName: "Vạn Công Trí",
+    fullName: 'Vạn Công Trí',
     gender: Gender.enum.male,
     birthYear: 1958,
     birthMonth: 4,
@@ -37,73 +37,71 @@ describe("MemberDetailContent", () => {
     birthOrder: 1,
   });
 
-  it("renders person name", () => {
+  it('renders person name', () => {
     render(<MemberDetailContent person={basePerson} privateData={null} isAdmin={false} />);
-    expect(screen.getByText("Vạn Công Trí")).toBeInTheDocument();
+    expect(screen.getByText('Vạn Công Trí')).toBeInTheDocument();
   });
 
-  it("shows deceased badge when person is deceased", () => {
+  it('shows deceased badge when person is deceased', () => {
     const deceased = createPerson({
-      fullName: "Vạn Công Gốc",
+      fullName: 'Vạn Công Gốc',
       isDeceased: true,
       deathYear: 2020,
       deathMonth: 5,
       deathDay: 10,
     });
     render(<MemberDetailContent person={deceased} privateData={null} isAdmin={false} />);
-    expect(screen.getByText(t("member.filterDeceased"))).toBeInTheDocument();
+    expect(screen.getByText(t('member.filterDeceased'))).toBeInTheDocument();
   });
 
-  it("shows generation and birth order badges", () => {
+  it('shows generation and birth order badges', () => {
     render(<MemberDetailContent person={basePerson} privateData={null} isAdmin={false} />);
-    expect(
-      screen.getByText(new RegExp(t("stats.generationLabel", { gen: 3 }))),
-    ).toBeInTheDocument();
-    expect(screen.getByText(new RegExp(t("member.filterFirstborn")))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('stats.generationLabel', { gen: 3 })))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('member.filterFirstborn')))).toBeInTheDocument();
   });
 
-  it("shows note placeholder when no note", () => {
+  it('shows note placeholder when no note', () => {
     const noNote = createPerson({ ...basePerson, note: null });
     render(<MemberDetailContent person={noNote} privateData={null} isAdmin={false} />);
-    expect(screen.getByText(t("member.noNote"))).toBeInTheDocument();
+    expect(screen.getByText(t('member.noNote'))).toBeInTheDocument();
   });
 
-  it("shows actual note text", () => {
-    const withNote = createPerson({ ...basePerson, note: "Người con trai cả." });
+  it('shows actual note text', () => {
+    const withNote = createPerson({ ...basePerson, note: 'Người con trai cả.' });
     render(<MemberDetailContent person={withNote} privateData={null} isAdmin={false} />);
-    expect(screen.getByText("Người con trai cả.")).toBeInTheDocument();
+    expect(screen.getByText('Người con trai cả.')).toBeInTheDocument();
   });
 
-  it("shows private info section for admin", () => {
+  it('shows private info section for admin', () => {
     const privateData = {
-      phoneNumber: "0912345678",
-      occupation: "Kỹ sư",
-      currentResidence: "TP.HCM",
+      phoneNumber: '0912345678',
+      occupation: 'Kỹ sư',
+      currentResidence: 'TP.HCM',
     };
     render(<MemberDetailContent person={basePerson} privateData={privateData} isAdmin={true} />);
-    expect(screen.getByText("0912345678")).toBeInTheDocument();
-    expect(screen.getByText("Kỹ sư")).toBeInTheDocument();
-    expect(screen.getByText("TP.HCM")).toBeInTheDocument();
+    expect(screen.getByText('0912345678')).toBeInTheDocument();
+    expect(screen.getByText('Kỹ sư')).toBeInTheDocument();
+    expect(screen.getByText('TP.HCM')).toBeInTheDocument();
   });
 
-  it("shows lock message for non-admin", () => {
+  it('shows lock message for non-admin', () => {
     render(<MemberDetailContent person={basePerson} privateData={null} isAdmin={false} />);
-    expect(screen.getByText(new RegExp(t("member.contactAdminOnly")))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(t('member.contactAdminOnly')))).toBeInTheDocument();
   });
 
-  it("renders relationship manager", () => {
+  it('renders relationship manager', () => {
     render(<MemberDetailContent person={basePerson} privateData={null} isAdmin={false} />);
-    expect(screen.getByTestId("relationship-manager")).toBeInTheDocument();
+    expect(screen.getByTestId('relationship-manager')).toBeInTheDocument();
   });
 
   it('shows "Chưa cập nhật" placeholders for null private data fields when admin', () => {
     render(<MemberDetailContent person={basePerson} privateData={null} isAdmin={true} />);
-    const placeholders = screen.getAllByText(new RegExp(t("member.notUpdated"), "i"));
+    const placeholders = screen.getAllByText(new RegExp(t('member.notUpdated'), 'i'));
     // Phone, occupation, and residence should all show placeholder
     expect(placeholders).toHaveLength(3);
   });
 
-  it("renders descendant statistics when person has descendants", () => {
+  it('renders descendant statistics when person has descendants', () => {
     Object.assign(mockStats, {
       biologicalChildren: 3,
       maleBiologicalChildren: 2,
@@ -116,14 +114,14 @@ describe("MemberDetailContent", () => {
 
     render(<MemberDetailContent person={basePerson} privateData={null} isAdmin={false} />);
 
-    expect(screen.getByText(t("member.descendants"))).toBeInTheDocument();
-    expect(screen.getByText(t("member.biologicalChildren"))).toBeInTheDocument();
-    expect(screen.getByText("3")).toBeInTheDocument();
-    expect(screen.getByText(t("member.inLawLabel"))).toBeInTheDocument();
-    expect(screen.getByText(t("member.grandchildren"))).toBeInTheDocument();
+    expect(screen.getByText(t('member.descendants'))).toBeInTheDocument();
+    expect(screen.getByText(t('member.biologicalChildren'))).toBeInTheDocument();
+    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(screen.getByText(t('member.inLawLabel'))).toBeInTheDocument();
+    expect(screen.getByText(t('member.grandchildren'))).toBeInTheDocument();
   });
 
-  it("does not render descendant card when person has no descendants", () => {
+  it('does not render descendant card when person has no descendants', () => {
     Object.assign(mockStats, {
       biologicalChildren: 0,
       maleBiologicalChildren: 0,
@@ -136,18 +134,18 @@ describe("MemberDetailContent", () => {
 
     render(<MemberDetailContent person={basePerson} privateData={null} isAdmin={false} />);
 
-    expect(screen.queryByText(t("member.descendants"))).not.toBeInTheDocument();
+    expect(screen.queryByText(t('member.descendants'))).not.toBeInTheDocument();
   });
 
-  it("shows zodiac sign and animal when birth month and day are available", () => {
+  it('shows zodiac sign and animal when birth month and day are available', () => {
     // basePerson has birthMonth: 4, birthDay: 12, birthYear: 1958
     // April 12 => Aries (Bạch Dương), 1958 => Dog (Tuất)
     render(<MemberDetailContent person={basePerson} privateData={null} isAdmin={false} />);
 
     // Zodiac animal is displayed with prefix (e.g. "Con giáp Tuất")
-    const zodiacAnimalEl = screen.getByText(new RegExp(`${t("member.zodiacPrefix")}.*Tuất`));
+    const zodiacAnimalEl = screen.getByText(new RegExp(`${t('member.zodiacPrefix')}.*Tuất`));
     expect(zodiacAnimalEl).toBeInTheDocument();
     // Western zodiac sign (April 12 => Aries / Bạch Dương)
-    expect(screen.getByText("Bạch Dương")).toBeInTheDocument();
+    expect(screen.getByText('Bạch Dương')).toBeInTheDocument();
   });
 });

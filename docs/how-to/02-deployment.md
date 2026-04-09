@@ -145,10 +145,10 @@ Add labels to your `docker-compose.production.yml`:
 services:
   app:
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.giapha.rule=Host(`your-domain.com`)"
-      - "traefik.http.routers.giapha.tls=true"
-      - "traefik.http.routers.giapha.tls.certresolver=letsencrypt"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.giapha.rule=Host(`your-domain.com`)'
+      - 'traefik.http.routers.giapha.tls=true'
+      - 'traefik.http.routers.giapha.tls.certresolver=letsencrypt'
 ```
 
 Run [Traefik](https://traefik.io/):
@@ -159,18 +159,18 @@ services:
   traefik:
     image: traefik:v3.0
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/acme.json:/acme.json
     command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--certificatesresolvers.letsencrypt.acme.email=your@email.com"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/acme.json"
-      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - '--api.insecure=true'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--certificatesresolvers.letsencrypt.acme.email=your@email.com'
+      - '--certificatesresolvers.letsencrypt.acme.storage=/acme.json'
+      - '--certificatesresolvers.letsencrypt.acme.tlschallenge=true'
     restart: unless-stopped
 ```
 

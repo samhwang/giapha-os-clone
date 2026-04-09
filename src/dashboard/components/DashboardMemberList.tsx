@@ -1,32 +1,29 @@
-import { ArrowUpDown, Filter, Plus, Search } from "lucide-react";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { ArrowUpDown, Filter, Plus, Search } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import type { Relationship } from "../../relationships/types";
+import type { Relationship } from '../../relationships/types';
 
-import PersonCard from "../../members/components/PersonCard";
-import { Gender, type Person } from "../../members/types";
-import { buildFamilyGroupedSort, FALLBACK_BIRTH_YEAR } from "../../members/utils/familyGrouping";
-import { Button } from "../../ui/common/Button";
-import { Card } from "../../ui/common/Card";
-import { EmptyState } from "../../ui/common/EmptyState";
-import { useDashboardStore } from "../store/dashboardStore";
-import GenerationGroupedList from "./GenerationGroupedList";
+import PersonCard from '../../members/components/PersonCard';
+import { Gender, type Person } from '../../members/types';
+import { buildFamilyGroupedSort, FALLBACK_BIRTH_YEAR } from '../../members/utils/familyGrouping';
+import { Button } from '../../ui/common/Button';
+import { Card } from '../../ui/common/Card';
+import { EmptyState } from '../../ui/common/EmptyState';
+import { useDashboardStore } from '../store/dashboardStore';
+import GenerationGroupedList from './GenerationGroupedList';
 
 interface DashboardMemberListProps {
   initialPersons: Person[];
   relationships?: Relationship[];
 }
 
-export default function DashboardMemberList({
-  initialPersons,
-  relationships = [],
-}: DashboardMemberListProps) {
+export default function DashboardMemberList({ initialPersons, relationships = [] }: DashboardMemberListProps) {
   const { t } = useTranslation();
   const { setShowCreateModal } = useDashboardStore();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState("updated_desc");
-  const [filterOption, setFilterOption] = useState("all");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOption, setSortOption] = useState('updated_desc');
+  const [filterOption, setFilterOption] = useState('all');
 
   const filteredPersons = useMemo(() => {
     return initialPersons.filter((person) => {
@@ -34,22 +31,22 @@ export default function DashboardMemberList({
 
       let matchesFilter = true;
       switch (filterOption) {
-        case "male":
+        case 'male':
           matchesFilter = person.gender === Gender.enum.male;
           break;
-        case "female":
+        case 'female':
           matchesFilter = person.gender === Gender.enum.female;
           break;
-        case "in_law_female":
+        case 'in_law_female':
           matchesFilter = person.gender === Gender.enum.female && person.isInLaw;
           break;
-        case "in_law_male":
+        case 'in_law_male':
           matchesFilter = person.gender === Gender.enum.male && person.isInLaw;
           break;
-        case "deceased":
+        case 'deceased':
           matchesFilter = person.isDeceased;
           break;
-        case "first_child":
+        case 'first_child':
           matchesFilter = person.birthOrder === 1;
           break;
         default:
@@ -66,10 +63,10 @@ export default function DashboardMemberList({
     const sOf = new Map<string, string[]>();
 
     for (const rel of relationships) {
-      if (rel.type === "biological_child" || rel.type === "adopted_child") {
+      if (rel.type === 'biological_child' || rel.type === 'adopted_child') {
         if (!pOf.has(rel.personBId)) pOf.set(rel.personBId, []);
         pOf.get(rel.personBId)?.push(rel.personAId);
-      } else if (rel.type === "marriage") {
+      } else if (rel.type === 'marriage') {
         if (!sOf.has(rel.personAId)) sOf.set(rel.personAId, []);
         if (!sOf.has(rel.personBId)) sOf.set(rel.personBId, []);
         sOf.get(rel.personAId)?.push(rel.personBId);
@@ -81,20 +78,20 @@ export default function DashboardMemberList({
   }, [relationships]);
 
   const sortedPersons = useMemo(() => {
-    if (!sortOption.includes("generation")) {
+    if (!sortOption.includes('generation')) {
       return [...filteredPersons].sort((a, b) => {
         switch (sortOption) {
-          case "birth_asc":
+          case 'birth_asc':
             return (a.birthYear || FALLBACK_BIRTH_YEAR) - (b.birthYear || FALLBACK_BIRTH_YEAR);
-          case "birth_desc":
+          case 'birth_desc':
             return (b.birthYear || 0) - (a.birthYear || 0);
-          case "name_asc":
-            return a.fullName.localeCompare(b.fullName, "vi");
-          case "name_desc":
-            return b.fullName.localeCompare(a.fullName, "vi");
-          case "updated_desc":
+          case 'name_asc':
+            return a.fullName.localeCompare(b.fullName, 'vi');
+          case 'name_desc':
+            return b.fullName.localeCompare(a.fullName, 'vi');
+          case 'updated_desc':
             return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-          case "updated_asc":
+          case 'updated_asc':
             return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
           default:
             return 0;
@@ -102,16 +99,10 @@ export default function DashboardMemberList({
       });
     }
 
-    return buildFamilyGroupedSort(
-      filteredPersons,
-      initialPersons,
-      parentsOf,
-      spousesOf,
-      sortOption,
-    );
+    return buildFamilyGroupedSort(filteredPersons, initialPersons, parentsOf, spousesOf, sortOption);
   }, [filteredPersons, sortOption, initialPersons, parentsOf, spousesOf]);
 
-  const isGenerationSort = sortOption.includes("generation");
+  const isGenerationSort = sortOption.includes('generation');
 
   return (
     <>
@@ -122,7 +113,7 @@ export default function DashboardMemberList({
               <Search className="absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-stone-400 transition-colors group-focus-within:text-amber-500" />
               <input
                 type="text"
-                placeholder={t("member.searchPlaceholder")}
+                placeholder={t('member.searchPlaceholder')}
                 className="w-full rounded-xl border border-border-strong bg-white/90 py-2.5 pr-4 pl-10 text-stone-900 placeholder-stone-400 shadow-sm transition-all focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 focus:outline-none"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -136,30 +127,18 @@ export default function DashboardMemberList({
                   value={filterOption}
                   onChange={(e) => setFilterOption(e.target.value)}
                 >
-                  <option value="all">{t("member.filterAll")}</option>
-                  <option value="male">{t("common.male")}</option>
-                  <option value="female">{t("common.female")}</option>
-                  <option value="in_law_female">{t("member.filterInLawFemale")}</option>
-                  <option value="in_law_male">{t("member.filterInLawMale")}</option>
-                  <option value="deceased">{t("member.filterDeceased")}</option>
-                  <option value="first_child">{t("member.filterFirstborn")}</option>
+                  <option value="all">{t('member.filterAll')}</option>
+                  <option value="male">{t('common.male')}</option>
+                  <option value="female">{t('common.female')}</option>
+                  <option value="in_law_female">{t('member.filterInLawFemale')}</option>
+                  <option value="in_law_male">{t('member.filterInLawMale')}</option>
+                  <option value="deceased">{t('member.filterDeceased')}</option>
+                  <option value="first_child">{t('member.filterFirstborn')}</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
-                  <svg
-                    className="size-4 text-stone-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    role="img"
-                    aria-label={t("member.openMenu")}
-                  >
-                    <title>{t("member.openMenu")}</title>
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 9l-7 7-7-7"
-                    />
+                  <svg className="size-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label={t('member.openMenu')}>
+                    <title>{t('member.openMenu')}</title>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </div>
               </div>
@@ -171,31 +150,19 @@ export default function DashboardMemberList({
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
                 >
-                  <option value="birth_asc">{t("member.sortBirthAsc")}</option>
-                  <option value="birth_desc">{t("member.sortBirthDesc")}</option>
-                  <option value="name_asc">{t("member.sortNameAsc")}</option>
-                  <option value="name_desc">{t("member.sortNameDesc")}</option>
-                  <option value="updated_desc">{t("member.sortUpdatedDesc")}</option>
-                  <option value="updated_asc">{t("member.sortUpdatedAsc")}</option>
-                  <option value="generation_asc">{t("member.sortGenerationAsc")}</option>
-                  <option value="generation_desc">{t("member.sortGenerationDesc")}</option>
+                  <option value="birth_asc">{t('member.sortBirthAsc')}</option>
+                  <option value="birth_desc">{t('member.sortBirthDesc')}</option>
+                  <option value="name_asc">{t('member.sortNameAsc')}</option>
+                  <option value="name_desc">{t('member.sortNameDesc')}</option>
+                  <option value="updated_desc">{t('member.sortUpdatedDesc')}</option>
+                  <option value="updated_asc">{t('member.sortUpdatedAsc')}</option>
+                  <option value="generation_asc">{t('member.sortGenerationAsc')}</option>
+                  <option value="generation_desc">{t('member.sortGenerationDesc')}</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
-                  <svg
-                    className="size-4 text-stone-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    role="img"
-                    aria-label={t("member.openMenu")}
-                  >
-                    <title>{t("member.openMenu")}</title>
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 9l-7 7-7-7"
-                    />
+                  <svg className="size-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label={t('member.openMenu')}>
+                    <title>{t('member.openMenu')}</title>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </div>
               </div>
@@ -203,17 +170,12 @@ export default function DashboardMemberList({
           </div>
           <Button variant="primary" onClick={() => setShowCreateModal(true)}>
             <Plus className="size-4" strokeWidth={2.5} />
-            {t("member.addMember")}
+            {t('member.addMember')}
           </Button>
         </Card>
       </div>
 
-      {sortedPersons.length === 0 && (
-        <EmptyState
-          title={initialPersons.length > 0 ? t("member.noResults") : t("member.emptyState")}
-          className="py-12"
-        />
-      )}
+      {sortedPersons.length === 0 && <EmptyState title={initialPersons.length > 0 ? t('member.noResults') : t('member.emptyState')} className="py-12" />}
 
       {sortedPersons.length > 0 && isGenerationSort && (
         <GenerationGroupedList

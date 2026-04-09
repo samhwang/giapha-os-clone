@@ -1,7 +1,7 @@
-import type { UserRole } from "../auth/types";
-import type { CustomEventRecord } from "../events/types";
-import type { Person } from "../members/types";
-import type { Relationship } from "../relationships/types";
+import type { UserRole } from '../auth/types';
+import type { CustomEventRecord } from '../events/types';
+import type { Person } from '../members/types';
+import type { Relationship } from '../relationships/types';
 
 export interface UserProfile {
   id: string;

@@ -1,17 +1,13 @@
-import * as z from "zod";
+import * as z from 'zod';
 
-import type { RelationshipType as PrismaRelType } from "../database/generated/prisma/enums";
-import type { Gender } from "../members/types";
+import type { RelationshipType as PrismaRelType } from '../database/generated/prisma/enums';
+import type { Gender } from '../members/types';
 
-export const RelationshipType = z.enum(["marriage", "biological_child", "adopted_child"]);
+export const RelationshipType = z.enum(['marriage', 'biological_child', 'adopted_child']);
 export type RelationshipType = z.infer<typeof RelationshipType>;
 
 // Compile-time check: fails if Prisma and Zod RelationshipType enums diverge.
-export type _AssertRelType = PrismaRelType extends RelationshipType
-  ? RelationshipType extends PrismaRelType
-    ? true
-    : never
-  : never;
+export type _AssertRelType = PrismaRelType extends RelationshipType ? (RelationshipType extends PrismaRelType ? true : never) : never;
 
 export interface Relationship {
   id: string;
@@ -41,4 +37,4 @@ export interface PersonNode {
   isInLaw: boolean;
 }
 
-export type RelEdge = Pick<Relationship, "type" | "personAId" | "personBId">;
+export type RelEdge = Pick<Relationship, 'type' | 'personAId' | 'personBId'>;

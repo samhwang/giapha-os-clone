@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router';
 
-import Footer from "../ui/layout/Footer";
-import LandingHero from "../ui/layout/LandingHero";
+import Footer from '../ui/layout/Footer';
+import LandingHero from '../ui/layout/LandingHero';
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute('/')({
   component: LandingPage,
 });
 

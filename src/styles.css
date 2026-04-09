@@ -1,13 +1,13 @@
-@import "@fontsource-variable/inter";
-@import "@fontsource-variable/playfair-display";
-@import "tailwindcss";
-@import "tw-animate-css";
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/playfair-display';
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --font-inter: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-playfair: "Playfair Display Variable", Georgia, serif;
+  --font-inter: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-playfair: 'Playfair Display Variable', Georgia, serif;
 
   /* Surface */
   --surface-primary: var(--color-white);

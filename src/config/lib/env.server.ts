@@ -1,16 +1,14 @@
-import * as z from "zod";
+import * as z from 'zod';
 
 export const ClientRuntimeEnv = z.object({
-  SITE_NAME: z.string().min(1).default("Gia Phả OS"),
+  SITE_NAME: z.string().min(1).default('Gia Phả OS'),
 });
 export type ClientRuntimeEnv = z.infer<typeof ClientRuntimeEnv>;
 
 function parseClientRuntimeEnv(): ClientRuntimeEnv {
   const result = ClientRuntimeEnv.safeParse(process.env);
   if (!result.success) {
-    const formatted = result.error.issues
-      .map((i) => `  ${i.path.join(".")}: ${i.message}`)
-      .join("\n");
+    const formatted = result.error.issues.map((i) => `  ${i.path.join('.')}: ${i.message}`).join('\n');
     throw new Error(`Invalid client environment variables:\n${formatted}`);
   }
   return result.data;
@@ -29,12 +27,12 @@ const AuthEnv = z.object({
 });
 
 const LocalFSStorageEnv = z.object({
-  STORAGE_PROVIDER: z.literal("local"),
-  UPLOAD_DIR: z.string().min(1).default("./uploads"),
+  STORAGE_PROVIDER: z.literal('local'),
+  UPLOAD_DIR: z.string().min(1).default('./uploads'),
 });
 
 const S3StorageEnv = z.object({
-  STORAGE_PROVIDER: z.literal("s3"),
+  STORAGE_PROVIDER: z.literal('s3'),
   S3_ENDPOINT: z.string(),
   S3_BUCKET: z.string(),
   S3_REGION: z.string(),
@@ -43,7 +41,7 @@ const S3StorageEnv = z.object({
   S3_PUBLIC_URL: z.string(),
 });
 
-const StorageEnv = z.discriminatedUnion("STORAGE_PROVIDER", [LocalFSStorageEnv, S3StorageEnv]);
+const StorageEnv = z.discriminatedUnion('STORAGE_PROVIDER', [LocalFSStorageEnv, S3StorageEnv]);
 
 const NetworkEnv = z.object({
   TRUSTED_ORIGINS: z
@@ -51,24 +49,19 @@ const NetworkEnv = z.object({
     .optional()
     .transform((v) =>
       v
-        ?.split(",")
+        ?.split(',')
         .map((s) => s.trim())
-        .filter(Boolean),
+        .filter(Boolean)
     ),
 });
 
-const ServerEnv = z.intersection(
-  z.intersection(DatabaseEnv, AuthEnv),
-  z.intersection(StorageEnv, NetworkEnv),
-);
+const ServerEnv = z.intersection(z.intersection(DatabaseEnv, AuthEnv), z.intersection(StorageEnv, NetworkEnv));
 type ServerEnv = z.infer<typeof ServerEnv>;
 
 function parseServerEnv(): ServerEnv {
   const result = ServerEnv.safeParse(process.env);
   if (!result.success) {
-    const formatted = result.error.issues
-      .map((i) => `  ${i.path.join(".")}: ${i.message}`)
-      .join("\n");
+    const formatted = result.error.issues.map((i) => `  ${i.path.join('.')}: ${i.message}`).join('\n');
     throw new Error(`Invalid server environment variables:\n${formatted}`);
   }
   return result.data;

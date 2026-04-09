@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
-import { useFieldContext } from "../hooks/useCustomEventForm";
+import { useFieldContext } from '../hooks/useCustomEventForm';
 
 interface CustomEventFieldProps {
   label: string;
@@ -11,14 +11,7 @@ interface CustomEventFieldProps {
   leftIcon?: ReactNode;
 }
 
-export default function CustomEventField({
-  label,
-  required,
-  className,
-  placeholder,
-  type,
-  leftIcon,
-}: CustomEventFieldProps) {
+export default function CustomEventField({ label, required, className, placeholder, type, leftIcon }: CustomEventFieldProps) {
   const field = useFieldContext<string | undefined>();
   return (
     <div>

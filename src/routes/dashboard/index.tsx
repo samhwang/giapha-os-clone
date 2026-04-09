@@ -1,33 +1,22 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  BarChart2,
-  Cake,
-  CalendarDays,
-  Database,
-  Flower2,
-  GitMerge,
-  Network,
-  Star,
-  Users,
-} from "lucide-react";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { ArrowRight, BarChart2, Cake, CalendarDays, Database, Flower2, GitMerge, Network, Star, Users } from 'lucide-react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import type { CustomEventRecord } from "../../events/types";
-import type { Person } from "../../members/types";
+import type { CustomEventRecord } from '../../events/types';
+import type { Person } from '../../members/types';
 
-import { UserRole } from "../../auth/types";
-import { getCustomEvents } from "../../events/server/customEvent";
-import { getTodayLunar } from "../../events/utils/dateHelpers";
-import { computeEvents } from "../../events/utils/eventHelpers";
-import { getPersons } from "../../members/server/member";
-import { cn } from "../../ui/utils/cn";
+import { UserRole } from '../../auth/types';
+import { getCustomEvents } from '../../events/server/customEvent';
+import { getTodayLunar } from '../../events/utils/dateHelpers';
+import { computeEvents } from '../../events/utils/eventHelpers';
+import { getPersons } from '../../members/server/member';
+import { cn } from '../../ui/utils/cn';
 
 const UPCOMING_EVENTS_DAYS = 30;
 const MAX_DISPLAYED_EVENTS = 4;
 
-export const Route = createFileRoute("/dashboard/")({
+export const Route = createFileRoute('/dashboard/')({
   loader: async () => {
     const [persons, customEvents] = await Promise.all([getPersons(), getCustomEvents()]);
     return { persons, customEvents };
@@ -35,22 +24,19 @@ export const Route = createFileRoute("/dashboard/")({
   component: DashboardLaunchpad,
 });
 
-const eventTypeConfig: Record<
-  string,
-  { icon: typeof Cake; label: string; color: string; bg: string }
-> = {
-  birthday: { icon: Cake, label: "events.birthday", color: "text-amber-600", bg: "bg-amber-50" },
+const eventTypeConfig: Record<string, { icon: typeof Cake; label: string; color: string; bg: string }> = {
+  birthday: { icon: Cake, label: 'events.birthday', color: 'text-amber-600', bg: 'bg-amber-50' },
   death_anniversary: {
     icon: Flower2,
-    label: "events.deathAnniversary",
-    color: "text-purple-600",
-    bg: "bg-purple-50",
+    label: 'events.deathAnniversary',
+    color: 'text-purple-600',
+    bg: 'bg-purple-50',
   },
   custom_event: {
     icon: Star,
-    label: "events.customEvent",
-    color: "text-emerald-600",
-    bg: "bg-emerald-50",
+    label: 'events.customEvent',
+    color: 'text-emerald-600',
+    bg: 'bg-emerald-50',
   },
 };
 
@@ -63,7 +49,7 @@ function DashboardLaunchpad() {
   const { session } = Route.useRouteContext();
   const isAdmin = session.role === UserRole.enum.admin;
 
-  const lunar = useMemo(() => getTodayLunar(undefined, t("common.month")), [t]);
+  const lunar = useMemo(() => getTodayLunar(undefined, t('common.month')), [t]);
 
   const upcomingEvents = useMemo(() => {
     const all = computeEvents({ persons, customEvents });
@@ -72,64 +58,64 @@ function DashboardLaunchpad() {
 
   const publicFeatures = [
     {
-      title: t("launchpad.familyTree"),
-      description: t("launchpad.familyTreeDesc"),
+      title: t('launchpad.familyTree'),
+      description: t('launchpad.familyTreeDesc'),
       icon: <Network className="size-8 text-amber-600" />,
-      href: "/dashboard/members" as const,
-      bgColor: "bg-amber-50",
-      borderColor: "border-amber-200/60",
-      hoverColor: "hover:border-amber-400 hover:shadow-amber-100",
-      hoverTitle: "group-hover:text-amber-700",
+      href: '/dashboard/members' as const,
+      bgColor: 'bg-amber-50',
+      borderColor: 'border-amber-200/60',
+      hoverColor: 'hover:border-amber-400 hover:shadow-amber-100',
+      hoverTitle: 'group-hover:text-amber-700',
     },
     {
-      title: t("launchpad.kinshipLookup"),
-      description: t("launchpad.kinshipLookupDesc"),
+      title: t('launchpad.kinshipLookup'),
+      description: t('launchpad.kinshipLookupDesc'),
       icon: <GitMerge className="size-8 text-blue-600" />,
-      href: "/dashboard/kinship" as const,
-      bgColor: "bg-blue-50",
-      borderColor: "border-blue-200/60",
-      hoverColor: "hover:border-blue-400 hover:shadow-blue-100",
-      hoverTitle: "group-hover:text-blue-700",
+      href: '/dashboard/kinship' as const,
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200/60',
+      hoverColor: 'hover:border-blue-400 hover:shadow-blue-100',
+      hoverTitle: 'group-hover:text-blue-700',
     },
     {
-      title: t("launchpad.familyStats"),
-      description: t("launchpad.familyStatsDesc"),
+      title: t('launchpad.familyStats'),
+      description: t('launchpad.familyStatsDesc'),
       icon: <BarChart2 className="size-8 text-purple-600" />,
-      href: "/dashboard/stats" as const,
-      bgColor: "bg-purple-50",
-      borderColor: "border-purple-200/60",
-      hoverColor: "hover:border-purple-400 hover:shadow-purple-100",
-      hoverTitle: "group-hover:text-purple-700",
+      href: '/dashboard/stats' as const,
+      bgColor: 'bg-purple-50',
+      borderColor: 'border-purple-200/60',
+      hoverColor: 'hover:border-purple-400 hover:shadow-purple-100',
+      hoverTitle: 'group-hover:text-purple-700',
     },
   ];
 
   const adminFeatures = [
     {
-      title: t("launchpad.userManagement"),
-      description: t("launchpad.userManagementDesc"),
+      title: t('launchpad.userManagement'),
+      description: t('launchpad.userManagementDesc'),
       icon: <Users className="size-8 text-rose-600" />,
-      href: "/dashboard/users" as const,
-      bgColor: "bg-rose-50",
-      borderColor: "border-rose-200/60",
-      hoverColor: "hover:border-rose-400 hover:shadow-rose-100",
+      href: '/dashboard/users' as const,
+      bgColor: 'bg-rose-50',
+      borderColor: 'border-rose-200/60',
+      hoverColor: 'hover:border-rose-400 hover:shadow-rose-100',
     },
     {
-      title: t("launchpad.lineageOrder"),
-      description: t("launchpad.lineageOrderDesc"),
+      title: t('launchpad.lineageOrder'),
+      description: t('launchpad.lineageOrderDesc'),
       icon: <Network className="size-8 text-indigo-600" />,
-      href: "/dashboard/lineage" as const,
-      bgColor: "bg-indigo-50",
-      borderColor: "border-indigo-200/60",
-      hoverColor: "hover:border-indigo-400 hover:shadow-indigo-100",
+      href: '/dashboard/lineage' as const,
+      bgColor: 'bg-indigo-50',
+      borderColor: 'border-indigo-200/60',
+      hoverColor: 'hover:border-indigo-400 hover:shadow-indigo-100',
     },
     {
-      title: t("launchpad.backupRestore"),
-      description: t("launchpad.backupRestoreDesc"),
+      title: t('launchpad.backupRestore'),
+      description: t('launchpad.backupRestoreDesc'),
       icon: <Database className="size-8 text-teal-600" />,
-      href: "/dashboard/data" as const,
-      bgColor: "bg-teal-50",
-      borderColor: "border-teal-200/60",
-      hoverColor: "hover:border-teal-400 hover:shadow-teal-100",
+      href: '/dashboard/data' as const,
+      bgColor: 'bg-teal-50',
+      borderColor: 'border-teal-200/60',
+      hoverColor: 'hover:border-teal-400 hover:shadow-teal-100',
     },
   ];
 
@@ -149,17 +135,13 @@ function DashboardLaunchpad() {
               <CalendarDays className="size-7" />
             </div>
             <div className="mt-1">
-              <p className="text-xl font-bold tracking-tight text-stone-800 sm:text-2xl">
-                {lunar.solarStr}
-              </p>
+              <p className="text-xl font-bold tracking-tight text-stone-800 sm:text-2xl">{lunar.solarStr}</p>
               <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-stone-100 bg-stone-50 px-3.5 py-1.5">
-                <span className="text-xs font-medium tracking-wider text-stone-500 uppercase">
-                  {t("launchpad.lunarCalendar")}:
-                </span>
+                <span className="text-xs font-medium tracking-wider text-stone-500 uppercase">{t('launchpad.lunarCalendar')}:</span>
                 <span className="text-sm font-semibold text-stone-700">{lunar.lunarDayStr}</span>
               </div>
               <p className="mt-2 flex items-center justify-center gap-1 pl-1 text-sm font-medium text-stone-500 md:justify-start">
-                {t("launchpad.year")} {lunar.lunarYear}
+                {t('launchpad.year')} {lunar.lunarYear}
               </p>
             </div>
           </div>
@@ -174,7 +156,7 @@ function DashboardLaunchpad() {
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
                       <span className="relative inline-flex size-2 rounded-full bg-amber-500" />
                     </span>
-                    {t("launchpad.upcomingEvents", { count: upcomingEvents.length })}
+                    {t('launchpad.upcomingEvents', { count: upcomingEvents.length })}
                   </p>
                   <ArrowRight className="size-5 text-stone-300 transition-all duration-default group-hover:translate-x-1 group-hover:text-stone-500" />
                 </div>
@@ -188,25 +170,17 @@ function DashboardLaunchpad() {
                         key={`${evt.personId}-${evt.type}`}
                         className="flex cursor-pointer items-center gap-3.5 rounded-2xl border border-transparent bg-stone-50/50 p-3 transition-all duration-default hover:border-stone-100 hover:bg-stone-50"
                       >
-                        <div
-                          className={cn(
-                            "size-10 rounded-xl",
-                            cfg.bg,
-                            "flex shrink-0 items-center justify-center border border-white shadow-sm",
-                          )}
-                        >
-                          <Icon className={cn("size-4", cfg.color)} />
+                        <div className={cn('size-10 rounded-xl', cfg.bg, 'flex shrink-0 items-center justify-center border border-white shadow-sm')}>
+                          <Icon className={cn('size-4', cfg.color)} />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <span className="block truncate text-sm font-semibold text-stone-700">
-                            {evt.personName}
-                          </span>
+                          <span className="block truncate text-sm font-semibold text-stone-700">{evt.personName}</span>
                           <span className="block pt-0.5 text-xs font-medium text-stone-500">
                             {evt.daysUntil === 0
-                              ? t("common.today")
+                              ? t('common.today')
                               : evt.daysUntil === 1
-                                ? t("common.tomorrow")
-                                : t("common.daysFromNow", { days: evt.daysUntil })}{" "}
+                                ? t('common.tomorrow')
+                                : t('common.daysFromNow', { days: evt.daysUntil })}{' '}
                             · {evt.eventDateLabel}
                           </span>
                         </div>
@@ -216,7 +190,7 @@ function DashboardLaunchpad() {
                 </div>
                 {upcomingEvents.length > MAX_DISPLAYED_EVENTS && (
                   <p className="mt-2 text-center text-xs font-medium text-stone-400 sm:text-left">
-                    + {upcomingEvents.length - MAX_DISPLAYED_EVENTS} {t("launchpad.moreEvents")}
+                    + {upcomingEvents.length - MAX_DISPLAYED_EVENTS} {t('launchpad.moreEvents')}
                   </p>
                 )}
               </div>
@@ -225,11 +199,9 @@ function DashboardLaunchpad() {
                 <div className="rounded-2xl border border-stone-100 bg-stone-50 p-4 text-stone-400 transition-transform duration-500 group-hover:scale-105 group-hover:text-stone-500">
                   <CalendarDays className="size-6" />
                 </div>
-                <p className="px-4 text-center font-medium text-stone-500">
-                  {t("launchpad.noUpcomingEvents")}
-                </p>
+                <p className="px-4 text-center font-medium text-stone-500">{t('launchpad.noUpcomingEvents')}</p>
                 <div className="mt-1 flex items-center gap-2 text-sm font-medium text-stone-400 transition-colors group-hover:text-stone-600">
-                  <span>{t("launchpad.viewYearEvents")}</span>
+                  <span>{t('launchpad.viewYearEvents')}</span>
                   <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                 </div>
               </div>
@@ -247,30 +219,16 @@ function DashboardLaunchpad() {
                 key={feat.href}
                 to={feat.href}
                 className={cn(
-                  "group flex flex-col rounded-2xl border bg-white p-6",
+                  'group flex flex-col rounded-2xl border bg-white p-6',
                   feat.borderColor,
                   feat.hoverColor,
-                  "shadow-sm transition-all duration-default hover:-translate-y-1",
+                  'shadow-sm transition-all duration-default hover:-translate-y-1'
                 )}
               >
-                <div
-                  className={cn(
-                    "mb-5 flex size-14 items-center justify-center rounded-xl",
-                    feat.bgColor,
-                    "transition-colors duration-default",
-                  )}
-                >
+                <div className={cn('mb-5 flex size-14 items-center justify-center rounded-xl', feat.bgColor, 'transition-colors duration-default')}>
                   {feat.icon}
                 </div>
-                <h4
-                  className={cn(
-                    "mb-2 text-lg font-bold text-stone-800",
-                    feat.hoverTitle,
-                    "transition-colors",
-                  )}
-                >
-                  {feat.title}
-                </h4>
+                <h4 className={cn('mb-2 text-lg font-bold text-stone-800', feat.hoverTitle, 'transition-colors')}>{feat.title}</h4>
                 <p className="line-clamp-2 text-sm text-stone-500">{feat.description}</p>
               </Link>
             ))}
@@ -281,7 +239,7 @@ function DashboardLaunchpad() {
           <section>
             <h3 className="mb-6 flex items-center gap-2 font-serif text-xl font-bold text-rose-800">
               <span className="h-px w-8 rounded-full bg-rose-200" />
-              {t("launchpad.adminSection")}
+              {t('launchpad.adminSection')}
             </h3>
             <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
               {adminFeatures.map((feat) => (
@@ -289,24 +247,16 @@ function DashboardLaunchpad() {
                   key={feat.href}
                   to={feat.href}
                   className={cn(
-                    "group flex flex-col rounded-2xl border bg-white p-6",
+                    'group flex flex-col rounded-2xl border bg-white p-6',
                     feat.borderColor,
                     feat.hoverColor,
-                    "shadow-sm transition-all duration-default hover:-translate-y-1",
+                    'shadow-sm transition-all duration-default hover:-translate-y-1'
                   )}
                 >
-                  <div
-                    className={cn(
-                      "mb-5 flex size-14 items-center justify-center rounded-xl",
-                      feat.bgColor,
-                      "transition-colors duration-default",
-                    )}
-                  >
+                  <div className={cn('mb-5 flex size-14 items-center justify-center rounded-xl', feat.bgColor, 'transition-colors duration-default')}>
                     {feat.icon}
                   </div>
-                  <h4 className="mb-2 text-lg font-bold text-stone-800 transition-colors group-hover:text-rose-700">
-                    {feat.title}
-                  </h4>
+                  <h4 className="mb-2 text-lg font-bold text-stone-800 transition-colors group-hover:text-rose-700">{feat.title}</h4>
                   <p className="line-clamp-2 text-sm text-stone-500">{feat.description}</p>
                 </Link>
               ))}

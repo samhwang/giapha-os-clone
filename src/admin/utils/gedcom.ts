@@ -1,11 +1,11 @@
-import { Gender, type Person } from "../../members/types";
-import { type Relationship, RelationshipType } from "../../relationships/types";
+import { Gender, type Person } from '../../members/types';
+import { type Relationship, RelationshipType } from '../../relationships/types';
 
-const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
 function getMonthName(month: number | null): string {
-  if (!month) return "";
-  return MONTHS[month - 1] || "";
+  if (!month) return '';
+  return MONTHS[month - 1] || '';
 }
 
 function parseMonthName(name: string): number | null {
@@ -14,13 +14,13 @@ function parseMonthName(name: string): number | null {
 }
 
 function formatNum(n: number | null | undefined): string {
-  return n && n > 0 ? String(n).padStart(2, "0") : "";
+  return n && n > 0 ? String(n).padStart(2, '0') : '';
 }
 
 function generateUUID(): string {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
-    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 }
@@ -31,15 +31,15 @@ interface ExportToGedcomInput {
 }
 
 export function exportToGedcom(data: ExportToGedcomInput): string {
-  let gedcom = "";
+  let gedcom = '';
 
   // Header (GEDCOM 7.0)
-  gedcom += "0 HEAD\n";
-  gedcom += "1 GEDC\n";
-  gedcom += "2 VERS 7.0\n";
-  gedcom += "1 SOUR Giapha_OS\n";
-  gedcom += "2 NAME Giapha OS\n";
-  gedcom += "2 VERS 0.1.0\n";
+  gedcom += '0 HEAD\n';
+  gedcom += '1 GEDC\n';
+  gedcom += '2 VERS 7.0\n';
+  gedcom += '1 SOUR Giapha_OS\n';
+  gedcom += '2 NAME Giapha OS\n';
+  gedcom += '2 VERS 0.1.0\n';
 
   const personMap = new Map(data.persons.map((p) => [p.id, p]));
 
@@ -50,16 +50,12 @@ export function exportToGedcom(data: ExportToGedcomInput): string {
     exportIdMap.set(person.id, `I${personCounter++}`);
   }
 
-  const getIndiXref = (id: string) => `@${exportIdMap.get(id) || id.replace(/-/g, "")}@`;
+  const getIndiXref = (id: string) => `@${exportIdMap.get(id) || id.replace(/-/g, '')}@`;
 
   // Pre-process Families
   let familyCounter = 1;
   const marriages = data.relationships.filter((r) => r.type === RelationshipType.enum.marriage);
-  const childrenRels = data.relationships.filter(
-    (r) =>
-      r.type === RelationshipType.enum.biological_child ||
-      r.type === RelationshipType.enum.adopted_child,
-  );
+  const childrenRels = data.relationships.filter((r) => r.type === RelationshipType.enum.biological_child || r.type === RelationshipType.enum.adopted_child);
 
   const families: { id: string; husb?: string; wife?: string; children: string[] }[] = [];
 
@@ -71,8 +67,7 @@ export function exportToGedcom(data: ExportToGedcomInput): string {
     families.push({
       id: `F${familyCounter++}`,
       husb: pA.gender === Gender.enum.male ? pA.id : pB.gender === Gender.enum.male ? pB.id : pA.id,
-      wife:
-        pA.gender === Gender.enum.female ? pA.id : pB.gender === Gender.enum.female ? pB.id : pB.id,
+      wife: pA.gender === Gender.enum.female ? pA.id : pB.gender === Gender.enum.female ? pB.id : pB.id,
       children: [],
     });
   }
@@ -125,40 +120,32 @@ export function exportToGedcom(data: ExportToGedcomInput): string {
 
     // Name
     if (person.fullName) {
-      const parts = person.fullName.trim().split(" ");
-      const lastName = parts.length > 1 ? parts.pop() : "";
-      const firstName = parts.join(" ");
+      const parts = person.fullName.trim().split(' ');
+      const lastName = parts.length > 1 ? parts.pop() : '';
+      const firstName = parts.join(' ');
       gedcom += `1 NAME ${firstName} /${lastName}/\n`;
     } else {
-      gedcom += "1 NAME Unknown /Unknown/\n";
+      gedcom += '1 NAME Unknown /Unknown/\n';
     }
 
     // Sex
-    if (person.gender === Gender.enum.male) gedcom += "1 SEX M\n";
-    else if (person.gender === Gender.enum.female) gedcom += "1 SEX F\n";
-    else gedcom += "1 SEX U\n";
+    if (person.gender === Gender.enum.male) gedcom += '1 SEX M\n';
+    else if (person.gender === Gender.enum.female) gedcom += '1 SEX F\n';
+    else gedcom += '1 SEX U\n';
 
     // Birth
     if (person.birthYear || person.birthMonth || person.birthDay) {
-      gedcom += "1 BIRT\n";
-      const dateParts = [
-        formatNum(person.birthDay),
-        getMonthName(person.birthMonth),
-        person.birthYear ? String(person.birthYear) : "",
-      ].filter(Boolean);
-      if (dateParts.length > 0) gedcom += `2 DATE ${dateParts.join(" ")}\n`;
+      gedcom += '1 BIRT\n';
+      const dateParts = [formatNum(person.birthDay), getMonthName(person.birthMonth), person.birthYear ? String(person.birthYear) : ''].filter(Boolean);
+      if (dateParts.length > 0) gedcom += `2 DATE ${dateParts.join(' ')}\n`;
     }
 
     // Death
     if (person.isDeceased) {
-      gedcom += "1 DEAT Y\n";
+      gedcom += '1 DEAT Y\n';
       if (person.deathYear || person.deathMonth || person.deathDay) {
-        const dateParts = [
-          formatNum(person.deathDay),
-          getMonthName(person.deathMonth),
-          person.deathYear ? String(person.deathYear) : "",
-        ].filter(Boolean);
-        if (dateParts.length > 0) gedcom += `2 DATE ${dateParts.join(" ")}\n`;
+        const dateParts = [formatNum(person.deathDay), getMonthName(person.deathMonth), person.deathYear ? String(person.deathYear) : ''].filter(Boolean);
+        if (dateParts.length > 0) gedcom += `2 DATE ${dateParts.join(' ')}\n`;
       }
     }
 
@@ -174,7 +161,7 @@ export function exportToGedcom(data: ExportToGedcomInput): string {
 
     // Note
     if (person.note) {
-      const lines = person.note.split("\n");
+      const lines = person.note.split('\n');
       gedcom += `1 NOTE ${lines[0]}\n`;
       for (let i = 1; i < lines.length; i++) {
         gedcom += `2 CONT ${lines[i]}\n`;
@@ -191,7 +178,7 @@ export function exportToGedcom(data: ExportToGedcomInput): string {
     }
   }
 
-  gedcom += "0 TRLR\n";
+  gedcom += '0 TRLR\n';
   return gedcom;
 }
 
@@ -205,16 +192,16 @@ export function parseGedcom(gedcom: string): {
   const relationships: { type: string; personAId: string; personBId: string }[] = [];
   const idMap = new Map<string, string>();
 
-  type ParseRecord = { type: "INDI" | "FAM"; id: string; lines: string[] };
+  type ParseRecord = { type: 'INDI' | 'FAM'; id: string; lines: string[] };
   const records: ParseRecord[] = [];
   let currentRecord: ParseRecord | null = null;
 
   for (const line of lines) {
-    if (line.startsWith("0 ")) {
+    if (line.startsWith('0 ')) {
       if (currentRecord) records.push(currentRecord);
       const match = line.match(/^0\s+@([^@]+)@\s+(INDI|FAM)/);
       if (match) {
-        currentRecord = { id: match[1], type: match[2] as "INDI" | "FAM", lines: [] };
+        currentRecord = { id: match[1], type: match[2] as 'INDI' | 'FAM', lines: [] };
       } else {
         currentRecord = null;
       }
@@ -225,11 +212,11 @@ export function parseGedcom(gedcom: string): {
   if (currentRecord) records.push(currentRecord);
 
   // Parse Individuals
-  for (const record of records.filter((r) => r.type === "INDI")) {
+  for (const record of records.filter((r) => r.type === 'INDI')) {
     const uuid = generateUUID();
     idMap.set(record.id, uuid);
 
-    let fullName = "Unknown";
+    let fullName = 'Unknown';
     let gender: Gender = Gender.enum.other;
     let isDeceased = false;
     let birthDay: number | null = null;
@@ -238,8 +225,8 @@ export function parseGedcom(gedcom: string): {
     let deathDay: number | null = null;
     let deathMonth: number | null = null;
     let deathYear: number | null = null;
-    let note = "";
-    let currentTag = "";
+    let note = '';
+    let currentTag = '';
 
     for (const line of record.lines) {
       const match = line.match(/^(\d+)\s+([A-Z0-9_]+)(?:\s+(.*))?$/);
@@ -247,22 +234,20 @@ export function parseGedcom(gedcom: string): {
 
       const level = Number.parseInt(match[1], 10);
       const tag = match[2];
-      const val = match[3] || "";
+      const val = match[3] || '';
 
       if (level === 1) {
         currentTag = tag;
-        if (tag === "NAME") fullName = val.replace(/\//g, "").trim();
-        else if (tag === "SEX")
-          gender =
-            val === "M" ? Gender.enum.male : val === "F" ? Gender.enum.female : Gender.enum.other;
-        else if (tag === "DEAT") isDeceased = val.trim().length === 0 || val === "Y";
-        else if (tag === "NOTE") note = val;
+        if (tag === 'NAME') fullName = val.replace(/\//g, '').trim();
+        else if (tag === 'SEX') gender = val === 'M' ? Gender.enum.male : val === 'F' ? Gender.enum.female : Gender.enum.other;
+        else if (tag === 'DEAT') isDeceased = val.trim().length === 0 || val === 'Y';
+        else if (tag === 'NOTE') note = val;
       } else if (level === 2) {
-        if (currentTag === "NOTE" && tag === "CONT") {
+        if (currentTag === 'NOTE' && tag === 'CONT') {
           note += `\n${val}`;
-        } else if (tag === "DATE") {
-          const cleanVal = val.replace(/^(ABT|EST|AFT|BEF|CAL)\s+/i, "");
-          const parts = cleanVal.split(" ");
+        } else if (tag === 'DATE') {
+          const cleanVal = val.replace(/^(ABT|EST|AFT|BEF|CAL)\s+/i, '');
+          const parts = cleanVal.split(' ');
           const parseDateParts = () => {
             if (parts.length === 3)
               return {
@@ -276,16 +261,15 @@ export function parseGedcom(gedcom: string): {
                 month: parseMonthName(parts[0]),
                 year: Number.parseInt(parts[1], 10) || null,
               };
-            if (parts.length === 1)
-              return { day: null, month: null, year: Number.parseInt(parts[0], 10) || null };
+            if (parts.length === 1) return { day: null, month: null, year: Number.parseInt(parts[0], 10) || null };
             return { day: null, month: null, year: null };
           };
           const dp = parseDateParts();
-          if (currentTag === "BIRT") {
+          if (currentTag === 'BIRT') {
             birthDay = dp.day;
             birthMonth = dp.month;
             birthYear = dp.year;
-          } else if (currentTag === "DEAT") {
+          } else if (currentTag === 'DEAT') {
             isDeceased = true;
             deathDay = dp.day;
             deathMonth = dp.month;
@@ -315,7 +299,7 @@ export function parseGedcom(gedcom: string): {
   }
 
   // Parse Families
-  for (const record of records.filter((r) => r.type === "FAM")) {
+  for (const record of records.filter((r) => r.type === 'FAM')) {
     let husb: string | null = null;
     let wife: string | null = null;
     const children: string[] = [];
@@ -325,9 +309,9 @@ export function parseGedcom(gedcom: string): {
       if (!match) continue;
       const uuid = idMap.get(match[2]);
       if (!uuid) continue;
-      if (match[1] === "HUSB") husb = uuid;
-      else if (match[1] === "WIFE") wife = uuid;
-      else if (match[1] === "CHIL") children.push(uuid);
+      if (match[1] === 'HUSB') husb = uuid;
+      else if (match[1] === 'WIFE') wife = uuid;
+      else if (match[1] === 'CHIL') children.push(uuid);
     }
 
     if (husb && wife && husb !== wife) {

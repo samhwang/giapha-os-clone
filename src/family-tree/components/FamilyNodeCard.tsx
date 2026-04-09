@@ -1,10 +1,10 @@
-import type { MouseEvent } from "react";
+import type { MouseEvent } from 'react';
 
-import type { Person } from "../../members/types";
+import type { Person } from '../../members/types';
 
-import { useDashboardStore } from "../../dashboard/store/dashboardStore";
-import Avatar from "../../ui/common/Avatar";
-import { cn } from "../../ui/utils/cn";
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
+import Avatar from '../../ui/common/Avatar';
+import { cn } from '../../ui/utils/cn';
 
 interface FamilyNodeCardProps {
   person: Person;
@@ -16,13 +16,7 @@ interface FamilyNodeCardProps {
   isPlusVisible?: boolean;
 }
 
-export default function FamilyNodeCard({
-  person,
-  onClickCard,
-  onClickName,
-  isRingVisible = false,
-  isPlusVisible = false,
-}: FamilyNodeCardProps) {
+export default function FamilyNodeCard({ person, onClickCard, onClickName, isRingVisible = false, isPlusVisible = false }: FamilyNodeCardProps) {
   const { showAvatar, setMemberModalId } = useDashboardStore();
 
   const content = (
@@ -30,9 +24,9 @@ export default function FamilyNodeCard({
     <div
       onClick={onClickCard}
       className={cn(
-        "group relative flex h-full flex-col items-center justify-start rounded-2xl px-1 py-2 transition-all duration-default hover:-translate-y-1",
-        person.isDeceased && "opacity-80 grayscale-[0.4]",
-        showAvatar ? "w-20 bg-white/70 hover:shadow-xl sm:w-24 md:w-28" : "px-3",
+        'group relative flex h-full flex-col items-center justify-start rounded-2xl px-1 py-2 transition-all duration-default hover:-translate-y-1',
+        person.isDeceased && 'opacity-80 grayscale-[0.4]',
+        showAvatar ? 'w-20 bg-white/70 hover:shadow-xl sm:w-24 md:w-28' : 'px-3'
       )}
     >
       {isRingVisible && (
@@ -61,10 +55,8 @@ export default function FamilyNodeCard({
         {/* oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- parent button handles a11y */}
         <span
           className={cn(
-            "line-clamp-2 cursor-pointer text-center text-2xs leading-tight font-bold transition-colors sm:text-xs-plus md:text-xs",
-            onClickName
-              ? "text-stone-800 group-hover:text-amber-700 hover:underline"
-              : "text-stone-800 group-hover:text-amber-800",
+            'line-clamp-2 cursor-pointer text-center text-2xs leading-tight font-bold transition-colors sm:text-xs-plus md:text-xs',
+            onClickName ? 'text-stone-800 group-hover:text-amber-700 hover:underline' : 'text-stone-800 group-hover:text-amber-800'
           )}
           title={person.fullName}
           onClick={(e) => {
@@ -77,7 +69,7 @@ export default function FamilyNodeCard({
         >
           {showAvatar
             ? person.fullName
-            : person.fullName.split(" ").map((word) => (
+            : person.fullName.split(' ').map((word) => (
                 <span key={word} className="block">
                   {word}
                 </span>

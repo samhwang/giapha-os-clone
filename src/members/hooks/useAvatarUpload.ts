@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 interface UseAvatarUploadOptions {
   initialUrl?: string | null;
@@ -19,7 +19,7 @@ export function useAvatarUpload({ initialUrl = null }: UseAvatarUploadOptions = 
   };
 
   const toBase64 = async (): Promise<string> => {
-    if (!avatarFile) throw new Error("No avatar file selected");
+    if (!avatarFile) throw new Error('No avatar file selected');
     const reader = new FileReader();
     return new Promise<string>((resolve) => {
       reader.onload = () => resolve(reader.result as string);

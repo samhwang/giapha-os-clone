@@ -1,42 +1,31 @@
-import { useStore } from "@tanstack/react-form";
-import { useNavigate, useRouter } from "@tanstack/react-router";
-import {
-  AlertCircle,
-  Briefcase,
-  Image as ImageIcon,
-  Loader2,
-  Lock,
-  MapPin,
-  Phone,
-  Settings2,
-  Trash2,
-  User,
-} from "lucide-react";
-import { Lunar, Solar } from "lunar-javascript";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useStore } from '@tanstack/react-form';
+import { useNavigate, useRouter } from '@tanstack/react-router';
+import { AlertCircle, Briefcase, Image as ImageIcon, Loader2, Lock, MapPin, Phone, Settings2, Trash2, User } from 'lucide-react';
+import { Lunar, Solar } from 'lunar-javascript';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { logger } from "../../lib/logger";
-import Avatar from "../../ui/common/Avatar";
-import { Button } from "../../ui/common/Button";
-import { Card } from "../../ui/common/Card";
-import Checkbox from "../../ui/common/Checkbox";
-import { cn } from "../../ui/utils/cn";
-import { useAvatarUpload } from "../hooks/useAvatarUpload";
-import { useMemberForm } from "../hooks/useMemberForm";
-import { createPerson, updatePerson, uploadPersonAvatar } from "../server/member";
-import { Gender, type Person } from "../types";
+import { logger } from '../../lib/logger';
+import Avatar from '../../ui/common/Avatar';
+import { Button } from '../../ui/common/Button';
+import { Card } from '../../ui/common/Card';
+import Checkbox from '../../ui/common/Checkbox';
+import { cn } from '../../ui/utils/cn';
+import { useAvatarUpload } from '../hooks/useAvatarUpload';
+import { useMemberForm } from '../hooks/useMemberForm';
+import { createPerson, updatePerson, uploadPersonAvatar } from '../server/member';
+import { Gender, type Person } from '../types';
 
 function slugify(str: string): string {
   return str
     .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[đĐ]/g, "d")
-    .replace(/[^0-9a-z\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[đĐ]/g, 'd')
+    .replace(/[^0-9a-z\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 interface MemberFormData extends Person {
@@ -54,84 +43,64 @@ interface MemberFormProps {
 }
 
 interface IsValidDateInput {
-  day: number | "";
-  month: number | "";
-  year: number | "";
+  day: number | '';
+  month: number | '';
+  year: number | '';
 }
 
 const isValidDate = ({ day, month, year }: IsValidDateInput): boolean => {
-  if (day !== "" && (day < 1 || day > 31)) return false;
-  if (month !== "" && (month < 1 || month > 12)) return false;
-  if (year !== "" && year < 1) return false;
-  if (day !== "" && month !== "") {
-    const currentYear = year !== "" ? year : 2000;
+  if (day !== '' && (day < 1 || day > 31)) return false;
+  if (month !== '' && (month < 1 || month > 12)) return false;
+  if (year !== '' && year < 1) return false;
+  if (day !== '' && month !== '') {
+    const currentYear = year !== '' ? year : 2000;
     const daysInMonth = new Date(currentYear, month, 0).getDate();
     if (day > daysInMonth) return false;
   }
   return true;
 };
 
-export default function MemberForm({
-  initialData,
-  isEditing = false,
-  isAdmin = false,
-  onSuccess,
-  onCancel,
-}: MemberFormProps) {
+export default function MemberForm({ initialData, isEditing = false, isAdmin = false, onSuccess, onCancel }: MemberFormProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const {
-    avatarFile,
-    avatarPreview,
-    selectFile,
-    clear: clearAvatar,
-    toBase64,
-  } = useAvatarUpload({ initialUrl: initialData?.avatarUrl });
+  const { avatarFile, avatarPreview, selectFile, clear: clearAvatar, toBase64 } = useAvatarUpload({ initialUrl: initialData?.avatarUrl });
 
   const form = useMemberForm({
     defaultValues: {
-      fullName: initialData?.fullName || "",
-      otherNames: initialData?.otherNames || "",
+      fullName: initialData?.fullName || '',
+      otherNames: initialData?.otherNames || '',
       gender: initialData?.gender || Gender.enum.male,
-      note: initialData?.note || "",
-      birthYear: initialData?.birthYear || ("" as number | ""),
-      birthMonth: initialData?.birthMonth || ("" as number | ""),
-      birthDay: initialData?.birthDay || ("" as number | ""),
-      deathYear: initialData?.deathYear || ("" as number | ""),
-      deathMonth: initialData?.deathMonth || ("" as number | ""),
-      deathDay: initialData?.deathDay || ("" as number | ""),
-      deathLunarYear: initialData?.deathLunarYear || ("" as number | ""),
-      deathLunarMonth: initialData?.deathLunarMonth || ("" as number | ""),
-      deathLunarDay: initialData?.deathLunarDay || ("" as number | ""),
+      note: initialData?.note || '',
+      birthYear: initialData?.birthYear || ('' as number | ''),
+      birthMonth: initialData?.birthMonth || ('' as number | ''),
+      birthDay: initialData?.birthDay || ('' as number | ''),
+      deathYear: initialData?.deathYear || ('' as number | ''),
+      deathMonth: initialData?.deathMonth || ('' as number | ''),
+      deathDay: initialData?.deathDay || ('' as number | ''),
+      deathLunarYear: initialData?.deathLunarYear || ('' as number | ''),
+      deathLunarMonth: initialData?.deathLunarMonth || ('' as number | ''),
+      deathLunarDay: initialData?.deathLunarDay || ('' as number | ''),
       isDeceased: initialData?.isDeceased || false,
       isInLaw: initialData?.isInLaw || false,
-      birthOrder: initialData?.birthOrder || ("" as number | ""),
-      generation: initialData?.generation || ("" as number | ""),
-      avatarUrl: initialData?.avatarUrl || "",
-      phoneNumber: initialData?.phoneNumber ?? "",
-      occupation: initialData?.occupation ?? "",
-      currentResidence: initialData?.currentResidence ?? "",
+      birthOrder: initialData?.birthOrder || ('' as number | ''),
+      generation: initialData?.generation || ('' as number | ''),
+      avatarUrl: initialData?.avatarUrl || '',
+      phoneNumber: initialData?.phoneNumber ?? '',
+      occupation: initialData?.occupation ?? '',
+      currentResidence: initialData?.currentResidence ?? '',
     },
     validators: {
       onSubmit: ({ value }) => {
         if (!isValidDate({ day: value.birthDay, month: value.birthMonth, year: value.birthYear })) {
-          return t("member.invalidBirthDate");
+          return t('member.invalidBirthDate');
         }
-        if (
-          value.isDeceased &&
-          !isValidDate({ day: value.deathDay, month: value.deathMonth, year: value.deathYear })
-        ) {
-          return t("member.invalidDeathDate");
+        if (value.isDeceased && !isValidDate({ day: value.deathDay, month: value.deathMonth, year: value.deathYear })) {
+          return t('member.invalidDeathDate');
         }
-        if (
-          value.isDeceased &&
-          value.birthYear !== "" &&
-          value.deathYear !== "" &&
-          value.deathYear < value.birthYear
-        ) {
-          return t("member.deathBeforeBirth");
+        if (value.isDeceased && value.birthYear !== '' && value.deathYear !== '' && value.deathYear < value.birthYear) {
+          return t('member.deathBeforeBirth');
         }
         return undefined;
       },
@@ -143,22 +112,19 @@ export default function MemberForm({
         const personData = {
           fullName: value.fullName,
           gender: value.gender,
-          birthYear: value.birthYear === "" ? null : Number(value.birthYear),
-          birthMonth: value.birthMonth === "" ? null : Number(value.birthMonth),
-          birthDay: value.birthDay === "" ? null : Number(value.birthDay),
-          deathYear: value.isDeceased && value.deathYear !== "" ? Number(value.deathYear) : null,
-          deathMonth: value.isDeceased && value.deathMonth !== "" ? Number(value.deathMonth) : null,
-          deathDay: value.isDeceased && value.deathDay !== "" ? Number(value.deathDay) : null,
-          deathLunarYear:
-            value.isDeceased && value.deathLunarYear !== "" ? Number(value.deathLunarYear) : null,
-          deathLunarMonth:
-            value.isDeceased && value.deathLunarMonth !== "" ? Number(value.deathLunarMonth) : null,
-          deathLunarDay:
-            value.isDeceased && value.deathLunarDay !== "" ? Number(value.deathLunarDay) : null,
+          birthYear: value.birthYear === '' ? null : Number(value.birthYear),
+          birthMonth: value.birthMonth === '' ? null : Number(value.birthMonth),
+          birthDay: value.birthDay === '' ? null : Number(value.birthDay),
+          deathYear: value.isDeceased && value.deathYear !== '' ? Number(value.deathYear) : null,
+          deathMonth: value.isDeceased && value.deathMonth !== '' ? Number(value.deathMonth) : null,
+          deathDay: value.isDeceased && value.deathDay !== '' ? Number(value.deathDay) : null,
+          deathLunarYear: value.isDeceased && value.deathLunarYear !== '' ? Number(value.deathLunarYear) : null,
+          deathLunarMonth: value.isDeceased && value.deathLunarMonth !== '' ? Number(value.deathLunarMonth) : null,
+          deathLunarDay: value.isDeceased && value.deathLunarDay !== '' ? Number(value.deathLunarDay) : null,
           isDeceased: value.isDeceased,
           isInLaw: value.isInLaw,
-          birthOrder: value.birthOrder === "" ? null : Number(value.birthOrder),
-          generation: value.generation === "" ? null : Number(value.generation),
+          birthOrder: value.birthOrder === '' ? null : Number(value.birthOrder),
+          generation: value.generation === '' ? null : Number(value.generation),
           otherNames: value.otherNames || null,
           avatarUrl: value.avatarUrl || null,
           note: value.note || null,
@@ -179,8 +145,8 @@ export default function MemberForm({
         const shouldUploadAvatar = avatarFile && personId;
         if (shouldUploadAvatar) {
           const base64 = await toBase64();
-          const ext = avatarFile.name.split(".").pop() || "jpg";
-          const slugName = slugify(form.getFieldValue("fullName") || "avatar");
+          const ext = avatarFile.name.split('.').pop() || 'jpg';
+          const slugName = slugify(form.getFieldValue('fullName') || 'avatar');
           const filename = `${personId}_${slugName}.${ext}`;
           await uploadPersonAvatar({
             data: {
@@ -192,14 +158,14 @@ export default function MemberForm({
           });
         }
 
-        if (!personId) throw new Error(t("member.noIdAfterSave"));
+        if (!personId) throw new Error(t('member.noIdAfterSave'));
 
         if (onSuccess) return onSuccess(personId);
         await router.invalidate();
-        void navigate({ to: "/dashboard/members/$id", params: { id: personId } });
+        void navigate({ to: '/dashboard/members/$id', params: { id: personId } });
       } catch (err) {
-        logger.error("Error saving member:", err);
-        setError(err instanceof Error ? err.message : t("member.saveError"));
+        logger.error('Error saving member:', err);
+        setError(err instanceof Error ? err.message : t('member.saveError'));
       }
     },
   });
@@ -209,38 +175,38 @@ export default function MemberForm({
   const fullName = useStore(form.store, (s) => s.values.fullName);
   const gender = useStore(form.store, (s) => s.values.gender);
 
-  const handleSolarDeathChange = (changedField: "day" | "month" | "year", val: string) => {
-    const num = val ? Number(val) : "";
-    const d = changedField === "day" ? num : form.getFieldValue("deathDay");
-    const m = changedField === "month" ? num : form.getFieldValue("deathMonth");
-    const y = changedField === "year" ? num : form.getFieldValue("deathYear");
+  const handleSolarDeathChange = (changedField: 'day' | 'month' | 'year', val: string) => {
+    const num = val ? Number(val) : '';
+    const d = changedField === 'day' ? num : form.getFieldValue('deathDay');
+    const m = changedField === 'month' ? num : form.getFieldValue('deathMonth');
+    const y = changedField === 'year' ? num : form.getFieldValue('deathYear');
 
-    if (d !== "" && m !== "" && y !== "" && y > 100) {
+    if (d !== '' && m !== '' && y !== '' && y > 100) {
       try {
         const solar = Solar.fromYmd(y, m, d);
         const lunar = solar.getLunar();
-        form.setFieldValue("deathLunarDay", lunar.getDay());
-        form.setFieldValue("deathLunarMonth", Math.abs(lunar.getMonth()));
-        form.setFieldValue("deathLunarYear", lunar.getYear());
+        form.setFieldValue('deathLunarDay', lunar.getDay());
+        form.setFieldValue('deathLunarMonth', Math.abs(lunar.getMonth()));
+        form.setFieldValue('deathLunarYear', lunar.getYear());
       } catch {
         // Ignore invalid dates
       }
     }
   };
 
-  const handleLunarDeathChange = (changedField: "day" | "month" | "year", val: string) => {
-    const num = val ? Number(val) : "";
-    const d = changedField === "day" ? num : form.getFieldValue("deathLunarDay");
-    const m = changedField === "month" ? num : form.getFieldValue("deathLunarMonth");
-    const y = changedField === "year" ? num : form.getFieldValue("deathLunarYear");
+  const handleLunarDeathChange = (changedField: 'day' | 'month' | 'year', val: string) => {
+    const num = val ? Number(val) : '';
+    const d = changedField === 'day' ? num : form.getFieldValue('deathLunarDay');
+    const m = changedField === 'month' ? num : form.getFieldValue('deathLunarMonth');
+    const y = changedField === 'year' ? num : form.getFieldValue('deathLunarYear');
 
-    if (d !== "" && m !== "" && y !== "" && y > 100) {
+    if (d !== '' && m !== '' && y !== '' && y > 100) {
       try {
         const lunar = Lunar.fromYmd(y, m, d);
         const solar = lunar.getSolar();
-        form.setFieldValue("deathDay", solar.getDay());
-        form.setFieldValue("deathMonth", solar.getMonth());
-        form.setFieldValue("deathYear", solar.getYear());
+        form.setFieldValue('deathDay', solar.getDay());
+        form.setFieldValue('deathMonth', solar.getMonth());
+        form.setFieldValue('deathYear', solar.getYear());
       } catch {
         // Ignore invalid dates
       }
@@ -248,7 +214,7 @@ export default function MemberForm({
   };
 
   const inputClasses = cn(
-    "block w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-sm text-stone-900 placeholder-stone-500 shadow-sm transition-all outline-none focus:border-amber-500 focus:bg-white focus:ring-2 focus:ring-amber-500/20",
+    'block w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-sm text-stone-900 placeholder-stone-500 shadow-sm transition-all outline-none focus:border-amber-500 focus:bg-white focus:ring-2 focus:ring-amber-500/20'
   );
 
   return (
@@ -263,12 +229,12 @@ export default function MemberForm({
       <Card variant="elevated" className="animate-[fade-in-up_0.3s_ease-out_forwards] p-5 sm:p-8">
         <h3 className="text-heading-section mb-6 flex items-center gap-2 border-b border-stone-100 pb-4">
           <User className="size-5 text-amber-600" />
-          {t("member.generalInfo")}
+          {t('member.generalInfo')}
         </h3>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="md:col-span-2">
             <label htmlFor="fullName" className="text-label">
-              {t("member.fullName")} <span className="text-red-500">*</span>
+              {t('member.fullName')} <span className="text-red-500">*</span>
             </label>
             <form.AppField name="fullName">
               {(field) => (
@@ -279,7 +245,7 @@ export default function MemberForm({
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   className={inputClasses}
-                  placeholder={t("member.fullNamePlaceholder")}
+                  placeholder={t('member.fullNamePlaceholder')}
                 />
               )}
             </form.AppField>
@@ -287,7 +253,7 @@ export default function MemberForm({
 
           <div className="md:col-span-2">
             <label htmlFor="otherNames" className="text-label">
-              {t("member.otherNames")}
+              {t('member.otherNames')}
             </label>
             <form.AppField name="otherNames">
               {(field) => (
@@ -297,7 +263,7 @@ export default function MemberForm({
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   className={inputClasses}
-                  placeholder={t("member.otherNamesPlaceholder")}
+                  placeholder={t('member.otherNamesPlaceholder')}
                 />
               )}
             </form.AppField>
@@ -305,7 +271,7 @@ export default function MemberForm({
 
           <div>
             <label htmlFor="gender" className="text-label">
-              {t("member.gender")} <span className="text-red-500">*</span>
+              {t('member.gender')} <span className="text-red-500">*</span>
             </label>
             <form.AppField name="gender">
               {(field) => (
@@ -314,11 +280,11 @@ export default function MemberForm({
                     id="gender"
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value as Gender)}
-                    className={cn(inputClasses, "appearance-none")}
+                    className={cn(inputClasses, 'appearance-none')}
                   >
-                    <option value={Gender.enum.male}>{t("common.male")}</option>
-                    <option value={Gender.enum.female}>{t("common.female")}</option>
-                    <option value={Gender.enum.other}>{t("common.other")}</option>
+                    <option value={Gender.enum.male}>{t('common.male')}</option>
+                    <option value={Gender.enum.female}>{t('common.female')}</option>
+                    <option value={Gender.enum.other}>{t('common.other')}</option>
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-stone-500">
                     <Settings2 className="size-4" />
@@ -330,19 +296,13 @@ export default function MemberForm({
 
           <div className="mt-2 flex items-center sm:mt-7">
             <form.AppField name="isInLaw">
-              {(field) => (
-                <Checkbox
-                  checked={field.state.value}
-                  onChange={(val) => field.handleChange(val)}
-                  label={t("member.isInLaw")}
-                />
-              )}
+              {(field) => <Checkbox checked={field.state.value} onChange={(val) => field.handleChange(val)} label={t('member.isInLaw')} />}
             </form.AppField>
           </div>
 
           <div>
             <label htmlFor="birthOrder" className="text-label">
-              {t("member.birthOrder")}
+              {t('member.birthOrder')}
             </label>
             <form.AppField name="birthOrder">
               {(field) => (
@@ -350,21 +310,21 @@ export default function MemberForm({
                   id="birthOrder"
                   type="number"
                   min="1"
-                  placeholder={t("member.birthOrderPlaceholder")}
+                  placeholder={t('member.birthOrderPlaceholder')}
                   value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value ? Number(e.target.value) : "")}
+                  onChange={(e) => field.handleChange(e.target.value ? Number(e.target.value) : '')}
                   className={inputClasses}
                 />
               )}
             </form.AppField>
             <p className="mt-1.5 flex items-center gap-1 text-xs text-stone-400">
-              <span>💡</span> {t("member.birthOrderHint")}
+              <span>💡</span> {t('member.birthOrderHint')}
             </p>
           </div>
 
           <div>
             <label htmlFor="generation" className="text-label">
-              {t("member.generation")}
+              {t('member.generation')}
             </label>
             <form.AppField name="generation">
               {(field) => (
@@ -372,24 +332,21 @@ export default function MemberForm({
                   id="generation"
                   type="number"
                   min="1"
-                  placeholder={t("member.generationPlaceholder")}
+                  placeholder={t('member.generationPlaceholder')}
                   value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value ? Number(e.target.value) : "")}
+                  onChange={(e) => field.handleChange(e.target.value ? Number(e.target.value) : '')}
                   className={inputClasses}
                 />
               )}
             </form.AppField>
             <p className="mt-1.5 flex items-center gap-1 text-xs text-stone-400">
-              <span>💡</span> {t("member.generationHint")}
+              <span>💡</span> {t('member.generationHint')}
             </p>
           </div>
 
           <div className="mt-2 md:col-span-2">
-            <label
-              htmlFor="avatarFile"
-              className="mb-2.5 block text-sm font-semibold text-stone-700"
-            >
-              {t("member.avatar")}
+            <label htmlFor="avatarFile" className="mb-2.5 block text-sm font-semibold text-stone-700">
+              {t('member.avatar')}
             </label>
             <div className="flex flex-col items-start gap-5 rounded-xl border border-stone-100 bg-stone-50/50 p-4 sm:flex-row sm:items-center">
               <Avatar
@@ -418,26 +375,26 @@ export default function MemberForm({
                       className="flex items-center gap-2 rounded-lg border border-amber-200/50 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 transition-colors hover:border-amber-300 hover:bg-amber-100"
                     >
                       <ImageIcon className="size-4" />
-                      {t("member.choosePhoto")}
+                      {t('member.choosePhoto')}
                     </button>
                   </div>
                   {avatarPreview && (
                     <button
                       type="button"
                       onClick={() => {
-                        form.setFieldValue("avatarUrl", "");
+                        form.setFieldValue('avatarUrl', '');
                         clearAvatar();
                       }}
                       className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-100 hover:text-rose-700"
                     >
                       <Trash2 className="size-4" />
-                      {t("member.removePhoto")}
+                      {t('member.removePhoto')}
                     </button>
                   )}
                 </div>
                 <p className="mt-2.5 flex items-center gap-1.5 text-xs text-stone-500">
                   <AlertCircle className="h-3.5 w-3.5 text-stone-400" />
-                  {t("member.photoHint")}
+                  {t('member.photoHint')}
                 </p>
               </div>
             </div>
@@ -445,7 +402,7 @@ export default function MemberForm({
 
           <div className="md:col-span-2">
             <label htmlFor="birthDay" className="text-label">
-              {t("member.solarBirthDate")}
+              {t('member.solarBirthDate')}
             </label>
             <div className="grid grid-cols-3 gap-3">
               <form.AppField name="birthDay">
@@ -453,13 +410,11 @@ export default function MemberForm({
                   <input
                     id="birthDay"
                     type="number"
-                    placeholder={t("common.day")}
+                    placeholder={t('common.day')}
                     min="1"
                     max="31"
                     value={field.state.value}
-                    onChange={(e) =>
-                      field.handleChange(e.target.value ? Number(e.target.value) : "")
-                    }
+                    onChange={(e) => field.handleChange(e.target.value ? Number(e.target.value) : '')}
                     className={inputClasses}
                   />
                 )}
@@ -468,13 +423,11 @@ export default function MemberForm({
                 {(field) => (
                   <input
                     type="number"
-                    placeholder={t("common.month")}
+                    placeholder={t('common.month')}
                     min="1"
                     max="12"
                     value={field.state.value}
-                    onChange={(e) =>
-                      field.handleChange(e.target.value ? Number(e.target.value) : "")
-                    }
+                    onChange={(e) => field.handleChange(e.target.value ? Number(e.target.value) : '')}
                     className={inputClasses}
                   />
                 )}
@@ -483,11 +436,9 @@ export default function MemberForm({
                 {(field) => (
                   <input
                     type="number"
-                    placeholder={t("common.year")}
+                    placeholder={t('common.year')}
                     value={field.state.value}
-                    onChange={(e) =>
-                      field.handleChange(e.target.value ? Number(e.target.value) : "")
-                    }
+                    onChange={(e) => field.handleChange(e.target.value ? Number(e.target.value) : '')}
                     className={inputClasses}
                   />
                 )}
@@ -504,15 +455,15 @@ export default function MemberForm({
                     onChange={(val) => {
                       field.handleChange(val);
                       if (!val) {
-                        form.setFieldValue("deathYear", "");
-                        form.setFieldValue("deathMonth", "");
-                        form.setFieldValue("deathDay", "");
-                        form.setFieldValue("deathLunarYear", "");
-                        form.setFieldValue("deathLunarMonth", "");
-                        form.setFieldValue("deathLunarDay", "");
+                        form.setFieldValue('deathYear', '');
+                        form.setFieldValue('deathMonth', '');
+                        form.setFieldValue('deathDay', '');
+                        form.setFieldValue('deathLunarYear', '');
+                        form.setFieldValue('deathLunarMonth', '');
+                        form.setFieldValue('deathLunarDay', '');
                       }
                     }}
-                    label={t("member.isDeceased")}
+                    label={t('member.isDeceased')}
                     colorClass="bg-stone-600 border-stone-600"
                     hoverClass="group-hover:text-stone-900"
                   />
@@ -522,16 +473,11 @@ export default function MemberForm({
 
             {isDeceased && (
               <div className="animate-[fade-in_0.3s_ease-out_forwards] overflow-hidden">
-                <p className="mb-4 text-sm-plus text-stone-500 italic">
-                  {t("member.deathDateHint")}
-                </p>
+                <p className="mb-4 text-sm-plus text-stone-500 italic">{t('member.deathDateHint')}</p>
 
                 <div>
-                  <label
-                    htmlFor="deathLunarDay"
-                    className="mb-2 block text-sm font-semibold text-stone-700"
-                  >
-                    {t("member.deathDateLunar")}
+                  <label htmlFor="deathLunarDay" className="mb-2 block text-sm font-semibold text-stone-700">
+                    {t('member.deathDateLunar')}
                   </label>
                   <div className="mb-4 grid grid-cols-3 gap-3">
                     <form.AppField name="deathLunarDay">
@@ -539,13 +485,13 @@ export default function MemberForm({
                         <input
                           id="deathLunarDay"
                           type="number"
-                          placeholder={t("common.day")}
+                          placeholder={t('common.day')}
                           min="1"
                           max="31"
                           value={field.state.value}
                           onChange={(e) => {
-                            field.handleChange(e.target.value ? Number(e.target.value) : "");
-                            handleLunarDeathChange("day", e.target.value);
+                            field.handleChange(e.target.value ? Number(e.target.value) : '');
+                            handleLunarDeathChange('day', e.target.value);
                           }}
                           className={inputClasses}
                         />
@@ -555,13 +501,13 @@ export default function MemberForm({
                       {(field) => (
                         <input
                           type="number"
-                          placeholder={t("common.month")}
+                          placeholder={t('common.month')}
                           min="1"
                           max="12"
                           value={field.state.value}
                           onChange={(e) => {
-                            field.handleChange(e.target.value ? Number(e.target.value) : "");
-                            handleLunarDeathChange("month", e.target.value);
+                            field.handleChange(e.target.value ? Number(e.target.value) : '');
+                            handleLunarDeathChange('month', e.target.value);
                           }}
                           className={inputClasses}
                         />
@@ -571,11 +517,11 @@ export default function MemberForm({
                       {(field) => (
                         <input
                           type="number"
-                          placeholder={t("common.year")}
+                          placeholder={t('common.year')}
                           value={field.state.value}
                           onChange={(e) => {
-                            field.handleChange(e.target.value ? Number(e.target.value) : "");
-                            handleLunarDeathChange("year", e.target.value);
+                            field.handleChange(e.target.value ? Number(e.target.value) : '');
+                            handleLunarDeathChange('year', e.target.value);
                           }}
                           className={inputClasses}
                         />
@@ -585,11 +531,8 @@ export default function MemberForm({
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="deathSolarDay"
-                    className="mb-2 block text-sm font-semibold text-stone-700"
-                  >
-                    {t("member.deathDateSolar")}
+                  <label htmlFor="deathSolarDay" className="mb-2 block text-sm font-semibold text-stone-700">
+                    {t('member.deathDateSolar')}
                   </label>
                   <div className="grid grid-cols-3 gap-3 pt-1">
                     <form.AppField name="deathDay">
@@ -597,13 +540,13 @@ export default function MemberForm({
                         <input
                           id="deathSolarDay"
                           type="number"
-                          placeholder={t("common.day")}
+                          placeholder={t('common.day')}
                           min="1"
                           max="31"
                           value={field.state.value}
                           onChange={(e) => {
-                            field.handleChange(e.target.value ? Number(e.target.value) : "");
-                            handleSolarDeathChange("day", e.target.value);
+                            field.handleChange(e.target.value ? Number(e.target.value) : '');
+                            handleSolarDeathChange('day', e.target.value);
                           }}
                           className={inputClasses}
                         />
@@ -613,13 +556,13 @@ export default function MemberForm({
                       {(field) => (
                         <input
                           type="number"
-                          placeholder={t("common.month")}
+                          placeholder={t('common.month')}
                           min="1"
                           max="12"
                           value={field.state.value}
                           onChange={(e) => {
-                            field.handleChange(e.target.value ? Number(e.target.value) : "");
-                            handleSolarDeathChange("month", e.target.value);
+                            field.handleChange(e.target.value ? Number(e.target.value) : '');
+                            handleSolarDeathChange('month', e.target.value);
                           }}
                           className={inputClasses}
                         />
@@ -629,11 +572,11 @@ export default function MemberForm({
                       {(field) => (
                         <input
                           type="number"
-                          placeholder={t("common.year")}
+                          placeholder={t('common.year')}
                           value={field.state.value}
                           onChange={(e) => {
-                            field.handleChange(e.target.value ? Number(e.target.value) : "");
-                            handleSolarDeathChange("year", e.target.value);
+                            field.handleChange(e.target.value ? Number(e.target.value) : '');
+                            handleSolarDeathChange('year', e.target.value);
                           }}
                           className={inputClasses}
                         />
@@ -647,7 +590,7 @@ export default function MemberForm({
 
           <div className="md:col-span-2">
             <label htmlFor="note" className="text-label">
-              {t("common.note")}
+              {t('common.note')}
             </label>
             <form.AppField name="note">
               {(field) => (
@@ -656,8 +599,8 @@ export default function MemberForm({
                   rows={3}
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder={t("member.notePlaceholder")}
-                  className={cn(inputClasses, "resize-none")}
+                  placeholder={t('member.notePlaceholder')}
+                  className={cn(inputClasses, 'resize-none')}
                 />
               )}
             </form.AppField>
@@ -668,25 +611,22 @@ export default function MemberForm({
       {isAdmin && (
         <div
           className="relative animate-[fade-in-up_0.3s_ease-out_forwards] overflow-hidden rounded-2xl border border-amber-200/50 bg-linear-to-br from-amber-50/80 to-stone-50/80 p-5 shadow-sm backdrop-blur-md sm:p-8"
-          style={{ animationDelay: "0.1s", animationFillMode: "backwards" }}
+          style={{ animationDelay: '0.1s', animationFillMode: 'backwards' }}
         >
           <Lock className="absolute -right-6 -bottom-6 h-32 w-32 rotate-12 text-amber-500/5" />
           <h3 className="relative z-10 mb-6 flex items-center gap-2 border-b border-amber-200/50 pb-4 font-serif text-lg font-bold text-amber-900 sm:text-xl">
             <span className="rounded-lg bg-amber-100/80 p-1.5 text-amber-700 shadow-xs">
               <Lock className="size-4" />
             </span>
-            <span>{t("member.privateInfo")}</span>
+            <span>{t('member.privateInfo')}</span>
             <span className="ml-auto rounded-md border border-amber-300/60 bg-amber-200/80 px-2.5 py-1 text-2xs font-bold tracking-wider text-amber-800 uppercase shadow-xs sm:ml-2">
-              {t("member.adminOnly")}
+              {t('member.adminOnly')}
             </span>
           </h3>
           <div className="relative z-10 grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
-              <label
-                htmlFor="phoneNumber"
-                className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-amber-900/80"
-              >
-                <Phone className="size-4" /> {t("member.phone")}
+              <label htmlFor="phoneNumber" className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-amber-900/80">
+                <Phone className="size-4" /> {t('member.phone')}
               </label>
               <form.AppField name="phoneNumber">
                 {(field) => (
@@ -696,27 +636,21 @@ export default function MemberForm({
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     disabled={isDeceased}
-                    placeholder={t("member.phonePlaceholder")}
-                    className={cn(
-                      inputClasses,
-                      "disabled:cursor-not-allowed disabled:bg-stone-100 disabled:text-stone-400",
-                    )}
+                    placeholder={t('member.phonePlaceholder')}
+                    className={cn(inputClasses, 'disabled:cursor-not-allowed disabled:bg-stone-100 disabled:text-stone-400')}
                   />
                 )}
               </form.AppField>
               {isDeceased && (
                 <p className="mt-1.5 flex items-center gap-1 text-xs-plus font-medium text-rose-500">
                   <AlertCircle className="size-3" />
-                  {t("member.phoneDeceasedError")}
+                  {t('member.phoneDeceasedError')}
                 </p>
               )}
             </div>
             <div>
-              <label
-                htmlFor="occupation"
-                className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-amber-900/80"
-              >
-                <Briefcase className="size-4" /> {t("member.occupation")}
+              <label htmlFor="occupation" className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-amber-900/80">
+                <Briefcase className="size-4" /> {t('member.occupation')}
               </label>
               <form.AppField name="occupation">
                 {(field) => (
@@ -725,18 +659,15 @@ export default function MemberForm({
                     type="text"
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
-                    placeholder={t("member.occupationPlaceholder")}
+                    placeholder={t('member.occupationPlaceholder')}
                     className={inputClasses}
                   />
                 )}
               </form.AppField>
             </div>
             <div className="md:col-span-2">
-              <label
-                htmlFor="currentResidence"
-                className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-amber-900/80"
-              >
-                <MapPin className="size-4" /> {t("member.currentResidence")}
+              <label htmlFor="currentResidence" className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-amber-900/80">
+                <MapPin className="size-4" /> {t('member.currentResidence')}
               </label>
               <form.AppField name="currentResidence">
                 {(field) => (
@@ -745,7 +676,7 @@ export default function MemberForm({
                     type="text"
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
-                    placeholder={t("member.residencePlaceholder")}
+                    placeholder={t('member.residencePlaceholder')}
                     className={inputClasses}
                   />
                 )}
@@ -767,7 +698,7 @@ export default function MemberForm({
           errors.length > 0 && (
             <div className="flex animate-[fade-in-up_0.3s_ease-out_forwards] items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-medium text-rose-700 shadow-sm">
               <AlertCircle className="mt-0.5 size-5 shrink-0" />
-              <p>{errors.join(", ")}</p>
+              <p>{errors.join(', ')}</p>
             </div>
           )
         }
@@ -775,18 +706,12 @@ export default function MemberForm({
 
       <div
         className="flex animate-[fade-in-up_0.3s_ease-out_forwards] justify-end gap-3 pt-6 sm:gap-4"
-        style={{ animationDelay: "0.2s", animationFillMode: "backwards" }}
+        style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}
       >
-        <Button onClick={() => (onCancel ? onCancel() : window.history.back())}>
-          {t("member.cancelButton")}
-        </Button>
+        <Button onClick={() => (onCancel ? onCancel() : window.history.back())}>{t('member.cancelButton')}</Button>
         <Button variant="primary" type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-          {isSubmitting
-            ? t("common.saving")
-            : isEditing
-              ? t("member.saveChanges")
-              : t("member.addMember")}
+          {isSubmitting ? t('common.saving') : isEditing ? t('member.saveChanges') : t('member.addMember')}
         </Button>
       </div>
     </form>

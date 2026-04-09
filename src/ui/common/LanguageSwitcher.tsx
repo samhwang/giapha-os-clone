@@ -1,8 +1,8 @@
-import { Globe } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
-import { type Language, supportedLanguages } from "../../i18n/lib";
-import { cn } from "../utils/cn";
+import { type Language, supportedLanguages } from '../../i18n/lib';
+import { cn } from '../utils/cn';
 
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 
@@ -10,29 +10,26 @@ interface LanguageSwitcherProps {
   className?: string;
 }
 
-export default function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
+export default function LanguageSwitcher({ className = '' }: LanguageSwitcherProps) {
   const { i18n, t } = useTranslation();
 
   const switchLanguage = (lang: Language) => {
     void cookieStore.set({
-      name: "lang",
+      name: 'lang',
       value: lang,
-      path: "/",
+      path: '/',
       expires: Date.now() + ONE_YEAR_MS,
     });
     void i18n.changeLanguage(lang);
   };
 
-  const nextLang = supportedLanguages.find((l) => l !== i18n.language) ?? "en";
+  const nextLang = supportedLanguages.find((l) => l !== i18n.language) ?? 'en';
 
   return (
     <button
       type="button"
       onClick={() => switchLanguage(nextLang)}
-      className={cn(
-        "flex items-center gap-1.5 text-sm font-medium text-stone-600 transition-colors hover:text-amber-700",
-        className,
-      )}
+      className={cn('flex items-center gap-1.5 text-sm font-medium text-stone-600 transition-colors hover:text-amber-700', className)}
       title={t(`language.${nextLang}`)}
     >
       <Globe className="size-4" />

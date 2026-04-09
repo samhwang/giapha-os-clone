@@ -1,7 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from 'vitest';
 
-import type { Person } from "../../members/types";
-import type { Relationship } from "../../relationships/types";
+import type { Person } from '../../members/types';
+import type { Relationship } from '../../relationships/types';
 
 import {
   binhThiMoc,
@@ -17,19 +17,19 @@ import {
   vanCongVien,
   vanThiBinh,
   vanThiCam,
-} from "../../../test/fixtures";
-import { Gender } from "../../members/types";
-import { RelationshipType } from "../../relationships/types";
-import { buildAdjacencyLists, getFilteredTreeData } from "./treeHelpers";
+} from '../../../test/fixtures';
+import { Gender } from '../../members/types';
+import { RelationshipType } from '../../relationships/types';
+import { buildAdjacencyLists, getFilteredTreeData } from './treeHelpers';
 
 function toPersonsMap(persons: Person[]): Map<string, Person> {
   return new Map(persons.map((p) => [p.id, p]));
 }
 
-describe("buildAdjacencyLists", () => {
+describe('buildAdjacencyLists', () => {
   const personsMap = toPersonsMap(mockPersons as Person[]);
 
-  it("builds spouse maps for marriage relationships (bidirectional)", () => {
+  it('builds spouse maps for marriage relationships (bidirectional)', () => {
     const adj = buildAdjacencyLists(mockRelationships as Relationship[], personsMap);
 
     const gocSpouses = adj.spousesByPersonId.get(vanCongGoc.id);
@@ -41,7 +41,7 @@ describe("buildAdjacencyLists", () => {
     expect(mocSpouses?.[0].person.id).toBe(vanCongGoc.id);
   });
 
-  it("builds children maps for biological_child relationships", () => {
+  it('builds children maps for biological_child relationships', () => {
     const adj = buildAdjacencyLists(mockRelationships as Relationship[], personsMap);
 
     const gocChildren = adj.childrenByPersonId.get(vanCongGoc.id);
@@ -52,19 +52,19 @@ describe("buildAdjacencyLists", () => {
     expect(childIds).toContain(vanCongVien.id);
   });
 
-  it("sorts children by birthOrder then birthYear", () => {
+  it('sorts children by birthOrder then birthYear', () => {
     const adj = buildAdjacencyLists(mockRelationships as Relationship[], personsMap);
 
     const thuanChildren = adj.childrenByPersonId.get(vanCongThuan.id);
     if (!thuanChildren) {
-      throw new Error("thuanChildren not found");
+      throw new Error('thuanChildren not found');
     }
     expect(thuanChildren.map((c) => c.id)).toEqual([vanCongTri.id, vanThiCam.id, vanCongMoc.id]);
   });
 
-  it("handles adopted_child relationships", () => {
-    const parent = createPerson({ id: "parent-1", fullName: "Parent" });
-    const adopted = createPerson({ id: "child-adopted", fullName: "Adopted" });
+  it('handles adopted_child relationships', () => {
+    const parent = createPerson({ id: 'parent-1', fullName: 'Parent' });
+    const adopted = createPerson({ id: 'child-adopted', fullName: 'Adopted' });
     const pMap = toPersonsMap([parent, adopted] as Person[]);
     const rels = [
       createRelationship({
@@ -79,34 +79,34 @@ describe("buildAdjacencyLists", () => {
     expect(adj.childrenByPersonId.get(parent.id)?.[0].id).toBe(adopted.id);
   });
 
-  it("preserves marriage note", () => {
-    const a = createPerson({ id: "p-a" });
-    const b = createPerson({ id: "p-b", gender: Gender.enum.female });
+  it('preserves marriage note', () => {
+    const a = createPerson({ id: 'p-a' });
+    const b = createPerson({ id: 'p-b', gender: Gender.enum.female });
     const pMap = toPersonsMap([a, b] as Person[]);
     const rels = [
       createRelationship({
         type: RelationshipType.enum.marriage,
         personAId: a.id,
         personBId: b.id,
-        note: "first wife",
+        note: 'first wife',
       }),
     ];
 
     const adj = buildAdjacencyLists(rels as Relationship[], pMap);
-    expect(adj.spousesByPersonId.get(a.id)?.[0].note).toBe("first wife");
-    expect(adj.spousesByPersonId.get(b.id)?.[0].note).toBe("first wife");
+    expect(adj.spousesByPersonId.get(a.id)?.[0].note).toBe('first wife');
+    expect(adj.spousesByPersonId.get(b.id)?.[0].note).toBe('first wife');
   });
 
-  it("returns empty maps for no relationships", () => {
+  it('returns empty maps for no relationships', () => {
     const adj = buildAdjacencyLists([], personsMap);
     expect(adj.spousesByPersonId.size).toBe(0);
     expect(adj.childrenByPersonId.size).toBe(0);
   });
 
-  it("sorts children without birthOrder to the end", () => {
-    const parent = createPerson({ id: "p-sort" });
-    const childA = createPerson({ id: "c-a", birthOrder: null, birthYear: 2000 });
-    const childB = createPerson({ id: "c-b", birthOrder: 1, birthYear: 2005 });
+  it('sorts children without birthOrder to the end', () => {
+    const parent = createPerson({ id: 'p-sort' });
+    const childA = createPerson({ id: 'c-a', birthOrder: null, birthYear: 2000 });
+    const childB = createPerson({ id: 'c-b', birthOrder: 1, birthYear: 2005 });
     const pMap = toPersonsMap([parent, childA, childB] as Person[]);
     const rels = [
       createRelationship({
@@ -124,14 +124,14 @@ describe("buildAdjacencyLists", () => {
     const adj = buildAdjacencyLists(rels as Relationship[], pMap);
     const children = adj.childrenByPersonId.get(parent.id);
     if (!children) {
-      throw new Error("children not found");
+      throw new Error('children not found');
     }
     expect(children[0].id).toBe(childB.id);
     expect(children[1].id).toBe(childA.id);
   });
 });
 
-describe("getFilteredTreeData", () => {
+describe('getFilteredTreeData', () => {
   const personsMap = toPersonsMap(mockPersons as Person[]);
   const adj = buildAdjacencyLists(mockRelationships as Relationship[], personsMap);
   const noFilters = {
@@ -143,7 +143,7 @@ describe("getFilteredTreeData", () => {
     hideFemales: false,
   };
 
-  it("returns person, spouses, and children for a given personId", () => {
+  it('returns person, spouses, and children for a given personId', () => {
     const data = getFilteredTreeData({
       personId: vanCongGoc.id,
       personsMap,
@@ -157,7 +157,7 @@ describe("getFilteredTreeData", () => {
     expect(data.children.length).toBeGreaterThan(0);
   });
 
-  it("hides daughters-in-law when hideDaughtersInLaw is true", () => {
+  it('hides daughters-in-law when hideDaughtersInLaw is true', () => {
     const data = getFilteredTreeData({
       personId: vanCongGoc.id,
       personsMap,
@@ -167,7 +167,7 @@ describe("getFilteredTreeData", () => {
     expect(data.spouses.every((s) => s.person.gender !== Gender.enum.female)).toBe(true);
   });
 
-  it("hides sons-in-law when hideSonsInLaw is true", () => {
+  it('hides sons-in-law when hideSonsInLaw is true', () => {
     const data = getFilteredTreeData({
       personId: dinhThiMyDuyen.id,
       personsMap,
@@ -177,7 +177,7 @@ describe("getFilteredTreeData", () => {
     expect(data.spouses.every((s) => s.person.gender !== Gender.enum.male)).toBe(true);
   });
 
-  it("hides daughters when hideDaughters is true", () => {
+  it('hides daughters when hideDaughters is true', () => {
     const data = getFilteredTreeData({
       personId: vanCongGoc.id,
       personsMap,
@@ -187,7 +187,7 @@ describe("getFilteredTreeData", () => {
     expect(data.children.every((c) => c.gender !== Gender.enum.female)).toBe(true);
   });
 
-  it("hides sons when hideSons is true", () => {
+  it('hides sons when hideSons is true', () => {
     const data = getFilteredTreeData({
       personId: vanCongGoc.id,
       personsMap,
@@ -197,7 +197,7 @@ describe("getFilteredTreeData", () => {
     expect(data.children.every((c) => c.gender !== Gender.enum.male)).toBe(true);
   });
 
-  it("hides male spouses when hideMales is true", () => {
+  it('hides male spouses when hideMales is true', () => {
     // vanTriMinh is male, married to dinhThiMyDuyen (female)
     const data = getFilteredTreeData({
       personId: dinhThiMyDuyen.id,
@@ -208,7 +208,7 @@ describe("getFilteredTreeData", () => {
     expect(data.spouses.every((s) => s.person.gender !== Gender.enum.male)).toBe(true);
   });
 
-  it("hides female spouses when hideFemales is true", () => {
+  it('hides female spouses when hideFemales is true', () => {
     const data = getFilteredTreeData({
       personId: vanCongGoc.id,
       personsMap,
@@ -218,7 +218,7 @@ describe("getFilteredTreeData", () => {
     expect(data.spouses.every((s) => s.person.gender !== Gender.enum.female)).toBe(true);
   });
 
-  it("hides male children when hideMales is true", () => {
+  it('hides male children when hideMales is true', () => {
     const data = getFilteredTreeData({
       personId: vanCongGoc.id,
       personsMap,
@@ -228,7 +228,7 @@ describe("getFilteredTreeData", () => {
     expect(data.children.every((c) => c.gender !== Gender.enum.male)).toBe(true);
   });
 
-  it("hides female children when hideFemales is true", () => {
+  it('hides female children when hideFemales is true', () => {
     const data = getFilteredTreeData({
       personId: vanCongGoc.id,
       personsMap,
@@ -238,13 +238,11 @@ describe("getFilteredTreeData", () => {
     expect(data.children.every((c) => c.gender !== Gender.enum.female)).toBe(true);
   });
 
-  it("throws when personId is not found in personsMap", () => {
-    expect(() =>
-      getFilteredTreeData({ personId: "non-existent", personsMap, adj, filters: noFilters }),
-    ).toThrow("Person with id non-existent not found");
+  it('throws when personId is not found in personsMap', () => {
+    expect(() => getFilteredTreeData({ personId: 'non-existent', personsMap, adj, filters: noFilters })).toThrow('Person with id non-existent not found');
   });
 
-  it("returns empty children/spouses for a leaf node", () => {
+  it('returns empty children/spouses for a leaf node', () => {
     const data = getFilteredTreeData({
       personId: vanThiCam.id,
       personsMap,

@@ -1,17 +1,17 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
-import { AlertCircle, ArrowLeft, ExternalLink, Pencil } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
+import { AlertCircle, ArrowLeft, ExternalLink, Pencil } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import type { Person } from "../types";
+import type { Person } from '../types';
 
-import { useDashboardStore } from "../../dashboard/store/dashboardStore";
-import { queryKeys } from "../../lib/queryKeys";
-import { Modal, ModalCloseButton, ModalPanel } from "../../ui/common/Modal";
-import { getPersonById } from "../server/member";
-import MemberDetailContent from "./MemberDetailContent";
-import MemberForm from "./MemberForm";
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
+import { queryKeys } from '../../lib/queryKeys';
+import { Modal, ModalCloseButton, ModalPanel } from '../../ui/common/Modal';
+import { getPersonById } from '../server/member';
+import MemberDetailContent from './MemberDetailContent';
+import MemberForm from './MemberForm';
 
 interface MemberDetailModalProps {
   isAdmin: boolean;
@@ -21,12 +21,7 @@ interface MemberDetailModalProps {
 export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDetailModalProps) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const {
-    memberModalId: memberId,
-    setMemberModalId,
-    showCreateModal,
-    setShowCreateModal,
-  } = useDashboardStore();
+  const { memberModalId: memberId, setMemberModalId, showCreateModal, setShowCreateModal } = useDashboardStore();
   const [isOpen, setIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -36,8 +31,8 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
     isLoading: loading,
     error: queryError,
   } = useQuery({
-    queryKey: queryKeys.persons.detail(memberId ?? ""),
-    queryFn: () => getPersonById({ data: { id: memberId ?? "" } }),
+    queryKey: queryKeys.persons.detail(memberId ?? ''),
+    queryFn: () => getPersonById({ data: { id: memberId ?? '' } }),
     enabled: !!memberId,
   });
 
@@ -46,9 +41,9 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
   const error = queryError
     ? queryError instanceof Error
       ? queryError.message
-      : t("member.systemError")
+      : t('member.systemError')
     : !result && !loading && memberId
-      ? t("member.loadError")
+      ? t('member.loadError')
       : null;
 
   const closeModal = () => {
@@ -102,7 +97,7 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
               className="flex items-center gap-1.5 rounded-full border border-amber-200/50 bg-amber-100/80 px-4 py-2 text-sm font-semibold text-amber-800 shadow-sm backdrop-blur-md transition-colors hover:bg-amber-200"
             >
               <Pencil className="size-4" />
-              <span className="hidden sm:inline">{t("common.edit")}</span>
+              <span className="hidden sm:inline">{t('common.edit')}</span>
             </button>
           )}
           {isAdmin && person && !isEditing && (
@@ -112,7 +107,7 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
               className="flex items-center gap-1.5 rounded-full border border-stone-200/50 bg-stone-100/80 px-4 py-2 text-sm font-semibold text-stone-700 shadow-sm backdrop-blur-md transition-colors hover:bg-stone-200"
             >
               <ExternalLink className="size-4" />
-              <span className="hidden sm:inline">{t("member.viewDetail")}</span>
+              <span className="hidden sm:inline">{t('member.viewDetail')}</span>
             </Link>
           )}
           {isEditing && (
@@ -122,7 +117,7 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
               className="flex items-center gap-1.5 rounded-full border border-stone-200/50 bg-stone-100/80 px-4 py-2 text-sm font-semibold text-stone-700 shadow-sm backdrop-blur-md transition-colors hover:bg-stone-200"
             >
               <ArrowLeft className="size-4" />
-              <span className="hidden sm:inline">{t("common.back")}</span>
+              <span className="hidden sm:inline">{t('common.back')}</span>
             </button>
           )}
           <ModalCloseButton
@@ -136,13 +131,13 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
                     }
                   : () => setMemberModalId(null)
             }
-            label={t("common.close")}
+            label={t('common.close')}
           />
         </div>
 
         {isCreating ? (
           <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-            <h2 className="text-heading-section mb-6">{t("member.addMember")}</h2>
+            <h2 className="text-heading-section mb-6">{t('member.addMember')}</h2>
             <MemberForm
               isAdmin={isAdmin}
               onSuccess={(personId) => {
@@ -159,7 +154,7 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
         ) : loading ? (
           <div className="flex min-h-100 flex-1 flex-col items-center justify-center gap-4">
             <div className="size-10 animate-spin rounded-full border-4 border-amber-600 border-t-transparent" />
-            <p className="font-medium text-stone-500">{t("common.loading")}</p>
+            <p className="font-medium text-stone-500">{t('common.loading')}</p>
           </div>
         ) : error ? (
           <div className="flex min-h-100 flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
@@ -172,7 +167,7 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
               onClick={closeModal}
               className="mt-2 rounded-full bg-stone-100 px-6 py-2.5 font-semibold text-stone-700 transition-colors hover:bg-stone-200"
             >
-              {t("common.close")}
+              {t('common.close')}
             </button>
           </div>
         ) : person ? (
@@ -191,12 +186,7 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
                 />
               </div>
             ) : (
-              <MemberDetailContent
-                person={person}
-                privateData={privateData}
-                isAdmin={isAdmin}
-                canEdit={canEdit}
-              />
+              <MemberDetailContent person={person} privateData={privateData} isAdmin={isAdmin} canEdit={canEdit} />
             )}
           </div>
         ) : null}

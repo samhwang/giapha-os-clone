@@ -1,8 +1,8 @@
-import type { LoginResult, TestCookie, TestHelpers } from "better-auth/plugins";
+import type { LoginResult, TestCookie, TestHelpers } from 'better-auth/plugins';
 
-import type { UserRole } from "../src/auth/types";
+import type { UserRole } from '../src/auth/types';
 
-import { auth } from "../src/auth/server";
+import { auth } from '../src/auth/server';
 
 let _test: TestHelpers | null = null;
 
@@ -22,14 +22,12 @@ interface TestUserOptions {
   isActive?: boolean;
 }
 
-export async function createAndSaveTestUser(
-  opts: TestUserOptions = {},
-): Promise<{ id: string; email: string }> {
+export async function createAndSaveTestUser(opts: TestUserOptions = {}): Promise<{ id: string; email: string }> {
   const test = await getTestCtx();
   const user = test.createUser({
     email: opts.email ?? `test-${crypto.randomUUID()}@test.local`,
-    name: opts.name ?? "Test User",
-    role: opts.role ?? "member",
+    name: opts.name ?? 'Test User',
+    role: opts.role ?? 'member',
     isActive: opts.isActive ?? true,
     emailVerified: true,
   });
@@ -46,10 +44,7 @@ export async function getTestAuthHeaders(userId: string): Promise<Headers> {
   return test.getAuthHeaders({ userId });
 }
 
-export async function getTestAuthCookies(
-  userId: string,
-  domain = "localhost",
-): Promise<TestCookie[]> {
+export async function getTestAuthCookies(userId: string, domain = 'localhost'): Promise<TestCookie[]> {
   const test = await getTestCtx();
   return test.getCookies({ userId, domain });
 }

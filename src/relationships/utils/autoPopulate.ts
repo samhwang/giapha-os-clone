@@ -1,4 +1,4 @@
-export type RelationshipDirection = "child" | "parent" | "spouse";
+export type RelationshipDirection = 'child' | 'parent' | 'spouse';
 
 interface SourcePerson {
   generation: number | null;
@@ -19,22 +19,19 @@ interface AutoPopulatedFields {
  * - Parent: generation = source - 1, isInLaw = false
  * - Spouse: generation = source, isInLaw = inverse of source
  */
-export function getAutoPopulatedFields(
-  direction: RelationshipDirection,
-  source: SourcePerson,
-): AutoPopulatedFields {
+export function getAutoPopulatedFields(direction: RelationshipDirection, source: SourcePerson): AutoPopulatedFields {
   switch (direction) {
-    case "child":
+    case 'child':
       return {
         ...(source.generation != null ? { generation: source.generation + 1 } : {}),
         isInLaw: false,
       };
-    case "parent":
+    case 'parent':
       return {
         ...(source.generation != null ? { generation: source.generation - 1 } : {}),
         isInLaw: false,
       };
-    case "spouse":
+    case 'spouse':
       return {
         ...(source.generation != null ? { generation: source.generation } : {}),
         isInLaw: source.isInLaw !== true,

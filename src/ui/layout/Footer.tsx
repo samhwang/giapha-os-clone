@@ -1,23 +1,21 @@
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
-import { cn } from "../utils/cn";
+import { cn } from '../utils/cn';
 
 interface FooterProps {
   className?: string;
   showDisclaimer?: boolean;
 }
 
-export default function Footer({ className = "", showDisclaimer = false }: FooterProps) {
+export default function Footer({ className = '', showDisclaimer = false }: FooterProps) {
   const { t } = useTranslation();
 
   return (
-    <footer
-      className={cn("py-8 text-center text-sm text-stone-500", className, "backdrop-blur-sm")}
-    >
+    <footer className={cn('py-8 text-center text-sm text-stone-500', className, 'backdrop-blur-sm')}>
       <div className="mx-auto max-w-7xl px-4">
         {showDisclaimer && (
           <p className="mb-4 inline-block rounded-full border border-amber-200/50 bg-amber-50 px-3 py-1 text-xs tracking-wide text-amber-800/80">
-            {t("footer.disclaimer")}
+            {t('footer.disclaimer')}
           </p>
         )}
         <p className="flex items-center justify-center gap-2 opacity-80 transition-opacity hover:opacity-100">

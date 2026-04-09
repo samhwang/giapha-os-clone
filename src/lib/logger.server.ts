@@ -1,3 +1,3 @@
-import { consola } from "consola";
+import { consola } from 'consola';
 
-export const logger = consola.withDefaults({ tag: "server" });
+export const logger = consola.withDefaults({ tag: 'server' });

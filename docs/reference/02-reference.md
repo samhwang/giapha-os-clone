@@ -337,7 +337,7 @@ ghcr.io/<owner>/giapha-os-clone:sha-<short_sha>
 Helpers from `test/`:
 
 ```tsx
-import { renderWithProviders } from "../../test/render-wrapper";
+import { renderWithProviders } from '../../test/render-wrapper';
 
 renderWithProviders(<Component />);
 ```

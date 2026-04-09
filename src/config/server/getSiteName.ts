@@ -1,9 +1,7 @@
-import { createServerFn } from "@tanstack/react-start";
+import { createServerFn } from '@tanstack/react-start';
 
-import { type ClientRuntimeEnv, clientEnv } from "../lib/env.server";
+import { type ClientRuntimeEnv, clientEnv } from '../lib/env.server';
 
-export const getSiteName = createServerFn({ method: "GET" }).handler(
-  async (): Promise<ClientRuntimeEnv> => {
-    return clientEnv;
-  },
-);
+export const getSiteName = createServerFn({ method: 'GET' }).handler(async (): Promise<ClientRuntimeEnv> => {
+  return clientEnv;
+});

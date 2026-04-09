@@ -1,13 +1,13 @@
-import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-import { getRequestHeaders } from "@tanstack/react-start/server";
-import { useTranslation } from "react-i18next";
+import { createFileRoute, Link, Outlet, redirect } from '@tanstack/react-router';
+import { createServerFn } from '@tanstack/react-start';
+import { getRequestHeaders } from '@tanstack/react-start/server';
+import { useTranslation } from 'react-i18next';
 
-import { auth } from "../../auth/server";
-import { UserRole } from "../../auth/types";
-import DashboardHeader from "../../dashboard/components/DashboardHeader";
-import Footer from "../../ui/layout/Footer";
-import LogoutButton from "../../ui/layout/LogoutButton";
+import { auth } from '../../auth/server';
+import { UserRole } from '../../auth/types';
+import DashboardHeader from '../../dashboard/components/DashboardHeader';
+import Footer from '../../ui/layout/Footer';
+import LogoutButton from '../../ui/layout/LogoutButton';
 
 const getSession = createServerFn().handler(async () => {
   const headers = getRequestHeaders();
@@ -21,11 +21,11 @@ const getSession = createServerFn().handler(async () => {
   };
 });
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute('/dashboard')({
   beforeLoad: async () => {
     const session = await getSession();
     if (!session) {
-      throw redirect({ to: "/login" });
+      throw redirect({ to: '/login' });
     }
     return { session };
   },
@@ -42,9 +42,7 @@ function InactiveAccountPage() {
         <div className="layout-page flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/" className="group flex items-center gap-2">
-              <h1 className="text-heading-page transition-colors group-hover:text-amber-700">
-                {clientEnv.SITE_NAME}
-              </h1>
+              <h1 className="text-heading-page transition-colors group-hover:text-amber-700">{clientEnv.SITE_NAME}</h1>
             </Link>
           </div>
           <div className="w-32">
@@ -55,14 +53,7 @@ function InactiveAccountPage() {
       <main className="flex flex-1 flex-col items-center justify-center p-4">
         <div className="w-full max-w-md rounded-xl border border-border-default bg-surface-primary p-6 text-center shadow-card sm:rounded-2xl sm:p-8">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-amber-600">
-            <svg
-              className="size-8"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              role="img"
-              aria-label="Account locked"
-            >
+            <svg className="size-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Account locked">
               <title>Account locked</title>
               <path
                 strokeLinecap="round"
@@ -72,11 +63,9 @@ function InactiveAccountPage() {
               />
             </svg>
           </div>
-          <h2 className="mb-2 font-serif text-2xl font-bold text-stone-800">
-            {t("auth.pendingTitle")}
-          </h2>
-          <p className="text-stone-600">{t("auth.pendingMessage")}</p>
-          <p className="mt-4 text-sm text-stone-500 italic">{t("auth.pendingContact")}</p>
+          <h2 className="mb-2 font-serif text-2xl font-bold text-stone-800">{t('auth.pendingTitle')}</h2>
+          <p className="text-stone-600">{t('auth.pendingMessage')}</p>
+          <p className="mt-4 text-sm text-stone-500 italic">{t('auth.pendingContact')}</p>
         </div>
       </main>
       <Footer className="mt-auto border-t border-stone-200 bg-white" />

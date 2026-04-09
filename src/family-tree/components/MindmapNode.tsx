@@ -1,21 +1,21 @@
-import type { TFunction } from "i18next";
+import type { TFunction } from 'i18next';
 
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { memo, useState } from "react";
+import { ChevronDown, ChevronRight } from 'lucide-react';
+import { memo, useState } from 'react';
 
-import type { Relationship } from "../../relationships/types";
-import type { AdjacencyLists, TreeFilterOptions } from "../utils/treeHelpers";
+import type { Relationship } from '../../relationships/types';
+import type { AdjacencyLists, TreeFilterOptions } from '../utils/treeHelpers';
 
-import { formatDisplayDate } from "../../events/utils/dateHelpers";
-import { Gender, type Person } from "../../members/types";
-import Avatar from "../../ui/common/Avatar";
-import { cardVariants } from "../../ui/common/Card";
-import InLawBadge from "../../ui/common/InLawBadge";
-import { cn } from "../../ui/utils/cn";
-import { getFilteredTreeData } from "../utils/treeHelpers";
+import { formatDisplayDate } from '../../events/utils/dateHelpers';
+import { Gender, type Person } from '../../members/types';
+import Avatar from '../../ui/common/Avatar';
+import { cardVariants } from '../../ui/common/Card';
+import InLawBadge from '../../ui/common/InLawBadge';
+import { cn } from '../../ui/utils/cn';
+import { getFilteredTreeData } from '../utils/treeHelpers';
 
 export interface ExpandSignal {
-  type: "expand" | "collapse";
+  type: 'expand' | 'collapse';
   ts: number;
 }
 
@@ -48,23 +48,16 @@ interface MindmapNodeProps {
   ctx: MindmapContextData;
 }
 
-export const MindmapNode = memo(function MindmapNode({
-  personId,
-  level = 0,
-  isLast = false,
-  ctx,
-}: MindmapNodeProps) {
+export const MindmapNode = memo(function MindmapNode({ personId, level = 0, isLast = false, ctx }: MindmapNodeProps) {
   const data = getTreeData(personId, ctx);
-  const [isExpanded, setIsExpanded] = useState(
-    ctx.autoCollapseLevel > 0 ? level < ctx.autoCollapseLevel : level < 2,
-  );
+  const [isExpanded, setIsExpanded] = useState(ctx.autoCollapseLevel > 0 ? level < ctx.autoCollapseLevel : level < 2);
   const [lastSignalTs, setLastSignalTs] = useState(0);
   const [lastCollapseLevel, setLastCollapseLevel] = useState(ctx.autoCollapseLevel);
 
   // React 18 supports setState during render for synchronous derived state.
   // This ensures expand/collapse signals apply before the first paint.
   if (ctx.expandSignal && ctx.expandSignal.ts !== lastSignalTs) {
-    setIsExpanded(ctx.expandSignal.type === "expand");
+    setIsExpanded(ctx.expandSignal.type === 'expand');
     setLastSignalTs(ctx.expandSignal.ts);
   }
 
@@ -80,21 +73,21 @@ export const MindmapNode = memo(function MindmapNode({
   const hasChildren = data.children.length > 0;
 
   return (
-    <div className={cn("relative py-1.5", level > 0 ? "pl-6" : "pl-0")}>
+    <div className={cn('relative py-1.5', level > 0 ? 'pl-6' : 'pl-0')}>
       {level > 0 && (
         <>
           <div
             className="absolute border-l-[1.5px] border-stone-300"
             style={{
-              left: "0",
-              top: "-16px",
-              bottom: isLast ? "auto" : "-16px",
-              height: isLast ? "40px" : "100%",
+              left: '0',
+              top: '-16px',
+              bottom: isLast ? 'auto' : '-16px',
+              height: isLast ? '40px' : '100%',
             }}
           />
           <div
             className="absolute rounded-bl-xl border-b-[1.5px] border-l-[1.5px] border-stone-300"
-            style={{ left: "0", top: "24px", width: "24px", height: "24px" }}
+            style={{ left: '0', top: '24px', width: '24px', height: '24px' }}
           />
         </>
       )}
@@ -106,13 +99,9 @@ export const MindmapNode = memo(function MindmapNode({
               type="button"
               onClick={() => setIsExpanded(!isExpanded)}
               className="flex size-5 items-center justify-center rounded border border-stone-200 bg-white text-stone-500 shadow-sm transition-colors hover:bg-amber-50 hover:text-amber-600 focus:outline-none"
-              aria-label={isExpanded ? ctx.t("tree.collapse") : ctx.t("tree.expand")}
+              aria-label={isExpanded ? ctx.t('tree.collapse') : ctx.t('tree.expand')}
             >
-              {isExpanded ? (
-                <ChevronDown strokeWidth={2.5} className="h-3.5 w-3.5" />
-              ) : (
-                <ChevronRight strokeWidth={2.5} className="h-3.5 w-3.5" />
-              )}
+              {isExpanded ? <ChevronDown strokeWidth={2.5} className="h-3.5 w-3.5" /> : <ChevronRight strokeWidth={2.5} className="h-3.5 w-3.5" />}
             </button>
           ) : (
             <div className="h-1.5 w-1.5 rounded-full bg-stone-300 ring-2 ring-white" />
@@ -124,13 +113,13 @@ export const MindmapNode = memo(function MindmapNode({
           role="button"
           tabIndex={0}
           className={cn(
-            cardVariants({ variant: "glass", interactive: true }),
-            "group/card relative flex animate-[fade-in_0.3s_ease-out_forwards] cursor-pointer flex-wrap items-center gap-2 p-2 sm:p-2.5",
-            data.person.isDeceased && "opacity-80 grayscale-[0.3]",
+            cardVariants({ variant: 'glass', interactive: true }),
+            'group/card relative flex animate-[fade-in_0.3s_ease-out_forwards] cursor-pointer flex-wrap items-center gap-2 p-2 sm:p-2.5',
+            data.person.isDeceased && 'opacity-80 grayscale-[0.3]'
           )}
           onClick={() => ctx.setMemberModalId(data.person.id)}
           onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
+            if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
               ctx.setMemberModalId(data.person.id);
             }
@@ -159,9 +148,9 @@ export const MindmapNode = memo(function MindmapNode({
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                     role="img"
-                    aria-label={ctx.t("tree.dateLabel")}
+                    aria-label={ctx.t('tree.dateLabel')}
                   >
-                    <title>{ctx.t("tree.dateLabel")}</title>
+                    <title>{ctx.t('tree.dateLabel')}</title>
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -174,10 +163,10 @@ export const MindmapNode = memo(function MindmapNode({
                       year: data.person.birthYear,
                       month: data.person.birthMonth,
                       day: data.person.birthDay,
-                      unknownLabel: ctx.t("common.unknown"),
+                      unknownLabel: ctx.t('common.unknown'),
                     })}
                     {data.person.isDeceased &&
-                      ` → ${formatDisplayDate({ year: data.person.deathYear, month: data.person.deathMonth, day: data.person.deathDay, unknownLabel: ctx.t("common.unknown") })}`}
+                      ` → ${formatDisplayDate({ year: data.person.deathYear, month: data.person.deathMonth, day: data.person.deathDay, unknownLabel: ctx.t('common.unknown') })}`}
                   </span>
                 </span>
                 {data.person.isInLaw && (
@@ -199,15 +188,10 @@ export const MindmapNode = memo(function MindmapNode({
                       ctx.setMemberModalId(spouseData.person.id);
                     }}
                     className={cn(
-                      "group/spouse flex cursor-pointer flex-col items-center gap-1 rounded-xl border border-border-default bg-stone-50/50 p-1.5 shadow-sm transition-all hover:border-amber-300 hover:bg-white hover:shadow-md",
-                      spouseData.person.isDeceased && "opacity-80 grayscale-[0.3]",
+                      'group/spouse flex cursor-pointer flex-col items-center gap-1 rounded-xl border border-border-default bg-stone-50/50 p-1.5 shadow-sm transition-all hover:border-amber-300 hover:bg-white hover:shadow-md',
+                      spouseData.person.isDeceased && 'opacity-80 grayscale-[0.3]'
                     )}
-                    title={
-                      spouseData.note ||
-                      (spouseData.person.gender === Gender.enum.male
-                        ? ctx.t("tree.husband")
-                        : ctx.t("tree.wife"))
-                    }
+                    title={spouseData.note || (spouseData.person.gender === Gender.enum.male ? ctx.t('tree.husband') : ctx.t('tree.wife'))}
                   >
                     {ctx.showAvatar && (
                       <Avatar
@@ -217,9 +201,7 @@ export const MindmapNode = memo(function MindmapNode({
                         className="size-8 text-2xs font-bold shadow-sm ring-2 ring-white transition-transform duration-default group-hover/spouse:scale-105"
                       />
                     )}
-                    <span className="max-w-12.5 truncate text-center text-2xs font-bold text-stone-600">
-                      {spouseData.person.fullName.split(" ").pop()}
-                    </span>
+                    <span className="max-w-12.5 truncate text-center text-2xs font-bold text-stone-600">{spouseData.person.fullName.split(' ').pop()}</span>
                   </button>
                 ))}
               </div>
@@ -232,13 +214,7 @@ export const MindmapNode = memo(function MindmapNode({
         <div className="relative z-0 -mt-4 origin-top animate-[fade-in_0.3s_ease-out_forwards] overflow-hidden pt-4">
           <div className="pb-1">
             {data.children.map((child, index) => (
-              <MindmapNode
-                key={child.id}
-                personId={child.id}
-                level={level + 1}
-                isLast={index === data.children.length - 1}
-                ctx={ctx}
-              />
+              <MindmapNode key={child.id} personId={child.id} level={level + 1} isLast={index === data.children.length - 1} ctx={ctx} />
             ))}
           </div>
         </div>

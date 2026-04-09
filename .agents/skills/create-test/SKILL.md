@@ -43,22 +43,22 @@ Tests are co-located with source files:
 Use Given-When-Then pattern:
 
 ```typescript
-describe("functionName", () => {
-  describe("given valid input", () => {
-    it("should return expected output", () => {
+describe('functionName', () => {
+  describe('given valid input', () => {
+    it('should return expected output', () => {
       // given
-      const input = "value";
+      const input = 'value';
 
       // when
       const result = functionName(input);
 
       // then
-      expect(result).toBe("expected");
+      expect(result).toBe('expected');
     });
   });
 
-  describe("given invalid input", () => {
-    it("should throw error", () => {
+  describe('given invalid input', () => {
+    it('should throw error', () => {
       expect(() => functionName(null)).toThrow();
     });
   });
@@ -87,20 +87,20 @@ pnpm test:run    # Single run
 
 ```typescript
 // src/utils/date.test.ts
-import { describe, it, expect } from "vitest";
-import { formatVietnameseDate } from "./date";
+import { describe, it, expect } from 'vitest';
+import { formatVietnameseDate } from './date';
 
-describe("formatVietnameseDate", () => {
-  describe("given a valid date", () => {
-    it("should format as DD/MM/YYYY", () => {
-      const date = new Date("2024-01-15");
+describe('formatVietnameseDate', () => {
+  describe('given a valid date', () => {
+    it('should format as DD/MM/YYYY', () => {
+      const date = new Date('2024-01-15');
       const result = formatVietnameseDate(date);
-      expect(result).toBe("15/01/2024");
+      expect(result).toBe('15/01/2024');
     });
   });
 
-  describe("given an invalid date", () => {
-    it("should throw error", () => {
+  describe('given an invalid date', () => {
+    it('should throw error', () => {
       expect(() => formatVietnameseDate(null as any)).toThrow();
     });
   });
@@ -111,25 +111,25 @@ describe("formatVietnameseDate", () => {
 
 ```typescript
 // src/members/server/member.test.ts
-import { beforeEach, describe, expect, it } from "vitest";
-import { createPerson, deleteAllPersons, findPersonById } from "../repository/person";
-import { Gender } from "../types";
+import { beforeEach, describe, expect, it } from 'vitest';
+import { createPerson, deleteAllPersons, findPersonById } from '../repository/person';
+import { Gender } from '../types';
 
-describe("createPerson (inner logic)", () => {
+describe('createPerson (inner logic)', () => {
   beforeEach(async () => {
     await deleteAllPersons();
   });
 
-  it("should create a person", async () => {
+  it('should create a person', async () => {
     const result = await createPerson({
-      data: { fullName: "Nguyễn Văn A", gender: Gender.enum.male },
+      data: { fullName: 'Nguyễn Văn A', gender: Gender.enum.male },
     });
 
-    expect(result.fullName).toBe("Nguyễn Văn A");
+    expect(result.fullName).toBe('Nguyễn Văn A');
     expect(result.id).toBeDefined();
   });
 
-  it("should return null for non-existent person", async () => {
+  it('should return null for non-existent person', async () => {
     const result = await findPersonById(crypto.randomUUID());
     expect(result).toBeNull();
   });
@@ -140,42 +140,42 @@ describe("createPerson (inner logic)", () => {
 
 ```tsx
 // src/components/Button.test.tsx
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { Button } from "./Button";
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Button } from './Button';
 
-describe("Button", () => {
-  describe("given default props", () => {
-    it("should render children", () => {
+describe('Button', () => {
+  describe('given default props', () => {
+    it('should render children', () => {
       render(<Button>Click me</Button>);
-      expect(screen.getByRole("button")).toHaveTextContent("Click me");
+      expect(screen.getByRole('button')).toHaveTextContent('Click me');
     });
   });
 
-  describe("given onClick handler", () => {
-    it("should call handler when clicked", async () => {
+  describe('given onClick handler', () => {
+    it('should call handler when clicked', async () => {
       const user = userEvent.setup();
       const handler = vi.fn();
       render(<Button onClick={handler}>Click me</Button>);
 
-      await user.click(screen.getByRole("button"));
+      await user.click(screen.getByRole('button'));
 
       expect(handler).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe("given disabled prop", () => {
-    it("should not call handler when clicked", async () => {
+  describe('given disabled prop', () => {
+    it('should not call handler when clicked', async () => {
       const user = userEvent.setup();
       const handler = vi.fn();
       render(
         <Button disabled onClick={handler}>
           Click me
-        </Button>,
+        </Button>
       );
 
-      await user.click(screen.getByRole("button"));
+      await user.click(screen.getByRole('button'));
 
       expect(handler).not.toHaveBeenCalled();
     });
@@ -187,19 +187,19 @@ describe("Button", () => {
 
 ```tsx
 // src/routes/members.test.tsx
-import { describe, it, expect } from "vitest";
-import { setup, createRouter } from "@testing-library/react";
-import MembersPage from "./members";
+import { describe, it, expect } from 'vitest';
+import { setup, createRouter } from '@testing-library/react';
+import MembersPage from './members';
 
-describe("MembersPage", () => {
-  it("should display members list", async () => {
+describe('MembersPage', () => {
+  it('should display members list', async () => {
     const { router } = setup(<MembersPage />, {
       router: {
-        loader: () => ({ members: [{ id: "1", firstName: "Minh" }] }),
+        loader: () => ({ members: [{ id: '1', firstName: 'Minh' }] }),
       },
     });
 
-    expect(screen.getByText("Minh")).toBeInTheDocument();
+    expect(screen.getByText('Minh')).toBeInTheDocument();
   });
 });
 ```

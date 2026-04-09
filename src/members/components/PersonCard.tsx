@@ -1,15 +1,15 @@
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
-import { useDashboardStore } from "../../dashboard/store/dashboardStore";
-import { formatDisplayDate } from "../../events/utils/dateHelpers";
-import Avatar from "../../ui/common/Avatar";
-import { Badge } from "../../ui/common/Badge";
-import { cardVariants } from "../../ui/common/Card";
-import InLawBadge from "../../ui/common/InLawBadge";
-import { FemaleIcon, MaleIcon } from "../../ui/icons/GenderIcons";
-import { cn } from "../../ui/utils/cn";
-import { getGenderStyle } from "../../ui/utils/styles";
-import { Gender, type Person } from "../types";
+import { useDashboardStore } from '../../dashboard/store/dashboardStore';
+import { formatDisplayDate } from '../../events/utils/dateHelpers';
+import Avatar from '../../ui/common/Avatar';
+import { Badge } from '../../ui/common/Badge';
+import { cardVariants } from '../../ui/common/Card';
+import InLawBadge from '../../ui/common/InLawBadge';
+import { FemaleIcon, MaleIcon } from '../../ui/icons/GenderIcons';
+import { cn } from '../../ui/utils/cn';
+import { getGenderStyle } from '../../ui/utils/styles';
+import { Gender, type Person } from '../types';
 
 interface PersonCardProps {
   person: Person;
@@ -24,9 +24,9 @@ export default function PersonCard({ person }: PersonCardProps) {
       type="button"
       onClick={() => setMemberModalId(person.id)}
       className={cn(
-        cardVariants({ variant: "glass", interactive: true }),
-        "group relative block w-full p-2 text-left sm:p-4",
-        person.isDeceased && "opacity-80 grayscale-[0.3]",
+        cardVariants({ variant: 'glass', interactive: true }),
+        'group relative block w-full p-2 text-left sm:p-4',
+        person.isDeceased && 'opacity-80 grayscale-[0.3]'
       )}
     >
       <div className="relative z-10 flex items-center space-x-4">
@@ -39,8 +39,8 @@ export default function PersonCard({ person }: PersonCardProps) {
           />
           <div
             className={cn(
-              "absolute right-0 bottom-0 flex size-5 items-center justify-center rounded-full shadow-sm ring-2 ring-white",
-              getGenderStyle(person.gender),
+              'absolute right-0 bottom-0 flex size-5 items-center justify-center rounded-full shadow-sm ring-2 ring-white',
+              getGenderStyle(person.gender)
             )}
           >
             {person.gender === Gender.enum.male ? (
@@ -56,15 +56,8 @@ export default function PersonCard({ person }: PersonCardProps) {
             {person.fullName}
           </h3>
           <p className="flex items-center gap-1.5 truncate text-sm font-medium text-stone-500">
-            <svg
-              className="size-4 shrink-0 text-stone-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              role="img"
-              aria-label={t("common.day")}
-            >
-              <title>{t("common.day")}</title>
+            <svg className="size-4 shrink-0 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" role="img" aria-label={t('common.day')}>
+              <title>{t('common.day')}</title>
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -77,31 +70,20 @@ export default function PersonCard({ person }: PersonCardProps) {
                 year: person.birthYear,
                 month: person.birthMonth,
                 day: person.birthDay,
-                unknownLabel: t("common.unknown"),
+                unknownLabel: t('common.unknown'),
               })}
               {person.isDeceased &&
-                ` → ${formatDisplayDate({ year: person.deathYear, month: person.deathMonth, day: person.deathDay, unknownLabel: t("common.unknown") })}`}
+                ` → ${formatDisplayDate({ year: person.deathYear, month: person.deathMonth, day: person.deathDay, unknownLabel: t('common.unknown') })}`}
             </span>
           </p>
-          {(person.isDeceased ||
-            person.isInLaw ||
-            person.birthOrder != null ||
-            person.generation != null) && (
+          {(person.isDeceased || person.isInLaw || person.birthOrder != null || person.generation != null) && (
             <div className="mt-2 flex shrink-0 flex-wrap items-center gap-1.5">
               {person.isInLaw && <InLawBadge size="md" gender={person.gender} />}
               {person.birthOrder != null && (
-                <Badge color="amber">
-                  {person.birthOrder === 1
-                    ? t("member.birthOrderFirst")
-                    : t("member.birthOrderN", { order: person.birthOrder })}
-                </Badge>
+                <Badge color="amber">{person.birthOrder === 1 ? t('member.birthOrderFirst') : t('member.birthOrderN', { order: person.birthOrder })}</Badge>
               )}
-              {person.generation != null && (
-                <Badge color="emerald">
-                  {t("stats.generationLabel", { gen: person.generation })}
-                </Badge>
-              )}
-              {person.isDeceased && <Badge color="stone">{t("member.filterDeceased")}</Badge>}
+              {person.generation != null && <Badge color="emerald">{t('stats.generationLabel', { gen: person.generation })}</Badge>}
+              {person.isDeceased && <Badge color="stone">{t('member.filterDeceased')}</Badge>}
             </div>
           )}
         </div>

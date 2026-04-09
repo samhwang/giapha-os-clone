@@ -37,10 +37,10 @@ Determine the file path based on TanStack Start conventions:
 Create `src/routes/[route-name].tsx` with:
 
 ```typescript
-import { createFileRoute } from "@tanstack/react-router";
-import { z } from "zod";
+import { createFileRoute } from '@tanstack/react-router';
+import { z } from 'zod';
 
-export const Route = createFileRoute("/[route-name]")({
+export const Route = createFileRoute('/[route-name]')({
   validateSearch: z.object({
     // search params schema
   }),
@@ -82,10 +82,10 @@ Create co-located test: `src/routes/[route-name].test.tsx`
 
 ```tsx
 // src/routes/members.tsx
-import { createFileRoute } from "@tanstack/react-router";
-import { membersOptions } from "../../members/server/member";
+import { createFileRoute } from '@tanstack/react-router';
+import { membersOptions } from '../../members/server/member';
 
-export const Route = createFileRoute("/members")({
+export const Route = createFileRoute('/members')({
   loader: async ({ context }) => {
     return await context.members.getAllMembers();
   },
@@ -101,16 +101,16 @@ export default function MembersPage() {
 
 ```tsx
 // src/routes/members.$memberId.tsx
-import { createFileRoute } from "@tanstack/react-router";
-import { z } from "zod";
+import { createFileRoute } from '@tanstack/react-router';
+import { z } from 'zod';
 
 const MemberParams = z.object({
   memberId: z.string(),
 });
 
-export const Route = createFileRoute("/members/$memberId")({
+export const Route = createFileRoute('/members/$memberId')({
   validateSearch: z.object({
-    tab: z.enum(["overview", "family", "events"]).default("overview"),
+    tab: z.enum(['overview', 'family', 'events']).default('overview'),
   }),
   loader: async ({ params, context }) => {
     const { memberId } = MemberParams.parse(params);
