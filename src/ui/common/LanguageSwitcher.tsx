@@ -14,8 +14,13 @@ export default function LanguageSwitcher({ className = "" }: LanguageSwitcherPro
   const { i18n, t } = useTranslation();
 
   const switchLanguage = (lang: Language) => {
-    cookieStore.set({ name: "lang", value: lang, path: "/", expires: Date.now() + ONE_YEAR_MS });
-    i18n.changeLanguage(lang);
+    void cookieStore.set({
+      name: "lang",
+      value: lang,
+      path: "/",
+      expires: Date.now() + ONE_YEAR_MS,
+    });
+    void i18n.changeLanguage(lang);
   };
 
   const nextLang = supportedLanguages.find((l) => l !== i18n.language) ?? "en";

@@ -25,7 +25,7 @@ export default function QuickAddSpouseForm({
   const [note, setNote] = useState("");
 
   const handleSubmit = () => {
-    onSubmit({ name, birthYear, note });
+    void onSubmit({ name, birthYear, note });
   };
 
   const handleCancel = () => {

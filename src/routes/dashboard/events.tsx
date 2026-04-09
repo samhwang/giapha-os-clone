@@ -24,7 +24,7 @@ function EventsPage() {
   const router = useRouter();
 
   const handleCustomEventChange = useCallback(() => {
-    router.invalidate();
+    void router.invalidate();
   }, [router]);
 
   return (

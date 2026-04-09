@@ -10,7 +10,7 @@ export const defaultLanguage: Language = "vi";
 
 export function createI18nInstance(lang: Language = defaultLanguage) {
   const instance = i18next.createInstance();
-  instance.use(initReactI18next).init({
+  void instance.use(initReactI18next).init({
     resources: { vi: { translation: vi }, en: { translation: en } },
     lng: lang,
     fallbackLng: defaultLanguage,

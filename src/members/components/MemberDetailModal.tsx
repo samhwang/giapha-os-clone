@@ -83,7 +83,7 @@ export default function MemberDetailModal({ isAdmin, canEdit = false }: MemberDe
   }, [memberId, showCreateModal]);
 
   const refetchPerson = (personId: string) => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.persons.detail(personId) });
+    void queryClient.invalidateQueries({ queryKey: queryKeys.persons.detail(personId) });
   };
 
   const handleBackdropClose = (): void => {

@@ -15,7 +15,7 @@ export default function LogoutButton() {
     setIsLoggingOut(true);
     try {
       await authClient.signOut();
-      navigate({ to: "/login" });
+      void navigate({ to: "/login" });
     } catch (err) {
       logger.error("Logout error:", err);
       setIsLoggingOut(false);

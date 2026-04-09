@@ -196,7 +196,7 @@ export default function MemberForm({
 
         if (onSuccess) return onSuccess(personId);
         await router.invalidate();
-        navigate({ to: "/dashboard/members/$id", params: { id: personId } });
+        void navigate({ to: "/dashboard/members/$id", params: { id: personId } });
       } catch (err) {
         logger.error("Error saving member:", err);
         setError(err instanceof Error ? err.message : t("member.saveError"));
@@ -257,7 +257,7 @@ export default function MemberForm({
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        form.handleSubmit();
+        void form.handleSubmit();
       }}
     >
       <Card variant="elevated" className="animate-[fade-in-up_0.3s_ease-out_forwards] p-5 sm:p-8">

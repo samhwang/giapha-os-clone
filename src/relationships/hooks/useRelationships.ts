@@ -201,7 +201,7 @@ export function useRelationships({ person, onStatsLoaded }: UseRelationshipsOpti
   const allPersons = data?.allPersons ?? [];
 
   const invalidateRelationships = () => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.relationships.forPerson(personId) });
+    void queryClient.invalidateQueries({ queryKey: queryKeys.relationships.forPerson(personId) });
   };
 
   const addRelationshipMutation = useMutation({

@@ -57,7 +57,7 @@ export default function AddRelationshipForm({
 
   const handleSubmit = () => {
     if (!selectedTargetId) return;
-    onSubmit({ direction, type, note, targetId: selectedTargetId });
+    void onSubmit({ direction, type, note, targetId: selectedTargetId });
   };
 
   const handleCancel = () => {

@@ -19,7 +19,7 @@ function LoginPage() {
 
   const handleSuccess = () => {
     if (isLogin) {
-      navigate({ to: "/dashboard" });
+      void navigate({ to: "/dashboard" });
     } else {
       setIsLogin(true);
     }

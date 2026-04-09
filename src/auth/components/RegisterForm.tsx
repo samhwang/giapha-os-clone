@@ -72,7 +72,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        form.handleSubmit();
+        void form.handleSubmit();
       }}
     >
       <div className="space-y-4">

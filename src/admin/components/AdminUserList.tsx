@@ -280,7 +280,7 @@ export default function AdminUserList({ initialUsers, currentUserId }: AdminUser
             onSubmit={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              form.handleSubmit();
+              void form.handleSubmit();
             }}
             className="p-6"
           >

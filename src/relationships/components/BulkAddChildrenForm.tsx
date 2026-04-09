@@ -36,7 +36,7 @@ export default function BulkAddChildrenForm({
   ]);
 
   const handleSubmit = () => {
-    onSubmit({
+    void onSubmit({
       spouseId: selectedSpouseId,
       children: bulkChildren.map((c) => ({
         name: c.name,

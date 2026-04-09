@@ -15,7 +15,7 @@ export default function DeleteMemberButton({ memberId }: DeleteMemberButtonProps
   const mutation = useMutation({
     mutationFn: () => deleteMember({ data: { id: memberId } }),
     onSuccess: () => {
-      navigate({ to: "/dashboard/members" });
+      void navigate({ to: "/dashboard/members" });
     },
   });
 
