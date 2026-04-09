@@ -1,6 +1,7 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/database/generated/prisma"
+  runtime  = "bun"
 }
 
 datasource db {

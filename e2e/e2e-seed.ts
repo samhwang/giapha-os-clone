@@ -1,4 +1,3 @@
-import '@dotenvx/dotenvx/config';
 import { test as setup } from '@playwright/test';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { mkdirSync, writeFileSync } from 'node:fs';

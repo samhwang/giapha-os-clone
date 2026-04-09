@@ -1,4 +1,3 @@
-import '@dotenvx/dotenvx/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 import { PrismaClient } from '../src/database/generated/prisma/client';

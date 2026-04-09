@@ -1,4 +1,3 @@
-import '@dotenvx/dotenvx/config';
 import { test as teardown } from '@playwright/test';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { existsSync, readFileSync, unlinkSync } from 'node:fs';
