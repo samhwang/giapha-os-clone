@@ -20,7 +20,7 @@ const t = (key: string, opts?: Record<string, unknown>) => {
   if (key === "member.childrenOf") return "Children of";
   if (key === "member.family") return "Family";
   if (key === "member.unknownGeneration") return "Unknown Generation";
-  if (key === "stats.generationLabel") return `Generation ${opts?.gen}`;
+  if (key === "stats.generationLabel") return `Generation ${String(opts?.gen)}`;
   return key;
 };
 

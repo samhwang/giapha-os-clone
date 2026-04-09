@@ -315,7 +315,7 @@ export default function LineageManager({ persons, relationships }: LineageManage
       });
 
       setUpdates(result);
-    } catch (_err) {
+    } catch {
       // Compute errors are local (not server), keep as-is
       applyMutation.reset();
     } finally {
