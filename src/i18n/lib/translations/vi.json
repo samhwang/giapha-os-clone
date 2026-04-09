@@ -521,6 +521,9 @@
     },
     "data": {
       "emptyBackup": "File backup trống — không có thành viên nào để phục hồi."
+    },
+    "tree": {
+      "renderFailed": "Tính năng này không được hỗ trợ trên trình duyệt của bạn ({{message}}). Vui lòng cập nhật hoặc sử dụng trình duyệt khác."
     }
   },
   "role": {

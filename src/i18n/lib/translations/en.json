@@ -521,6 +521,9 @@
     },
     "data": {
       "emptyBackup": "Backup file is empty — no members to restore."
+    },
+    "tree": {
+      "renderFailed": "This feature is not supported on your browser ({{message}}). Please update or use a different browser."
     }
   },
   "role": {
