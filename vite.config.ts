@@ -45,7 +45,7 @@ function getDeploymentPlugins(): PluginOption[] {
         }),
       ];
     default:
-      throw new Error(`Unsupported DEPLOYMENT_ENV "${env}". Supported values: bun, vercel, netlify, cloudflare.`);
+      throw new Error(`Unsupported DEPLOYMENT_ENV "${env as string}". Supported values: bun, vercel, netlify, cloudflare.`);
   }
 }
 
