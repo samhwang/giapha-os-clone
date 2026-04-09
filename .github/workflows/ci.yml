@@ -14,9 +14,9 @@ jobs:
         task: ['lint:ci', 'typecheck', 'test:ui', 'test:server', 'test:integration']
     steps:
       - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-node-deps
+      - uses: ./.github/actions/setup-deps
       - run: cp .env.sample .env
-      - run: pnpm run ${{ matrix.task }}
+      - run: bun run ${{ matrix.task }}
 
   e2e:
     runs-on: ubuntu-latest
@@ -36,12 +36,12 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-node-deps
+      - uses: ./.github/actions/setup-deps
       - run: cp .env.sample .env
-      - run: npx playwright install --with-deps
-      - run: pnpm run prisma:migrate:dev
-      - run: pnpm run prisma:seed
-      - run: pnpm run test:e2e
+      - run: bunx playwright install --with-deps
+      - run: bun run prisma:migrate:dev
+      - run: bun run prisma:seed
+      - run: bun run test:e2e
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:

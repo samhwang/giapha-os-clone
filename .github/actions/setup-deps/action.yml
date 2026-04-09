@@ -1,0 +1,22 @@
+name: setup-deps
+description: Setup Bun and project dependencies
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version-file: .bun-version
+
+    - name: Install dependencies
+      shell: bash
+      run: bun install --frozen-lockfile
+
+    - name: Generate Prisma types
+      shell: bash
+      run: bun run prisma:generate
+
+    - name: Build router tree
+      shell: bash
+      run: bun run build
