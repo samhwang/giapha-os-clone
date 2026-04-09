@@ -20,6 +20,6 @@ export function nowInTimeZone(timeZone?: string): dayjs.Dayjs {
 
 export function formatDateInTimeZone(date: dayjs.Dayjs | Date | string, timeZone?: string): string {
   const tz = timeZone || getUserTimeZone();
-  const d = typeof date === "string" ? dayjs(date) : dayjs(date);
+  const d = dayjs(date);
   return d.tz(tz).format("YYYY-MM-DD");
 }
