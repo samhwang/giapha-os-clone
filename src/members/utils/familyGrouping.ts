@@ -50,28 +50,72 @@ export function buildFamilyGroupedSort(
     families.get(groupId)?.push(p);
   }
 
-  // Sort families by parent birth order, then own birth order
-  const getFamilyScore = (members: Person[]) => {
-    const coreMember = members.find((m) => !m.isInLaw) || members[0];
-    const parents = parentsOf.get(coreMember.id) || [];
-    let parentBirthOrder = FALLBACK_BIRTH_ORDER;
-    if (parents.length > 0) {
-      const p1 = personMap.get(parents[0]);
-      if (p1) parentBirthOrder = p1.birthOrder || FALLBACK_BIRTH_ORDER;
-    }
-    return {
-      parentBirthOrder,
-      ownBirthOrder: coreMember.birthOrder || FALLBACK_BIRTH_ORDER,
-      birthYear: coreMember.birthYear || FALLBACK_BIRTH_YEAR,
-    };
+  // Each family is ranked by building a recursive "lineage score" from its core bloodline member.
+  // The score includes ancestor → parent → self ordering (birthOrder, then birthYear at each level).
+  // This ensures deeper generations (e.g. 4th, 5th) inherit correct positioning from their full ancestry,
+  // not just their immediate parent, resulting in stable and accurate family ordering across generations.
+  const lineageScoreCache = new Map<string, number[]>();
+
+  const getPrimaryBloodlineMember = (members: Person[]): Person => {
+    return (
+      members
+        .filter((m: Person) => !m.isInLaw)
+        .sort((a: Person, b: Person) => {
+          if ((a.birthOrder ?? 999) !== (b.birthOrder ?? 999)) {
+            return (a.birthOrder ?? 999) - (b.birthOrder ?? 999);
+          }
+          return (a.birthYear ?? 9999) - (b.birthYear ?? 9999);
+        })[0] || members[0]
+    );
   };
 
-  const sortedGroups = Array.from(families.entries()).sort((a, b) => {
-    const scoreA = getFamilyScore(a[1]);
-    const scoreB = getFamilyScore(b[1]);
-    if (scoreA.parentBirthOrder !== scoreB.parentBirthOrder) return scoreA.parentBirthOrder - scoreB.parentBirthOrder;
-    if (scoreA.ownBirthOrder !== scoreB.ownBirthOrder) return scoreA.ownBirthOrder - scoreB.ownBirthOrder;
-    return scoreA.birthYear - scoreB.birthYear;
+  const getBloodlineParent = (person: Person): Person | null => {
+    const parentIds = parentsOf.get(person.id) || [];
+    const parentPersons = parentIds.map((id: string) => personMap.get(id)).filter((p): p is Person => !!p);
+
+    return parentPersons.find((p: Person) => !p.isInLaw) || parentPersons[0] || null;
+  };
+
+  const getPersonLineageScore = (person: Person): number[] => {
+    if (lineageScoreCache.has(person.id)) {
+      return lineageScoreCache.get(person.id)!;
+    }
+
+    const parent = getBloodlineParent(person);
+
+    const ownPart = [person.birthOrder ?? 999, person.birthYear ?? 9999];
+
+    if (!parent) {
+      lineageScoreCache.set(person.id, ownPart);
+      return ownPart;
+    }
+
+    const score = [...getPersonLineageScore(parent), ...ownPart];
+    lineageScoreCache.set(person.id, score);
+    return score;
+  };
+
+  const getFamilyScore = (_groupId: string, members: Person[]): number[] => {
+    const coreMember = getPrimaryBloodlineMember(members);
+    return getPersonLineageScore(coreMember);
+  };
+
+  const sortedGroups = Array.from(families.entries()).sort((a: [string, Person[]], b: [string, Person[]]) => {
+    const scoreA = getFamilyScore(a[0], a[1]);
+    const scoreB = getFamilyScore(b[0], b[1]);
+
+    const maxLen = Math.max(scoreA.length, scoreB.length);
+
+    for (let i = 0; i < maxLen; i++) {
+      const valA = scoreA[i] ?? 9999;
+      const valB = scoreB[i] ?? 9999;
+
+      if (valA !== valB) {
+        return valA - valB;
+      }
+    }
+
+    return 0;
   });
 
   // Sort within each family: bloodline first, by birth order, spouses follow their partner

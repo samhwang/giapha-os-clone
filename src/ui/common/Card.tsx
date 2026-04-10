@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../utils/cn';
 
-const cardVariants = cva('rounded-card border overflow-hidden transition-all duration-default', {
+const cardVariants = cva('rounded-card border transition-all duration-default', {
   variants: {
     variant: {
       glass: 'bg-surface-glass backdrop-blur-md border-border-default shadow-card',
