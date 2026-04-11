@@ -59,8 +59,8 @@ export function buildFamilyGroupedSort(
   const getPrimaryBloodlineMember = (members: Person[]): Person => {
     return (
       members
-        .filter((m: Person) => !m.isInLaw)
-        .sort((a: Person, b: Person) => {
+        .filter((m) => !m.isInLaw)
+        .sort((a, b) => {
           if ((a.birthOrder ?? FALLBACK_BIRTH_ORDER) !== (b.birthOrder ?? FALLBACK_BIRTH_ORDER)) {
             return (a.birthOrder ?? FALLBACK_BIRTH_ORDER) - (b.birthOrder ?? FALLBACK_BIRTH_ORDER);
           }
@@ -71,9 +71,9 @@ export function buildFamilyGroupedSort(
 
   const getBloodlineParent = (person: Person): Person | null => {
     const parentIds = parentsOf.get(person.id) || [];
-    const parentPersons = parentIds.map((id: string) => personMap.get(id)).filter((p): p is Person => !!p);
+    const parentPersons = parentIds.map((id) => personMap.get(id)).filter((p): p is Person => !!p);
 
-    return parentPersons.find((p: Person) => !p.isInLaw) || parentPersons[0] || null;
+    return parentPersons.find((p) => !p.isInLaw) || parentPersons[0] || null;
   };
 
   const getPersonLineageScore = (person: Person): number[] => {
@@ -100,7 +100,7 @@ export function buildFamilyGroupedSort(
     return getPersonLineageScore(coreMember);
   };
 
-  const sortedGroups = Array.from(families.entries()).sort((a: [string, Person[]], b: [string, Person[]]) => {
+  const sortedGroups = Array.from(families.entries()).sort((a, b) => {
     const scoreA = getFamilyScore(a[1]);
     const scoreB = getFamilyScore(b[1]);
 
