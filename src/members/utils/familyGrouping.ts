@@ -3,8 +3,13 @@ import type { Person } from '../types';
 const FALLBACK_BIRTH_ORDER = 999;
 export const FALLBACK_BIRTH_YEAR = 9999;
 const FALLBACK_GENERATION = 999;
+const MAX_LINEAGE_DEPTH = 20;
 
 export type PersonWithFamily = Person & { _familyId?: string };
+
+const compareBirthOrder = (a: Person, b: Person) => (a.birthOrder ?? FALLBACK_BIRTH_ORDER) - (b.birthOrder ?? FALLBACK_BIRTH_ORDER);
+
+const compareBirthYear = (a: Person, b: Person) => (a.birthYear ?? FALLBACK_BIRTH_YEAR) - (b.birthYear ?? FALLBACK_BIRTH_YEAR);
 
 export function getGroupId(personId: string, parentsOf: Map<string, string[]>, spousesOf: Map<string, string[]>): string {
   const parents = parentsOf.get(personId) || [];
@@ -50,23 +55,14 @@ export function buildFamilyGroupedSort(
     families.get(groupId)?.push(p);
   }
 
-  // Each family is ranked by building a recursive "lineage score" from its core bloodline member.
-  // The score includes ancestor → parent → self ordering (birthOrder, then birthYear at each level).
-  // This ensures deeper generations (e.g. 4th, 5th) inherit correct positioning from their full ancestry,
-  // not just their immediate parent, resulting in stable and accurate family ordering across generations.
+  // Lineage scores ensure deeper generations inherit correct positioning from their full ancestry,
+  // not just their immediate parent.
   const lineageScoreCache = new Map<string, number[]>();
 
   const getPrimaryBloodlineMember = (members: Person[]): Person => {
-    return (
-      members
-        .filter((m) => !m.isInLaw)
-        .sort((a, b) => {
-          if ((a.birthOrder ?? FALLBACK_BIRTH_ORDER) !== (b.birthOrder ?? FALLBACK_BIRTH_ORDER)) {
-            return (a.birthOrder ?? FALLBACK_BIRTH_ORDER) - (b.birthOrder ?? FALLBACK_BIRTH_ORDER);
-          }
-          return (a.birthYear ?? FALLBACK_BIRTH_YEAR) - (b.birthYear ?? FALLBACK_BIRTH_YEAR);
-        })[0] || members[0]
-    );
+    const bloodline = members.filter((m) => !m.isInLaw);
+    if (bloodline.length === 0) return members[0];
+    return bloodline.reduce((best, m) => ((compareBirthOrder(m, best) || compareBirthYear(m, best)) < 0 ? m : best));
   };
 
   const getBloodlineParent = (person: Person): Person | null => {
@@ -75,8 +71,6 @@ export function buildFamilyGroupedSort(
 
     return parentPersons.find((p) => !p.isInLaw) || parentPersons[0] || null;
   };
-
-  const MAX_LINEAGE_DEPTH = 20;
 
   const getPersonLineageScore = (person: Person, depth = 0): number[] => {
     if (lineageScoreCache.has(person.id)) {
@@ -97,14 +91,16 @@ export function buildFamilyGroupedSort(
     return score;
   };
 
-  const getFamilyScore = (members: Person[]): number[] => {
+  // Precompute scores per group to avoid repeated work in the comparator
+  const groupScores = new Map<string, number[]>();
+  for (const [groupId, members] of families) {
     const coreMember = getPrimaryBloodlineMember(members);
-    return getPersonLineageScore(coreMember);
-  };
+    groupScores.set(groupId, getPersonLineageScore(coreMember));
+  }
 
   const sortedGroups = Array.from(families.entries()).sort((a, b) => {
-    const scoreA = getFamilyScore(a[1]);
-    const scoreB = getFamilyScore(b[1]);
+    const scoreA = groupScores.get(a[0])!;
+    const scoreB = groupScores.get(b[0])!;
 
     const maxLen = Math.max(scoreA.length, scoreB.length);
 
@@ -150,14 +146,12 @@ export function sortFamilyMembers(members: Person[], spousesOf: Map<string, stri
     const refB = getBloodlineRef(b);
 
     if (refA.id !== refB.id) {
-      if ((refA.birthOrder ?? FALLBACK_BIRTH_ORDER) !== (refB.birthOrder ?? FALLBACK_BIRTH_ORDER))
-        return (refA.birthOrder ?? FALLBACK_BIRTH_ORDER) - (refB.birthOrder ?? FALLBACK_BIRTH_ORDER);
-      return (refA.birthYear ?? FALLBACK_BIRTH_YEAR) - (refB.birthYear ?? FALLBACK_BIRTH_YEAR);
+      return compareBirthOrder(refA, refB) || compareBirthYear(refA, refB);
     }
 
     // Same bloodline partner — bloodline member first
     if (a.isInLaw !== b.isInLaw) return a.isInLaw ? 1 : -1;
-    return (a.birthYear ?? FALLBACK_BIRTH_YEAR) - (b.birthYear ?? FALLBACK_BIRTH_YEAR);
+    return compareBirthYear(a, b);
   });
 }
 
@@ -188,8 +182,8 @@ export function buildCoupleGroups(famPersons: Person[], spousesOf: Map<string, s
     }
 
     // Order: bloodline first, then in-laws
-    const bloodline = group.filter((m) => !m.isInLaw).sort((a, b) => (a.birthYear ?? FALLBACK_BIRTH_YEAR) - (b.birthYear ?? FALLBACK_BIRTH_YEAR));
-    const inLaws = group.filter((m) => m.isInLaw).sort((a, b) => (a.birthYear ?? FALLBACK_BIRTH_YEAR) - (b.birthYear ?? FALLBACK_BIRTH_YEAR));
+    const bloodline = group.filter((m) => !m.isInLaw).sort(compareBirthYear);
+    const inLaws = group.filter((m) => m.isInLaw).sort(compareBirthYear);
     groups.push([...bloodline, ...inLaws]);
   }
 
