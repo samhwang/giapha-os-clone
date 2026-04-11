@@ -95,14 +95,14 @@ export function buildFamilyGroupedSort(
     return score;
   };
 
-  const getFamilyScore = (_groupId: string, members: Person[]): number[] => {
+  const getFamilyScore = (members: Person[]): number[] => {
     const coreMember = getPrimaryBloodlineMember(members);
     return getPersonLineageScore(coreMember);
   };
 
   const sortedGroups = Array.from(families.entries()).sort((a: [string, Person[]], b: [string, Person[]]) => {
-    const scoreA = getFamilyScore(a[0], a[1]);
-    const scoreB = getFamilyScore(b[0], b[1]);
+    const scoreA = getFamilyScore(a[1]);
+    const scoreB = getFamilyScore(b[1]);
 
     const maxLen = Math.max(scoreA.length, scoreB.length);
 
