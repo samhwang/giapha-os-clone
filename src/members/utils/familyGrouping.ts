@@ -76,21 +76,23 @@ export function buildFamilyGroupedSort(
     return parentPersons.find((p) => !p.isInLaw) || parentPersons[0] || null;
   };
 
-  const getPersonLineageScore = (person: Person): number[] => {
+  const MAX_LINEAGE_DEPTH = 20;
+
+  const getPersonLineageScore = (person: Person, depth = 0): number[] => {
     if (lineageScoreCache.has(person.id)) {
       return lineageScoreCache.get(person.id)!;
     }
 
-    const parent = getBloodlineParent(person);
-
     const ownPart = [person.birthOrder ?? FALLBACK_BIRTH_ORDER, person.birthYear ?? FALLBACK_BIRTH_YEAR];
+
+    const parent = depth < MAX_LINEAGE_DEPTH ? getBloodlineParent(person) : null;
 
     if (!parent) {
       lineageScoreCache.set(person.id, ownPart);
       return ownPart;
     }
 
-    const score = [...getPersonLineageScore(parent), ...ownPart];
+    const score = [...getPersonLineageScore(parent, depth + 1), ...ownPart];
     lineageScoreCache.set(person.id, score);
     return score;
   };
