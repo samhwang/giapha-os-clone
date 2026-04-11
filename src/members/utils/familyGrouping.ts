@@ -61,10 +61,10 @@ export function buildFamilyGroupedSort(
       members
         .filter((m: Person) => !m.isInLaw)
         .sort((a: Person, b: Person) => {
-          if ((a.birthOrder ?? 999) !== (b.birthOrder ?? 999)) {
-            return (a.birthOrder ?? 999) - (b.birthOrder ?? 999);
+          if ((a.birthOrder ?? FALLBACK_BIRTH_ORDER) !== (b.birthOrder ?? FALLBACK_BIRTH_ORDER)) {
+            return (a.birthOrder ?? FALLBACK_BIRTH_ORDER) - (b.birthOrder ?? FALLBACK_BIRTH_ORDER);
           }
-          return (a.birthYear ?? 9999) - (b.birthYear ?? 9999);
+          return (a.birthYear ?? FALLBACK_BIRTH_YEAR) - (b.birthYear ?? FALLBACK_BIRTH_YEAR);
         })[0] || members[0]
     );
   };
@@ -83,7 +83,7 @@ export function buildFamilyGroupedSort(
 
     const parent = getBloodlineParent(person);
 
-    const ownPart = [person.birthOrder ?? 999, person.birthYear ?? 9999];
+    const ownPart = [person.birthOrder ?? FALLBACK_BIRTH_ORDER, person.birthYear ?? FALLBACK_BIRTH_YEAR];
 
     if (!parent) {
       lineageScoreCache.set(person.id, ownPart);
@@ -107,8 +107,8 @@ export function buildFamilyGroupedSort(
     const maxLen = Math.max(scoreA.length, scoreB.length);
 
     for (let i = 0; i < maxLen; i++) {
-      const valA = scoreA[i] ?? 9999;
-      const valB = scoreB[i] ?? 9999;
+      const valA = scoreA[i] ?? FALLBACK_BIRTH_YEAR;
+      const valB = scoreB[i] ?? FALLBACK_BIRTH_YEAR;
 
       if (valA !== valB) {
         return valA - valB;
