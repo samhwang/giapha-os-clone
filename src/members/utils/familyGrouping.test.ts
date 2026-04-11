@@ -5,6 +5,7 @@ import type { Person } from '../types';
 import {
   binhThiMoc,
   camThiDiu,
+  createPerson,
   dinhThiMyDuyen,
   ngoThiDiuHien,
   tanThiKheo,
@@ -116,61 +117,27 @@ describe('buildFamilyGroupedSort', () => {
   });
 
   it('keeps 4th generation families ordered by ancestor branch lineage', () => {
-    const { parentsOf, spousesOf } = buildMaps([]);
+    const grandparent = createPerson({ id: 'grandparent', generation: 1 });
+    const olderParent = createPerson({ id: 'older-parent', generation: 2, birthOrder: 1 });
+    const youngerParent = createPerson({ id: 'younger-parent', generation: 2, birthOrder: 2 });
+    const olderChild = createPerson({ id: 'older-child', generation: 3, birthOrder: 1, birthYear: 1985 });
+    const youngerChild = createPerson({ id: 'younger-child', generation: 3, birthOrder: 1, birthYear: 1980 });
 
-    const olderBranchChild: Person = {
-      ...vanTriMinh,
-      id: 'older-branch-child',
-      fullName: 'Older Branch Child',
-      generation: 4,
-      birthOrder: 1,
-      birthYear: 1985,
-      isInLaw: false,
-    };
+    const parentsOf = new Map<string, string[]>();
+    parentsOf.set(olderParent.id, [grandparent.id]);
+    parentsOf.set(youngerParent.id, [grandparent.id]);
+    parentsOf.set(olderChild.id, [olderParent.id]);
+    parentsOf.set(youngerChild.id, [youngerParent.id]);
 
-    const youngerBranchParent: Person = {
-      ...vanCongMoc,
-      id: 'younger-branch-parent',
-      fullName: 'Younger Branch Parent',
-      generation: 3,
-      birthOrder: 3,
-      birthYear: 1965,
-      isInLaw: false,
-    };
-
-    const youngerBranchChild: Person = {
-      ...vanTriMinh,
-      id: 'younger-branch-child',
-      fullName: 'Younger Branch Child',
-      generation: 4,
-      birthOrder: 1,
-      birthYear: 1980, // intentionally earlier
-      isInLaw: false,
-    };
-
-    const allPersons: Person[] = [
-      vanCongGoc,
-      binhThiMoc,
-      vanCongThuan,
-      camThiDiu,
-      vanCongTri,
-      vanThiCam,
-      youngerBranchParent,
-      olderBranchChild,
-      youngerBranchChild,
-    ];
-
-    parentsOf.set(olderBranchChild.id, [vanCongTri.id, ngoThiDiuHien.id]);
-    parentsOf.set(youngerBranchParent.id, [vanCongThuan.id, camThiDiu.id]);
-    parentsOf.set(youngerBranchChild.id, [youngerBranchParent.id]);
-
-    const filtered: Person[] = [youngerBranchChild, olderBranchChild];
+    const spousesOf = new Map<string, string[]>();
+    const allPersons = [grandparent, olderParent, youngerParent, olderChild, youngerChild];
+    const filtered = [youngerChild, olderChild];
 
     const result = buildFamilyGroupedSort(filtered, allPersons, parentsOf, spousesOf, 'generation');
 
     expect(result).toHaveLength(2);
-    expect(result[0].id).toBe(olderBranchChild.id);
-    expect(result[1].id).toBe(youngerBranchChild.id);
+    expect(result[0].id).toBe(olderChild.id);
+    expect(result[1].id).toBe(youngerChild.id);
   });
 });
 
