@@ -129,8 +129,8 @@ export function buildFamilyGroupedSort(
 
   // Stable sort by generation
   result.sort((a, b) => {
-    const genA = a.generation || FALLBACK_GENERATION;
-    const genB = b.generation || FALLBACK_GENERATION;
+    const genA = a.generation ?? FALLBACK_GENERATION;
+    const genB = b.generation ?? FALLBACK_GENERATION;
     if (genA !== genB) return sortOption === 'generation_desc' ? genB - genA : genA - genB;
     return 0;
   });
@@ -150,14 +150,14 @@ export function sortFamilyMembers(members: Person[], spousesOf: Map<string, stri
     const refB = getBloodlineRef(b);
 
     if (refA.id !== refB.id) {
-      if ((refA.birthOrder || FALLBACK_BIRTH_ORDER) !== (refB.birthOrder || FALLBACK_BIRTH_ORDER))
-        return (refA.birthOrder || FALLBACK_BIRTH_ORDER) - (refB.birthOrder || FALLBACK_BIRTH_ORDER);
-      return (refA.birthYear || FALLBACK_BIRTH_YEAR) - (refB.birthYear || FALLBACK_BIRTH_YEAR);
+      if ((refA.birthOrder ?? FALLBACK_BIRTH_ORDER) !== (refB.birthOrder ?? FALLBACK_BIRTH_ORDER))
+        return (refA.birthOrder ?? FALLBACK_BIRTH_ORDER) - (refB.birthOrder ?? FALLBACK_BIRTH_ORDER);
+      return (refA.birthYear ?? FALLBACK_BIRTH_YEAR) - (refB.birthYear ?? FALLBACK_BIRTH_YEAR);
     }
 
     // Same bloodline partner — bloodline member first
     if (a.isInLaw !== b.isInLaw) return a.isInLaw ? 1 : -1;
-    return (a.birthYear || FALLBACK_BIRTH_YEAR) - (b.birthYear || FALLBACK_BIRTH_YEAR);
+    return (a.birthYear ?? FALLBACK_BIRTH_YEAR) - (b.birthYear ?? FALLBACK_BIRTH_YEAR);
   });
 }
 
@@ -188,8 +188,8 @@ export function buildCoupleGroups(famPersons: Person[], spousesOf: Map<string, s
     }
 
     // Order: bloodline first, then in-laws
-    const bloodline = group.filter((m) => !m.isInLaw).sort((a, b) => (a.birthYear || FALLBACK_BIRTH_YEAR) - (b.birthYear || FALLBACK_BIRTH_YEAR));
-    const inLaws = group.filter((m) => m.isInLaw).sort((a, b) => (a.birthYear || FALLBACK_BIRTH_YEAR) - (b.birthYear || FALLBACK_BIRTH_YEAR));
+    const bloodline = group.filter((m) => !m.isInLaw).sort((a, b) => (a.birthYear ?? FALLBACK_BIRTH_YEAR) - (b.birthYear ?? FALLBACK_BIRTH_YEAR));
+    const inLaws = group.filter((m) => m.isInLaw).sort((a, b) => (a.birthYear ?? FALLBACK_BIRTH_YEAR) - (b.birthYear ?? FALLBACK_BIRTH_YEAR));
     groups.push([...bloodline, ...inLaws]);
   }
 
