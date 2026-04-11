@@ -117,27 +117,46 @@ describe('buildFamilyGroupedSort', () => {
   });
 
   it('keeps 4th generation families ordered by ancestor branch lineage', () => {
-    const grandparent = createPerson({ id: 'grandparent', generation: 1 });
-    const olderParent = createPerson({ id: 'older-parent', generation: 2, birthOrder: 1 });
-    const youngerParent = createPerson({ id: 'younger-parent', generation: 2, birthOrder: 2 });
-    const olderChild = createPerson({ id: 'older-child', generation: 3, birthOrder: 1, birthYear: 1985 });
-    const youngerChild = createPerson({ id: 'younger-child', generation: 3, birthOrder: 1, birthYear: 1980 });
+    // Gen 1: ancestor couple (bloodline + in-law)
+    const ancestor = createPerson({ id: 'ancestor', generation: 1 });
+    const ancestorSpouse = createPerson({ id: 'ancestor-spouse', generation: 1, isInLaw: true });
+
+    // Gen 2: two branches from ancestor — older (birthOrder 1) and younger (birthOrder 3)
+    const olderBranch = createPerson({ id: 'older-branch', generation: 2, birthOrder: 1 });
+    const olderBranchSpouse = createPerson({ id: 'older-branch-spouse', generation: 2, isInLaw: true });
+    const youngerBranch = createPerson({ id: 'younger-branch', generation: 2, birthOrder: 3 });
+
+    // Gen 3: one child per branch
+    const olderGen3 = createPerson({ id: 'older-gen3', generation: 3, birthOrder: 1 });
+    const youngerGen3 = createPerson({ id: 'younger-gen3', generation: 3, birthOrder: 1, birthYear: 1965 });
+
+    // Gen 4: the two members being sorted — youngerGen4 has an earlier birthYear to
+    // verify sorting uses full lineage (ancestor birthOrder) not just the person's own fields
+    const olderGen4 = createPerson({ id: 'older-gen4', generation: 4, birthOrder: 1, birthYear: 1985 });
+    const youngerGen4 = createPerson({ id: 'younger-gen4', generation: 4, birthOrder: 1, birthYear: 1980 });
 
     const parentsOf = new Map<string, string[]>();
-    parentsOf.set(olderParent.id, [grandparent.id]);
-    parentsOf.set(youngerParent.id, [grandparent.id]);
-    parentsOf.set(olderChild.id, [olderParent.id]);
-    parentsOf.set(youngerChild.id, [youngerParent.id]);
+    parentsOf.set(olderBranch.id, [ancestor.id, ancestorSpouse.id]);
+    parentsOf.set(youngerBranch.id, [ancestor.id, ancestorSpouse.id]);
+    parentsOf.set(olderGen3.id, [olderBranch.id, olderBranchSpouse.id]);
+    parentsOf.set(youngerGen3.id, [youngerBranch.id]);
+    parentsOf.set(olderGen4.id, [olderGen3.id]);
+    parentsOf.set(youngerGen4.id, [youngerGen3.id]);
 
     const spousesOf = new Map<string, string[]>();
-    const allPersons = [grandparent, olderParent, youngerParent, olderChild, youngerChild];
-    const filtered = [youngerChild, olderChild];
+    spousesOf.set(ancestor.id, [ancestorSpouse.id]);
+    spousesOf.set(ancestorSpouse.id, [ancestor.id]);
+    spousesOf.set(olderBranch.id, [olderBranchSpouse.id]);
+    spousesOf.set(olderBranchSpouse.id, [olderBranch.id]);
+
+    const allPersons = [ancestor, ancestorSpouse, olderBranch, olderBranchSpouse, youngerBranch, olderGen3, youngerGen3, olderGen4, youngerGen4];
+    const filtered = [youngerGen4, olderGen4];
 
     const result = buildFamilyGroupedSort(filtered, allPersons, parentsOf, spousesOf, 'generation');
 
     expect(result).toHaveLength(2);
-    expect(result[0].id).toBe(olderChild.id);
-    expect(result[1].id).toBe(youngerChild.id);
+    expect(result[0].id).toBe(olderGen4.id);
+    expect(result[1].id).toBe(youngerGen4.id);
   });
 });
 
